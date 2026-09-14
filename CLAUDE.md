@@ -51,3 +51,7 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - The registry route reads `registry/` with `fs` at request time. On Vercel this may need `outputFileTracingIncludes` — not verified yet.
 - Config JSON is escaped (`<` → `\u003c`) because the vanilla JS gets inlined into the preview iframe's `<script>`.
 - PowerShell shows pnpm's `$ cmd` echo as a red NativeCommandError. That is not a failure — check the exit code.
+- Next injects `#__next-route-announcer__` with `role="alert"` on every page. Scope test locators to `main`.
+- After `pnpm test:e2e`, the generated `app/harness/*` routes show up in local `next build` output. They `notFound()` in production and are gitignored.
+- React components: render date- or locale-dependent content only on the client (e.g. only while a popup is open), or hydration will mismatch.
+- Only one `next dev` can run per project (lock in `.next/dev`). Playwright reuses a dev server already running on :3100.
