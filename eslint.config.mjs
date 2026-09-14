@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated test outputs (copies of registry sources)
+    "app/harness/**",
+    "e2e/.generated/**",
+    "test-results/**",
   ]),
 ]);
 
