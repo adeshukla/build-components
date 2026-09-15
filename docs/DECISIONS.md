@@ -98,3 +98,34 @@ Session 2 (Adesh: "complete the next phases that don't need me, and get a UI rea
 **Decision:** Build the modal the same way as the date picker while the Mitosis / Web Components question waits for Adesh.
 **Why:** The modal is small, reuses the proven native `<dialog>` approach, and gives Adesh a second component to test. Its tests target exported output, so they keep their value whatever D6 decides.
 **Not done by hand yet:** Searchable select, form, header, CTA. Their cost depends on D6 and on the `list` option type.
+
+---
+
+Session 3 (Adesh: "the design is ugly … super organized … Build Components logo … full of animations and a unique theme"; date picker month/year; iPhone/Safari question; remove the test form):
+
+## 2026-09-16 — D19. Visual world: "Parts Datasheet"
+**Decision:** Components are presented as electronic parts: solder-mask purple board with gold contact pads and silkscreen labels for identity (header, footer, home hero), white datasheet paper for the work (catalogue, editor, code). Barlow Condensed display, Geist body, Geist Mono only for part numbers, data and code. Recorded in `DESIGN.md`.
+**Why:** The impeccable concept roll assigned it (seed `e9db4b6a`) from a grounded list of seven worlds. Adesh asked me to decide. It maps onto the product: part number, pinout = keyboard map, test report, order code = install command.
+**Rejected:**
+- DevTools Inspector: familiar, close to every dev tool.
+- Live Code Floor and Event Display: competitive alternates, weaker for finding options fast.
+- Four declined outside styles, which donated specific disciplines: the type-mass headline, the PASS stamp, per-part records, and stillness at rest.
+- The category-standard docs site.
+
+## 2026-09-16 — D20. Editor organisation
+**Decision:**
+- **Options panel:** one tab per group (Content / Behaviour / Add-ons / Style) with changed counts, a search across every option, add-ons as switches, a one-line description under every control, and per-option plus reset-all.
+- **Right side:** a test bench (output + screen width), a keyboard map, and a manual checklist.
+- **Take it home:** install command plus file tabs, with changed config lines flashing gold.
+
+"Submit test form" removed (Adesh found it confusing; form values are covered by e2e tests).
+**Why:** Adesh asked for every add-on and feature to be findable without hunting.
+
+## 2026-09-16 — D21. Date picker month and year views
+**Decision:** The month-year heading is a button. Days → years (12-year pages) → months → days. Arrow keys move in every view; Escape steps back to days before it closes the dialog. Both outputs.
+**Why:** Changing year one month at a time wasn't usable (Adesh's report).
+
+## 2026-09-16 — D22. Test in WebKit and an emulated iPhone
+**Decision:** Playwright runs every spec in chromium, webkit (Safari's engine) and an emulated iPhone 15.
+**Why:** Adesh asked whether it looks the same on iPhone/Safari. The picker is custom (never the OS picker), so layout is ours; the test run proves behaviour. A real device check stays on the manual checklist.
+**Found:** A real React bug. Pressing Enter right after typing skipped validation in WebKit. Fixed by reading the live input value.

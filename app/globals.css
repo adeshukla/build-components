@@ -1,20 +1,276 @@
 @import "tailwindcss";
 
-/* Light only for now: the MVP components are light-themed. */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Parts Datasheet world: solder-mask purple board, gold contact pads, silkscreen labels,
+   white datasheet paper with ink rules. Tokens live here (Tailwind v4 has no config file). */
+@theme {
+  --color-board: #25154d;
+  --color-board-raised: #33206a;
+  --color-board-line: #4f3a8f;
+  --color-silk: #f3efff;
+  --color-silk-muted: #c9bfe8;
+  --color-pad: #e6b24a;
+  --color-pad-strong: #f2c566;
+  --color-copper: #c98a4b;
+  --color-paper: #ffffff;
+  --color-paper-sunk: #f5f3fa;
+  --color-ink: #16121f;
+  --color-ink-muted: #534c63;
+  --color-rule: #dcd6ea;
+  --color-rule-strong: #8c83a3;
+  --color-pass: #13744a;
+  --color-pass-bg: #e3f4ea;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+@layer base {
+  html {
+    color-scheme: light;
+    scrollbar-color: var(--color-rule-strong) var(--color-paper-sunk);
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    caret-color: var(--color-board);
+  }
+
+  ::selection {
+    background: var(--color-pad);
+    color: var(--color-board);
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  /* Zero specificity, so exported components keep their own focus rings. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-board);
+    outline-offset: 2px;
+  }
+
+  :where(.on-board) :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline-color: var(--color-pad);
+  }
+
+  table,
+  pre,
+  code,
+  input {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@utility board-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--color-board-line) 1px, transparent 1.6px);
+  background-size: 24px 24px;
+}
+
+@utility paper-grid {
+  background-image:
+    linear-gradient(var(--color-paper-sunk) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-paper-sunk) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+@utility skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 50;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background: var(--color-pad);
+  color: var(--color-board);
+  font-weight: 600;
+
+  &:focus {
+    top: 0.75rem;
+  }
+}
+
+/* Motion: one orchestrated moment per surface, all switched off for reduced motion. */
+@keyframes trace-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes signal {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes slab-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.35em);
+  }
+  to {
+    clip-path: inset(0 0 -0.1em 0);
+    transform: none;
+  }
+}
+
+@keyframes pin-light {
+  from {
+    background-color: var(--color-board-line);
+  }
+  to {
+    background-color: var(--color-pad);
+  }
+}
+
+@utility pin {
+  animation: pin-light 0.5s var(--ease-out-expo) both;
+}
+
+@utility btn-pad {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--color-pad);
+  color: var(--color-board);
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  box-shadow: 0 10px 24px -12px rgb(230 178 74 / 0.75);
+  transition:
+    background-color 0.2s,
+    transform 0.4s var(--ease-out-expo);
+
+  &:hover {
+    background: var(--color-pad-strong);
+    transform: translateY(-2px);
+  }
+}
+
+@utility btn-outline-board {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-silk-muted);
+  border-radius: 0.375rem;
+  color: var(--color-silk);
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+
+  &:hover {
+    background: var(--color-board-raised);
+    border-color: var(--color-silk);
+  }
+}
+
+@utility btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--color-board);
+  color: var(--color-silk);
+  padding: 0.625rem 1rem;
+  font-weight: 600;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: var(--color-board-raised);
+  }
+}
+
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.8) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.94) rotate(-6deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-6deg);
+  }
+}
+
+@keyframes line-flash {
+  from {
+    background-color: color-mix(in srgb, var(--color-pad) 60%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@utility trace-path {
+  stroke-dasharray: 1;
+  animation: trace-draw 1.4s var(--ease-out-expo) both;
+}
+
+@utility slab-line {
+  display: block;
+  animation: slab-in 0.9s var(--ease-out-expo) both;
+}
+
+@utility stamp-in {
+  animation: stamp 0.45s var(--ease-out-expo) both;
+}
+
+@utility flash-line {
+  animation: line-flash 1.6s ease-out;
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    animation: none !important;
+  }
 }

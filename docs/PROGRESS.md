@@ -1,8 +1,61 @@
 # Progress
 
-Last updated: 2026-09-15 (end of session 2)
+Last updated: 2026-09-16 (end of session 3)
 
-## Current status (session 2)
+## Current status (session 3)
+
+### How Adesh can test
+```
+cd C:\dev\component-platform
+pnpm dev
+```
+Open http://localhost:3000.
+- **Home:** the purple "board" hero with the live date picker and modal mounted as parts, the parts catalogue (in stock vs coming soon), how it works, and the test report.
+- **Date picker or Modal page:**
+  1. **Configure** (left): tabs Content · Behaviour · Add-ons · Style, each showing how many options you changed. Or type in "Find an option" (try "clear" or "today"). Every option has a one-line description, a "Changed" marker and Reset.
+  2. **Test bench:** switch Output (React + Tailwind / HTML/CSS/JS) and Screen width (Phone / Tablet / Desktop). "Copy link" shares your setup.
+  3. **Keyboard map / Manual checks** tabs under the bench. Ticking a check stamps it PASS.
+  4. **Take it home:** the install command, or the file tabs. Change an option and the lines it changed flash gold.
+- **Date picker month/year:** open the calendar, click "September 2026" → years → months → back to days.
+
+### Done in session 3 (2026-09-16)
+- **Redesign, "Parts Datasheet" world** (D19, `DESIGN.md`):
+  - "Build Components" logo (chip mark) in the header and footer.
+  - Board hero with animated traces and pins.
+  - Catalogue, how-it-works and test report sections.
+  - Scroll reveals, flashing code lines and PASS stamps, all off under reduced motion.
+- **Organised editor** (D20). "Submit test form" removed.
+- **Date picker:** month and year views in both outputs, mouse and keyboard, Escape steps back (D21).
+- **Safari/iPhone:** tests now run in chromium, webkit and an emulated iPhone 15 (D22). This caught a real React bug (Enter right after typing skipped validation), now fixed.
+- **`PRODUCT.md`** written (your answers: "Build Components" is the logo only for now; audience is front-end devs on client sites; proof is live components + roadmap).
+- **Checks:** 72/72 e2e tests (24 per browser × 3), typecheck, lint.
+- **Design process** (impeccable skill): direction roll `e9db4b6a`, two screenshot rounds, then a finish review with verdict "ship". The reviewer and documenter ran inline because this session had no subagents for them.
+
+### In progress
+Nothing half-finished.
+
+### Next — doesn't need Adesh
+- Design ideas the review noted as unused:
+  - Draw the keyboard map as a real pin diagram.
+  - Encode the chosen options into the part number of the "order code".
+  - Trace lines from the options panel to the test bench.
+- Configurable UI strings (labels, error messages) for both components.
+- Modal: close animation; open from any existing button.
+
+### Next — needs Adesh's answers first
+- Components 3–6 (searchable select, form, header, CTA): build order question below, plus a `list` option type.
+
+### Blockers & questions for Adesh
+1. **Final name**: "Build Components" is the logo only for now. Make it the product name everywhere?
+2. **Build order**: Mitosis / Web Components spike first, or build the searchable select by hand?
+3. **Tailwind v4 only** for the React output?
+4. **Private GitHub repo?** Still no remote.
+5. **Dark theme and i18n**: MVP or later?
+6. **Manual checks**: please run the checklist with NVDA and on a real iPhone. Emulation isn't a real device.
+
+---
+
+## Session 2 record (history — superseded by the section above)
 
 ### How Adesh can test the components
 ```

@@ -47,3 +47,4 @@ next-env.d.ts
 
 # impeccable decision-page session state
 /.impeccable/questions/
+/.impeccable/review/

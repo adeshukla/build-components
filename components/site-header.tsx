@@ -1,29 +1,39 @@
 import Link from "next/link";
-
-export const componentsList = [
-  { slug: "date-picker", name: "Date picker", summary: "Single or range, typed input in your format, min/max dates." },
-  { slug: "modal", name: "Modal", summary: "Accessible dialog with title, body, actions and close options." },
-];
+import { HeaderNav } from "@/components/header-nav";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-neutral-200 bg-white">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3">
-        <Link href="/" className="font-semibold">
-          Component Platform <span className="text-sm font-normal text-neutral-600">(working name)</span>
+    <header className="on-board relative z-20 border-b border-board-line bg-board text-silk">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
+        <Link href="/" className="group flex items-center gap-3 rounded-sm">
+          <ChipMark />
+          <span className="font-display text-2xl leading-none font-semibold tracking-wide uppercase">
+            Build Components
+          </span>
         </Link>
-        <nav aria-label="Components">
-          <ul className="flex flex-wrap gap-4 text-sm">
-            {componentsList.map((component) => (
-              <li key={component.slug}>
-                <Link href={`/${component.slug}`} className="underline-offset-4 hover:underline">
-                  {component.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <HeaderNav />
       </div>
     </header>
+  );
+}
+
+/** Logo mark: an IC package with gold pins. The pins light up on hover. */
+export function ChipMark({ className = "size-9" }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 40 40" className={className}>
+      <rect x="9" y="6" width="22" height="28" rx="3" className="fill-board-raised stroke-silk" strokeWidth="2" />
+      <path d="M17 6a3 3 0 0 0 6 0" className="fill-none stroke-silk" strokeWidth="2" />
+      <circle cx="14.5" cy="12" r="1.6" className="fill-pad" />
+      {[12, 20, 28].map((y, i) => (
+        <g
+          key={y}
+          className="fill-pad transition-[fill] duration-300 group-hover:fill-pad-strong"
+          style={{ transitionDelay: `${i * 60}ms` }}
+        >
+          <rect x="2" y={y - 1.5} width="7" height="3" rx="1" />
+          <rect x="31" y={y - 1.5} width="7" height="3" rx="1" />
+        </g>
+      ))}
+    </svg>
   );
 }

@@ -1,27 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { Editor, type Sources } from "@/components/editor";
+import { Editor, type KeyboardRow, type Sources } from "@/components/editor";
 import { Modal, type ModalAction, type ModalConfig } from "@/registry/modal/react/modal";
 import { modalSchema } from "@/registry/modal/schema";
 
+const keyboard: KeyboardRow[] = [
+  [["Enter", "Space"], "On the trigger button: open the modal."],
+  [["Tab", "Shift + Tab"], "Move between the modal's buttons. Focus wraps and never leaves the modal."],
+  [["Escape"], "Close the modal and return focus to the trigger button."],
+  [["Enter", "Space"], "On a button inside: run its action and close."],
+];
+
 const checklist = [
-  "Screen reader (NVDA or Narrator): opening announces the dialog with its title and body text.",
-  "Focus starts on the title (or the primary button, if set), and Tab / Shift+Tab never leave the dialog.",
-  "Escape closes the dialog and focus returns to the trigger button.",
-  "The page behind the open dialog doesn't scroll.",
-  "With reduced motion turned on in Windows settings, the dialog opens without animation.",
-  "Phone width and 200% zoom: long body text scrolls inside the dialog and every button stays reachable.",
-  "Bottom position on phone width: the sheet sits flush with the bottom edge.",
+  "Screen reader (NVDA or Narrator): opening reads the modal's title and body text.",
+  "Focus starts on the title (or the primary button, if set), and Tab never leaves the modal.",
+  "Escape closes the modal and focus returns to the trigger button.",
+  "The page behind the open modal doesn't scroll.",
+  "With reduced motion turned on in Windows settings, the modal opens without animation.",
+  "Phone width and 200% zoom: long body text scrolls inside the modal and every button stays reachable.",
+  "On a real iPhone in Safari: the bottom sheet sits flush with the bottom edge.",
 ];
 
 function ModalPreview({ config }: { config: ModalConfig }) {
   const [lastAction, setLastAction] = useState<ModalAction | null>(null);
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Modal config={config} onAction={setLastAction} />
-      <p className="text-sm text-neutral-600" aria-live="polite">
-        {lastAction ? `Closed with: ${lastAction}` : "Not closed yet."}
+      <p className="font-mono text-xs text-ink-muted" aria-live="polite">
+        Last result: {lastAction ?? "not closed yet"}
       </p>
     </div>
   );
@@ -34,6 +41,7 @@ export function ModalEditor({ initialConfig, sources }: { initialConfig: ModalCo
       schema={modalSchema}
       initialConfig={initialConfig}
       sources={sources}
+      keyboard={keyboard}
       checklist={checklist}
       renderPreview={(config) => <ModalPreview config={config as ModalConfig} />}
     />

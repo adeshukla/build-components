@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-16T00:00:00Z",
+  "title": "Design System: Build Components",
+  "extensions": {
+    "colorMeta": {
+      "board": { "role": "primary", "displayName": "Solder-Mask Purple", "canonical": "#25154d", "tonalRamp": ["#120a28", "#25154d", "#33206a", "#4f3a8f", "#6f5bb0", "#9a8bcc", "#c9bfe8", "#f3efff"] },
+      "pad": { "role": "primary", "displayName": "Contact-Pad Gold", "canonical": "#e6b24a", "tonalRamp": ["#4a3510", "#7a5a1c", "#a97f2b", "#d39f3c", "#e6b24a", "#f2c566", "#f8dc9e", "#fdf3dc"] },
+      "paper": { "role": "neutral", "displayName": "Datasheet Paper", "canonical": "#ffffff", "tonalRamp": ["#16121f", "#2d2838", "#534c63", "#8c83a3", "#b6afc8", "#dcd6ea", "#f5f3fa", "#ffffff"] },
+      "pass": { "role": "tertiary", "displayName": "Pass Green", "canonical": "#13744a", "tonalRamp": ["#062b1b", "#0b4a2f", "#13744a", "#23945f", "#4db482", "#8fd3ae", "#c4ead5", "#e3f4ea"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Home hero slabs only." },
+      "headline": { "displayName": "Headline", "purpose": "Section and page titles, uppercase." },
+      "title": { "displayName": "Title", "purpose": "Panel titles and catalogue part names." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and copy." },
+      "label": { "displayName": "Label", "purpose": "Part numbers, spec terms, captions, code metadata." }
+    },
+    "shadows": [
+      { "name": "mounted-part", "value": "0 30px 60px -24px rgb(8 3 24 / 0.7)", "purpose": "Live components mounted on the board." },
+      { "name": "bench-frame", "value": "0 14px 32px -18px rgb(22 18 31 / 0.4)", "purpose": "Preview frame on the test bench." },
+      { "name": "pad-glow", "value": "0 10px 24px -12px rgb(230 178 74 / 0.75)", "purpose": "Primary gold buttons." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Every state transition and entrance." },
+      { "name": "trace-draw", "value": "1.4s ease-out-expo", "purpose": "Board traces draw in once on load." },
+      { "name": "line-flash", "value": "1.6s ease-out", "purpose": "Changed config lines flash gold in the code view." },
+      { "name": "stamp", "value": "0.45s ease-out-expo", "purpose": "PASS stamp when a manual check is ticked." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Pad Button",
+      "kind": "button",
+      "refersTo": "button-pad",
+      "description": "Primary action on board surfaces.",
+      "html": "<button class=\"ds-btn-pad\">Configure the date picker</button>",
+      "css": ".ds-btn-pad { display: inline-flex; align-items: center; gap: .5rem; border: 0; border-radius: 6px; background: var(--color-pad, #e6b24a); color: var(--color-board, #25154d); padding: 12px 20px; font-weight: 600; box-shadow: 0 10px 24px -12px rgb(230 178 74 / .75); transition: background-color .2s, transform .4s cubic-bezier(.16,1,.3,1); cursor: pointer; } .ds-btn-pad:hover { background: var(--color-pad-strong, #f2c566); transform: translateY(-2px); } .ds-btn-pad:focus-visible { outline: 2px solid #e6b24a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Board Button",
+      "kind": "button",
+      "refersTo": "button-outline-board",
+      "description": "Secondary action on board surfaces.",
+      "html": "<div style=\"background:#25154d;padding:16px\"><button class=\"ds-btn-outline\">Browse all parts</button></div>",
+      "css": ".ds-btn-outline { border: 1px solid #c9bfe8; border-radius: 6px; background: transparent; color: #f3efff; padding: 12px 20px; font-weight: 600; transition: background-color .2s, border-color .2s; cursor: pointer; } .ds-btn-outline:hover { background: #33206a; border-color: #f3efff; } .ds-btn-outline:focus-visible { outline: 2px solid #e6b24a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "segmented-selected",
+      "description": "Short choices, output and screen width.",
+      "html": "<div class=\"ds-seg\"><span class=\"ds-seg-on\">React + Tailwind</span><span>HTML/CSS/JS</span></div>",
+      "css": ".ds-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border: 1px solid #8c83a3; border-radius: 6px; background: #f5f3fa; font: 14px system-ui; } .ds-seg span { padding: 6px 10px; text-align: center; border-radius: 4px; color: #534c63; } .ds-seg .ds-seg-on { background: #25154d; color: #f3efff; }"
+    },
+    {
+      "name": "Add-on Switch",
+      "kind": "custom",
+      "description": "Toggles an add-on on or off.",
+      "html": "<button class=\"ds-switch\" role=\"switch\" aria-checked=\"true\"><span></span></button>",
+      "css": ".ds-switch { position: relative; width: 44px; height: 24px; border: 1px solid #25154d; border-radius: 9999px; background: #25154d; cursor: pointer; } .ds-switch span { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 9999px; background: #e6b24a; transform: translateX(20px); transition: transform .3s cubic-bezier(.16,1,.3,1); } .ds-switch[aria-checked=false] { background: #f5f3fa; border-color: #8c83a3; } .ds-switch[aria-checked=false] span { background: #8c83a3; transform: none; } .ds-switch:focus-visible { outline: 2px solid #25154d; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Find any option across groups.",
+      "html": "<input class=\"ds-input\" type=\"search\" placeholder=\"Find an option, e.g. clear\">",
+      "css": ".ds-input { width: 100%; border: 1px solid #8c83a3; border-radius: 6px; background: #fff; color: #16121f; padding: 8px 12px; font: 14px system-ui; } .ds-input::placeholder { color: #534c63; } .ds-input:focus-visible { outline: 2px solid #25154d; outline-offset: 2px; }"
+    },
+    {
+      "name": "PASS Stamp",
+      "kind": "custom",
+      "description": "Marks a passed check.",
+      "html": "<span class=\"ds-stamp\">Pass</span>",
+      "css": ".ds-stamp { display: inline-block; transform: rotate(-6deg); border: 2px solid #13744a; border-radius: 4px; padding: 0 6px; color: #13744a; font: 700 18px 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .05em; text-transform: uppercase; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Parts Datasheet",
+    "overview": "Every component is a part in a catalogue: it has a part number, a spec line, a pinout (its keyboard map), a test report, and an order code (the install command). The site borrows the two materials of electronics: the solder-mask board and the white datasheet. Purple board carries identity; white paper carries the work; gold contact pads mark what is live and what to press.",
+    "keyCharacteristics": [
+      "Two materials: purple board for identity, white datasheet paper for work.",
+      "Gold pads for live, active and primary.",
+      "Condensed uppercase display type; plain sans for reading; mono only for part numbers, data and code.",
+      "Real, running components as the imagery.",
+      "Accessibility shown as a feature: keyboard maps, test reports, PASS stamps."
+    ],
+    "rules": [
+      { "name": "The Two Materials Rule", "body": "A surface is either board or paper. Never mix them in a gradient or tint one toward the other.", "section": "colors" },
+      { "name": "The Gold Means Live Rule", "body": "Gold marks what is live, changed or clickable-primary. Decoration in gold dilutes it.", "section": "colors" },
+      { "name": "The Mono Is Data Rule", "body": "Monospace only for part numbers, measurements, code and table data, never as a technical costume.", "section": "typography" },
+      { "name": "The No Kicker Rule", "body": "No small label above a heading. Part numbers sit beside or below the name, never above it.", "section": "typography" },
+      { "name": "The Mounted Only Rule", "body": "Only mounted parts, the bench frame and primary gold buttons cast shadows. Panels are bordered, not lifted.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do mount real, running components as the imagery; the component is the proof.",
+      "Do keep every option's one-line description visible under its control.",
+      "Do mark changed options (gold dot, \"Changed\", per-option Reset) and count them on their group tab.",
+      "Do switch every animation off under prefers-reduced-motion.",
+      "Do use gold on board or as a fill; for text on paper use purple or ink."
+    ],
+    "donts": [
+      "Don't put a kicker or eyebrow label above a heading.",
+      "Don't use monospace for anything that isn't a part number, data or code.",
+      "Don't set gold text on white paper (2:1 contrast).",
+      "Don't add grid-paper backgrounds outside measuring surfaces (the test bench is the one place).",
+      "Don't invent usage numbers, customers or benchmarks; the test report states only what the tests check."
+    ]
+  }
+}

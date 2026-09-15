@@ -28,12 +28,15 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `lib/schema.ts` — option types, `parseConfig` (validates untrusted query params), `toSearchParams`, `isVisible` (dependsOn).
 - `lib/sources.ts` — `readSource` / `readComponentSources(slug)` (Node only).
 - `components/options-panel.tsx` — editor controls generated from any schema (text, boolean, select, colour, date, number).
-- `components/editor.tsx` — shared editor + test UI:
-  - live test of both outputs, with a test form showing submitted values
-  - preview width switcher
-  - manual checklist
-  - copy code and install command
-- `components/site-header.tsx` — `componentsList` (nav and home page). Add new components there.
+- `components/editor.tsx` — shared editor:
+  - test bench (output + screen width)
+  - keyboard map and manual checklist tabs
+  - "Take it home" (install command + file tabs, changed config lines flash)
+- `components/options-panel.tsx` + `tabs.tsx` + `segmented.tsx` — the organised options UI.
+- `lib/parts.ts` — the parts catalogue (part numbers, pattern, in-stock vs coming). Add new components there.
+- `components/part-header.tsx` — the datasheet header on component pages.
+- `components/site-header.tsx`, `header-nav.tsx`, `site-footer.tsx`, `board-traces.tsx`, `mounted-part.tsx` — the site chrome and home hero.
+- Visual system: `DESIGN.md` + `.impeccable/design.json` (Parts Datasheet world). Tokens in `app/globals.css` `@theme`. Product truth for design work: `PRODUCT.md`.
 - `app/<slug>/page.tsx` (server: parse URL config, read sources) + `editor.tsx` (client: preview + checklist). Config lives in the URL query (non-default values only).
 - `app/r/[name]/route.ts` — shadcn registry item for every slug in its `registry` map; config from query params.
 - Tests:
