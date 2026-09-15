@@ -7,11 +7,14 @@
   // @config-start
   const defaultConfig = {
     label: "Date",
+    name: "date",
     helperText: false,
     helperTextContent: "Select or type a date.",
     format: "DD/MM/YYYY",
     mode: "single",
     weekStartsOn: "monday",
+    minDate: "",
+    maxDate: "",
     clearButton: false,
     todayButton: false,
     accentColor: "#2563eb",
@@ -48,6 +51,25 @@
       .replace("DD", pad(d.getDate()));
   }
 
+  // "YYYY-MM-DD" (the form value and the min/max config format) → local Date, or null when empty.
+  function fromIso(iso) {
+    return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) : null;
+  }
+
+  function isDisabled(date, config) {
+    const min = fromIso(config.minDate);
+    const max = fromIso(config.maxDate);
+    return (!!min && date < min) || (!!max && date > max);
+  }
+
+  function limitError(date, config) {
+    const min = fromIso(config.minDate);
+    const max = fromIso(config.maxDate);
+    if (min && date < min) return `Choose a date on or after ${formatDate(min, config.format)}.`;
+    if (max && date > max) return `Choose a date on or before ${formatDate(max, config.format)}.`;
+    return "";
+  }
+
   function parseDate(text, format) {
     const hint = `Enter the date as ${format}.`;
     const parts = text.trim().split(/[^0-9]+/);
@@ -70,14 +92,20 @@
     if (!trimmed) return { dates: [] };
     if (config.mode === "single") {
       const result = parseDate(trimmed, config.format);
-      return result.error ? result : { dates: [result.date] };
+      if (result.error) return result;
+      const limit = limitError(result.date, config);
+      return limit ? { error: limit } : { dates: [result.date] };
     }
     const parts = trimmed.split(/\s*–\s*|\s+-\s+|\s+to\s+/);
     if (parts.length !== 2) return { error: `Enter the dates as ${config.format} – ${config.format}.` };
     const start = parseDate(parts[0], config.format);
     if (start.error) return { error: `Start date: ${start.error}` };
+    const startLimit = limitError(start.date, config);
+    if (startLimit) return { error: `Start date: ${startLimit}` };
     const end = parseDate(parts[1], config.format);
     if (end.error) return { error: `End date: ${end.error}` };
+    const endLimit = limitError(end.date, config);
+    if (endLimit) return { error: `End date: ${endLimit}` };
     if (end.date < start.date) return { error: "The end date is before the start date." };
     return { dates: [start.date, end.date] };
   }
@@ -131,6 +159,7 @@
       </div>
       ${showHelper ? `<p class="dp-helper" id="${id}-help"></p>` : ""}
       <p class="dp-error" id="${id}-error" role="alert"></p>
+      ${config.name ? (range ? '<input type="hidden" data-value><input type="hidden" data-value>' : '<input type="hidden" data-value>') : ""}
       <dialog class="dp-dialog">
         <div class="dp-dialog-inner">
           <div class="dp-header">
@@ -153,6 +182,7 @@
     const clearButton = find("[data-clear]");
     const openButton = find("[data-open]");
     const errorText = find(".dp-error");
+    const valueInputs = root.querySelectorAll("[data-value]");
     const dialog = find("dialog");
     const monthHeading = find(".dp-month");
     const tbody = find("tbody");
@@ -165,6 +195,11 @@
     dialog.setAttribute("aria-label", chooseLabel);
     if (showHelper) find(".dp-helper").textContent = config.helperTextContent;
     if (clearButton) clearButton.setAttribute("aria-label", range ? "Clear dates" : "Clear date");
+    if (valueInputs.length === 1) valueInputs[0].name = config.name;
+    if (valueInputs.length === 2) {
+      valueInputs[0].name = `${config.name}-start`;
+      valueInputs[1].name = `${config.name}-end`;
+    }
 
     const headRow = find("thead tr");
     for (let i = 0; i < 7; i++) {
@@ -186,15 +221,21 @@
       else input.removeAttribute("aria-describedby");
     }
 
-    function syncClearButton() {
+    // Form values follow the typed text, so submitting with Enter never sends a stale value.
+    function syncInputs() {
       if (clearButton) clearButton.hidden = input.value === "";
+      const parsed = parseValue(input.value, config);
+      const formDates = parsed.error ? [] : parsed.dates;
+      valueInputs.forEach((valueInput, i) => {
+        valueInput.value = formDates[i] ? formatDate(formDates[i], "YYYY-MM-DD") : "";
+      });
     }
 
     function commit(next) {
       dates = next;
       input.value = next.map((d) => formatDate(d, config.format)).join(" – ");
       setError("");
-      syncClearButton();
+      syncInputs();
     }
 
     function commitText() {
@@ -231,11 +272,23 @@
           "aria-label",
           date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
         );
+        if (isDisabled(date, config)) cell.setAttribute("aria-disabled", "true");
         if (sameDay(date, now)) cell.setAttribute("aria-current", "date");
         if (isEnd) cell.dataset.end = "";
         else if (inRange) cell.dataset.inRange = "";
       }
       status.textContent = rangeStart ? "Now choose the end date." : "";
+      position();
+    }
+
+    function position() {
+      if (!dialog.open) return;
+      const rect = field.getBoundingClientRect();
+      const below = rect.bottom + 4;
+      const top =
+        below + dialog.offsetHeight > window.innerHeight ? Math.max(8, rect.top - dialog.offsetHeight - 4) : below;
+      dialog.style.top = `${top}px`;
+      dialog.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - dialog.offsetWidth - 8))}px`;
     }
 
     function moveTo(date) {
@@ -245,6 +298,7 @@
     }
 
     function select(date) {
+      if (isDisabled(date, config)) return;
       if (range && !rangeStart) {
         rangeStart = date;
         moveTo(date);
@@ -255,20 +309,19 @@
     }
 
     function openPicker() {
-      focused = dates[0] || today();
+      const min = fromIso(config.minDate);
+      const max = fromIso(config.maxDate);
+      const now = today();
+      focused = dates[0] || (min && now < min ? min : max && now > max ? max : now);
       rangeStart = null;
-      renderGrid();
       dialog.showModal();
-      const rect = field.getBoundingClientRect();
-      const below = rect.bottom + 4;
-      const top =
-        below + dialog.offsetHeight > window.innerHeight ? Math.max(8, rect.top - dialog.offsetHeight - 4) : below;
-      dialog.style.top = `${top}px`;
-      dialog.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - dialog.offsetWidth - 8))}px`;
+      renderGrid();
+      window.addEventListener("resize", position);
+      window.addEventListener("scroll", position, true);
       tbody.querySelector('[tabindex="0"]').focus();
     }
 
-    input.addEventListener("input", syncClearButton);
+    input.addEventListener("input", syncInputs);
     input.addEventListener("blur", commitText);
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") commitText();
@@ -338,10 +391,13 @@
 
     dialog.addEventListener("close", () => {
       rangeStart = null;
+      window.removeEventListener("resize", position);
+      window.removeEventListener("scroll", position, true);
       openButton.focus();
     });
 
     setError("");
+    syncInputs();
   }
 
   document.querySelectorAll("[data-date-picker]").forEach((root) => createDatePicker(root, defaultConfig));

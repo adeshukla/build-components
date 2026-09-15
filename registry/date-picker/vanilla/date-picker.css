@@ -81,7 +81,7 @@
 .dp-icon-button:hover,
 .dp-nav:hover,
 .dp-text-button:hover,
-.dp-grid td[data-day]:not([data-end], [data-in-range]):hover { background: #f5f5f5; }
+.dp-grid td[data-day]:not([data-end], [data-in-range], [aria-disabled]):hover { background: #f5f5f5; }
 
 .dp-icon-button:focus-visible,
 .dp-nav:focus-visible,
@@ -129,6 +129,7 @@
   font-variant-numeric: tabular-nums;
 }
 .dp-grid td[data-day] { cursor: pointer; }
+.dp-grid td[aria-disabled="true"] { color: #a3a3a3; cursor: not-allowed; }
 .dp-grid td[aria-current="date"] { font-weight: 600; text-decoration: underline; }
 .dp-grid td[data-in-range] { background: color-mix(in srgb, var(--dp-accent) 15%, transparent); }
 .dp-grid td[data-end] { background: var(--dp-accent); color: var(--dp-on-accent); font-weight: 600; }

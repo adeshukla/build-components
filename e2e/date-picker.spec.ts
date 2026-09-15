@@ -1,33 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { variants } from "./generate";
+import { components } from "./generate";
+import { expectNoAxeViolations, targets } from "./helpers";
 
+const variants = components["date-picker"].variants;
 type Variant = keyof typeof variants;
-
-// The same tests run against every exported output.
-const targets = [
-  { name: "React + Tailwind", url: (variant: Variant) => `/harness/date-picker-${variant}` },
-  {
-    name: "HTML/CSS/JS",
-    url: (variant: Variant) => pathToFileURL(path.join(__dirname, ".generated/vanilla", variant, "index.html")).href,
-  },
-];
-
-async function expectNoAxeViolations(page: Page) {
-  const { violations } = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-    .analyze();
-  expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
-}
 
 const field = (page: Page) => page.getByRole("textbox", { name: /^Date/ });
 const focusedInDialog = (page: Page) => page.locator("dialog :focus");
 const cell = (page: Page, name: string) => page.getByRole("gridcell", { name, exact: true });
 
-for (const target of targets) {
+for (const target of targets("date-picker")) {
   test.describe(`date picker — ${target.name} export`, () => {
     test.beforeEach(async ({ page }) => {
       await page.clock.setFixedTime(new Date(2026, 2, 10, 12)); // Tuesday 10 March 2026
@@ -71,6 +55,7 @@ for (const target of targets) {
       await page.keyboard.press("Enter");
       await expect(page.getByRole("dialog")).toBeHidden();
       await expect(field(page)).toHaveValue("19/04/2025");
+      await expect(page.locator('input[name="date"]')).toHaveValue("2025-04-19");
       await expect(trigger).toBeFocused();
     });
 
@@ -111,6 +96,7 @@ for (const target of targets) {
       await input.fill("5/3/2026");
       await input.press("Enter");
       await expect(input).toHaveValue("05/03/2026");
+      await expect(page.locator('input[name="date"]')).toHaveValue("2026-03-05");
       await expect(input).not.toHaveAttribute("aria-invalid");
       await expect(page.locator('main [role="alert"]')).toHaveText(""); // Next adds its own route-announcer alert
     });
@@ -141,12 +127,29 @@ for (const target of targets) {
       await cell(page, "Friday, March 20, 2026").click();
       await cell(page, "Monday, March 16, 2026").click();
       await expect(input).toHaveValue("2026-03-16 – 2026-03-20");
+      await expect(page.locator('input[name="stay-start"]')).toHaveValue("2026-03-16");
+      await expect(page.locator('input[name="stay-end"]')).toHaveValue("2026-03-20");
 
       await page.getByRole("button", { name: "Choose dates" }).click();
       await page.keyboard.press("PageDown");
       await page.getByRole("button", { name: "Today" }).click();
       await expect(focusedInDialog(page)).toHaveAccessibleName("Tuesday, March 10, 2026");
+
+      // Days outside minDate/maxDate are disabled and can't be picked.
+      await expect(cell(page, "Wednesday, March 4, 2026")).toHaveAttribute("aria-disabled", "true");
+      await expect(cell(page, "Thursday, March 26, 2026")).toHaveAttribute("aria-disabled", "true");
+      await expect(cell(page, "Thursday, March 5, 2026")).not.toHaveAttribute("aria-disabled");
+      // force: Playwright won't click aria-disabled elements, but a real mouse can.
+      await cell(page, "Wednesday, March 4, 2026").click({ force: true });
+      await expect(page.getByText("Now choose the end date.")).toHaveCount(0);
       await page.keyboard.press("Escape");
+
+      await input.fill("2026-03-01 – 2026-03-10");
+      await input.press("Enter");
+      await expect(input).toHaveAccessibleDescription(
+        "Check-in to check-out Start date: Choose a date on or after 2026-03-05.",
+      );
+      await expect(page.locator('input[name="stay-start"]')).toHaveValue("");
 
       await input.fill("2026-03-20 – 2026-03-16");
       await input.press("Enter");

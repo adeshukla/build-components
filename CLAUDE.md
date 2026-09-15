@@ -26,10 +26,26 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
   - `react/<name>.tsx`, `vanilla/<name>.{html,css,js}` — real, working source files, each with one `// @config-start … // @config-end` block.
 - `lib/export.ts` → `applyConfig(source, config)`: exporting = swapping that block. Used by the editor's Copy, the registry route and the test generator.
 - `lib/schema.ts` — option types, `parseConfig` (validates untrusted query params), `toSearchParams`, `isVisible` (dependsOn).
-- `components/options-panel.tsx` — editor controls generated from any schema.
-- `app/<component>/page.tsx` + `editor.tsx` — editor. Config lives in the URL query (non-default values only).
-- `app/r/[name]/route.ts` — shadcn registry item; config from query params.
-- `e2e/generate.ts` writes exported outputs to `app/harness/*` (React, rendered by Next) and `e2e/.generated/*` (vanilla, opened via file://). `e2e/*.spec.ts` runs identical tests against both. Both dirs are gitignored.
+- `lib/sources.ts` — `readSource` / `readComponentSources(slug)` (Node only).
+- `components/options-panel.tsx` — editor controls generated from any schema (text, boolean, select, colour, date, number).
+- `components/editor.tsx` — shared editor + test UI:
+  - live test of both outputs, with a test form showing submitted values
+  - preview width switcher
+  - manual checklist
+  - copy code and install command
+- `components/site-header.tsx` — `componentsList` (nav and home page). Add new components there.
+- `app/<slug>/page.tsx` (server: parse URL config, read sources) + `editor.tsx` (client: preview + checklist). Config lives in the URL query (non-default values only).
+- `app/r/[name]/route.ts` — shadcn registry item for every slug in its `registry` map; config from query params.
+- Tests:
+  - `e2e/generate.ts` holds the `components` map (schema + test variants per component). It writes exported outputs to `app/harness/<slug>-<variant>` (React, rendered by Next) and `e2e/.generated/<slug>/<variant>` (vanilla, opened via file://). Both dirs are gitignored.
+  - `e2e/helpers.ts` has `targets(slug)` and `expectNoAxeViolations`. Each `e2e/<slug>.spec.ts` runs identical tests against both outputs.
+- Adding a component touches:
+  - `registry/<slug>/` (schema + 4 source files)
+  - `app/<slug>/`
+  - `componentsList`
+  - the route's `registry` map
+  - `components` in `e2e/generate.ts`
+  - `e2e/<slug>.spec.ts`
 
 ## Stack (installed versions — check before upgrading or coding against a lib)
 Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9.3 (strict) · Tailwind CSS 4.3.3 · ESLint 9 + eslint-config-next 16.3.5 · Playwright 1.63.0 + @axe-core/playwright 4.13.0 · pnpm 11.5.0 · Node 24.15.0. Zod not installed (if added: v4 API).
@@ -55,3 +71,5 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - After `pnpm test:e2e`, the generated `app/harness/*` routes show up in local `next build` output. They `notFound()` in production and are gitignored.
 - React components: render date- or locale-dependent content only on the client (e.g. only while a popup is open), or hydration will mismatch.
 - Only one `next dev` can run per project (lock in `.next/dev`). Playwright reuses a dev server already running on :3100.
+- Playwright refuses to click `aria-disabled` elements. Use `click({ force: true })` when testing that a disabled item can't be picked.
+- ESLint enforces `react-hooks/set-state-in-effect`. Read browser storage with `useSyncExternalStore` (see the checklist in `components/editor.tsx`), not `setState` inside `useEffect`.

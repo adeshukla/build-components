@@ -3,6 +3,9 @@ import type { DatePickerConfig } from "./react/date-picker";
 
 export const datePickerSchema = [
   { key: "label", label: "Label", group: "Content", type: "text", default: "Date", maxLength: 60 },
+  { key: "name", label: "Form field name", group: "Behaviour", type: "text", default: "date", maxLength: 40 },
+  { key: "minDate", label: "Earliest date", group: "Behaviour", type: "date", default: "" },
+  { key: "maxDate", label: "Latest date", group: "Behaviour", type: "date", default: "" },
   {
     key: "format",
     label: "Date format",

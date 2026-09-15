@@ -75,3 +75,26 @@ Decisions made during the first session:
 ## 2026-09-15 — D15. Config persisted in the URL only
 **Decision:** Non-default option values go into the query string (shareable); the registry URL uses the same query string.
 **Rejected (for now):** localStorage — adds a second state source and unclear precedence with shared links.
+
+---
+
+Session 2 (Adesh: "complete the next phases that don't need me, and get a UI ready to test the components"):
+
+## 2026-09-15 — D16. One shared editor, doubling as the test UI
+**Decision:** `components/editor.tsx` is used by every component page. It adds:
+- A live test for both outputs. React renders inside a test form; HTML/CSS/JS runs the exported files inside a sandboxed iframe with a test form.
+- Preview width switcher (phone 375 / tablet 768 / full).
+- "Submit test form", which shows the real submitted values.
+- A per-component manual checklist (screen reader, zoom, reduced motion). Ticks are stored per browser in localStorage.
+
+**Why:** Adesh asked for a UI to test components. Two components now share the editor, so the abstraction has two uses.
+**Rejected:** A separate "playground" app (a second UI to maintain); hosting Storybook (a dependency and a different view from what users get).
+
+## 2026-09-15 — D17. `date` option type; dates in config are ISO strings
+**Decision:** The schema gains `type: "date"` (value "YYYY-MM-DD" or "" for none), rendered as `<input type="date">`. Form values from the date picker are also ISO, whatever the display format.
+**Why:** Min/max dates need it. ISO is unambiguous for servers.
+
+## 2026-09-15 — D18. Modal built by hand (React + vanilla) before the D6 framework decision
+**Decision:** Build the modal the same way as the date picker while the Mitosis / Web Components question waits for Adesh.
+**Why:** The modal is small, reuses the proven native `<dialog>` approach, and gives Adesh a second component to test. Its tests target exported output, so they keep their value whatever D6 decides.
+**Not done by hand yet:** Searchable select, form, header, CTA. Their cost depends on D6 and on the `list` option type.

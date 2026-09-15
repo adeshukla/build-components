@@ -1,0 +1,68 @@
+/* Modal — plain CSS. Accent colour and radius are set by modal.js from its config. */
+.mdl {
+  --modal-accent: #2563eb;
+  --modal-on-accent: #ffffff;
+  --modal-ring: #2563eb;
+  --modal-radius: 8px;
+}
+.mdl *, .mdl *::before, .mdl *::after { box-sizing: border-box; }
+
+.mdl-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--modal-radius);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.mdl-button--primary { background: var(--modal-accent); color: var(--modal-on-accent); }
+.mdl-button--secondary { border-color: #737373; background: #fff; color: #171717; }
+.mdl-button--secondary:hover, .mdl-close:hover { background: #f5f5f5; }
+.mdl-button:focus-visible, .mdl-close:focus-visible { outline: 2px solid var(--modal-ring); outline-offset: 2px; }
+
+.mdl-dialog {
+  max-height: calc(100% - 2rem);
+  overflow: auto;
+  padding: 0;
+  border: 0;
+  background: #fff;
+  color: #171717;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+.mdl-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.mdl-dialog--sm { max-width: 24rem; }
+.mdl-dialog--md { max-width: 32rem; }
+.mdl-dialog--lg { max-width: 42rem; }
+.mdl-dialog--center { width: calc(100% - 2rem); border-radius: var(--modal-radius); }
+.mdl-dialog--bottom { width: 100%; margin-bottom: 0; border-radius: var(--modal-radius) var(--modal-radius) 0 0; }
+
+.mdl-dialog--fade[open] { transition: opacity 200ms; }
+.mdl-dialog--scale[open] { transition: opacity 200ms, scale 200ms; }
+@starting-style {
+  .mdl-dialog--fade[open] { opacity: 0; }
+  .mdl-dialog--scale[open] { opacity: 0; scale: 0.95; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mdl-dialog[open] { transition: none; }
+}
+
+.mdl-inner { padding: 1.5rem; }
+.mdl-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.mdl-title { margin: 0; font-size: 1.125rem; font-weight: 600; outline: none; }
+.mdl-close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--modal-radius);
+  background: transparent;
+  color: #404040;
+  cursor: pointer;
+}
+.mdl-close svg { width: 1.25rem; height: 1.25rem; }
+.mdl-body { margin: 0.5rem 0 0; color: #404040; }
+.mdl-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }

@@ -68,7 +68,12 @@ Pattern: APG Date Picker Dialog (button → modal dialog → grid).
 | Style | Size | sm · md · lg | md |
 
 Built-in behaviour: typed input parsed in the chosen format with specific errors (bad format, invalid month, day doesn't exist, end before start); text/focus colour picked automatically for contrast with the accent.
-Later: min/max dates, disabled dates, locale for month/day names, form field name / hidden ISO value, dark theme.
+Added in session 2:
+- Form field name: hidden ISO value(s), `<name>` for single or `<name>-start` / `<name>-end` for range.
+- Earliest/latest date: days outside are `aria-disabled` and typed dates get "Choose a date on or after …".
+- The popup follows scroll and resize.
+
+Later: specific disabled dates (weekends, holidays), locale for month/day names, configurable UI strings, dark theme.
 
 ### 2. Form with custom validation
 Pattern: native form, labels, `aria-describedby` errors, error summary.
@@ -84,12 +89,27 @@ Pattern: APG combobox with listbox popup.
 - Add-ons: clear button, option groups, helper text, icons per option.
 - Style: colours, radius, size.
 
-### 4. Modal / popup
-Pattern: APG dialog (modal).
-- Content: trigger text, title, body, primary/secondary button text.
-- Behaviour: close on backdrop click, initial focus target, return focus (always on), size sm/md/lg/full, position centre / bottom sheet, animation none/fade/scale (respects reduced motion).
-- Add-ons: close icon button, footer, scroll-lock.
-- Style: colours, radius, backdrop opacity, padding.
+### 4. Modal / popup *(built — session 2)*
+Pattern: APG Dialog (Modal) on native `<dialog>` + `showModal()`.
+| Group | Option | Type | Default |
+|---|---|---|---|
+| Content | Trigger text, title, body, primary button text | text | "Open dialog", "Subscribe to updates", …, "Confirm" |
+| Behaviour | Focus when opened | title · primary | title |
+| Behaviour | Close on backdrop click | boolean | on |
+| Behaviour | Position | center · bottom (sheet) | center |
+| Behaviour | Open animation | none · fade · scale (off under reduced motion) | fade |
+| Add-ons | Close (×) button | boolean | on |
+| Add-ons | Secondary button + text | boolean + text | on, "Cancel" |
+| Style | Accent colour · corner radius · width | colour · 0–24 px · sm/md/lg | #2563eb · 8 · md |
+
+Built-in behaviour:
+- Escape always closes.
+- Tab wraps inside the dialog.
+- Focus returns to the trigger.
+- The page can't scroll while the dialog is open.
+- Result reporting: React `onAction("primary" | "secondary" | "dismiss")`; vanilla fires a `modal-action` event.
+
+Later: custom trigger (open from any button), form content inside the dialog, close animation, backdrop opacity.
 
 ### 5. CTA section
 Pattern: landmark section with heading; HTML-first, no JS.

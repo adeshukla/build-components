@@ -77,6 +77,15 @@ function Control({ option, value, onChange }: { option: Option; value: unknown; 
           className="mt-1 block h-9 w-16 cursor-pointer rounded-md border border-neutral-500"
         />
       )}
+      {option.type === "date" && (
+        <input
+          id={id}
+          type="date"
+          value={value as string}
+          onChange={(e) => onChange(e.target.value)}
+          className={inputClass}
+        />
+      )}
       {option.type === "number" && (
         <input
           id={id}

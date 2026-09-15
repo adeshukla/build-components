@@ -11,11 +11,14 @@ import {
 
 export type DatePickerConfig = {
   label: string;
+  name: string;
   helperText: boolean;
   helperTextContent: string;
   format: "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY/MM/DD" | "YYYY-MM-DD";
   mode: "single" | "range";
   weekStartsOn: "monday" | "sunday";
+  minDate: string;
+  maxDate: string;
   clearButton: boolean;
   todayButton: boolean;
   accentColor: string;
@@ -26,11 +29,14 @@ export type DatePickerConfig = {
 // @config-start
 const defaultConfig: DatePickerConfig = {
   label: "Date",
+  name: "date",
   helperText: false,
   helperTextContent: "Select or type a date.",
   format: "DD/MM/YYYY",
   mode: "single",
   weekStartsOn: "monday",
+  minDate: "",
+  maxDate: "",
   clearButton: false,
   todayButton: false,
   accentColor: "#2563eb",
@@ -80,6 +86,25 @@ function formatDate(d: Date, format: Format) {
     .replace("DD", pad(d.getDate()));
 }
 
+// "YYYY-MM-DD" (the form value and the min/max config format) → local Date, or null when empty.
+function fromIso(iso: string) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) : null;
+}
+
+function isDisabled(date: Date, config: DatePickerConfig) {
+  const min = fromIso(config.minDate);
+  const max = fromIso(config.maxDate);
+  return (!!min && date < min) || (!!max && date > max);
+}
+
+function limitError(date: Date, config: DatePickerConfig) {
+  const min = fromIso(config.minDate);
+  const max = fromIso(config.maxDate);
+  if (min && date < min) return `Choose a date on or after ${formatDate(min, config.format)}.`;
+  if (max && date > max) return `Choose a date on or before ${formatDate(max, config.format)}.`;
+  return "";
+}
+
 function parseDate(text: string, format: Format): { date: Date } | { error: string } {
   const hint = `Enter the date as ${format}.`;
   const parts = text.trim().split(/[^0-9]+/);
@@ -102,14 +127,20 @@ function parseValue(text: string, config: DatePickerConfig): { dates: Date[] } |
   if (!trimmed) return { dates: [] };
   if (config.mode === "single") {
     const result = parseDate(trimmed, config.format);
-    return "error" in result ? result : { dates: [result.date] };
+    if ("error" in result) return result;
+    const limit = limitError(result.date, config);
+    return limit ? { error: limit } : { dates: [result.date] };
   }
   const parts = trimmed.split(/\s*–\s*|\s+-\s+|\s+to\s+/);
   if (parts.length !== 2) return { error: `Enter the dates as ${config.format} – ${config.format}.` };
   const start = parseDate(parts[0], config.format);
   if ("error" in start) return { error: `Start date: ${start.error}` };
+  const startLimit = limitError(start.date, config);
+  if (startLimit) return { error: `Start date: ${startLimit}` };
   const end = parseDate(parts[1], config.format);
   if ("error" in end) return { error: `End date: ${end.error}` };
+  const endLimit = limitError(end.date, config);
+  if (endLimit) return { error: `End date: ${endLimit}` };
   if (end.date < start.date) return { error: "The end date is before the start date." };
   return { dates: [start.date, end.date] };
 }
@@ -146,6 +177,9 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const showHelper = config.helperText && config.helperTextContent !== "";
   const describedBy =
     [showHelper && `${id}-help`, error && `${id}-error`].filter(Boolean).join(" ") || undefined;
+  // Form values follow the typed text, so submitting with Enter never sends a stale value.
+  const parsed = parseValue(text, config);
+  const formDates = "dates" in parsed ? parsed.dates : [];
   const accentLuminance = luminance(config.accentColor);
   const style = {
     "--dp-accent": config.accentColor,
@@ -157,17 +191,29 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   useEffect(() => {
     const dialog = dialogRef.current;
     const field = fieldRef.current;
-    if (!open || !dialog || !field || dialog.open) return;
-    dialog.showModal();
-    const rect = field.getBoundingClientRect();
-    const below = rect.bottom + 4;
-    const top =
-      below + dialog.offsetHeight > window.innerHeight
-        ? Math.max(8, rect.top - dialog.offsetHeight - 4)
-        : below;
-    dialog.style.top = `${top}px`;
-    dialog.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - dialog.offsetWidth - 8))}px`;
-  }, [open]);
+    if (!open || !dialog || !field) return;
+    if (!dialog.open) dialog.showModal();
+
+    function position() {
+      if (!dialog || !field) return;
+      const rect = field.getBoundingClientRect();
+      const below = rect.bottom + 4;
+      const top =
+        below + dialog.offsetHeight > window.innerHeight
+          ? Math.max(8, rect.top - dialog.offsetHeight - 4)
+          : below;
+      dialog.style.top = `${top}px`;
+      dialog.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - dialog.offsetWidth - 8))}px`;
+    }
+
+    position();
+    window.addEventListener("resize", position);
+    window.addEventListener("scroll", position, true);
+    return () => {
+      window.removeEventListener("resize", position);
+      window.removeEventListener("scroll", position, true);
+    };
+  }, [open, focused]);
 
   useEffect(() => {
     if (!open || !moveFocus.current) return;
@@ -182,13 +228,15 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   }
 
   function commitText() {
-    const result = parseValue(text, config);
-    if ("error" in result) setError(result.error);
-    else commit(result.dates);
+    if ("error" in parsed) setError(parsed.error);
+    else commit(parsed.dates);
   }
 
   function openPicker() {
-    setFocused(dates[0] ?? today());
+    const min = fromIso(config.minDate);
+    const max = fromIso(config.maxDate);
+    const now = today();
+    setFocused(dates[0] ?? (min && now < min ? min : max && now > max ? max : now));
     setRangeStart(null);
     moveFocus.current = true;
     setOpen(true);
@@ -200,6 +248,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   }
 
   function select(date: Date) {
+    if (isDisabled(date, config)) return;
     if (range && !rangeStart) {
       setRangeStart(date);
       moveTo(date);
@@ -262,6 +311,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const weeks = Array.from({ length: cells.length / 7 }, (_, i) => cells.slice(i * 7, i * 7 + 7));
   const selStart = rangeStart ?? dates[0];
   const selEnd = rangeStart ?? dates[1] ?? dates[0];
+  const isoValue = (d?: Date) => (d ? formatDate(d, "YYYY-MM-DD") : "");
 
   return (
     <div className="flex flex-col gap-1.5" style={style}>
@@ -326,6 +376,15 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
       <p id={`${id}-error`} role="alert" className="text-sm text-red-700 empty:hidden">
         {error}
       </p>
+      {config.name !== "" &&
+        (range ? (
+          <>
+            <input type="hidden" name={`${config.name}-start`} value={isoValue(formDates[0])} />
+            <input type="hidden" name={`${config.name}-end`} value={isoValue(formDates[1])} />
+          </>
+        ) : (
+          <input type="hidden" name={config.name} value={isoValue(formDates[0])} />
+        ))}
 
       <dialog
         ref={dialogRef}
@@ -396,12 +455,14 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                       const isEnd = sameDay(date, selStart) || sameDay(date, selEnd);
                       const inRange = !!selStart && !!selEnd && date > selStart && date < selEnd;
                       const isToday = sameDay(date, today());
+                      const disabled = isDisabled(date, config);
                       return (
                         <td
                           key={d}
                           role="gridcell"
                           tabIndex={sameDay(date, focused) ? 0 : -1}
                           aria-selected={isEnd || inRange}
+                          aria-disabled={disabled || undefined}
                           aria-current={isToday ? "date" : undefined}
                           aria-label={date.toLocaleDateString(undefined, {
                             weekday: "long",
@@ -410,12 +471,14 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                             year: "numeric",
                           })}
                           onClick={() => select(date)}
-                          className={`cursor-pointer rounded-(--dp-radius) text-center tabular-nums ${focusRing} ${size.cell} ${
+                          className={`rounded-(--dp-radius) text-center tabular-nums ${focusRing} ${size.cell} ${
                             isEnd
-                              ? "bg-(--dp-accent) font-semibold text-(--dp-on-accent)"
+                              ? "cursor-pointer bg-(--dp-accent) font-semibold text-(--dp-on-accent)"
                               : inRange
-                                ? "bg-(--dp-accent)/15"
-                                : "hover:bg-neutral-100"
+                                ? "cursor-pointer bg-(--dp-accent)/15"
+                                : disabled
+                                  ? "cursor-not-allowed text-neutral-400"
+                                  : "cursor-pointer hover:bg-neutral-100"
                           } ${isToday ? "font-semibold underline" : ""}`}
                         >
                           {date.getDate()}

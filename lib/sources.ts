@@ -5,3 +5,13 @@ import path from "node:path";
 export function readSource(file: string) {
   return fs.readFileSync(path.join(process.cwd(), "registry", file), "utf8");
 }
+
+/** All four source files of a component, by registry slug (e.g. "modal"). */
+export function readComponentSources(slug: string) {
+  return {
+    react: readSource(`${slug}/react/${slug}.tsx`),
+    html: readSource(`${slug}/vanilla/${slug}.html`),
+    css: readSource(`${slug}/vanilla/${slug}.css`),
+    js: readSource(`${slug}/vanilla/${slug}.js`),
+  };
+}

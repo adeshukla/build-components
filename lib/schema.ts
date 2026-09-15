@@ -14,6 +14,7 @@ export type Option = Base &
     | { type: "boolean"; default: boolean }
     | { type: "select"; default: string; options: readonly string[] }
     | { type: "color"; default: string }
+    | { type: "date"; default: string } // "YYYY-MM-DD" or "" for none
     | { type: "number"; default: number; min: number; max: number; step?: number }
   );
 
@@ -49,6 +50,8 @@ function coerce(option: Option, raw: string) {
       return option.options.includes(raw) ? raw : option.default;
     case "color":
       return /^#[0-9a-f]{6}$/i.test(raw) ? raw.toLowerCase() : option.default;
+    case "date":
+      return raw === "" || /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : option.default;
     case "number": {
       const n = Number(raw);
       return Number.isFinite(n) ? Math.min(option.max, Math.max(option.min, n)) : option.default;
