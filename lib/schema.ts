@@ -4,6 +4,8 @@ type Base = {
   key: string;
   label: string;
   group: "Content" | "Behaviour" | "Add-ons" | "Style";
+  /** One plain sentence shown under the control: what the option does. */
+  description?: string;
   /** Only shown (in the editor) when another option has this value. */
   dependsOn?: { key: string; equals: string | boolean };
 };
