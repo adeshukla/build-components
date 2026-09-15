@@ -5,7 +5,8 @@ import { generateOutputs } from "./e2e/generate";
 // so it's safe that this runs in every Playwright process.
 generateOutputs();
 
-const port = 3100;
+// Only one `next dev` can run per project: set E2E_PORT=3000 to reuse a dev server that's already running.
+const port = Number(process.env.E2E_PORT ?? 3100);
 
 export default defineConfig({
   testDir: "e2e",
@@ -13,7 +14,14 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   reporter: "list",
-  use: { ...devices["Desktop Chrome"], baseURL: `http://localhost:${port}`, locale: "en-US" },
+  use: { baseURL: `http://localhost:${port}`, locale: "en-US" },
+  // Same tests in Chromium, WebKit (Safari's engine) and an emulated iPhone.
+  // Playwright's WebKit is close to Safari but not identical; a real iPhone check stays on the manual checklist.
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+    { name: "iphone", use: { ...devices["iPhone 15"] } },
+  ],
   webServer: {
     command: `pnpm dev --port ${port}`,
     url: `http://localhost:${port}`,

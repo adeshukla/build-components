@@ -45,16 +45,18 @@ const defaultConfig: DatePickerConfig = {
 };
 // @config-end
 
+type View = "days" | "months" | "years";
+
 const sizes = {
-  sm: { field: "h-8 text-sm", input: "px-2", button: "w-8", cell: "size-8 text-xs" },
-  md: { field: "h-10 text-base", input: "px-3", button: "w-10", cell: "size-10 text-sm" },
-  lg: { field: "h-12 text-lg", input: "px-4", button: "w-12", cell: "size-12 text-base" },
+  sm: { field: "h-8 text-sm", input: "px-2", button: "w-8", cell: "size-8 text-xs", panel: "w-56" },
+  md: { field: "h-10 text-base", input: "px-3", button: "w-10", cell: "size-10 text-sm", panel: "w-70" },
+  lg: { field: "h-12 text-lg", input: "px-4", button: "w-12", cell: "size-12 text-base", panel: "w-84" },
 };
 
 const focusRing =
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--dp-ring)";
 const iconButton = `grid shrink-0 cursor-pointer place-items-center text-neutral-700 hover:bg-neutral-100 ${focusRing}`;
-const navButton = `grid size-9 cursor-pointer place-items-center rounded-(--dp-radius) text-neutral-700 hover:bg-neutral-100 ${focusRing}`;
+const navButton = `grid size-9 shrink-0 cursor-pointer place-items-center rounded-(--dp-radius) text-neutral-700 hover:bg-neutral-100 ${focusRing}`;
 
 type Format = DatePickerConfig["format"];
 
@@ -95,6 +97,18 @@ function isDisabled(date: Date, config: DatePickerConfig) {
   const min = fromIso(config.minDate);
   const max = fromIso(config.maxDate);
   return (!!min && date < min) || (!!max && date > max);
+}
+
+function isMonthDisabled(year: number, month: number, config: DatePickerConfig) {
+  const min = fromIso(config.minDate);
+  const max = fromIso(config.maxDate);
+  return (!!min && new Date(year, month + 1, 0) < min) || (!!max && new Date(year, month, 1) > max);
+}
+
+function isYearDisabled(year: number, config: DatePickerConfig) {
+  const min = fromIso(config.minDate);
+  const max = fromIso(config.maxDate);
+  return (!!min && year < min.getFullYear()) || (!!max && year > max.getFullYear());
 }
 
 function limitError(date: Date, config: DatePickerConfig) {
@@ -166,6 +180,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const [dates, setDates] = useState<Date[]>([]);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<View>("days");
   const [focused, setFocused] = useState(today);
   const [rangeStart, setRangeStart] = useState<Date | null>(null);
 
@@ -213,7 +228,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
       window.removeEventListener("resize", position);
       window.removeEventListener("scroll", position, true);
     };
-  }, [open, focused]);
+  }, [open, focused, view]);
 
   useEffect(() => {
     if (!open || !moveFocus.current) return;
@@ -228,8 +243,10 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   }
 
   function commitText() {
-    if ("error" in parsed) setError(parsed.error);
-    else commit(parsed.dates);
+    // Read the live input: Enter can arrive before React re-renders with the typed text.
+    const result = parseValue(inputRef.current?.value ?? text, config);
+    if ("error" in result) setError(result.error);
+    else commit(result.dates);
   }
 
   function openPicker() {
@@ -238,6 +255,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
     const now = today();
     setFocused(dates[0] ?? (min && now < min ? min : max && now > max ? max : now));
     setRangeStart(null);
+    setView("days");
     moveFocus.current = true;
     setOpen(true);
   }
@@ -245,6 +263,11 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   function moveTo(date: Date) {
     moveFocus.current = true;
     setFocused(date);
+  }
+
+  function changeView(next: View) {
+    moveFocus.current = true;
+    setView(next);
   }
 
   function select(date: Date) {
@@ -258,35 +281,90 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
     dialogRef.current?.close();
   }
 
+  // Days view selects a date; years view drills into months; months view returns to days.
+  function pick(date: Date) {
+    if (view === "days") return select(date);
+    if (view === "years") {
+      if (isYearDisabled(date.getFullYear(), config)) return;
+      setFocused(date);
+      changeView("months");
+      return;
+    }
+    if (isMonthDisabled(date.getFullYear(), date.getMonth(), config)) return;
+    setFocused(date);
+    changeView("days");
+  }
+
   function onDialogClose() {
     setOpen(false);
+    setView("days");
     setRangeStart(null);
     buttonRef.current?.focus();
   }
 
+  const year = focused.getFullYear();
+  const month = focused.getMonth();
+  const yearStart = year - (year % 12);
+  const heading =
+    view === "days"
+      ? focused.toLocaleDateString(undefined, { month: "long", year: "numeric" })
+      : view === "months"
+        ? String(year)
+        : `${yearStart} – ${yearStart + 11}`;
+  const stepMonths = view === "days" ? 1 : view === "months" ? 12 : 144;
+  const stepName = view === "days" ? "month" : view === "months" ? "year" : "12 years";
+
   function onGridKeyDown(event: KeyboardEvent) {
+    const by = (months: number) => () => addMonths(focused, months);
     const dayOfWeek = (focused.getDay() - startIdx + 7) % 7;
-    const moves: Record<string, () => Date> = {
-      ArrowLeft: () => addDays(focused, -1),
-      ArrowRight: () => addDays(focused, 1),
-      ArrowUp: () => addDays(focused, -7),
-      ArrowDown: () => addDays(focused, 7),
-      Home: () => addDays(focused, -dayOfWeek),
-      End: () => addDays(focused, 6 - dayOfWeek),
-      PageUp: () => addMonths(focused, event.shiftKey ? -12 : -1),
-      PageDown: () => addMonths(focused, event.shiftKey ? 12 : 1),
-    };
+    const moves: Record<string, () => Date> =
+      view === "days"
+        ? {
+            ArrowLeft: () => addDays(focused, -1),
+            ArrowRight: () => addDays(focused, 1),
+            ArrowUp: () => addDays(focused, -7),
+            ArrowDown: () => addDays(focused, 7),
+            Home: () => addDays(focused, -dayOfWeek),
+            End: () => addDays(focused, 6 - dayOfWeek),
+            PageUp: by(event.shiftKey ? -12 : -1),
+            PageDown: by(event.shiftKey ? 12 : 1),
+          }
+        : view === "months"
+          ? {
+              ArrowLeft: by(-1),
+              ArrowRight: by(1),
+              ArrowUp: by(-4),
+              ArrowDown: by(4),
+              Home: by(-(month % 4)),
+              End: by(3 - (month % 4)),
+              PageUp: by(-12),
+              PageDown: by(12),
+            }
+          : {
+              ArrowLeft: by(-12),
+              ArrowRight: by(12),
+              ArrowUp: by(-48),
+              ArrowDown: by(48),
+              PageUp: by(-144),
+              PageDown: by(144),
+            };
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      select(focused);
+      pick(focused);
     } else if (moves[event.key]) {
       event.preventDefault();
       moveTo(moves[event.key]());
     }
   }
 
-  // Keep Tab inside the open dialog (APG dialog pattern).
   function onDialogKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
+    // In the month or year view, Escape steps back to the days instead of closing.
+    if (event.key === "Escape" && view !== "days") {
+      event.preventDefault();
+      changeView("days");
+      return;
+    }
+    // Keep Tab inside the open dialog (APG dialog pattern).
     if (event.key !== "Tab") return;
     const items = [...event.currentTarget.querySelectorAll<HTMLElement>('button, [tabindex="0"]')];
     const first = items[0];
@@ -300,8 +378,6 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
     }
   }
 
-  const year = focused.getFullYear();
-  const month = focused.getMonth();
   const offset = (new Date(year, month, 1).getDay() - startIdx + 7) % 7;
   const total = daysInMonth(year, month);
   const cells = Array.from({ length: Math.ceil((offset + total) / 7) * 7 }, (_, i) => {
@@ -311,6 +387,40 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const weeks = Array.from({ length: cells.length / 7 }, (_, i) => cells.slice(i * 7, i * 7 + 7));
   const selStart = rangeStart ?? dates[0];
   const selEnd = rangeStart ?? dates[1] ?? dates[0];
+  const now = today();
+  const pickerItems = Array.from({ length: 12 }, (_, i) => {
+    if (view === "years") {
+      const date = addMonths(focused, (yearStart + i - year) * 12);
+      const y = date.getFullYear();
+      return {
+        date,
+        label: String(y),
+        name: String(y),
+        focus: y === year,
+        selected: y === selStart?.getFullYear(),
+        current: y === now.getFullYear(),
+        disabled: isYearDisabled(y, config),
+      };
+    }
+    const date = addMonths(focused, i - month);
+    return {
+      date,
+      label: date.toLocaleDateString(undefined, { month: "short" }),
+      name: date.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
+      focus: i === month,
+      selected: !!selStart && selStart.getFullYear() === year && selStart.getMonth() === i,
+      current: year === now.getFullYear() && i === now.getMonth(),
+      disabled: isMonthDisabled(year, i, config),
+    };
+  });
+  const cellState = (selected: boolean, inRange: boolean, disabled: boolean) =>
+    selected
+      ? "cursor-pointer bg-(--dp-accent) font-semibold text-(--dp-on-accent)"
+      : inRange
+        ? "cursor-pointer bg-(--dp-accent)/15"
+        : disabled
+          ? "cursor-not-allowed text-neutral-400"
+          : "cursor-pointer hover:bg-neutral-100";
   const isoValue = (d?: Date) => (d ? formatDate(d, "YYYY-MM-DD") : "");
 
   return (
@@ -394,28 +504,45 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
         onClick={(event) => {
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}
-        className="fixed inset-auto m-0 rounded-(--dp-radius) border border-neutral-300 bg-white p-0 text-neutral-900 shadow-lg backdrop:bg-black/10"
+        className="fixed inset-auto m-0 rounded-(--dp-radius) border border-neutral-200 bg-white p-0 text-neutral-900 shadow-xl backdrop:bg-black/10"
       >
         {open && (
-          <div className="p-3">
-            <div className="mb-2 flex items-center justify-between gap-2">
+          <div className={`box-content p-3 ${size.panel}`}>
+            <div className="mb-2 flex items-center justify-between gap-1">
               <button
                 type="button"
-                aria-label="Previous month"
-                onClick={() => setFocused(addMonths(focused, -1))}
+                aria-label={`Previous ${stepName}`}
+                onClick={() => setFocused(addMonths(focused, -stepMonths))}
                 className={navButton}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                   <path d="m15 18-6-6 6-6" />
                 </svg>
               </button>
-              <h2 id={`${id}-month`} aria-live="polite" className="font-semibold">
-                {focused.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-              </h2>
               <button
                 type="button"
-                aria-label="Next month"
-                onClick={() => setFocused(addMonths(focused, 1))}
+                onClick={() => changeView(view === "days" ? "years" : view === "years" ? "days" : "years")}
+                className={`inline-flex min-w-0 cursor-pointer items-center gap-1 rounded-(--dp-radius) px-2 py-1 font-semibold hover:bg-neutral-100 ${focusRing}`}
+              >
+                {heading}
+                <span className="sr-only">
+                  {view === "days" ? ", change month and year" : view === "years" ? ", back to calendar" : ", change year"}
+                </span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  className={`size-4 transition-transform motion-reduce:transition-none ${view === "days" ? "" : "rotate-180"}`}
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                aria-label={`Next ${stepName}`}
+                onClick={() => setFocused(addMonths(focused, stepMonths))}
                 className={navButton}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
@@ -423,72 +550,100 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                 </svg>
               </button>
             </div>
-            <table
-              ref={gridRef}
-              role="grid"
-              aria-labelledby={`${id}-month`}
-              onKeyDown={onGridKeyDown}
-              className="border-collapse"
-            >
-              <thead>
-                <tr>
-                  {Array.from({ length: 7 }, (_, i) => {
-                    const day = new Date(2026, 0, 4 + startIdx + i); // 4 Jan 2026 was a Sunday
-                    return (
-                      <th
-                        key={i}
-                        scope="col"
-                        abbr={day.toLocaleDateString(undefined, { weekday: "long" })}
-                        className="h-8 text-xs font-medium text-neutral-600"
-                      >
-                        {day.toLocaleDateString(undefined, { weekday: "short" })}
-                      </th>
-                    );
-                  })}
-                </tr>
-              </thead>
-              <tbody>
-                {weeks.map((week, w) => (
-                  <tr key={w}>
-                    {week.map((date, d) => {
-                      if (!date) return <td key={d} />;
-                      const isEnd = sameDay(date, selStart) || sameDay(date, selEnd);
-                      const inRange = !!selStart && !!selEnd && date > selStart && date < selEnd;
-                      const isToday = sameDay(date, today());
-                      const disabled = isDisabled(date, config);
+            <p aria-live="polite" className="sr-only">
+              {heading}
+            </p>
+
+            {view === "days" ? (
+              <table
+                ref={gridRef}
+                role="grid"
+                aria-label={heading}
+                onKeyDown={onGridKeyDown}
+                className="w-full border-collapse"
+              >
+                <thead>
+                  <tr>
+                    {Array.from({ length: 7 }, (_, i) => {
+                      const day = new Date(2026, 0, 4 + startIdx + i); // 4 Jan 2026 was a Sunday
                       return (
-                        <td
-                          key={d}
-                          role="gridcell"
-                          tabIndex={sameDay(date, focused) ? 0 : -1}
-                          aria-selected={isEnd || inRange}
-                          aria-disabled={disabled || undefined}
-                          aria-current={isToday ? "date" : undefined}
-                          aria-label={date.toLocaleDateString(undefined, {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                          onClick={() => select(date)}
-                          className={`rounded-(--dp-radius) text-center tabular-nums ${focusRing} ${size.cell} ${
-                            isEnd
-                              ? "cursor-pointer bg-(--dp-accent) font-semibold text-(--dp-on-accent)"
-                              : inRange
-                                ? "cursor-pointer bg-(--dp-accent)/15"
-                                : disabled
-                                  ? "cursor-not-allowed text-neutral-400"
-                                  : "cursor-pointer hover:bg-neutral-100"
-                          } ${isToday ? "font-semibold underline" : ""}`}
+                        <th
+                          key={i}
+                          scope="col"
+                          abbr={day.toLocaleDateString(undefined, { weekday: "long" })}
+                          className="h-8 text-xs font-medium text-neutral-600"
                         >
-                          {date.getDate()}
-                        </td>
+                          {day.toLocaleDateString(undefined, { weekday: "short" })}
+                        </th>
                       );
                     })}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {weeks.map((week, w) => (
+                    <tr key={w}>
+                      {week.map((date, d) => {
+                        if (!date) return <td key={d} />;
+                        const isEnd = sameDay(date, selStart) || sameDay(date, selEnd);
+                        const inRange = !!selStart && !!selEnd && date > selStart && date < selEnd;
+                        const isToday = sameDay(date, now);
+                        const disabled = isDisabled(date, config);
+                        return (
+                          <td
+                            key={d}
+                            role="gridcell"
+                            tabIndex={sameDay(date, focused) ? 0 : -1}
+                            aria-selected={isEnd || inRange}
+                            aria-disabled={disabled || undefined}
+                            aria-current={isToday ? "date" : undefined}
+                            aria-label={date.toLocaleDateString(undefined, {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                            onClick={() => pick(date)}
+                            className={`rounded-(--dp-radius) text-center tabular-nums ${focusRing} ${size.cell} ${cellState(isEnd, inRange, disabled)} ${isToday ? "font-semibold underline" : ""}`}
+                          >
+                            {date.getDate()}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <table
+                ref={gridRef}
+                role="grid"
+                aria-label={view === "years" ? "Choose year" : "Choose month"}
+                onKeyDown={onGridKeyDown}
+                className="w-full border-collapse"
+              >
+                <tbody>
+                  {[0, 4, 8].map((start) => (
+                    <tr key={start}>
+                      {pickerItems.slice(start, start + 4).map((item) => (
+                        <td
+                          key={item.name}
+                          role="gridcell"
+                          tabIndex={item.focus ? 0 : -1}
+                          aria-selected={item.selected}
+                          aria-disabled={item.disabled || undefined}
+                          aria-label={item.name}
+                          onClick={() => pick(item.date)}
+                          className={`h-12 rounded-(--dp-radius) text-center text-sm tabular-nums ${focusRing} ${cellState(item.selected, false, item.disabled)} ${item.current ? "font-semibold underline" : ""}`}
+                        >
+                          {item.label}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
             <p aria-live="polite" className="mt-2 min-h-5 text-sm text-neutral-700">
               {rangeStart ? "Now choose the end date." : ""}
             </p>
@@ -496,7 +651,10 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               <div className="mt-2 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => moveTo(today())}
+                  onClick={() => {
+                    setView("days");
+                    moveTo(today());
+                  }}
                   className={`cursor-pointer rounded-(--dp-radius) border border-neutral-500 px-3 py-1 text-sm hover:bg-neutral-100 ${focusRing}`}
                 >
                   Today

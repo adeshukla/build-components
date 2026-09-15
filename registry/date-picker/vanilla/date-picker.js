@@ -62,6 +62,18 @@
     return (!!min && date < min) || (!!max && date > max);
   }
 
+  function isMonthDisabled(year, month, config) {
+    const min = fromIso(config.minDate);
+    const max = fromIso(config.maxDate);
+    return (!!min && new Date(year, month + 1, 0) < min) || (!!max && new Date(year, month, 1) > max);
+  }
+
+  function isYearDisabled(year, config) {
+    const min = fromIso(config.minDate);
+    const max = fromIso(config.maxDate);
+    return (!!min && year < min.getFullYear()) || (!!max && year > max.getFullYear());
+  }
+
   function limitError(date, config) {
     const min = fromIso(config.minDate);
     const max = fromIso(config.maxDate);
@@ -126,6 +138,7 @@
     calendar: svg('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
     prev: svg('<path d="m15 18-6-6 6-6"/>'),
     next: svg('<path d="m9 18 6-6-6-6"/>'),
+    chevron: svg('<path d="m6 9 6 6 6-6"/>'),
   };
 
   let count = 0;
@@ -140,6 +153,7 @@
     let dates = [];
     let focused = today();
     let rangeStart = null;
+    let view = "days"; // "days" | "months" | "years"
 
     const accentLuminance = luminance(config.accentColor);
     root.classList.add("dp", `dp--${config.size}`);
@@ -163,11 +177,12 @@
       <dialog class="dp-dialog">
         <div class="dp-dialog-inner">
           <div class="dp-header">
-            <button type="button" class="dp-nav" data-prev aria-label="Previous month">${icons.prev}</button>
-            <h2 class="dp-month" id="${id}-month" aria-live="polite"></h2>
-            <button type="button" class="dp-nav" data-next aria-label="Next month">${icons.next}</button>
+            <button type="button" class="dp-nav" data-prev>${icons.prev}</button>
+            <button type="button" class="dp-heading" data-heading><span data-heading-text></span><span class="dp-sr-only" data-heading-hint></span>${icons.chevron}</button>
+            <button type="button" class="dp-nav" data-next>${icons.next}</button>
           </div>
-          <table class="dp-grid" role="grid" aria-labelledby="${id}-month">
+          <p class="dp-sr-only" aria-live="polite" data-live></p>
+          <table class="dp-grid" role="grid">
             <thead><tr></tr></thead>
             <tbody></tbody>
           </table>
@@ -184,7 +199,12 @@
     const errorText = find(".dp-error");
     const valueInputs = root.querySelectorAll("[data-value]");
     const dialog = find("dialog");
-    const monthHeading = find(".dp-month");
+    const prevButton = find("[data-prev]");
+    const nextButton = find("[data-next]");
+    const headingButton = find("[data-heading]");
+    const live = find("[data-live]");
+    const grid = find(".dp-grid");
+    const thead = find("thead");
     const tbody = find("tbody");
     const status = find(".dp-status");
 
@@ -244,38 +264,101 @@
       else commit(result.dates);
     }
 
-    function renderGrid() {
+    function addCell(row, { label, name, focus, selected, inRange, disabled, current }) {
+      const cell = row.insertCell();
+      cell.textContent = label;
+      cell.setAttribute("role", "gridcell");
+      cell.setAttribute("aria-label", name);
+      cell.setAttribute("aria-selected", String(selected || inRange));
+      cell.tabIndex = focus ? 0 : -1;
+      if (disabled) cell.setAttribute("aria-disabled", "true");
+      if (selected) cell.dataset.end = "";
+      else if (inRange) cell.dataset.inRange = "";
+      if (current) cell.dataset.current = "";
+      return cell;
+    }
+
+    function render() {
       const year = focused.getFullYear();
       const month = focused.getMonth();
-      const offset = (new Date(year, month, 1).getDay() - startIdx + 7) % 7;
-      const total = daysInMonth(year, month);
+      const yearStart = year - (year % 12);
       const selStart = rangeStart || dates[0];
       const selEnd = rangeStart || dates[1] || dates[0];
       const now = today();
-      monthHeading.textContent = focused.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      const heading =
+        view === "days"
+          ? focused.toLocaleDateString(undefined, { month: "long", year: "numeric" })
+          : view === "months"
+            ? String(year)
+            : `${yearStart} – ${yearStart + 11}`;
+      const stepName = view === "days" ? "month" : view === "months" ? "year" : "12 years";
+
+      find("[data-heading-text]").textContent = heading;
+      find("[data-heading-hint]").textContent =
+        view === "days" ? ", change month and year" : view === "years" ? ", back to calendar" : ", change year";
+      headingButton.toggleAttribute("data-open-view", view !== "days");
+      prevButton.setAttribute("aria-label", `Previous ${stepName}`);
+      nextButton.setAttribute("aria-label", `Next ${stepName}`);
+      live.textContent = heading;
+      grid.classList.toggle("dp-grid--picker", view !== "days");
+      grid.setAttribute("aria-label", view === "days" ? heading : view === "years" ? "Choose year" : "Choose month");
+      thead.hidden = view !== "days";
       tbody.replaceChildren();
-      let row;
-      for (let i = 0; i < Math.ceil((offset + total) / 7) * 7; i++) {
-        if (i % 7 === 0) row = tbody.insertRow();
-        const cell = row.insertCell();
-        const day = i - offset + 1;
-        if (day < 1 || day > total) continue;
-        const date = new Date(year, month, day);
-        const isEnd = sameDay(date, selStart) || sameDay(date, selEnd);
-        const inRange = !!selStart && !!selEnd && date > selStart && date < selEnd;
-        cell.textContent = String(day);
-        cell.dataset.day = String(day);
-        cell.setAttribute("role", "gridcell");
-        cell.tabIndex = sameDay(date, focused) ? 0 : -1;
-        cell.setAttribute("aria-selected", String(isEnd || inRange));
-        cell.setAttribute(
-          "aria-label",
-          date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
-        );
-        if (isDisabled(date, config)) cell.setAttribute("aria-disabled", "true");
-        if (sameDay(date, now)) cell.setAttribute("aria-current", "date");
-        if (isEnd) cell.dataset.end = "";
-        else if (inRange) cell.dataset.inRange = "";
+
+      if (view === "days") {
+        const offset = (new Date(year, month, 1).getDay() - startIdx + 7) % 7;
+        const total = daysInMonth(year, month);
+        let row;
+        for (let i = 0; i < Math.ceil((offset + total) / 7) * 7; i++) {
+          if (i % 7 === 0) row = tbody.insertRow();
+          const day = i - offset + 1;
+          if (day < 1 || day > total) {
+            row.insertCell();
+            continue;
+          }
+          const date = new Date(year, month, day);
+          const cell = addCell(row, {
+            label: String(day),
+            name: date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+            focus: sameDay(date, focused),
+            selected: sameDay(date, selStart) || sameDay(date, selEnd),
+            inRange: !!selStart && !!selEnd && date > selStart && date < selEnd,
+            disabled: isDisabled(date, config),
+            current: false,
+          });
+          cell.dataset.day = String(day);
+          if (sameDay(date, now)) cell.setAttribute("aria-current", "date");
+        }
+      } else {
+        let row;
+        for (let i = 0; i < 12; i++) {
+          if (i % 4 === 0) row = tbody.insertRow();
+          const date =
+            view === "years" ? addMonths(focused, (yearStart + i - year) * 12) : addMonths(focused, i - month);
+          const cell = addCell(
+            row,
+            view === "years"
+              ? {
+                  label: String(date.getFullYear()),
+                  name: String(date.getFullYear()),
+                  focus: date.getFullYear() === year,
+                  selected: !!selStart && date.getFullYear() === selStart.getFullYear(),
+                  inRange: false,
+                  disabled: isYearDisabled(date.getFullYear(), config),
+                  current: date.getFullYear() === now.getFullYear(),
+                }
+              : {
+                  label: date.toLocaleDateString(undefined, { month: "short" }),
+                  name: date.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
+                  focus: i === month,
+                  selected: !!selStart && selStart.getFullYear() === year && selStart.getMonth() === i,
+                  inRange: false,
+                  disabled: isMonthDisabled(year, i, config),
+                  current: year === now.getFullYear() && i === now.getMonth(),
+                },
+          );
+          cell.dataset.offset = String(view === "years" ? (yearStart + i - year) * 12 : i - month);
+        }
       }
       status.textContent = rangeStart ? "Now choose the end date." : "";
       position();
@@ -291,10 +374,20 @@
       dialog.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - dialog.offsetWidth - 8))}px`;
     }
 
+    function focusCell() {
+      tbody.querySelector('[tabindex="0"]').focus();
+    }
+
     function moveTo(date) {
       focused = date;
-      renderGrid();
-      tbody.querySelector('[tabindex="0"]').focus();
+      render();
+      focusCell();
+    }
+
+    function changeView(next) {
+      view = next;
+      render();
+      focusCell();
     }
 
     function select(date) {
@@ -308,18 +401,34 @@
       dialog.close();
     }
 
+    // Days view selects a date; years view drills into months; months view returns to days.
+    function pick(date) {
+      if (view === "days") return select(date);
+      if (view === "years") {
+        if (isYearDisabled(date.getFullYear(), config)) return;
+        focused = date;
+        return changeView("months");
+      }
+      if (isMonthDisabled(date.getFullYear(), date.getMonth(), config)) return;
+      focused = date;
+      changeView("days");
+    }
+
     function openPicker() {
       const min = fromIso(config.minDate);
       const max = fromIso(config.maxDate);
       const now = today();
       focused = dates[0] || (min && now < min ? min : max && now > max ? max : now);
       rangeStart = null;
+      view = "days";
       dialog.showModal();
-      renderGrid();
+      render();
       window.addEventListener("resize", position);
       window.addEventListener("scroll", position, true);
-      tbody.querySelector('[tabindex="0"]').focus();
+      focusCell();
     }
+
+    const stepMonths = () => (view === "days" ? 1 : view === "months" ? 12 : 144);
 
     input.addEventListener("input", syncInputs);
     input.addEventListener("blur", commitText);
@@ -333,45 +442,84 @@
       });
     }
     openButton.addEventListener("click", openPicker);
-    find("[data-prev]").addEventListener("click", () => {
-      focused = addMonths(focused, -1);
-      renderGrid();
+    prevButton.addEventListener("click", () => {
+      focused = addMonths(focused, -stepMonths());
+      render();
     });
-    find("[data-next]").addEventListener("click", () => {
-      focused = addMonths(focused, 1);
-      renderGrid();
+    nextButton.addEventListener("click", () => {
+      focused = addMonths(focused, stepMonths());
+      render();
     });
+    headingButton.addEventListener("click", () =>
+      changeView(view === "days" ? "years" : view === "years" ? "days" : "years"),
+    );
     const todayButton = find("[data-today]");
-    if (todayButton) todayButton.addEventListener("click", () => moveTo(today()));
+    if (todayButton) {
+      todayButton.addEventListener("click", () => {
+        view = "days";
+        moveTo(today());
+      });
+    }
 
     tbody.addEventListener("click", (event) => {
-      const cell = event.target.closest("td[data-day]");
-      if (cell) select(new Date(focused.getFullYear(), focused.getMonth(), Number(cell.dataset.day)));
+      const cell = event.target.closest('td[role="gridcell"]');
+      if (!cell) return;
+      if (view === "days") select(new Date(focused.getFullYear(), focused.getMonth(), Number(cell.dataset.day)));
+      else pick(addMonths(focused, Number(cell.dataset.offset)));
     });
 
     tbody.addEventListener("keydown", (event) => {
+      const by = (months) => () => addMonths(focused, months);
+      const month = focused.getMonth();
       const dayOfWeek = (focused.getDay() - startIdx + 7) % 7;
-      const moves = {
-        ArrowLeft: () => addDays(focused, -1),
-        ArrowRight: () => addDays(focused, 1),
-        ArrowUp: () => addDays(focused, -7),
-        ArrowDown: () => addDays(focused, 7),
-        Home: () => addDays(focused, -dayOfWeek),
-        End: () => addDays(focused, 6 - dayOfWeek),
-        PageUp: () => addMonths(focused, event.shiftKey ? -12 : -1),
-        PageDown: () => addMonths(focused, event.shiftKey ? 12 : 1),
-      };
+      const moves =
+        view === "days"
+          ? {
+              ArrowLeft: () => addDays(focused, -1),
+              ArrowRight: () => addDays(focused, 1),
+              ArrowUp: () => addDays(focused, -7),
+              ArrowDown: () => addDays(focused, 7),
+              Home: () => addDays(focused, -dayOfWeek),
+              End: () => addDays(focused, 6 - dayOfWeek),
+              PageUp: by(event.shiftKey ? -12 : -1),
+              PageDown: by(event.shiftKey ? 12 : 1),
+            }
+          : view === "months"
+            ? {
+                ArrowLeft: by(-1),
+                ArrowRight: by(1),
+                ArrowUp: by(-4),
+                ArrowDown: by(4),
+                Home: by(-(month % 4)),
+                End: by(3 - (month % 4)),
+                PageUp: by(-12),
+                PageDown: by(12),
+              }
+            : {
+                ArrowLeft: by(-12),
+                ArrowRight: by(12),
+                ArrowUp: by(-48),
+                ArrowDown: by(48),
+                PageUp: by(-144),
+                PageDown: by(144),
+              };
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        select(focused);
+        pick(focused);
       } else if (moves[event.key]) {
         event.preventDefault();
         moveTo(moves[event.key]());
       }
     });
 
-    // Keep Tab inside the open dialog (APG dialog pattern).
     dialog.addEventListener("keydown", (event) => {
+      // In the month or year view, Escape steps back to the days instead of closing.
+      if (event.key === "Escape" && view !== "days") {
+        event.preventDefault();
+        changeView("days");
+        return;
+      }
+      // Keep Tab inside the open dialog (APG dialog pattern).
       if (event.key !== "Tab") return;
       const items = [...dialog.querySelectorAll('button, [tabindex="0"]')];
       const first = items[0];
@@ -391,6 +539,7 @@
 
     dialog.addEventListener("close", () => {
       rangeStart = null;
+      view = "days";
       window.removeEventListener("resize", position);
       window.removeEventListener("scroll", position, true);
       openButton.focus();

@@ -44,7 +44,7 @@ for (const target of targets("date-picker")) {
 
       await page.keyboard.press("ArrowDown"); // 17 March
       await page.keyboard.press("PageDown"); // 17 April
-      await expect(page.getByRole("heading", { name: "April 2026" })).toBeVisible();
+      await expect(page.getByRole("grid", { name: "April 2026" })).toBeVisible();
       await page.keyboard.press("Home"); // week starts Monday
       await expect(focusedInDialog(page)).toHaveAccessibleName("Monday, April 13, 2026");
       await page.keyboard.press("End");
@@ -67,7 +67,10 @@ for (const target of targets("date-picker")) {
       await page.keyboard.press("Tab"); // grid cell is last → wraps to first
       await expect(page.getByRole("button", { name: "Previous month" })).toBeFocused();
       await page.keyboard.press("Tab");
+      await expect(page.getByRole("button", { name: /^March 2026\b.*change month and year$/ })).toBeFocused();
+      await page.keyboard.press("Tab");
       await expect(page.getByRole("button", { name: "Next month" })).toBeFocused();
+      await page.keyboard.press("Shift+Tab");
       await page.keyboard.press("Shift+Tab");
       await page.keyboard.press("Shift+Tab"); // first → wraps to last
       await expect(focusedInDialog(page)).toHaveAccessibleName("Tuesday, March 10, 2026");
@@ -76,6 +79,41 @@ for (const target of targets("date-picker")) {
       await expect(page.getByRole("dialog")).toBeHidden();
       await expect(field(page)).toHaveValue("");
       await expect(page.getByRole("button", { name: "Choose date" })).toBeFocused();
+    });
+
+    test("month and year: heading opens years → months → back to days", async ({ page }) => {
+      await page.goto(target.url("default"));
+      await page.getByRole("button", { name: "Choose date" }).click();
+      const heading = page.getByRole("button", { name: /change month and year$/ });
+
+      // Keyboard: Escape in the year view steps back to the days, without closing.
+      await heading.press("Enter");
+      await expect(page.getByRole("grid", { name: "Choose year" })).toBeVisible();
+      await expect(focusedInDialog(page)).toHaveAccessibleName("2026");
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await expect(page.getByRole("grid", { name: "March 2026" })).toBeVisible();
+
+      await heading.press("Enter");
+      await page.keyboard.press("ArrowRight"); // 2027
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("grid", { name: "Choose month" })).toBeVisible();
+      await expect(focusedInDialog(page)).toHaveAccessibleName("March 2027");
+      await page.keyboard.press("ArrowDown"); // four months later
+      await expect(focusedInDialog(page)).toHaveAccessibleName("July 2027");
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("grid", { name: "July 2027" })).toBeVisible();
+      await expect(focusedInDialog(page)).toHaveAccessibleName("Saturday, July 10, 2027");
+
+      // Mouse: same path with clicks.
+      await heading.click(); // years view shows 2016 – 2027
+      await page.getByRole("button", { name: "Next 12 years" }).click(); // 2028 – 2039
+      await page.getByRole("gridcell", { name: "2030", exact: true }).click();
+      await page.getByRole("gridcell", { name: "December 2030", exact: true }).click();
+      await expect(page.getByRole("grid", { name: "December 2030" })).toBeVisible();
+      await page.getByRole("gridcell", { name: "Wednesday, December 25, 2030", exact: true }).click();
+      await expect(page.getByRole("dialog")).toBeHidden();
+      await expect(field(page)).toHaveValue("25/12/2030");
     });
 
     test("typed dates follow the format, with accurate errors", async ({ page }) => {

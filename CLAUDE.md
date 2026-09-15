@@ -70,6 +70,7 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Next injects `#__next-route-announcer__` with `role="alert"` on every page. Scope test locators to `main`.
 - After `pnpm test:e2e`, the generated `app/harness/*` routes show up in local `next build` output. They `notFound()` in production and are gitignored.
 - React components: render date- or locale-dependent content only on the client (e.g. only while a popup is open), or hydration will mismatch.
-- Only one `next dev` can run per project (lock in `.next/dev`). Playwright reuses a dev server already running on :3100.
+- Only one `next dev` can run per project (lock in `.next/dev`). If Adesh's `pnpm dev` is already running on :3000, run tests with `E2E_PORT=3000` so Playwright reuses it. Never kill his server.
+- Tests run in 3 Playwright projects: chromium, webkit (Safari engine) and iphone (emulated iPhone 15). Playwright's WebKit is close to Safari but not identical; a real-device check stays on the manual checklist.
 - Playwright refuses to click `aria-disabled` elements. Use `click({ force: true })` when testing that a disabled item can't be picked.
 - ESLint enforces `react-hooks/set-state-in-effect`. Read browser storage with `useSyncExternalStore` (see the checklist in `components/editor.tsx`), not `setState` inside `useEffect`.

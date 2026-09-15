@@ -115,7 +115,30 @@
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
-.dp-month { margin: 0; font-size: 1rem; font-weight: 600; }
+.dp-dialog-inner { box-sizing: content-box; width: calc(var(--dp-cell) * 7); }
+.dp-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: var(--dp-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dp-heading:hover { background: #f5f5f5; }
+.dp-heading:focus-visible { outline: 2px solid var(--dp-ring); outline-offset: -2px; }
+.dp-heading svg { width: 1rem; height: 1rem; transition: transform 150ms; }
+.dp-heading[data-open-view] svg { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .dp-heading svg { transition: none; } }
+.dp-grid { width: 100%; }
+.dp-grid.dp-grid--picker td { height: 3rem; width: 25%; }
+.dp-grid td[data-current] { font-weight: 600; text-decoration: underline; }
 
 .dp-grid { border-collapse: collapse; }
 .dp-grid th { height: 2rem; padding: 0; font-size: 0.75rem; font-weight: 500; color: #525252; }
