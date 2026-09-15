@@ -1,6 +1,68 @@
 # Progress
 
-Last updated: 2026-09-15 (end of session 1)
+Last updated: 2026-09-15 (end of session 2)
+
+## Current status (session 2)
+
+### How Adesh can test the components
+```
+cd C:\dev\component-platform
+pnpm dev
+```
+Open http://localhost:3000 and pick **Date picker** or **Modal**. On each page:
+1. Change options on the left. The live test updates and the URL keeps the config, so links are shareable.
+2. Switch **Output** between React + Tailwind and HTML/CSS/JS. Both run the exported code.
+3. Switch **Preview width**: phone 375, tablet 768, full.
+4. **Submit test form** (date picker) shows the real submitted values. The modal shows "Closed with: primary / secondary / dismiss".
+5. Work through the **Manual test checklist** (screen reader, zoom, reduced motion). Ticks are saved in your browser.
+
+### Done in session 2 (2026-09-15)
+- **Test UI.** `components/editor.tsx` is shared by every component page:
+  - live test of both outputs, React and sandboxed HTML/CSS/JS
+  - width switcher
+  - test form with submitted values
+  - manual checklist
+  - copy code and install command
+
+  Also: site header, and a home page with how-to-test steps.
+- **Date picker follow-ups** (both outputs):
+  - Form field name with hidden ISO values (`date`, or `<name>-start` / `<name>-end`).
+  - Earliest/latest dates: outside days are `aria-disabled`, and typed dates get "Choose a date on or after …".
+  - The popup follows scroll and resize.
+  - New schema option type `date` (D17).
+- **Modal** as the second component (D18):
+  - 14 options; React + vanilla exports.
+  - `/r/modal.json`, and the `/modal` page.
+  - 6 tests per output plus a registry test.
+- **Registry route** serves every known slug; unknown names return 404 before touching the file system.
+- **Checks:** 22/22 e2e tests pass (date picker 5 per output + registry; modal 6 per output + registry). `typecheck`, `lint` and `build` pass.
+- **Real component bugs the tests caught** (now fixed and asserted):
+  1. The React modal rendered in the top-left corner instead of centred. Tailwind's reset (`margin: 0`) cancels the browser's `<dialog>` centring; plain CSS keeps it, so vanilla was fine. This is exactly the kind of drift the "test every output" rule exists for.
+  2. Clicking the modal backdrop moved keyboard focus out of the dialog (both outputs), so Enter stopped working. Backdrop mousedown no longer steals focus.
+- **Test-only fixes:** Playwright won't click `aria-disabled` cells (now a forced click). axe was measuring mid-fade (the helper now waits for animations to finish).
+
+### In progress
+Nothing half-finished. Everything above is committed on `dev`.
+
+### Next — doesn't need Adesh
+- Configurable UI strings (button labels, error messages) for both components.
+- Modal: close animation; open from any existing button (custom trigger).
+- Check the editor itself at phone width on a real device.
+
+### Next — needs Adesh's answers first
+- Components 3–6 (searchable select, form, header, CTA). They depend on question 2 (framework spike vs by hand) and need a `list` option type.
+
+### Blockers & questions for Adesh
+1. **Name**: see the options under "Session 1 record" below.
+2. **Build order**: Mitosis / Web Components spike next, or build the searchable select by hand?
+3. **Tailwind v4 only** for the React output?
+4. **Private GitHub repo?** Still no remote: no backup, no CI.
+5. **Dark theme and i18n**: MVP or later?
+6. **New:** run the manual checklist on both components with NVDA. Automated tests can't judge what a screen reader actually says. Tell me anything that feels wrong.
+
+---
+
+## Session 1 record (history — the "Next" and "Blockers" lists here are superseded by the section above)
 
 ## Done
 - **2026-09-15** Repo created at `C:\dev\component-platform` (outside OneDrive), git on `dev`, Next.js 16.3.5 scaffold. Commits: scaffold → docs → spike.
