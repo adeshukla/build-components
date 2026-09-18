@@ -1,10 +1,12 @@
 // One place that knows every component: used by the registry route, the preview frame and the editor.
 import { ctaSchema } from "@/registry/cta/schema";
 import { datePickerSchema } from "@/registry/date-picker/schema";
+import { footerSchema } from "@/registry/footer/schema";
 import { formSchema } from "@/registry/form/schema";
 import { headerSchema } from "@/registry/header/schema";
 import { modalSchema } from "@/registry/modal/schema";
 import { searchableSelectSchema } from "@/registry/searchable-select/schema";
+import { tabsSchema } from "@/registry/tabs/schema";
 
 export const registry = {
   "date-picker": {
@@ -16,6 +18,11 @@ export const registry = {
     title: "Form with validation",
     description: "A contact form with your rules and error messages that say how to fix each problem.",
     schema: formSchema,
+  },
+  footer: {
+    title: "Site footer",
+    description: "A site footer with links, social profiles and a legal line. Plain HTML, no JavaScript.",
+    schema: footerSchema,
   },
   header: {
     title: "Site header",
@@ -31,6 +38,11 @@ export const registry = {
     title: "CTA section",
     description: "A call-to-action section: heading, supporting text and actions. Plain HTML, no JavaScript.",
     schema: ctaSchema,
+  },
+  tabs: {
+    title: "Tabs",
+    description: "Accessible tabs (WAI-ARIA tabs pattern) with automatic or manual activation.",
+    schema: tabsSchema,
   },
   "searchable-select": {
     title: "Searchable select",

@@ -159,3 +159,9 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 ## 2026-09-18 — D28. Nav and footer stay short
 **Decision:** The header links to Catalogue, How it works and Testing; the footer carries the brand, one catalogue link and what the tests cover. Neither lists components.
 **Why:** Adesh: the catalogue already lists everything, so repeating it twice is noise.
+
+## 2026-09-18 — D29. Two more parts: Compass (tabs) and Keel (footer)
+**Decision:** Added the two components from Adesh's own shortlist that pay off first: **Compass**, tabs following the APG Tabs pattern (roving tabindex, arrow keys, Home/End, automatic or manual activation, horizontal or vertical), and **Keel**, a site footer that ships as plain HTML with no JavaScript.
+**Why:** Tabs are the most-asked-for interactive pattern left and are easy to get wrong by hand; the footer completes the pair with Masthead and costs almost nothing because it needs no script. Mega menu, tooltip, slider and lazy loading are still waiting on Adesh to say which comes next.
+**How they are built:** Both are HTML-first (D27) — the markup is generated from the options; tabs add a small script for the keyboard only, so the first panel is already open without JavaScript.
+**Tests:** Both run the same suite against both outputs in Chromium, WebKit and an emulated iPhone. The tabs spec covers wrapping, Home/End, manual activation and that the panel itself can take focus; the footer spec asserts that a `javascript:` link from a shared URL is neutralised.

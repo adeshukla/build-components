@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
 import { DatePicker, type DatePickerConfig } from "@/registry/date-picker/react/date-picker";
+import { SiteFooter as FooterPart, type FooterConfig } from "@/registry/footer/react/footer";
 import { ContactForm, type FormConfig } from "@/registry/form/react/form";
 import { SiteHeader as HeaderPart, type HeaderConfig } from "@/registry/header/react/header";
 import { Modal, type ModalAction, type ModalConfig } from "@/registry/modal/react/modal";
 import { SearchableSelect, type SearchableSelectConfig } from "@/registry/searchable-select/react/searchable-select";
+import { Tabs, type TabsConfig } from "@/registry/tabs/react/tabs";
 
 type Config = Record<string, unknown>;
 
@@ -59,13 +61,15 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
     <div
       ref={boxRef}
       style={surfaces[dark ? "dark" : "light"]}
-      className={slug === "cta" || slug === "header" ? "" : "p-6 sm:p-8"}
+      className={slug === "cta" || slug === "header" || slug === "footer" ? "" : "p-6 sm:p-8"}
     >
       {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
       {slug === "cta" && <Cta config={config as unknown as CtaConfig} />}
       {slug === "header" && <HeaderPart config={config as unknown as HeaderConfig} />}
+      {slug === "footer" && <FooterPart config={config as unknown as FooterConfig} />}
       {slug === "form" && <ContactForm config={config as unknown as FormConfig} />}
       {slug === "searchable-select" && <SearchableSelect config={config as unknown as SearchableSelectConfig} />}
+      {slug === "tabs" && <Tabs config={config as unknown as TabsConfig} />}
       {slug === "modal" && (
         <>
           <Modal config={config as unknown as ModalConfig} onAction={setLastAction} />

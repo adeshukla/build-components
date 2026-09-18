@@ -1,0 +1,103 @@
+/* Tabs — plain CSS. Colours come from the inline custom properties on the wrapper. */
+.tb {
+  --tb-accent: #2563eb;
+  --tb-accent-text: #1b4ab0;
+  --tb-on-accent: #ffffff;
+  --tb-radius: 8px;
+  --tb-surface: #ffffff;
+  --tb-text: #16121f;
+  --tb-muted: #4d4a57;
+  --tb-line: #d9d5e4;
+  --tb-hover: #f4f3f8;
+  background: var(--tb-surface);
+  color: var(--tb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tb--theme-system {
+    --tb-surface: #141019;
+    --tb-text: #f6f5fa;
+    --tb-muted: #b6b3c2;
+    --tb-line: #3a3448;
+    --tb-hover: #221d2e;
+  }
+}
+
+.tb--md { font-size: 1rem; }
+.tb--sm { font-size: 0.875rem; }
+
+.tb-list {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+}
+
+.tb--underline.tb--horizontal .tb-list { border-bottom: 1px solid var(--tb-line); }
+
+.tb-tab {
+  padding: 0.75rem 1rem;
+  border: 0;
+  background: none;
+  color: var(--tb-muted);
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tb--sm .tb-tab { padding: 0.5rem 1rem; }
+.tb-tab:hover { background: var(--tb-hover); }
+.tb-tab:focus-visible,
+.tb-panel:focus-visible {
+  outline: 2px solid var(--tb-accent-text);
+  outline-offset: 2px;
+}
+
+.tb--stretch.tb--horizontal .tb-tab { flex: 1; }
+
+/* Underline: a 2px rule under the selected tab, sitting on the list's own line. */
+.tb--underline.tb--horizontal .tb-tab {
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+}
+.tb--underline .tb-tab[aria-selected="true"] {
+  border-bottom-color: var(--tb-accent);
+  color: var(--tb-accent-text);
+}
+
+/* Pill: the selected tab is filled with the accent. */
+.tb--pill .tb-tab { border-radius: var(--tb-radius); }
+.tb--pill .tb-tab[aria-selected="true"] {
+  background: var(--tb-accent);
+  color: var(--tb-on-accent);
+}
+
+.tb-panel {
+  margin-top: 1rem;
+  min-width: 0;
+  text-wrap: pretty;
+}
+.tb--boxed .tb-panel {
+  padding: 1.25rem;
+  border: 1px solid var(--tb-line);
+  border-radius: var(--tb-radius);
+}
+
+/* Vertical: the list moves to the side once there is room for it. */
+.tb--vertical { display: flex; flex-direction: column; gap: 1rem; }
+.tb--vertical .tb-list { flex-direction: column; overflow-x: visible; }
+.tb--vertical .tb-tab { text-align: left; border-left: 2px solid var(--tb-line); }
+.tb--vertical.tb--underline .tb-tab[aria-selected="true"] { border-left-color: var(--tb-accent); }
+.tb--vertical.tb--pill .tb-tab { border-left-color: transparent; }
+.tb--vertical .tb-panel { margin-top: 0; flex: 1; }
+
+@media (min-width: 640px) {
+  .tb--vertical { flex-direction: row; }
+  .tb--vertical .tb-list { width: 12rem; flex-shrink: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tb-tab { transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease; }
+}

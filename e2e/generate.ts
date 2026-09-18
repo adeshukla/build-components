@@ -4,6 +4,9 @@ import { applyConfig } from "../lib/export";
 import { renderCtaHtml } from "../registry/cta/vanilla/render";
 import { ctaSchema } from "../registry/cta/schema";
 import type { CtaConfig } from "../registry/cta/react/cta";
+import { renderFooterHtml } from "../registry/footer/vanilla/render";
+import { footerSchema } from "../registry/footer/schema";
+import type { FooterConfig } from "../registry/footer/react/footer";
 import { renderFormHtml } from "../registry/form/vanilla/render";
 import { formSchema } from "../registry/form/schema";
 import type { FormConfig } from "../registry/form/react/form";
@@ -15,6 +18,9 @@ import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
 import { modalSchema } from "../registry/modal/schema";
 import { searchableSelectSchema } from "../registry/searchable-select/schema";
+import { renderTabsHtml } from "../registry/tabs/vanilla/render";
+import { tabsSchema } from "../registry/tabs/schema";
+import type { TabsConfig } from "../registry/tabs/react/tabs";
 
 /** Components under test, with configs written as the same query strings the editor puts in its URL. */
 export const components: Record<
@@ -45,6 +51,15 @@ export const components: Record<
         "filter=startsWith&clearButton=true&helperText=true&maxVisible=4&size=sm&label=Fruit&name=fruit&options=%5B%7B%22label%22%3A%22Apple%22%7D%2C%7B%22label%22%3A%22Apricot%22%7D%2C%7B%22label%22%3A%22Banana%22%7D%2C%7B%22label%22%3A%22Blackberry%22%7D%2C%7B%22label%22%3A%22Cherry%22%7D%2C%7B%22label%22%3A%22Fig%22%7D%5D",
     },
   },
+  tabs: {
+    exportName: "Tabs",
+    schema: tabsSchema,
+    renderHtml: (config) => renderTabsHtml(config as unknown as TabsConfig),
+    variants: {
+      default: "",
+      manual: "activation=manual&orientation=vertical&look=pill&theme=dark&panelBox=false&stretch=true&size=sm&label=Account",
+    },
+  },
   cta: {
     exportName: "Cta",
     schema: ctaSchema,
@@ -52,6 +67,15 @@ export const components: Record<
     variants: {
       default: "",
       plain: "layout=left&secondaryButton=false&note=true&theme=dark&spacing=compact&headingLevel=h3&heading=Book+a+call&primaryText=Choose+a+time&primaryHref=%2Fcall",
+    },
+  },
+  footer: {
+    exportName: "SiteFooter",
+    schema: footerSchema,
+    renderHtml: (config) => renderFooterHtml(config as unknown as FooterConfig),
+    variants: {
+      default: "",
+      full: "layout=stacked&social=true&backToTop=true&theme=dark&spacing=compact&topBorder=false&brandText=Harbour&navLabel=More+from+Harbour",
     },
   },
   form: {

@@ -95,7 +95,7 @@ export default function Home() {
               Parts catalogue
             </h2>
             <p className="max-w-md text-pretty text-ink-muted">
-              All six parts are in stock, and every one of them is tested on both outputs.
+              All eight parts are in stock, and every one of them is tested on both outputs.
             </p>
           </div>
 

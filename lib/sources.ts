@@ -12,7 +12,7 @@ function readOptional(file: string) {
 }
 
 /**
- * A component's source files by registry slug. HTML-first components (CTA, header) generate their
+ * A component's source files by registry slug. HTML-first components (CTA, header, footer, tabs) generate their
  * markup from the options instead of shipping a fixed .html, and some ship no JavaScript at all.
  */
 export function readComponentSources(slug: string) {

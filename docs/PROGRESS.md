@@ -10,13 +10,13 @@ cd C:\dev\component-platform
 pnpm dev
 ```
 Open http://localhost:3000.
-- **Home:** the board hero with three live parts mounted on it, the catalogue (all six parts), how it works, and the test report.
+- **Home:** the board hero with three live parts mounted on it, the catalogue (all eight parts), how it works, and the test report.
 - **Theme:** the System / Light / Dark control sits in the header and is remembered per browser.
 - **Any part page:** Configure on the left (tabs with changed counts, plus a search across every option), the test bench in the middle (React + Tailwind or HTML/CSS/JS, phone/tablet/desktop), the keyboard map and manual checklist under it, and the install command and code below.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The six parts, all in stock
+### The eight parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -24,6 +24,8 @@ Open http://localhost:3000.
 | **Sextant** | Searchable select | APG Combobox |
 | **Logbook** | Form with validation | Native form + error summary |
 | **Masthead** | Site header | APG Disclosure navigation |
+| **Compass** | Tabs | APG Tabs |
+| **Keel** | Site footer | Landmark contentinfo |
 | **Beacon** | CTA section | Landmark section |
 
 ### Done in session 4 (2026-09-18)
@@ -42,6 +44,9 @@ Open http://localhost:3000.
   2. Safari does not focus a button when it is tapped, so Escape never closed the header menu there. Both outputs now listen on the document.
   3. The form's error-summary links were under the 24px minimum target size (WCAG 2.2 AA).
 - **Test-side fixes:** tests now wait for React hydration before typing, and locators no longer collide with Next's route announcer.
+- **Dark mode in the test bench:** the preview frame now opens with the page's own options and waits until it is listening, so a component opened with `theme=dark` is dark on first paint. Interactive text uses a theme-aware link colour that stays readable in both themes.
+- **Two more parts (D29):** **Compass** (tabs — arrow keys, Home/End, automatic or manual activation, row or side) and **Keel** (site footer — links, social profiles, legal line, no JavaScript). Both outputs, registry entry, editor page, keyboard map, checklist and tests each.
+- **Test count:** 256 passing, 2 skipped, across Chromium, WebKit and an emulated iPhone. Production build green.
 
 ### In progress
 Nothing half-finished.
@@ -52,12 +57,12 @@ Nothing half-finished.
 - A "copy all files" button for the HTML/CSS/JS output.
 
 ### Next — needs Adesh's answers first
-- Components beyond these six (footer, mega menu, tabs, tooltip, slider, lazy loading): which ones, in what order?
-- The Mitosis / Web Components question (D6) is still open. Six components now exist in two hand-written outputs each; that is the cost a third output would multiply.
+- Components beyond these eight (mega menu, tooltip, slider, lazy loading, or something else): which ones, in what order?
+- The Mitosis / Web Components question (D6) is still open. Eight components now exist in two hand-written outputs each; that is the cost a third output would multiply.
 
 ### Blockers & questions for Adesh
 1. **Final name**: "Build Components" is still the logo only. Make it the product name everywhere?
-2. **Next components**: which of footer, mega menu, tabs, tooltip, slider, lazy loading do you want first?
+2. **Next components**: tabs and the footer are done. Which of mega menu, tooltip, slider and lazy loading do you want next?
 3. **Tailwind v4 only** for the React output?
 4. **Private GitHub repo?** Still no remote, so no backup and no CI.
 5. **Manual checks**: please run the checklists with NVDA and on a real iPhone. Emulation is not a real device.
