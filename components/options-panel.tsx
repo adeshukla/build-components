@@ -165,7 +165,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
           type="button"
           onClick={onResetAll}
           disabled={changedCount === 0}
-          className="cursor-pointer font-semibold text-board underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-ink-muted disabled:no-underline"
+          className="cursor-pointer font-semibold text-link underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-ink-muted disabled:no-underline"
         >
           Reset all
         </button>
@@ -207,7 +207,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             <span aria-hidden="true" className="size-1.5 rounded-full bg-pad ring-2 ring-pad/30" />
             Changed
           </span>
-          <button type="button" onClick={onReset} className="cursor-pointer font-semibold text-board hover:underline">
+          <button type="button" onClick={onReset} className="cursor-pointer font-semibold text-link hover:underline">
             Reset<span className="sr-only"> {option.label}</span>
           </button>
         </>
@@ -447,7 +447,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             <button
               type="button"
               onClick={() => onChange("")}
-              className="cursor-pointer rounded-md px-2 py-2 text-sm font-semibold text-board hover:underline"
+              className="cursor-pointer rounded-md px-2 py-2 text-sm font-semibold text-link hover:underline"
             >
               Clear<span className="sr-only"> {option.label}</span>
             </button>

@@ -19,6 +19,8 @@
   --color-rule-strong: #8c83a3;
   --color-pass: #13744a;
   --color-pass-bg: #e3f4ea;
+  /* Interactive text on paper: purple on light, gold on dark. */
+  --color-link: #25154d;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -45,6 +47,7 @@
       --color-rule-strong: #7a6fa3;
       --color-pass: #4ade80;
       --color-pass-bg: #12351f;
+      --color-link: #f2c566;
       color-scheme: dark;
     }
   }
@@ -60,6 +63,7 @@
     --color-rule-strong: #7a6fa3;
     --color-pass: #4ade80;
     --color-pass-bg: #12351f;
+    --color-link: #f2c566;
     color-scheme: dark;
   }
 

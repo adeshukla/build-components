@@ -136,7 +136,7 @@ export default function Home() {
                   </div>
                   <p className="md:text-right">
                     {inStock ? (
-                      <span className="inline-flex items-center gap-2 font-semibold text-board">
+                      <span className="inline-flex items-center gap-2 font-semibold text-link">
                         Configure and test
                         <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
                       </span>

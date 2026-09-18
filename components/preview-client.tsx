@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
 import { DatePicker, type DatePickerConfig } from "@/registry/date-picker/react/date-picker";
 import { ContactForm, type FormConfig } from "@/registry/form/react/form";
@@ -10,10 +10,23 @@ import { SearchableSelect, type SearchableSelectConfig } from "@/registry/search
 
 type Config = Record<string, unknown>;
 
+// The frame shows the component on its own surface, whatever theme the site is in.
+const surfaces = { light: { background: "#ffffff", color: "#16121f" }, dark: { background: "#141019", color: "#f6f5fa" } };
+const darkMedia = {
+  subscribe: (onChange: () => void) => {
+    const list = window.matchMedia("(prefers-color-scheme: dark)");
+    list.addEventListener("change", onChange);
+    return () => list.removeEventListener("change", onChange);
+  },
+  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+};
+
 export function PreviewClient({ slug, initialConfig }: { slug: string; initialConfig: Config }) {
   const [config, setConfig] = useState(initialConfig);
   const [lastAction, setLastAction] = useState<ModalAction | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
+  const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
 
   // The editor sends new options as they change, instead of reloading this page.
   useEffect(() => {
@@ -22,6 +35,8 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
       if (event.data?.type === "config") setConfig(event.data.config as Config);
     }
     window.addEventListener("message", onMessage);
+    // Tell the editor we are listening; a config sent before this would be lost.
+    window.parent?.postMessage({ type: "preview-ready" }, window.location.origin);
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
@@ -41,7 +56,11 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
   }, []);
 
   return (
-    <div ref={boxRef} className={slug === "cta" || slug === "header" ? "" : "p-6 sm:p-8"}>
+    <div
+      ref={boxRef}
+      style={surfaces[dark ? "dark" : "light"]}
+      className={slug === "cta" || slug === "header" ? "" : "p-6 sm:p-8"}
+    >
       {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
       {slug === "cta" && <Cta config={config as unknown as CtaConfig} />}
       {slug === "header" && <HeaderPart config={config as unknown as HeaderConfig} />}

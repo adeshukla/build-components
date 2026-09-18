@@ -48,6 +48,8 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
   const origin = useSyncExternalStore(subscribeNever, () => window.location.origin, () => "");
 
   const query = toSearchParams(schema, config).toString();
+  // Captured once: the frame loads with the options the page opened with.
+  const [initialQuery] = useState(() => toSearchParams(schema, initialConfig).toString());
   const js = sources.js === "" ? "" : applyConfig(sources.js, config);
   const html = vanillaHtml ? vanillaHtml(config) : sources.html;
   const files =
@@ -131,14 +133,14 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
               </p>
               <div className="rounded-md border border-rule-strong bg-paper shadow-[0_14px_32px_-18px_rgb(22_18_31/0.4)]">
                 {output === "react" ? (
-                  <PreviewFrame slug={slug} title={part.name} config={config} />
+                  <PreviewFrame slug={slug} title={part.name} config={config} initialQuery={initialQuery} />
                 ) : (
                   <iframe
                     key={query}
                     title={`${part.name}, HTML/CSS/JS output`}
                     sandbox="allow-scripts"
                     className="block h-[30rem] w-full rounded-md"
-                    srcDoc={vanillaDocument(html, sources.css, js)}
+                    srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark")}
                   />
                 )}
               </div>
@@ -204,14 +206,27 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
 
 
 /** The React output runs on its own page in a frame, so its dialogs stay inside the bench. */
-function PreviewFrame({ slug, title, config }: { slug: string; title: string; config: Record<string, unknown> }) {
+function PreviewFrame({
+  slug,
+  title,
+  config,
+  initialQuery,
+}: {
+  slug: string;
+  title: string;
+  config: Record<string, unknown>;
+  initialQuery: string;
+}) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState(320);
   const [ready, setReady] = useState(false);
+  // The frame keeps one URL for the session; later changes arrive by message.
+  const [src] = useState(`/preview/${slug}${initialQuery ? `?${initialQuery}` : ""}`);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "preview-ready") setReady(true);
       if (event.data?.type === "preview-height") {
         setHeight(Math.min(760, Math.max(220, Number(event.data.height) + 4)));
       }
@@ -228,9 +243,8 @@ function PreviewFrame({ slug, title, config }: { slug: string; title: string; co
   return (
     <iframe
       ref={frameRef}
-      src={`/preview/${slug}`}
+      src={src}
       title={`${title}, React + Tailwind output`}
-      onLoad={() => setReady(true)}
       style={{ height: `${height}px` }}
       className="block w-full rounded-md"
     />
@@ -238,11 +252,12 @@ function PreviewFrame({ slug, title, config }: { slug: string; title: string; co
 }
 
 /** Inlines the exported CSS and JS into the exported HTML page, so the frame runs the real files. */
-function vanillaDocument(html: string, css: string, js: string) {
+function vanillaDocument(html: string, css: string, js: string, dark: boolean) {
+  const page = dark ? "background:#141019;color:#f6f5fa" : "background:#ffffff;color:#16121f";
   return html
     .replace(
       /<link rel="stylesheet" href="[^"]+">/,
-      () => `<style>body{margin:0;padding:32px;font-family:system-ui,sans-serif;color:#16121f}${css}</style>`,
+      () => `<style>body{margin:0;padding:32px;font-family:system-ui,sans-serif;${page}}${css}</style>`,
     )
     .replace(/<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `<script>${js}</script>`));
 }
