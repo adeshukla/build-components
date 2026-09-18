@@ -1,7 +1,7 @@
 "use client";
 
 import { Editor, type KeyboardRow, type Sources } from "@/components/editor";
-import { DatePicker, type DatePickerConfig } from "@/registry/date-picker/react/date-picker";
+import type { DatePickerConfig } from "@/registry/date-picker/react/date-picker";
 import { datePickerSchema } from "@/registry/date-picker/schema";
 
 const keyboard: KeyboardRow[] = [
@@ -36,7 +36,6 @@ export function DatePickerEditor({ initialConfig, sources }: { initialConfig: Da
       sources={sources}
       keyboard={keyboard}
       checklist={checklist}
-      renderPreview={(config) => <DatePicker config={config as DatePickerConfig} />}
     />
   );
 }

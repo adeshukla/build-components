@@ -3,7 +3,7 @@
 import { useId, useState, type ReactNode } from "react";
 import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
-import { isVisible, type Option, type Schema } from "@/lib/schema";
+import { isDefault, isVisible, type Option, type Schema } from "@/lib/schema";
 
 type Props = {
   schema: Schema;
@@ -20,6 +20,8 @@ const choiceNames: Record<string, string> = {
   md: "Medium",
   lg: "Large",
   center: "Centre",
+  centered: "Centred",
+  left: "Left",
   bottom: "Bottom sheet",
   none: "None",
   fade: "Fade",
@@ -30,6 +32,18 @@ const choiceNames: Record<string, string> = {
   range: "Date range",
   monday: "Monday",
   sunday: "Sunday",
+  contains: "Contains",
+  startsWith: "Starts with",
+  blur: "When leaving a field",
+  submit: "On submit",
+  one: "One column",
+  two: "Two columns",
+  h2: "H2",
+  h3: "H3",
+  h4: "H4",
+  compact: "Compact",
+  regular: "Regular",
+  spacious: "Spacious",
 };
 const choiceName = (value: string) => choiceNames[value] ?? value;
 
@@ -41,7 +55,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
   const [query, setQuery] = useState("");
 
   const search = query.trim().toLowerCase();
-  const isChanged = (option: Option) => config[option.key] !== option.default;
+  const isChanged = (option: Option) => !isDefault(option, config[option.key]);
   const changedCount = schema.filter(isChanged).length;
   const shown = schema.filter(
     (option) =>
@@ -122,7 +136,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
       >
         {shown.length === 0 ? (
           <p className="p-6 text-sm text-pretty text-ink-muted">
-            No option matches “{query.trim()}”. Try a word like colour, format or button.
+            No option matches “{query.trim()}”. Try a word like colour, text or button.
           </p>
         ) : (
           <ul className="divide-y divide-rule">
@@ -170,6 +184,9 @@ type ControlProps = {
   onReset: () => void;
 };
 
+const smallButton =
+  "grid size-7 cursor-pointer place-items-center rounded text-ink-muted hover:bg-paper hover:text-ink disabled:cursor-not-allowed disabled:opacity-40";
+
 function Control({ idBase, option, value, changed, showGroup, onChange, onReset }: ControlProps) {
   const id = `${idBase}-${option.key}`;
   const descriptionId = option.description ? `${id}-description` : undefined;
@@ -197,6 +214,102 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
       )}
     </div>
   );
+
+  if (option.type === "list") {
+    const items = value as Record<string, string>[];
+    const name = option.itemLabel;
+    const move = (from: number, to: number) => {
+      const next = [...items];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      onChange(next);
+    };
+
+    return (
+      <fieldset aria-describedby={descriptionId}>
+        <legend className="font-medium">{option.label}</legend>
+        {description}
+        <ol className="mt-2 space-y-2">
+          {items.map((item, index) => (
+            <li key={index} className="rounded-md border border-rule bg-paper-sunk p-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="pl-1 font-mono text-xs text-ink-muted">
+                  {name} {index + 1}
+                </span>
+                <span className="flex">
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    onClick={() => move(index, index - 1)}
+                    aria-label={`Move ${name.toLowerCase()} ${index + 1} up`}
+                    className={smallButton}
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
+                      <path d="m6 15 6-6 6 6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === items.length - 1}
+                    onClick={() => move(index, index + 1)}
+                    aria-label={`Move ${name.toLowerCase()} ${index + 1} down`}
+                    className={smallButton}
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={items.length === 1}
+                    onClick={() => onChange(items.filter((_, i) => i !== index))}
+                    aria-label={`Remove ${name.toLowerCase()} ${index + 1}`}
+                    className={smallButton}
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
+                      <path d="M6 6l12 12M18 6 6 18" />
+                    </svg>
+                  </button>
+                </span>
+              </div>
+              {option.fields.map((field) => (
+                <label key={field.key} className="mt-1.5 block text-xs text-ink-muted">
+                  {field.label}
+                  <span className="sr-only">
+                    {" "}
+                    for {name.toLowerCase()} {index + 1}
+                  </span>
+                  <input
+                    type={field.format === "url" ? "url" : "text"}
+                    value={item[field.key] ?? ""}
+                    maxLength={field.maxLength}
+                    onChange={(event) =>
+                      onChange(items.map((it, i) => (i === index ? { ...it, [field.key]: event.target.value } : it)))
+                    }
+                    className="mt-0.5 block w-full rounded border border-rule-strong bg-paper px-2 py-1.5 text-sm text-ink"
+                  />
+                </label>
+              ))}
+            </li>
+          ))}
+        </ol>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            disabled={items.length >= option.maxItems}
+            onClick={() => onChange([...items, Object.fromEntries(option.fields.map((field) => [field.key, ""]))])}
+            className="cursor-pointer rounded-md border border-rule-strong bg-paper px-3 py-1.5 text-sm font-semibold hover:bg-paper-sunk disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Add {name.toLowerCase()}
+          </button>
+          <span className="font-mono text-xs text-ink-muted">
+            {items.length} of {option.maxItems}
+          </span>
+        </div>
+        {status}
+      </fieldset>
+    );
+  }
 
   if (option.type === "boolean") {
     return (
@@ -264,7 +377,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
         ) : (
           <input
             id={id}
-            type="text"
+            type={option.format === "url" ? "url" : "text"}
             maxLength={option.maxLength}
             value={value as string}
             aria-describedby={descriptionId}
@@ -311,12 +424,11 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             step={option.step ?? 1}
             value={value as number}
             aria-describedby={descriptionId}
-            aria-valuetext={`${value} pixels`}
             onChange={(event) => onChange(Number(event.target.value))}
             className="h-2 flex-1 cursor-pointer accent-board"
           />
-          <output htmlFor={id} className="w-12 text-right font-mono text-sm">
-            {String(value)}px
+          <output htmlFor={id} className="w-14 text-right font-mono text-sm">
+            {String(value)}
           </output>
         </div>
       )}

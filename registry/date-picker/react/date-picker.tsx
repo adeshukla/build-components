@@ -5,6 +5,7 @@ import {
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
   type KeyboardEvent,
 } from "react";
@@ -21,6 +22,8 @@ export type DatePickerConfig = {
   maxDate: string;
   clearButton: boolean;
   todayButton: boolean;
+  theme: "light" | "dark" | "system";
+  iosOnPhone: boolean;
   accentColor: string;
   radius: number;
   size: "sm" | "md" | "lg";
@@ -39,6 +42,8 @@ const defaultConfig: DatePickerConfig = {
   maxDate: "",
   clearButton: false,
   todayButton: false,
+  theme: "light",
+  iosOnPhone: true,
   accentColor: "#2563eb",
   radius: 6,
   size: "md",
@@ -53,10 +58,40 @@ const sizes = {
   lg: { field: "h-12 text-lg", input: "px-4", button: "w-12", cell: "size-12 text-base", panel: "w-84" },
 };
 
+// iOS uses bigger rows and its own blue; everything else is shared with the web look.
+const iosSizes = { field: "h-11 text-[17px]", input: "px-4", button: "w-11", cell: "size-11 text-base", panel: "w-77" };
+const IOS_FONT = '-apple-system, "SF Pro Text", "SF Pro Display", system-ui, sans-serif';
+const IOS_BLUE = { light: "#007aff", dark: "#0a84ff" };
+
+const palettes = {
+  light: {
+    surface: "#ffffff",
+    sunk: "#f2f2f7",
+    text: "#171717",
+    muted: "#535358",
+    border: "#737373",
+    line: "#d4d4d4",
+    disabled: "#a3a3a3",
+    error: "#b3261e",
+    hover: "#f2f2f7",
+  },
+  dark: {
+    surface: "#1c1c1e",
+    sunk: "#2c2c2e",
+    text: "#f5f5f7",
+    muted: "#b0b0b8",
+    border: "#8e8e93",
+    line: "#48484a",
+    disabled: "#6b6b70",
+    error: "#ff6b6b",
+    hover: "#2c2c2e",
+  },
+};
+
 const focusRing =
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--dp-ring)";
-const iconButton = `grid shrink-0 cursor-pointer place-items-center text-neutral-700 hover:bg-neutral-100 ${focusRing}`;
-const navButton = `grid size-9 shrink-0 cursor-pointer place-items-center rounded-(--dp-radius) text-neutral-700 hover:bg-neutral-100 ${focusRing}`;
+const iconButton = `grid shrink-0 cursor-pointer place-items-center text-(--dp-muted) hover:bg-(--dp-hover) ${focusRing}`;
+const navButton = `grid size-9 shrink-0 cursor-pointer place-items-center rounded-(--dp-radius) text-(--dp-muted) hover:bg-(--dp-hover) ${focusRing}`;
 
 type Format = DatePickerConfig["format"];
 
@@ -168,6 +203,43 @@ function luminance(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+function contrast(a: number, b: number) {
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+function shift(hex: string, factor: number) {
+  const channels = [1, 3, 5].map((i) =>
+    Math.max(0, Math.min(255, Math.round(parseInt(hex.slice(i, i + 2), 16) * factor))),
+  );
+  return `#${channels.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** The accent used as text: darkened (or lightened on dark) until it clears 4.5:1. */
+function readableAccent(hex: string, surface: string, dark: boolean) {
+  let color = hex;
+  const surfaceLuminance = luminance(surface);
+  for (let i = 0; i < 14 && contrast(luminance(color), surfaceLuminance) < 4.5; i++) {
+    color = shift(color, dark ? 1.15 : 0.85);
+  }
+  return color;
+}
+
+const media = (query: string) => ({
+  subscribe: (onChange: () => void) => {
+    const list = window.matchMedia(query);
+    list.addEventListener("change", onChange);
+    return () => list.removeEventListener("change", onChange);
+  },
+  get: () => window.matchMedia(query).matches,
+});
+
+const darkMedia = media("(prefers-color-scheme: dark)");
+const phoneMedia = media("(max-width: 480px)");
+const isApplePhone = () =>
+  /iP(hone|od)/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
+  /iPad/.test(navigator.userAgent);
+
 export function DatePicker({ config = defaultConfig }: { config?: DatePickerConfig }) {
   const id = useId();
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -184,8 +256,15 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const [focused, setFocused] = useState(today);
   const [rangeStart, setRangeStart] = useState<Date | null>(null);
 
+  // Theme and platform are read from the browser, so the exported file works anywhere.
+  const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
+  const onPhone = useSyncExternalStore(phoneMedia.subscribe, phoneMedia.get, () => false);
+  const applePhone = useSyncExternalStore(phoneMedia.subscribe, () => onPhone && isApplePhone(), () => false);
+  const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
+  const ios = config.iosOnPhone && applePhone;
+
   const range = config.mode === "range";
-  const size = sizes[config.size];
+  const size = ios ? iosSizes : sizes[config.size];
   const startIdx = config.weekStartsOn === "monday" ? 1 : 0;
   const chooseLabel = range ? "Choose dates" : "Choose date";
   const placeholder = range ? `${config.format} – ${config.format}` : config.format;
@@ -195,12 +274,25 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   // Form values follow the typed text, so submitting with Enter never sends a stale value.
   const parsed = parseValue(text, config);
   const formDates = "dates" in parsed ? parsed.dates : [];
-  const accentLuminance = luminance(config.accentColor);
+  const palette = dark ? palettes.dark : palettes.light;
+  const accent = ios && config.accentColor === defaultConfig.accentColor ? IOS_BLUE[dark ? "dark" : "light"] : config.accentColor;
+  const accentLuminance = luminance(accent);
   const style = {
-    "--dp-accent": config.accentColor,
+    "--dp-accent": accent,
+    "--dp-accent-text": readableAccent(accent, palette.surface, dark),
     "--dp-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--dp-ring": accentLuminance <= 0.3 ? config.accentColor : "#000000",
-    "--dp-radius": `${config.radius}px`,
+    "--dp-ring": accentLuminance <= 0.35 || dark ? accent : "#000000",
+    "--dp-radius": `${ios ? 12 : config.radius}px`,
+    "--dp-surface": palette.surface,
+    "--dp-sunk": palette.sunk,
+    "--dp-text": palette.text,
+    "--dp-muted": palette.muted,
+    "--dp-border": ios ? palette.sunk : palette.border,
+    "--dp-line": palette.line,
+    "--dp-disabled": palette.disabled,
+    "--dp-error": palette.error,
+    "--dp-hover": palette.hover,
+    ...(ios ? { fontFamily: IOS_FONT } : null),
   } as CSSProperties;
 
   useEffect(() => {
@@ -208,6 +300,8 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
     const field = fieldRef.current;
     if (!open || !dialog || !field) return;
     if (!dialog.open) dialog.showModal();
+    // The iOS sheet is pinned to the bottom of the screen by CSS; only the popover is positioned.
+    if (ios) return;
 
     function position() {
       if (!dialog || !field) return;
@@ -228,7 +322,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
       window.removeEventListener("resize", position);
       window.removeEventListener("scroll", position, true);
     };
-  }, [open, focused, view]);
+  }, [open, focused, view, ios]);
 
   useEffect(() => {
     if (!open || !moveFocus.current) return;
@@ -413,25 +507,26 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
       disabled: isMonthDisabled(year, i, config),
     };
   });
+  const cellShape = ios ? "rounded-full" : "rounded-(--dp-radius)";
   const cellState = (selected: boolean, inRange: boolean, disabled: boolean) =>
     selected
       ? "cursor-pointer bg-(--dp-accent) font-semibold text-(--dp-on-accent)"
       : inRange
         ? "cursor-pointer bg-(--dp-accent)/15"
         : disabled
-          ? "cursor-not-allowed text-neutral-400"
-          : "cursor-pointer hover:bg-neutral-100";
+          ? "cursor-not-allowed text-(--dp-disabled)"
+          : "cursor-pointer hover:bg-(--dp-hover)";
   const isoValue = (d?: Date) => (d ? formatDate(d, "YYYY-MM-DD") : "");
 
   return (
-    <div className="flex flex-col gap-1.5" style={style}>
+    <div className="flex flex-col gap-1.5 text-(--dp-text)" style={style}>
       <label htmlFor={`${id}-input`} className="font-medium">
         {config.label}
         <span className="sr-only"> ({placeholder})</span>
       </label>
       <div
         ref={fieldRef}
-        className={`flex w-full items-stretch overflow-hidden rounded-(--dp-radius) border bg-white text-neutral-900 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--dp-ring) ${range ? "max-w-sm" : "max-w-xs"} ${error ? "border-red-700" : "border-neutral-500"} ${size.field}`}
+        className={`flex w-full items-stretch overflow-hidden rounded-(--dp-radius) border bg-(--dp-surface) text-(--dp-text) has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--dp-ring) ${range ? "max-w-sm" : "max-w-xs"} ${error ? "border-(--dp-error)" : "border-(--dp-border)"} ${ios ? "bg-(--dp-sunk)" : ""} ${size.field}`}
       >
         <input
           ref={inputRef}
@@ -447,7 +542,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
           onKeyDown={(event) => {
             if (event.key === "Enter") commitText();
           }}
-          className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-neutral-500 ${size.input}`}
+          className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-(--dp-muted) ${size.input}`}
         />
         {config.clearButton && text !== "" && (
           <button
@@ -470,7 +565,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
           aria-label={chooseLabel}
           aria-haspopup="dialog"
           onClick={openPicker}
-          className={`${iconButton} ${size.button}`}
+          className={`${iconButton} ${size.button} ${ios ? "text-(--dp-accent-text)" : ""}`}
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
             <rect x="3" y="5" width="18" height="16" rx="2" />
@@ -479,11 +574,11 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
         </button>
       </div>
       {showHelper && (
-        <p id={`${id}-help`} className="text-sm text-neutral-600">
+        <p id={`${id}-help`} className="text-sm text-(--dp-muted)">
           {config.helperTextContent}
         </p>
       )}
-      <p id={`${id}-error`} role="alert" className="text-sm text-red-700 empty:hidden">
+      <p id={`${id}-error`} role="alert" className="text-sm text-(--dp-error) empty:hidden">
         {error}
       </p>
       {config.name !== "" &&
@@ -504,16 +599,23 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
         onClick={(event) => {
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}
-        className="fixed inset-auto m-0 rounded-(--dp-radius) border border-neutral-200 bg-white p-0 text-neutral-900 shadow-xl backdrop:bg-black/10"
+        className={`m-0 border bg-(--dp-surface) p-0 text-(--dp-text) shadow-xl ${
+          ios
+            ? "fixed inset-x-0 top-auto bottom-0 max-h-[85vh] w-full max-w-none rounded-t-2xl border-(--dp-line) pb-[env(safe-area-inset-bottom)] backdrop:bg-black/40 transition-transform duration-300 ease-out starting:translate-y-full motion-reduce:transition-none"
+            : "fixed inset-auto rounded-(--dp-radius) border-(--dp-line) backdrop:bg-black/10"
+        }`}
       >
         {open && (
-          <div className={`box-content p-3 ${size.panel}`}>
+          <div className={`p-3 select-none ${ios ? "mx-auto w-full max-w-[26rem] px-4 pb-6" : `box-content ${size.panel}`}`}>
+            {ios && (
+              <span aria-hidden="true" className="mx-auto mb-3 block h-1 w-9 rounded-full bg-(--dp-line)" />
+            )}
             <div className="mb-2 flex items-center justify-between gap-1">
               <button
                 type="button"
                 aria-label={`Previous ${stepName}`}
                 onClick={() => setFocused(addMonths(focused, -stepMonths))}
-                className={navButton}
+                className={`${navButton} ${ios ? "text-(--dp-accent-text)" : ""}`}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                   <path d="m15 18-6-6 6-6" />
@@ -522,7 +624,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               <button
                 type="button"
                 onClick={() => changeView(view === "days" ? "years" : view === "years" ? "days" : "years")}
-                className={`inline-flex min-w-0 cursor-pointer items-center gap-1 rounded-(--dp-radius) px-2 py-1 font-semibold hover:bg-neutral-100 ${focusRing}`}
+                className={`inline-flex min-w-0 cursor-pointer items-center gap-1 rounded-(--dp-radius) px-2 py-1 font-semibold hover:bg-(--dp-hover) ${focusRing} ${ios ? "text-(--dp-text)" : ""}`}
               >
                 {heading}
                 <span className="sr-only">
@@ -534,7 +636,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
-                  className={`size-4 transition-transform motion-reduce:transition-none ${view === "days" ? "" : "rotate-180"}`}
+                  className={`size-4 text-(--dp-accent-text) transition-transform motion-reduce:transition-none ${view === "days" ? "" : "rotate-180"}`}
                 >
                   <path d="m6 9 6 6 6-6" />
                 </svg>
@@ -543,7 +645,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                 type="button"
                 aria-label={`Next ${stepName}`}
                 onClick={() => setFocused(addMonths(focused, stepMonths))}
-                className={navButton}
+                className={`${navButton} ${ios ? "text-(--dp-accent-text)" : ""}`}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                   <path d="m9 18 6-6-6-6" />
@@ -571,7 +673,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                           key={i}
                           scope="col"
                           abbr={day.toLocaleDateString(undefined, { weekday: "long" })}
-                          className="h-8 text-xs font-medium text-neutral-600"
+                          className="h-8 cursor-default text-xs font-medium text-(--dp-muted)"
                         >
                           {day.toLocaleDateString(undefined, { weekday: "short" })}
                         </th>
@@ -603,7 +705,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                               year: "numeric",
                             })}
                             onClick={() => pick(date)}
-                            className={`rounded-(--dp-radius) text-center tabular-nums ${focusRing} ${size.cell} ${cellState(isEnd, inRange, disabled)} ${isToday ? "font-semibold underline" : ""}`}
+                            className={`text-center tabular-nums ${cellShape} ${focusRing} ${size.cell} ${cellState(isEnd, inRange, disabled)} ${isToday && !isEnd ? (ios ? "font-semibold text-(--dp-accent-text)" : "font-semibold underline") : ""}`}
                           >
                             {date.getDate()}
                           </td>
@@ -633,7 +735,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                           aria-disabled={item.disabled || undefined}
                           aria-label={item.name}
                           onClick={() => pick(item.date)}
-                          className={`h-12 rounded-(--dp-radius) text-center text-sm tabular-nums ${focusRing} ${cellState(item.selected, false, item.disabled)} ${item.current ? "font-semibold underline" : ""}`}
+                          className={`h-12 rounded-(--dp-radius) text-center text-sm tabular-nums ${focusRing} ${cellState(item.selected, false, item.disabled)} ${item.current && !item.selected ? (ios ? "font-semibold text-(--dp-accent-text)" : "font-semibold underline") : ""}`}
                         >
                           {item.label}
                         </td>
@@ -644,7 +746,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               </table>
             )}
 
-            <p aria-live="polite" className="mt-2 min-h-5 text-sm text-neutral-700">
+            <p aria-live="polite" className="mt-2 min-h-5 text-sm text-(--dp-muted)">
               {rangeStart ? "Now choose the end date." : ""}
             </p>
             {config.todayButton && (
@@ -655,7 +757,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                     setView("days");
                     moveTo(today());
                   }}
-                  className={`cursor-pointer rounded-(--dp-radius) border border-neutral-500 px-3 py-1 text-sm hover:bg-neutral-100 ${focusRing}`}
+                  className={`cursor-pointer rounded-(--dp-radius) px-3 py-1 text-sm hover:bg-(--dp-hover) ${focusRing} ${ios ? "font-semibold text-(--dp-accent-text)" : "border border-(--dp-border)"}`}
                 >
                   Today
                 </button>

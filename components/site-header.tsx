@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HeaderNav } from "@/components/header-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader() {
   return (
@@ -12,6 +13,7 @@ export function SiteHeader() {
           </span>
         </Link>
         <HeaderNav />
+        <ThemeToggle />
       </div>
     </header>
   );

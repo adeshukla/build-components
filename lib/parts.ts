@@ -1,62 +1,73 @@
 // The parts catalogue: what exists, and what is planned (shown as coming, never as available).
+// Each part has a name of its own from one family (ship's instruments) plus a plain description.
 
 export type Part = {
   slug: string;
-  partNumber: string;
+  /** The part's own name, e.g. "Almanac". */
+  codename: string;
+  /** What it is in plain words, e.g. "Date picker". */
   name: string;
   summary: string;
   pattern: string;
+  /** Accent used for this part across the catalogue and its page. */
+  accent: string;
   status: "in-stock" | "coming";
 };
 
 export const parts: Part[] = [
   {
     slug: "date-picker",
-    partNumber: "BC-DP01",
+    codename: "Almanac",
     name: "Date picker",
     summary: "One date or a range, typed in your format, with month and year views and earliest/latest dates.",
     pattern: "APG Date Picker Dialog",
+    accent: "#e6b24a",
     status: "in-stock",
   },
   {
     slug: "modal",
-    partNumber: "BC-MD01",
+    codename: "Porthole",
     name: "Modal",
     summary: "Centred dialog or bottom sheet. Focus stays inside, Escape closes, motion respects reduced-motion settings.",
     pattern: "APG Dialog (Modal)",
+    accent: "#5ad1c8",
     status: "in-stock",
   },
   {
     slug: "searchable-select",
-    partNumber: "BC-SS01",
+    codename: "Sextant",
     name: "Searchable select",
-    summary: "Type to filter a long list, pick with keyboard or mouse.",
+    summary: "Type to filter a long list, pick with the keyboard or the mouse, with matches highlighted.",
     pattern: "APG Combobox",
-    status: "coming",
+    accent: "#f08a5d",
+    status: "in-stock",
   },
   {
     slug: "form",
-    partNumber: "BC-FM01",
+    codename: "Logbook",
     name: "Form with validation",
     summary: "Your rules, and error messages that say what went wrong and how to fix it.",
     pattern: "Native form + error summary",
-    status: "coming",
+    accent: "#9d7bea",
+    status: "in-stock",
   },
   {
     slug: "header",
-    partNumber: "BC-HD01",
-    name: "Header",
-    summary: "Site header with logo, links, call to action and a mobile menu.",
+    codename: "Masthead",
+    name: "Site header",
+    summary: "Logo, links, call to action and a mobile menu that behaves.",
     pattern: "APG Disclosure navigation",
-    status: "coming",
+    accent: "#6fc36f",
+    status: "in-stock",
   },
   {
     slug: "cta",
-    partNumber: "BC-CT01",
+    codename: "Beacon",
     name: "CTA section",
     summary: "Heading, supporting text and actions. Plain HTML, no JavaScript.",
     pattern: "Landmark section",
-    status: "coming",
+    accent: "#ef7ba4",
+    status: "in-stock",
   },
 ];
 

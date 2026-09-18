@@ -30,6 +30,39 @@
 }
 
 @layer base {
+  /* Dark theme: the board stays purple; the datasheet paper turns to ink.
+     An explicit choice wins; otherwise the system setting decides. */
+  :root[data-theme="dark"],
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --color-board: #1b1233;
+      --color-board-raised: #2a1d4d;
+      --color-paper: #141020;
+      --color-paper-sunk: #1c1730;
+      --color-ink: #f5f2ff;
+      --color-ink-muted: #b9b1d0;
+      --color-rule: #2e2745;
+      --color-rule-strong: #7a6fa3;
+      --color-pass: #4ade80;
+      --color-pass-bg: #12351f;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --color-board: #1b1233;
+    --color-board-raised: #2a1d4d;
+    --color-paper: #141020;
+    --color-paper-sunk: #1c1730;
+    --color-ink: #f5f2ff;
+    --color-ink-muted: #b9b1d0;
+    --color-rule: #2e2745;
+    --color-rule-strong: #7a6fa3;
+    --color-pass: #4ade80;
+    --color-pass-bg: #12351f;
+    color-scheme: dark;
+  }
+
   html {
     color-scheme: light;
     scrollbar-color: var(--color-rule-strong) var(--color-paper-sunk);

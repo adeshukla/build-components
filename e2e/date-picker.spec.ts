@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { components } from "./generate";
-import { expectNoAxeViolations, targets } from "./helpers";
+import { expectNoAxeViolations, open, targets } from "./helpers";
 
 const variants = components["date-picker"].variants;
 type Variant = keyof typeof variants;
@@ -19,7 +19,7 @@ for (const target of targets("date-picker")) {
 
     test("no axe violations, closed and open, for every variant", async ({ page }) => {
       for (const variant of Object.keys(variants) as Variant[]) {
-        await page.goto(target.url(variant));
+        await open(page, target.url(variant));
         await expectNoAxeViolations(page);
         await page.getByRole("button", { name: /^Choose date/ }).click();
         await expect(page.getByRole("dialog")).toBeVisible();
@@ -28,7 +28,7 @@ for (const target of targets("date-picker")) {
     });
 
     test("keyboard only: open, navigate, select, focus returns", async ({ page }) => {
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       await field(page).focus();
       await page.keyboard.press("Tab");
       const trigger = page.getByRole("button", { name: "Choose date" });
@@ -60,7 +60,7 @@ for (const target of targets("date-picker")) {
     });
 
     test("Tab wraps inside the dialog; Escape closes without changing the value", async ({ page }) => {
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       await page.getByRole("button", { name: "Choose date" }).click();
       await expect(focusedInDialog(page)).toHaveAccessibleName("Tuesday, March 10, 2026");
 
@@ -82,7 +82,7 @@ for (const target of targets("date-picker")) {
     });
 
     test("month and year: heading opens years → months → back to days", async ({ page }) => {
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       await page.getByRole("button", { name: "Choose date" }).click();
       const heading = page.getByRole("button", { name: /change month and year$/ });
 
@@ -117,7 +117,7 @@ for (const target of targets("date-picker")) {
     });
 
     test("typed dates follow the format, with accurate errors", async ({ page }) => {
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       const input = field(page);
       const cases = [
         ["31/02/2026", "Day 31 doesn't exist — that month has 28 days."],
@@ -140,7 +140,7 @@ for (const target of targets("date-picker")) {
     });
 
     test("range variant: keyboard + mouse selection, add-ons, reversed input", async ({ page }) => {
-      await page.goto(target.url("range"));
+      await open(page, target.url("range"));
       const input = field(page);
       await expect(input).toHaveAccessibleDescription("Check-in to check-out");
 
@@ -206,7 +206,7 @@ test("registry item carries the exact React export for the URL's config", async 
   expect(response.ok()).toBe(true);
   const item = await response.json();
   expect(item).toMatchObject({ name: "date-picker", type: "registry:component" });
-  const exported = fs.readFileSync(path.join(process.cwd(), "app/harness/date-picker-range/date-picker.tsx"), "utf8");
+  const exported = fs.readFileSync(path.join(process.cwd(), "app/(bare)/harness/date-picker-range/date-picker.tsx"), "utf8");
   expect(item.files[0].content).toBe(exported);
 
   const invalid = await (await request.get("/r/date-picker.json?mode=sideways&accentColor=red&radius=999")).json();

@@ -1,0 +1,154 @@
+/* Searchable select — plain CSS. Colours, radius, theme and the iPhone look are set by searchable-select.js. */
+.ss {
+  --ss-accent: #2563eb;
+  --ss-accent-text: #1d4ed8;
+  --ss-on-accent: #ffffff;
+  --ss-ring: #2563eb;
+  --ss-radius: 6px;
+  --ss-visible: 6;
+  --ss-height: 2.5rem;
+  --ss-row: 2.25rem;
+  --ss-surface: #ffffff;
+  --ss-sunk: #f2f2f7;
+  --ss-text: #171717;
+  --ss-muted: #535358;
+  --ss-border: #737373;
+  --ss-line: #d4d4d4;
+  --ss-error: #b3261e;
+  --ss-hover: #f2f2f7;
+  --ss-font: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  color: var(--ss-text);
+  font-family: var(--ss-font);
+}
+.ss--sm { --ss-height: 2rem; --ss-row: 2rem; }
+.ss--lg { --ss-height: 3rem; --ss-row: 2.75rem; }
+.ss *, .ss *::before, .ss *::after { box-sizing: border-box; }
+.ss [hidden] { display: none !important; }
+
+.ss-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.ss-label { font-weight: 500; }
+.ss-control { position: relative; width: 100%; max-width: 20rem; }
+
+.ss-field {
+  display: flex;
+  align-items: stretch;
+  height: var(--ss-height);
+  overflow: hidden;
+  border: 1px solid var(--ss-border);
+  border-radius: var(--ss-radius);
+  background: var(--ss-surface);
+  color: var(--ss-text);
+}
+.ss--sm .ss-field { font-size: 0.875rem; }
+.ss--lg .ss-field { font-size: 1.125rem; }
+.ss-field[data-invalid] { border-color: var(--ss-error); }
+.ss-field:has(.ss-input:focus-visible) { outline: 2px solid var(--ss-ring); outline-offset: 2px; }
+
+.ss-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0.75rem;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.ss--sm .ss-input { padding: 0 0.5rem; }
+.ss--lg .ss-input { padding: 0 1rem; }
+.ss-input::placeholder { color: var(--ss-muted); opacity: 1; }
+
+.ss-icon-button {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: var(--ss-height);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ss-muted);
+  cursor: pointer;
+}
+.ss-icon-button:hover { background: var(--ss-hover); }
+.ss-icon-button:focus-visible { outline: 2px solid var(--ss-ring); outline-offset: -2px; }
+.ss-icon-button svg { width: 1rem; height: 1rem; }
+.ss-chevron { transition: transform 150ms; }
+.ss[data-expanded] .ss-chevron { transform: rotate(180deg); }
+
+.ss-listbox,
+.ss-no-results {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  left: 0;
+  margin: 0.25rem 0 0;
+  border: 1px solid var(--ss-line);
+  border-radius: var(--ss-radius);
+  background: var(--ss-surface);
+  color: var(--ss-text);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.14), 0 4px 6px -4px rgb(0 0 0 / 0.14);
+}
+.ss-listbox {
+  max-height: calc(var(--ss-row) * var(--ss-visible) + 0.5rem);
+  overflow-y: auto;
+  padding: 0.25rem;
+  list-style: none;
+}
+.ss-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: var(--ss-row);
+  padding: 0 0.75rem;
+  border-radius: var(--ss-radius);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.ss--sm .ss-option { padding: 0 0.5rem; }
+.ss--lg .ss-option { padding: 0 1rem; font-size: 1rem; }
+.ss-option:hover { background: var(--ss-hover); }
+.ss-option[data-active] { background: var(--ss-accent); color: var(--ss-on-accent); }
+.ss-option-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ss-option mark {
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ss-check { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--ss-accent-text); }
+.ss-option[data-active] .ss-check { color: inherit; }
+.ss-no-results { padding: 0.5rem 0.75rem; font-size: 0.875rem; color: var(--ss-muted); }
+
+.ss-helper,
+.ss-error { margin: 0; font-size: 0.875rem; }
+.ss-helper { color: var(--ss-muted); }
+.ss-error { color: var(--ss-error); }
+.ss-error:empty { display: none; }
+
+/* iPhone and iPad: Apple's system font, iOS blue, and bigger rows to tap. */
+.ss--ios { --ss-height: 2.75rem; --ss-row: 2.75rem; }
+.ss--ios .ss-field { border-color: transparent; background: var(--ss-sunk); font-size: 17px; }
+.ss--ios .ss-icon-button { color: var(--ss-accent-text); }
+.ss--ios .ss-option { font-size: 1rem; }
+.ss--ios .ss-listbox { border-radius: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-chevron { transition: none; }
+}

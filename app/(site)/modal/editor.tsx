@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Editor, type KeyboardRow, type Sources } from "@/components/editor";
-import { Modal, type ModalAction, type ModalConfig } from "@/registry/modal/react/modal";
+import type { ModalConfig } from "@/registry/modal/react/modal";
 import { modalSchema } from "@/registry/modal/schema";
 
 const keyboard: KeyboardRow[] = [
@@ -22,18 +21,6 @@ const checklist = [
   "On a real iPhone in Safari: the bottom sheet sits flush with the bottom edge.",
 ];
 
-function ModalPreview({ config }: { config: ModalConfig }) {
-  const [lastAction, setLastAction] = useState<ModalAction | null>(null);
-  return (
-    <div className="space-y-4">
-      <Modal config={config} onAction={setLastAction} />
-      <p className="font-mono text-xs text-ink-muted" aria-live="polite">
-        Last result: {lastAction ?? "not closed yet"}
-      </p>
-    </div>
-  );
-}
-
 export function ModalEditor({ initialConfig, sources }: { initialConfig: ModalConfig; sources: Sources }) {
   return (
     <Editor
@@ -43,7 +30,6 @@ export function ModalEditor({ initialConfig, sources }: { initialConfig: ModalCo
       sources={sources}
       keyboard={keyboard}
       checklist={checklist}
-      renderPreview={(config) => <ModalPreview config={config as ModalConfig} />}
     />
   );
 }

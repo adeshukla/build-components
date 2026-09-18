@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { components } from "./generate";
-import { expectNoAxeViolations, targets } from "./helpers";
+import { expectNoAxeViolations, open, targets } from "./helpers";
 
 const variants = Object.keys(components.modal.variants);
 
@@ -12,7 +12,7 @@ for (const target of targets("modal")) {
   test.describe(`modal — ${target.name} export`, () => {
     test("no axe violations, closed and open, for every variant", async ({ page }) => {
       for (const variant of variants) {
-        await page.goto(target.url(variant));
+        await open(page, target.url(variant));
         await expectNoAxeViolations(page);
         await trigger(page).click();
         await expect(dialog(page)).toBeVisible();
@@ -21,7 +21,7 @@ for (const target of targets("modal")) {
     });
 
     test("keyboard only: focus starts on the title, Tab wraps, Escape closes and focus returns", async ({ page }) => {
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       await trigger(page).focus();
       await page.keyboard.press("Enter");
       await expect(dialog(page)).toBeVisible();
@@ -47,7 +47,7 @@ for (const target of targets("modal")) {
     });
 
     test("Cancel, × and backdrop click all close it", async ({ page }) => {
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       const closers: [string, () => Promise<void>][] = [
         ["Cancel button", () => button(page, "Cancel").click()],
         ["× button", () => button(page, "Close").click()],
@@ -65,7 +65,7 @@ for (const target of targets("modal")) {
     });
 
     test("sheet variant: primary gets focus, optional buttons off, backdrop click ignored", async ({ page }) => {
-      await page.goto(target.url("sheet"));
+      await open(page, target.url("sheet"));
       await trigger(page).click();
       await expect(button(page, "Confirm")).toBeFocused();
       await expect(button(page, "Close")).toHaveCount(0);
@@ -82,16 +82,18 @@ for (const target of targets("modal")) {
       await expect(trigger(page)).toBeFocused();
     });
 
-    test("position: centred by default, flush with the bottom edge as a sheet", async ({ page }) => {
+    test("position: centred by default, flush with the bottom edge as a sheet", async ({ page, isMobile }) => {
+      // On iPhone the modal is deliberately always a sheet, so centring does not apply there.
+      test.skip(!!isMobile, "iPhone look presents every modal as a bottom sheet");
       const viewport = page.viewportSize()!;
 
-      await page.goto(target.url("default"));
+      await open(page, target.url("default"));
       await trigger(page).click();
       const centred = (await dialog(page).boundingBox())!;
       expect(Math.abs(centred.x + centred.width / 2 - viewport.width / 2)).toBeLessThan(2);
       expect(Math.abs(centred.y + centred.height / 2 - viewport.height / 2)).toBeLessThan(2);
 
-      await page.goto(target.url("sheet"));
+      await open(page, target.url("sheet"));
       await trigger(page).click();
       const sheet = (await dialog(page).boundingBox())!;
       expect(Math.round(sheet.y + sheet.height)).toBe(viewport.height);

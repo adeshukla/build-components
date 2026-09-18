@@ -4,6 +4,7 @@ import { MountedPart } from "@/components/mounted-part";
 import { parts } from "@/lib/parts";
 import { DatePicker } from "@/registry/date-picker/react/date-picker";
 import { Modal } from "@/registry/modal/react/modal";
+import { SearchableSelect } from "@/registry/searchable-select/react/searchable-select";
 
 const tests = [
   ["axe accessibility rules", "WCAG 2.0, 2.1 and 2.2, levels A and AA, with the component closed and open."],
@@ -11,7 +12,7 @@ const tests = [
   ["Focus stays inside", "Tab and Shift+Tab wrap inside dialogs instead of escaping to the page behind."],
   ["Both outputs", "The same tests run on the React + Tailwind file and the HTML/CSS/JS files."],
   ["Browsers", "Chromium, WebKit (the Safari engine) and an emulated iPhone 15."],
-  ["Install by URL", "The registry serves exactly the file you'd copy, with your options applied."],
+  ["Install by URL", "The registry serves exactly the file you would copy, with your options applied."],
 ];
 
 const steps = [
@@ -35,11 +36,11 @@ const steps = [
 export default function Home() {
   return (
     <main>
-      {/* Hero: the board, with a real part mounted on it */}
+      {/* Hero: the board, with real parts mounted on it */}
       <section aria-labelledby="hero-heading" className="on-board relative isolate overflow-hidden bg-board text-silk">
         <div aria-hidden="true" className="board-grid absolute inset-0 -z-20 opacity-50" />
         <BoardTraces />
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 lg:min-h-[calc(100svh-4.25rem)] lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
           <div>
             <h1
               id="hero-heading"
@@ -51,26 +52,34 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-7 max-w-xl text-lg text-pretty text-silk-muted">
-              Set up a date picker or a modal without writing code, test the exact files you&apos;ll export, then take
-              them into your project as React + Tailwind or HTML/CSS/JS. No library to install.
+              Set up a component without writing code, test the exact files you will export, then take them into your
+              project as React + Tailwind or HTML/CSS/JS. No library to install.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/date-picker" className="btn-pad">
-                Configure the date picker
+              <Link href="#catalogue" className="btn-pad">
+                Open the catalogue
                 <Arrow />
               </Link>
-              <Link href="#catalogue" className="btn-outline-board">
-                Browse all parts
+              <Link href="/date-picker" className="btn-outline-board">
+                Try Almanac, the date picker
               </Link>
             </div>
+            <p className="mt-8 font-mono text-xs tracking-wide text-silk-muted">
+              Every part ships tested in Chromium, WebKit and on iPhone.
+            </p>
           </div>
 
-          <div className="grid gap-10">
-            <MountedPart caption="BC-DP01 · Date picker · live component, try it">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:gap-10">
+            <MountedPart caption="Almanac · date picker · live, try it">
               <DatePicker />
             </MountedPart>
-            <div className="lg:translate-x-12">
-              <MountedPart caption="BC-MD01 · Modal · live component, try it">
+            <div className="lg:translate-x-10">
+              <MountedPart caption="Sextant · searchable select · live, try it">
+                <SearchableSelect />
+              </MountedPart>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-1 lg:translate-x-20">
+              <MountedPart caption="Porthole · modal · live, try it">
                 <Modal />
               </MountedPart>
             </div>
@@ -79,14 +88,14 @@ export default function Home() {
       </section>
 
       {/* Catalogue */}
-      <section id="catalogue" aria-labelledby="catalogue-heading" className="scroll-mt-8">
+      <section id="catalogue" aria-labelledby="catalogue-heading" className="scroll-mt-4">
         <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-5">
             <h2 id="catalogue-heading" className="font-display text-5xl leading-none font-bold uppercase sm:text-6xl">
               Parts catalogue
             </h2>
             <p className="max-w-md text-pretty text-ink-muted">
-              Two parts are in stock and fully tested. Four more are on the way.
+              All six parts are in stock, and every one of them is tested on both outputs.
             </p>
           </div>
 
@@ -96,26 +105,33 @@ export default function Home() {
               return (
                 <li
                   key={part.slug}
-                  className={`reveal group relative grid gap-x-8 gap-y-2 border-b border-rule py-6 md:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1.6fr)_11rem] md:items-center ${inStock ? "transition-colors hover:bg-paper-sunk" : ""}`}
+                  style={{ ["--part-accent" as string]: part.accent }}
+                  className={`reveal group relative grid gap-x-8 gap-y-2 border-b border-rule py-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_11rem] md:items-center ${inStock ? "transition-colors hover:bg-paper-sunk" : ""}`}
                 >
-                  <p className="flex items-center gap-2 font-mono text-sm text-ink-muted">
+                  {inStock && (
                     <span
                       aria-hidden="true"
-                      className={`size-2.5 rounded-full ${inStock ? "bg-pad ring-2 ring-pad/30" : "border border-rule-strong"}`}
+                      className="absolute top-0 bottom-0 -left-4 w-1 origin-center scale-y-0 rounded-full bg-(--part-accent) transition-transform duration-500 ease-out-expo group-hover:scale-y-100"
                     />
-                    {part.partNumber}
-                  </p>
-                  <h3 className="font-display text-3xl leading-none font-semibold uppercase">
-                    {inStock ? (
-                      <Link href={`/${part.slug}`} className="after:absolute after:inset-0 hover:underline">
-                        {part.name}
-                      </Link>
-                    ) : (
-                      <span className="text-ink-muted">{part.name}</span>
-                    )}
-                  </h3>
+                  )}
+                  <div className="flex items-baseline gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={`size-2.5 shrink-0 rounded-full ${inStock ? "bg-(--part-accent)" : "border border-rule-strong"}`}
+                    />
+                    <h3 className="font-display text-3xl leading-none font-semibold uppercase">
+                      {inStock ? (
+                        <Link href={`/${part.slug}`} className="after:absolute after:inset-0 hover:underline">
+                          {part.codename}
+                        </Link>
+                      ) : (
+                        <span className="text-ink-muted">{part.codename}</span>
+                      )}
+                    </h3>
+                  </div>
                   <div>
-                    <p className="text-pretty text-ink-muted">{part.summary}</p>
+                    <p className="font-medium">{part.name}</p>
+                    <p className="mt-0.5 text-pretty text-ink-muted">{part.summary}</p>
                     <p className="mt-1 text-sm text-ink-muted">Pattern: {part.pattern}</p>
                   </div>
                   <p className="md:text-right">
@@ -137,14 +153,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works: one trace, three pads */}
-      <section aria-labelledby="how-heading" className="border-y border-rule bg-paper-sunk">
+      {/* How it works */}
+      <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 border-y border-rule bg-paper-sunk">
         <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
           <h2 id="how-heading" className="font-display text-5xl leading-none font-bold uppercase sm:text-6xl">
             From this page to your project
           </h2>
           <ol className="relative mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
-            <span aria-hidden="true" className="absolute top-5 right-[16%] left-[16%] hidden h-0.5 bg-rule-strong md:block" />
+            <span
+              aria-hidden="true"
+              className="absolute top-5 right-[16%] left-[16%] hidden h-0.5 bg-rule-strong md:block"
+            />
             {steps.map((step, i) => (
               <li key={step.title} className="reveal relative">
                 <span
@@ -165,24 +184,30 @@ export default function Home() {
       </section>
 
       {/* Test report */}
-      <section aria-labelledby="report-heading">
+      <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4">
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <h2 id="report-heading" className="font-display text-5xl leading-none font-bold uppercase sm:text-6xl">
               Test report
             </h2>
             <p className="mt-5 max-w-md text-pretty text-ink-muted">
-              What every part in stock is checked against, on every exported output. Automated tests can&apos;t judge
-              what a screen reader says, so each part&apos;s page also has a manual checklist.
+              What every part in stock is checked against, on every exported output. Automated tests cannot judge what
+              a screen reader says, so each part has a manual checklist on its own page.
             </p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="border-b-2 border-ink font-mono text-xs text-ink-muted uppercase">
-                  <th scope="col" className="py-3 pr-4 font-medium">Check</th>
-                  <th scope="col" className="hidden py-3 pr-4 font-medium sm:table-cell">What it proves</th>
-                  <th scope="col" className="py-3 text-right font-medium">Result</th>
+                  <th scope="col" className="py-3 pr-4 font-medium">
+                    Check
+                  </th>
+                  <th scope="col" className="hidden py-3 pr-4 font-medium sm:table-cell">
+                    What it proves
+                  </th>
+                  <th scope="col" className="py-3 text-right font-medium">
+                    Result
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -208,7 +233,10 @@ export default function Home() {
       </section>
 
       {/* Close */}
-      <section aria-labelledby="close-heading" className="on-board relative isolate overflow-hidden bg-board-raised text-silk">
+      <section
+        aria-labelledby="close-heading"
+        className="on-board relative isolate overflow-hidden bg-board-raised text-silk"
+      >
         <div aria-hidden="true" className="board-grid absolute inset-0 -z-10 opacity-40" />
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-8 px-4 py-16 sm:px-6">
           <h2 id="close-heading" className="max-w-2xl font-display text-5xl leading-none font-bold uppercase">
@@ -216,11 +244,14 @@ export default function Home() {
           </h2>
           <div className="flex flex-wrap gap-3">
             <Link href="/date-picker" className="btn-pad">
-              Date picker
+              Almanac
               <Arrow />
             </Link>
+            <Link href="/searchable-select" className="btn-outline-board">
+              Sextant
+            </Link>
             <Link href="/modal" className="btn-outline-board">
-              Modal
+              Porthole
             </Link>
           </div>
         </div>
@@ -231,7 +262,14 @@ export default function Home() {
 
 function Arrow({ className = "" }: { className?: string }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={`size-4 ${className}`}>
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className={`size-4 ${className}`}
+    >
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
   );

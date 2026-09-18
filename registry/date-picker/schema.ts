@@ -98,6 +98,23 @@ export const datePickerSchema = [
     dependsOn: { key: "helperText", equals: true },
   },
   {
+    key: "theme",
+    label: "Theme",
+    description: "Light, dark, or whatever the visitor's device is set to.",
+    group: "Style",
+    type: "select",
+    default: "light",
+    options: ["light", "dark", "system"],
+  },
+  {
+    key: "iosOnPhone",
+    label: "iPhone look",
+    description: "On iPhone and iPad: Apple's system font, iOS blue, bigger rows, and a sheet that slides up.",
+    group: "Style",
+    type: "boolean",
+    default: true,
+  },
+  {
     key: "accentColor",
     label: "Accent colour",
     description: "Selected days and focus rings. Text colour adjusts for contrast.",

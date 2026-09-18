@@ -1,9 +1,18 @@
-/* Modal — plain CSS. Accent colour and radius are set by modal.js from its config. */
+/* Modal — plain CSS. Colours, radius, theme and the iPhone look are set by modal.js. */
 .mdl {
   --modal-accent: #2563eb;
+  --modal-accent-text: #1d4ed8;
   --modal-on-accent: #ffffff;
   --modal-ring: #2563eb;
   --modal-radius: 8px;
+  --modal-surface: #ffffff;
+  --modal-text: #171717;
+  --modal-muted: #535358;
+  --modal-border: #737373;
+  --modal-line: #d4d4d4;
+  --modal-hover: #f2f2f7;
+  --modal-font: inherit;
+  font-family: var(--modal-font);
 }
 .mdl *, .mdl *::before, .mdl *::after { box-sizing: border-box; }
 
@@ -16,8 +25,8 @@
   cursor: pointer;
 }
 .mdl-button--primary { background: var(--modal-accent); color: var(--modal-on-accent); }
-.mdl-button--secondary { border-color: #737373; background: #fff; color: #171717; }
-.mdl-button--secondary:hover, .mdl-close:hover { background: #f5f5f5; }
+.mdl-button--secondary { border-color: var(--modal-border); background: transparent; color: var(--modal-text); }
+.mdl-button--secondary:hover, .mdl-close:hover { background: var(--modal-hover); }
 .mdl-button:focus-visible, .mdl-close:focus-visible { outline: 2px solid var(--modal-ring); outline-offset: 2px; }
 
 .mdl-dialog {
@@ -25,9 +34,10 @@
   overflow: auto;
   padding: 0;
   border: 0;
-  background: #fff;
-  color: #171717;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  background: var(--modal-surface);
+  color: var(--modal-text);
+  font-family: var(--modal-font);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.18), 0 8px 10px -6px rgb(0 0 0 / 0.18);
 }
 .mdl-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
 .mdl-dialog--sm { max-width: 24rem; }
@@ -42,11 +52,9 @@
   .mdl-dialog--fade[open] { opacity: 0; }
   .mdl-dialog--scale[open] { opacity: 0; scale: 0.95; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .mdl-dialog[open] { transition: none; }
-}
 
 .mdl-inner { padding: 1.5rem; }
+.mdl-grabber { display: none; }
 .mdl-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .mdl-title { margin: 0; font-size: 1.125rem; font-weight: 600; outline: none; }
 .mdl-close {
@@ -60,9 +68,40 @@
   border: 0;
   border-radius: var(--modal-radius);
   background: transparent;
-  color: #404040;
+  color: var(--modal-muted);
   cursor: pointer;
 }
 .mdl-close svg { width: 1.25rem; height: 1.25rem; }
-.mdl-body { margin: 0.5rem 0 0; color: #404040; }
+.mdl-body { margin: 0.5rem 0 0; color: var(--modal-muted); }
 .mdl-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+
+/* iPhone and iPad: Apple's system font, iOS blue, bigger buttons, and a sheet that slides up. */
+.mdl--ios .mdl-dialog {
+  inset: auto 0 0 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-radius: 20px 20px 0 0;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@starting-style {
+  .mdl--ios .mdl-dialog[open] { transform: translateY(100%); opacity: 1; scale: 1; }
+}
+.mdl--ios .mdl-inner { max-width: 32rem; margin: 0 auto; padding: 0.5rem 1.25rem 1.5rem; }
+.mdl--ios .mdl-grabber {
+  display: block;
+  width: 2.25rem;
+  height: 0.3125rem;
+  margin: 0 auto 0.75rem;
+  border-radius: 9999px;
+  background: var(--modal-line);
+}
+.mdl--ios .mdl-close { width: 2.75rem; height: 2.75rem; }
+.mdl--ios .mdl-button { min-height: 2.75rem; padding: 0.625rem 1.25rem; font-weight: 600; }
+.mdl--ios .mdl-button--secondary { border: 0; color: var(--modal-accent-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mdl-dialog[open],
+  .mdl--ios .mdl-dialog { transition: none; }
+}

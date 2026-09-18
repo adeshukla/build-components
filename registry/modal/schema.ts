@@ -100,6 +100,23 @@ export const modalSchema = [
     dependsOn: { key: "secondaryButton", equals: true },
   },
   {
+    key: "theme",
+    label: "Theme",
+    description: "Light, dark, or whatever the visitor's device is set to.",
+    group: "Style",
+    type: "select",
+    default: "light",
+    options: ["light", "dark", "system"],
+  },
+  {
+    key: "iosOnPhone",
+    label: "iPhone look",
+    description: "On iPhone and iPad: Apple's system font, iOS blue, bigger buttons, and a sheet that slides up.",
+    group: "Style",
+    type: "boolean",
+    default: true,
+  },
+  {
     key: "accentColor",
     label: "Accent colour",
     description: "Primary buttons and focus rings. Text colour adjusts for contrast.",

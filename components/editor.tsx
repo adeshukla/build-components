@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useId, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { OptionsPanel } from "@/components/options-panel";
 import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
@@ -17,11 +17,12 @@ type Props = {
   schema: Schema;
   initialConfig: Record<string, unknown>;
   sources: Sources;
-  renderPreview: (config: Record<string, unknown>) => ReactNode;
   /** The component's keyboard behaviour, shown as a pinout-style map. */
   keyboard: KeyboardRow[];
   /** Manual checks automated tests can't prove (screen readers, zoom, real devices). */
   checklist: string[];
+  /** HTML-first components generate their markup from the options instead of shipping a fixed file. */
+  vanillaHtml?: (config: Record<string, unknown>) => string;
 };
 
 type Output = "react" | "vanilla";
@@ -34,7 +35,7 @@ const widths = [
 
 const subscribeNever = () => () => {};
 
-export function Editor({ slug, schema, initialConfig, sources, renderPreview, keyboard, checklist }: Props) {
+export function Editor({ slug, schema, initialConfig, sources, keyboard, checklist, vanillaHtml }: Props) {
   const idBase = useId();
   const part = partBySlug(slug);
   const [config, setConfig] = useState(initialConfig);
@@ -47,14 +48,15 @@ export function Editor({ slug, schema, initialConfig, sources, renderPreview, ke
   const origin = useSyncExternalStore(subscribeNever, () => window.location.origin, () => "");
 
   const query = toSearchParams(schema, config).toString();
-  const js = applyConfig(sources.js, config);
+  const js = sources.js === "" ? "" : applyConfig(sources.js, config);
+  const html = vanillaHtml ? vanillaHtml(config) : sources.html;
   const files =
     output === "react"
       ? [{ name: `${slug}.tsx`, code: applyConfig(sources.react, config) }]
       : [
-          { name: `${slug}.html`, code: sources.html },
+          { name: `${slug}.html`, code: html },
           { name: `${slug}.css`, code: sources.css },
-          { name: `${slug}.js`, code: js },
+          ...(js === "" ? [] : [{ name: `${slug}.js`, code: js }]),
         ];
   const codeTabs = [
     ...(output === "react" ? [{ id: "install", label: "Install" }] : []),
@@ -123,23 +125,20 @@ export function Editor({ slug, schema, initialConfig, sources, renderPreview, ke
             <div className="mx-auto transition-[max-width] duration-700 ease-out-expo" style={{ maxWidth: width }}>
               <p className="mb-2 flex justify-between gap-4 font-mono text-xs text-ink-muted">
                 <span>
-                  {part.partNumber} · {outputName}
+                  {part.codename} · {outputName}
                 </span>
                 <span>{width === "100%" ? "Full width" : width}</span>
               </p>
               <div className="rounded-md border border-rule-strong bg-paper shadow-[0_14px_32px_-18px_rgb(22_18_31/0.4)]">
                 {output === "react" ? (
-                  // Remount on config change so internal state never mixes two configs.
-                  <div key={query} className="min-h-44 p-6 sm:p-8">
-                    {renderPreview(config)}
-                  </div>
+                  <PreviewFrame slug={slug} title={part.name} config={config} />
                 ) : (
                   <iframe
                     key={query}
                     title={`${part.name}, HTML/CSS/JS output`}
                     sandbox="allow-scripts"
                     className="block h-[30rem] w-full rounded-md"
-                    srcDoc={vanillaDocument(sources.html, sources.css, js)}
+                    srcDoc={vanillaDocument(html, sources.css, js)}
                   />
                 )}
               </div>
@@ -184,7 +183,9 @@ export function Editor({ slug, schema, initialConfig, sources, renderPreview, ke
             <p className="mt-1 text-sm text-pretty text-ink-muted">
               {output === "react"
                 ? "React + Tailwind CSS v4: install with one command, or copy the file. Your options are already in it."
-                : "Three plain files and no library. The HTML file shows where the CSS and JS go."}
+                : js === ""
+                  ? "Plain HTML and CSS, no JavaScript at all. Paste the markup, ship the stylesheet."
+                  : "Three plain files and no library. The HTML file shows where the CSS and JS go."}
             </p>
           </div>
           <TabList label="Code" idBase={`${idBase}-code`} value={activeCode} onChange={setCodeTab} tabs={codeTabs} />
@@ -201,6 +202,41 @@ export function Editor({ slug, schema, initialConfig, sources, renderPreview, ke
   );
 }
 
+
+/** The React output runs on its own page in a frame, so its dialogs stay inside the bench. */
+function PreviewFrame({ slug, title, config }: { slug: string; title: string; config: Record<string, unknown> }) {
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const [height, setHeight] = useState(320);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "preview-height") {
+        setHeight(Math.min(760, Math.max(220, Number(event.data.height) + 4)));
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    frameRef.current?.contentWindow?.postMessage({ type: "config", config }, window.location.origin);
+  }, [config, ready]);
+
+  return (
+    <iframe
+      ref={frameRef}
+      src={`/preview/${slug}`}
+      title={`${title}, React + Tailwind output`}
+      onLoad={() => setReady(true)}
+      style={{ height: `${height}px` }}
+      className="block w-full rounded-md"
+    />
+  );
+}
+
 /** Inlines the exported CSS and JS into the exported HTML page, so the frame runs the real files. */
 function vanillaDocument(html: string, css: string, js: string) {
   return html
@@ -208,7 +244,7 @@ function vanillaDocument(html: string, css: string, js: string) {
       /<link rel="stylesheet" href="[^"]+">/,
       () => `<style>body{margin:0;padding:32px;font-family:system-ui,sans-serif;color:#16121f}${css}</style>`,
     )
-    .replace(/<script src="[^"]+"><\/script>/, () => `<script>${js}</script>`);
+    .replace(/<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `<script>${js}</script>`));
 }
 
 function InstallPanel({ slug, command }: { slug: string; command: string }) {

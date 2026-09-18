@@ -3,6 +3,14 @@ import { pathToFileURL } from "node:url";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page } from "@playwright/test";
 
+/** Navigate, and on React harness pages wait until hydration has finished. */
+export async function open(page: Page, url: string) {
+  await page.goto(url, { waitUntil: "load" });
+  if (url.startsWith("/harness")) {
+    await page.locator('[data-hydrated="true"]').first().waitFor({ state: "attached", timeout: 30_000 });
+  }
+}
+
 export async function expectNoAxeViolations(page: Page) {
   // Let open animations finish: mid-fade colours would give false contrast failures.
   await page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished)));

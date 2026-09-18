@@ -1,14 +1,27 @@
-/* Date picker — plain CSS. Accent colour and radius are set by date-picker.js from its config. */
+/* Date picker — plain CSS. Colours, radius, theme and the iPhone look are set by date-picker.js. */
 .dp {
   --dp-accent: #2563eb;
+  --dp-accent-text: #1d4ed8;
   --dp-on-accent: #ffffff;
   --dp-ring: #2563eb;
   --dp-radius: 6px;
+  --dp-surface: #ffffff;
+  --dp-sunk: #f2f2f7;
+  --dp-text: #171717;
+  --dp-muted: #535358;
+  --dp-border: #737373;
+  --dp-line: #d4d4d4;
+  --dp-disabled: #a3a3a3;
+  --dp-error: #b3261e;
+  --dp-hover: #f2f2f7;
+  --dp-font: inherit;
   --dp-field-height: 2.5rem;
   --dp-cell: 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
+  color: var(--dp-text);
+  font-family: var(--dp-font);
 }
 .dp--sm { --dp-field-height: 2rem; --dp-cell: 2rem; }
 .dp--lg { --dp-field-height: 3rem; --dp-cell: 3rem; }
@@ -35,15 +48,15 @@
   max-width: 20rem;
   height: var(--dp-field-height);
   overflow: hidden;
-  border: 1px solid #737373;
+  border: 1px solid var(--dp-border);
   border-radius: var(--dp-radius);
-  background: #fff;
-  color: #171717;
+  background: var(--dp-surface);
+  color: var(--dp-text);
 }
 .dp--range .dp-field { max-width: 24rem; }
 .dp--sm .dp-field { font-size: 0.875rem; }
 .dp--lg .dp-field { font-size: 1.125rem; }
-.dp-field[data-invalid] { border-color: #b91c1c; }
+.dp-field[data-invalid] { border-color: var(--dp-error); }
 .dp-field:has(.dp-input:focus-visible) { outline: 2px solid var(--dp-ring); outline-offset: 2px; }
 
 .dp-input {
@@ -59,7 +72,7 @@
 }
 .dp--sm .dp-input { padding: 0 0.5rem; }
 .dp--lg .dp-input { padding: 0 1rem; }
-.dp-input::placeholder { color: #737373; opacity: 1; }
+.dp-input::placeholder { color: var(--dp-muted); opacity: 1; }
 
 .dp-icon-button,
 .dp-nav {
@@ -70,7 +83,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #404040;
+  color: var(--dp-muted);
   cursor: pointer;
 }
 .dp-icon-button { width: var(--dp-field-height); }
@@ -81,18 +94,20 @@
 .dp-icon-button:hover,
 .dp-nav:hover,
 .dp-text-button:hover,
-.dp-grid td[data-day]:not([data-end], [data-in-range], [aria-disabled]):hover { background: #f5f5f5; }
+.dp-heading:hover,
+.dp-grid td[data-day]:not([data-end], [data-in-range], [aria-disabled]):hover { background: var(--dp-hover); }
 
 .dp-icon-button:focus-visible,
 .dp-nav:focus-visible,
 .dp-text-button:focus-visible,
+.dp-heading:focus-visible,
 .dp-grid td:focus-visible { outline: 2px solid var(--dp-ring); outline-offset: -2px; }
 
 .dp-helper,
 .dp-error,
 .dp-status { margin: 0; font-size: 0.875rem; }
-.dp-helper { color: #525252; }
-.dp-error { color: #b91c1c; }
+.dp-helper { color: var(--dp-muted); }
+.dp-error { color: var(--dp-error); }
 .dp-error:empty { display: none; }
 
 .dp-dialog {
@@ -100,14 +115,21 @@
   inset: auto;
   margin: 0;
   padding: 0;
-  border: 1px solid #d4d4d4;
+  border: 1px solid var(--dp-line);
   border-radius: var(--dp-radius);
-  background: #fff;
-  color: #171717;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  background: var(--dp-surface);
+  color: var(--dp-text);
+  font-family: var(--dp-font);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.14), 0 4px 6px -4px rgb(0 0 0 / 0.14);
 }
 .dp-dialog::backdrop { background: rgb(0 0 0 / 0.1); }
-.dp-dialog-inner { padding: 0.75rem; }
+.dp-dialog-inner {
+  box-sizing: content-box;
+  width: calc(var(--dp-cell) * 7);
+  padding: 0.75rem;
+  user-select: none;
+}
+.dp-grabber { display: none; }
 .dp-header {
   display: flex;
   align-items: center;
@@ -115,7 +137,6 @@
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
-.dp-dialog-inner { box-sizing: content-box; width: calc(var(--dp-cell) * 7); }
 .dp-heading {
   display: inline-flex;
   align-items: center;
@@ -131,17 +152,18 @@
   font-weight: 600;
   cursor: pointer;
 }
-.dp-heading:hover { background: #f5f5f5; }
-.dp-heading:focus-visible { outline: 2px solid var(--dp-ring); outline-offset: -2px; }
-.dp-heading svg { width: 1rem; height: 1rem; transition: transform 150ms; }
+.dp-heading svg { width: 1rem; height: 1rem; color: var(--dp-accent-text); transition: transform 150ms; }
 .dp-heading[data-open-view] svg { transform: rotate(180deg); }
-@media (prefers-reduced-motion: reduce) { .dp-heading svg { transition: none; } }
-.dp-grid { width: 100%; }
-.dp-grid.dp-grid--picker td { height: 3rem; width: 25%; }
-.dp-grid td[data-current] { font-weight: 600; text-decoration: underline; }
 
-.dp-grid { border-collapse: collapse; }
-.dp-grid th { height: 2rem; padding: 0; font-size: 0.75rem; font-weight: 500; color: #525252; }
+.dp-grid { width: 100%; border-collapse: collapse; }
+.dp-grid th {
+  height: 2rem;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--dp-muted);
+  cursor: default;
+}
 .dp-grid td {
   width: var(--dp-cell);
   height: var(--dp-cell);
@@ -151,21 +173,65 @@
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
+.dp-grid.dp-grid--picker td { height: 3rem; width: 25%; }
 .dp-grid td[data-day] { cursor: pointer; }
-.dp-grid td[aria-disabled="true"] { color: #a3a3a3; cursor: not-allowed; }
-.dp-grid td[aria-current="date"] { font-weight: 600; text-decoration: underline; }
+.dp-grid td[aria-disabled="true"] { color: var(--dp-disabled); cursor: not-allowed; }
+.dp-grid td[aria-current="date"]:not([data-end]) { font-weight: 600; text-decoration: underline; }
+.dp-grid td[data-current]:not([data-end]) { font-weight: 600; text-decoration: underline; }
 .dp-grid td[data-in-range] { background: color-mix(in srgb, var(--dp-accent) 15%, transparent); }
 .dp-grid td[data-end] { background: var(--dp-accent); color: var(--dp-on-accent); font-weight: 600; }
 
-.dp-status { min-height: 1.25rem; margin-top: 0.5rem; color: #404040; }
+.dp-status { min-height: 1.25rem; margin-top: 0.5rem; color: var(--dp-muted); }
 .dp-footer { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
 .dp-text-button {
   padding: 0.25rem 0.75rem;
-  border: 1px solid #737373;
+  border: 1px solid var(--dp-border);
   border-radius: var(--dp-radius);
-  background: #fff;
-  color: #171717;
+  background: transparent;
+  color: inherit;
   font: inherit;
   font-size: 0.875rem;
   cursor: pointer;
+}
+
+/* iPhone and iPad: Apple's system font, iOS blue, bigger rows, and a sheet that slides up. */
+.dp--ios { --dp-field-height: 2.75rem; --dp-cell: 2.75rem; }
+.dp--ios .dp-field { border-color: transparent; background: var(--dp-sunk); font-size: 17px; }
+.dp--ios .dp-dialog {
+  inset: auto 0 0 0;
+  width: 100%;
+  max-height: 85vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  border: 0;
+  border-radius: 20px 20px 0 0;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dp--ios .dp-dialog::backdrop { background: rgb(0 0 0 / 0.4); }
+@starting-style {
+  .dp--ios .dp-dialog[open] { transform: translateY(100%); }
+}
+.dp--ios .dp-dialog-inner {
+  width: auto;
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 0.5rem 1rem 1.5rem;
+}
+.dp--ios .dp-grabber {
+  display: block;
+  width: 2.25rem;
+  height: 0.3125rem;
+  margin: 0 auto 0.75rem;
+  border-radius: 9999px;
+  background: var(--dp-line);
+}
+.dp--ios .dp-grid td { border-radius: 9999px; font-size: 1rem; }
+.dp--ios .dp-grid td[aria-current="date"]:not([data-end]) { color: var(--dp-accent-text); text-decoration: none; }
+.dp--ios .dp-nav,
+.dp--ios .dp-icon-button[data-open],
+.dp--ios .dp-text-button { color: var(--dp-accent-text); }
+.dp--ios .dp-text-button { border: 0; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-heading svg,
+  .dp--ios .dp-dialog { transition: none; }
 }

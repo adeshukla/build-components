@@ -1,0 +1,144 @@
+/* Site header — plain CSS. Colours come from the inline custom properties on the header. */
+.hd {
+  --hd-accent: #2563eb;
+  --hd-on-accent: #ffffff;
+  --hd-ring: #2563eb;
+  --hd-radius: 8px;
+  --hd-surface: #ffffff;
+  --hd-text: #16121f;
+  --hd-muted: #4d4a57;
+  --hd-line: #e4e1ec;
+  --hd-hover: #f4f3f8;
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid var(--hd-line);
+  background: var(--hd-surface);
+  color: var(--hd-text);
+  font-family: system-ui, sans-serif;
+}
+.hd *, .hd *::before, .hd *::after { box-sizing: border-box; }
+.hd--sticky { position: sticky; top: 0; z-index: 40; }
+
+@media (prefers-color-scheme: dark) {
+  .hd--theme-system {
+    --hd-surface: #141019;
+    --hd-text: #f6f5fa;
+    --hd-muted: #b6b3c2;
+    --hd-line: #2c2838;
+    --hd-hover: #221d2e;
+  }
+}
+
+.hd-skip {
+  position: absolute;
+  left: 1rem;
+  z-index: 50;
+  padding: 0.5rem 1rem;
+  border-radius: var(--hd-radius);
+  background: var(--hd-accent);
+  color: var(--hd-on-accent);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-5rem);
+  transition: transform 150ms;
+}
+.hd-skip:focus { transform: translateY(0.75rem); }
+
+.hd-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 80rem;
+  height: 4rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+.hd--compact .hd-bar { height: 3.5rem; }
+@media (min-width: 640px) {
+  .hd-bar { padding: 0 1.5rem; height: 5rem; }
+  .hd--compact .hd-bar { height: 3.5rem; }
+}
+
+.hd-logo { font-size: 1.125rem; font-weight: 700; color: var(--hd-text); text-decoration: none; }
+.hd-nav { display: none; align-items: center; gap: 0.75rem; margin-left: auto; }
+.hd-list { display: flex; align-items: center; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+.hd-list--stacked { flex-direction: column; align-items: stretch; }
+
+.hd-link {
+  display: block;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--hd-radius);
+  color: var(--hd-muted);
+  text-decoration: none;
+}
+.hd-link:hover { background: var(--hd-hover); color: var(--hd-text); }
+.hd-link[aria-current="page"] { color: var(--hd-text); font-weight: 600; }
+
+.hd-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: var(--hd-radius);
+  background: var(--hd-accent);
+  color: var(--hd-on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hd-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-left: auto;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: var(--hd-radius);
+  background: transparent;
+  color: var(--hd-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.hd-toggle:hover { background: var(--hd-hover); }
+.hd-toggle svg { width: 1.25rem; height: 1.25rem; }
+.hd-icon-close { display: none; }
+.hd[data-open] .hd-icon-open { display: none; }
+.hd[data-open] .hd-icon-close { display: block; }
+
+.hd-skip:focus-visible,
+.hd-logo:focus-visible,
+.hd-link:focus-visible,
+.hd-cta:focus-visible,
+.hd-toggle:focus-visible { outline: 2px solid var(--hd-ring); outline-offset: 2px; }
+
+.hd-menu { border-top: 1px solid var(--hd-line); }
+.hd-menu[hidden] { display: none; }
+.hd-menu-inner { width: 100%; max-width: 80rem; margin: 0 auto; padding: 0.75rem 1rem; }
+.hd-menu-inner .hd-cta { display: flex; margin-top: 0.75rem; }
+@media (min-width: 640px) { .hd-menu-inner { padding: 0.75rem 1.5rem; } }
+
+/* Above the chosen breakpoint the links sit in the bar and the menu button disappears. */
+.hd[data-breakpoint="sm"] { --hd-wide: 640px; }
+@media (min-width: 640px) {
+  .hd[data-breakpoint="sm"] .hd-nav { display: flex; }
+  .hd[data-breakpoint="sm"] .hd-toggle,
+  .hd[data-breakpoint="sm"] .hd-menu { display: none; }
+}
+@media (min-width: 768px) {
+  .hd[data-breakpoint="md"] .hd-nav { display: flex; }
+  .hd[data-breakpoint="md"] .hd-toggle,
+  .hd[data-breakpoint="md"] .hd-menu { display: none; }
+}
+@media (min-width: 1024px) {
+  .hd[data-breakpoint="lg"] .hd-nav { display: flex; }
+  .hd[data-breakpoint="lg"] .hd-toggle,
+  .hd[data-breakpoint="lg"] .hd-menu { display: none; }
+}
+
+/* Only used by the exported demo page. */
+.hd-demo-main { max-width: 80rem; margin: 0 auto; padding: 2rem 1rem; font-family: system-ui, sans-serif; }

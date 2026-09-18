@@ -21,34 +21,24 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 7. Accessible by default: WAI-ARIA APG patterns. Test every generated output (not just the preview) with Playwright + axe + keyboard-only flows.
 
 ## How it's built
-- `registry/<component>/` is the product. Per component:
-  - `schema.ts` — options (`as const satisfies Schema`) plus a compile-time check that it matches the component's config type.
-  - `react/<name>.tsx`, `vanilla/<name>.{html,css,js}` — real, working source files, each with one `// @config-start … // @config-end` block.
-- `lib/export.ts` → `applyConfig(source, config)`: exporting = swapping that block. Used by the editor's Copy, the registry route and the test generator.
-- `lib/schema.ts` — option types, `parseConfig` (validates untrusted query params), `toSearchParams`, `isVisible` (dependsOn).
-- `lib/sources.ts` — `readSource` / `readComponentSources(slug)` (Node only).
-- `components/options-panel.tsx` — editor controls generated from any schema (text, boolean, select, colour, date, number).
-- `components/editor.tsx` — shared editor:
-  - test bench (output + screen width)
-  - keyboard map and manual checklist tabs
-  - "Take it home" (install command + file tabs, changed config lines flash)
-- `components/options-panel.tsx` + `tabs.tsx` + `segmented.tsx` — the organised options UI.
-- `lib/parts.ts` — the parts catalogue (part numbers, pattern, in-stock vs coming). Add new components there.
-- `components/part-header.tsx` — the datasheet header on component pages.
-- `components/site-header.tsx`, `header-nav.tsx`, `site-footer.tsx`, `board-traces.tsx`, `mounted-part.tsx` — the site chrome and home hero.
-- Visual system: `DESIGN.md` + `.impeccable/design.json` (Parts Datasheet world). Tokens in `app/globals.css` `@theme`. Product truth for design work: `PRODUCT.md`.
-- `app/<slug>/page.tsx` (server: parse URL config, read sources) + `editor.tsx` (client: preview + checklist). Config lives in the URL query (non-default values only).
-- `app/r/[name]/route.ts` — shadcn registry item for every slug in its `registry` map; config from query params.
+- `registry/<slug>/` is the product. Per component:
+  - `schema.ts` — options (`as const satisfies Schema`) plus a compile-time check against the component's config type.
+  - `react/<slug>.tsx` — one `// @config-start … // @config-end` block.
+  - `vanilla/<slug>.{css,js}` — plain output. JS-driven parts also ship `<slug>.html`; HTML-first parts (cta, form, header) generate markup from the options in `vanilla/render.ts` instead.
+- Every component supports `theme` (light / dark / system, detected at runtime) and, where it matters, `iosOnPhone` (Apple system font, iOS blue, 44px targets, bottom sheets on iPhone/iPad).
+- `lib/export.ts` → `applyConfig(source, config)`: swap the config block. Files without one come back unchanged.
+- `lib/schema.ts` — option types incl. `list` (repeatable items) and URL-safe `format: "url"`; `parseConfig` validates untrusted query params; `isDefault`, `toSearchParams`, `isVisible`.
+- `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.
+- `lib/registry.ts` — the one map of slug → title, description, schema. Used by the registry route and the preview page.
+- `lib/parts.ts` — catalogue: part name (Almanac, Porthole, Sextant, Logbook, Masthead, Beacon), plain name, pattern, accent, status.
+- `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
+- `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
+- Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
+- `app/r/[name]/route.ts` — shadcn registry item for every slug in `lib/registry.ts`.
 - Tests:
-  - `e2e/generate.ts` holds the `components` map (schema + test variants per component). It writes exported outputs to `app/harness/<slug>-<variant>` (React, rendered by Next) and `e2e/.generated/<slug>/<variant>` (vanilla, opened via file://). Both dirs are gitignored.
-  - `e2e/helpers.ts` has `targets(slug)` and `expectNoAxeViolations`. Each `e2e/<slug>.spec.ts` runs identical tests against both outputs.
-- Adding a component touches:
-  - `registry/<slug>/` (schema + 4 source files)
-  - `app/<slug>/`
-  - `componentsList`
-  - the route's `registry` map
-  - `components` in `e2e/generate.ts`
-  - `e2e/<slug>.spec.ts`
+  - `e2e/generate.ts` holds the `components` map (schema, variants, optional `renderHtml`). Writes React output to `app/(bare)/harness/<slug>-<variant>` and vanilla output to `e2e/.generated/<slug>/<variant>`. Both gitignored.
+  - `e2e/helpers.ts`: `targets(slug)`, `expectNoAxeViolations`, and `open(page, url)` which waits for `data-hydrated` on React harness pages.
+- Adding a component touches: `registry/<slug>/`, `app/(site)/<slug>/`, `lib/parts.ts`, `lib/registry.ts`, `components/preview-client.tsx`, `components` in `e2e/generate.ts`, `e2e/<slug>.spec.ts`.
 
 ## Stack (installed versions — check before upgrading or coding against a lib)
 Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9.3 (strict) · Tailwind CSS 4.3.3 · ESLint 9 + eslint-config-next 16.3.5 · Playwright 1.63.0 + @axe-core/playwright 4.13.0 · pnpm 11.5.0 · Node 24.15.0. Zod not installed (if added: v4 API).
@@ -77,3 +67,8 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Tests run in 3 Playwright projects: chromium, webkit (Safari engine) and iphone (emulated iPhone 15). Playwright's WebKit is close to Safari but not identical; a real-device check stays on the manual checklist.
 - Playwright refuses to click `aria-disabled` elements. Use `click({ force: true })` when testing that a disabled item can't be picked.
 - ESLint enforces `react-hooks/set-state-in-effect`. Read browser storage with `useSyncExternalStore` (see the checklist in `components/editor.tsx`), not `setState` inside `useEffect`.
+- Next injects `#__next-route-announcer__` with `role="alert"`: scope alert locators by name or to `main`.
+- Safari does not focus a button when it is clicked. Components that close on Escape must listen on `document`, not on their own root (this bit the header menu).
+- Safari only Tabs to links when the user turns that setting on. Test link focus with `.focus()`, not with Tab.
+- Tests must wait for hydration before typing into React output: use `open()` from `e2e/helpers.ts`.
+- Any accent used as *text* has to be darkened/lightened first (`readableAccent`), or WCAG contrast fails. iOS blue on white is only 3.9:1.

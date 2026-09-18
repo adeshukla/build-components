@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, type CSSProperties, type KeyboardEvent } from "react";
+import { useId, useRef, useSyncExternalStore, type CSSProperties, type KeyboardEvent } from "react";
 
 export type ModalConfig = {
   triggerText: string;
@@ -14,6 +14,8 @@ export type ModalConfig = {
   closeButton: boolean;
   secondaryButton: boolean;
   secondaryText: string;
+  theme: "light" | "dark" | "system";
+  iosOnPhone: boolean;
   accentColor: string;
   radius: number;
   size: "sm" | "md" | "lg";
@@ -34,6 +36,8 @@ const defaultConfig: ModalConfig = {
   closeButton: true,
   secondaryButton: true,
   secondaryText: "Cancel",
+  theme: "light",
+  iosOnPhone: true,
   accentColor: "#2563eb",
   radius: 8,
   size: "md",
@@ -43,6 +47,25 @@ const defaultConfig: ModalConfig = {
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--modal-ring)";
 const widths = { sm: "max-w-sm", md: "max-w-lg", lg: "max-w-2xl" };
+const IOS_FONT = '-apple-system, "SF Pro Text", "SF Pro Display", system-ui, sans-serif';
+const IOS_BLUE = { light: "#007aff", dark: "#0a84ff" };
+const palettes = {
+  light: { surface: "#ffffff", sunk: "#f2f2f7", text: "#171717", muted: "#535358", border: "#737373", line: "#d4d4d4", hover: "#f2f2f7" },
+  dark: { surface: "#1c1c1e", sunk: "#2c2c2e", text: "#f5f5f7", muted: "#b0b0b8", border: "#8e8e93", line: "#48484a", hover: "#2c2c2e" },
+};
+
+const media = (query: string) => ({
+  subscribe: (onChange: () => void) => {
+    const list = window.matchMedia(query);
+    list.addEventListener("change", onChange);
+    return () => list.removeEventListener("change", onChange);
+  },
+  get: () => window.matchMedia(query).matches,
+});
+const darkMedia = media("(prefers-color-scheme: dark)");
+const phoneMedia = media("(max-width: 480px)");
+const isApplePhone = () =>
+  /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 // Margins restated: Tailwind's reset sets margin: 0, which cancels the browser's dialog centring.
 const positions = {
   center: "m-auto w-[calc(100%-2rem)] rounded-(--modal-radius)",
@@ -63,6 +86,27 @@ function luminance(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+function contrast(a: number, b: number) {
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+function shift(hex: string, factor: number) {
+  const channels = [1, 3, 5].map((i) =>
+    Math.max(0, Math.min(255, Math.round(parseInt(hex.slice(i, i + 2), 16) * factor))),
+  );
+  return `#${channels.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** The accent used as text: darkened (or lightened on dark) until it clears 4.5:1. */
+function readableAccent(hex: string, surface: string, dark: boolean) {
+  let color = hex;
+  const surfaceLuminance = luminance(surface);
+  for (let i = 0; i < 14 && contrast(luminance(color), surfaceLuminance) < 4.5; i++) {
+    color = shift(color, dark ? 1.15 : 0.85);
+  }
+  return color;
+}
+
 export function Modal({
   config = defaultConfig,
   onAction,
@@ -79,14 +123,31 @@ export function Modal({
   const actionRef = useRef<ModalAction>("dismiss");
   const overflowRef = useRef("");
 
-  const accentLuminance = luminance(config.accentColor);
+  // Theme and platform are read from the browser, so the exported file works anywhere.
+  const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
+  const onPhone = useSyncExternalStore(phoneMedia.subscribe, phoneMedia.get, () => false);
+  const applePhone = useSyncExternalStore(phoneMedia.subscribe, () => onPhone && isApplePhone(), () => false);
+  const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
+  const ios = config.iosOnPhone && applePhone;
+  const palette = dark ? palettes.dark : palettes.light;
+  const accent =
+    ios && config.accentColor === defaultConfig.accentColor ? IOS_BLUE[dark ? "dark" : "light"] : config.accentColor;
+  const accentLuminance = luminance(accent);
   const style = {
-    "--modal-accent": config.accentColor,
+    "--modal-accent": accent,
+    "--modal-accent-text": readableAccent(accent, palette.surface, dark),
     "--modal-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--modal-ring": accentLuminance <= 0.3 ? config.accentColor : "#000000",
-    "--modal-radius": `${config.radius}px`,
+    "--modal-ring": accentLuminance <= 0.35 || dark ? accent : "#000000",
+    "--modal-radius": `${ios ? 14 : config.radius}px`,
+    "--modal-surface": palette.surface,
+    "--modal-text": palette.text,
+    "--modal-muted": palette.muted,
+    "--modal-border": palette.border,
+    "--modal-line": palette.line,
+    "--modal-hover": palette.hover,
+    ...(ios ? { fontFamily: IOS_FONT } : null),
   } as CSSProperties;
-  const primaryButton = `cursor-pointer rounded-(--modal-radius) bg-(--modal-accent) px-4 py-2 font-medium text-(--modal-on-accent) ${focusRing}`;
+  const primaryButton = `cursor-pointer rounded-(--modal-radius) bg-(--modal-accent) px-4 font-medium text-(--modal-on-accent) ${focusRing} ${ios ? "min-h-11 py-2.5" : "py-2"}`;
 
   function open() {
     const dialog = dialogRef.current;
@@ -143,9 +204,14 @@ export function Modal({
         onClick={(event) => {
           if (config.closeOnBackdrop && event.target === event.currentTarget) close("dismiss");
         }}
-        className={`max-h-[calc(100%-2rem)] overflow-auto border-0 bg-white p-0 text-neutral-900 shadow-xl backdrop:bg-black/50 ${widths[config.size]} ${positions[config.position]} ${animations[config.animation]}`}
+        className={`max-h-[calc(100%-2rem)] overflow-auto border-0 bg-(--modal-surface) p-0 text-(--modal-text) shadow-xl backdrop:bg-black/50 ${widths[config.size]} ${
+          ios
+            ? "mx-auto mt-auto mb-0 w-full rounded-t-[1.25rem] pb-[env(safe-area-inset-bottom)] transition-transform duration-300 ease-out starting:translate-y-full motion-reduce:transition-none"
+            : `${positions[config.position]} ${animations[config.animation]}`
+        }`}
       >
         <div className="p-6">
+          {ios && <span aria-hidden="true" className="mx-auto mb-4 block h-1.5 w-9 rounded-full bg-(--modal-line)" />}
           <div className="flex items-start justify-between gap-4">
             <h2 ref={titleRef} id={`${id}-title`} tabIndex={-1} className="text-lg font-semibold outline-none">
               {config.title}
@@ -155,7 +221,7 @@ export function Modal({
                 type="button"
                 aria-label="Close"
                 onClick={() => close("dismiss")}
-                className={`-m-1 grid size-8 shrink-0 cursor-pointer place-items-center rounded-(--modal-radius) text-neutral-700 hover:bg-neutral-100 ${focusRing}`}
+                className={`-m-1 grid shrink-0 cursor-pointer place-items-center rounded-(--modal-radius) text-(--modal-muted) hover:bg-(--modal-hover) ${focusRing} ${ios ? "size-11" : "size-8"}`}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
                   <path d="M6 6l12 12M18 6 6 18" />
@@ -163,7 +229,7 @@ export function Modal({
               </button>
             )}
           </div>
-          <p id={`${id}-body`} className="mt-2 text-neutral-700">
+          <p id={`${id}-body`} className="mt-2 text-(--modal-muted)">
             {config.body}
           </p>
           <div className="mt-6 flex flex-wrap justify-end gap-3">
@@ -171,7 +237,7 @@ export function Modal({
               <button
                 type="button"
                 onClick={() => close("secondary")}
-                className={`cursor-pointer rounded-(--modal-radius) border border-neutral-500 bg-white px-4 py-2 font-medium text-neutral-900 hover:bg-neutral-100 ${focusRing}`}
+                className={`cursor-pointer rounded-(--modal-radius) border border-(--modal-border) bg-transparent px-4 font-medium text-(--modal-text) hover:bg-(--modal-hover) ${focusRing} ${ios ? "min-h-11 py-2.5 border-0 text-(--modal-accent-text)" : "py-2"}`}
               >
                 {config.secondaryText}
               </button>

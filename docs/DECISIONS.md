@@ -129,3 +129,33 @@ Session 3 (Adesh: "the design is ugly … super organized … Build Components l
 **Decision:** Playwright runs every spec in chromium, webkit (Safari's engine) and an emulated iPhone 15.
 **Why:** Adesh asked whether it looks the same on iPhone/Safari. The picker is custom (never the OS picker), so layout is ours; the test run proves behaviour. A real device check stays on the manual checklist.
 **Found:** A real React bug. Pressing Enter right after typing skipped validation in WebKit. Fixed by reading the live input value.
+
+---
+
+Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/dark, per-page animation, better naming, iPhone look, and the rest of the components):
+
+## 2026-09-18 — D23. Parts have names, not codes
+**Decision:** "BC-DP01" is gone. Each part has a name from one family (ship's instruments) plus its plain description: Almanac (date picker), Porthole (modal), Sextant (searchable select), Logbook (form), Masthead (site header), Beacon (CTA section). Each also has its own accent colour in the catalogue and on its page.
+**Why:** Adesh: the code names were dry and forgettable. Names are easier to say, to search for and to remember; the plain description still carries the meaning.
+
+## 2026-09-18 — D24. The React preview runs in its own frame
+**Decision:** `app/(bare)/preview/[slug]` renders just the component. The editor shows it in an iframe and sends options by `postMessage`. Routes are split into `(site)` (with chrome) and `(bare)` (without).
+**Why:** A native `<dialog>` opened with `showModal()` always covers the whole window, so the React preview spilled over the page while the HTML/CSS/JS preview (already in an iframe) stayed put. Same containment for both outputs now, and the preview page also proves the exported React file runs standalone.
+**Rejected:** Rendering dialogs inline instead of `showModal()` — that would weaken the real component (top layer, page made inert, Escape handling).
+
+## 2026-09-18 — D25. Light / dark / system, per component and for the site
+**Decision:** The site has a System / Light / Dark control in the header (saved per browser, applied before first paint). Every component gets a `theme` option with the same three values, resolved at runtime from `prefers-color-scheme`, so exported code follows the visitor's device without any wiring.
+**Why:** Adesh asked for both. Components carry their own palette as CSS custom properties, so the exported file works on any site.
+
+## 2026-09-18 — D26. iPhone look, switched on by default
+**Decision:** `iosOnPhone` on the date picker, modal and select. On iPhone/iPad it switches to Apple's system font, iOS blue, 44px rows, 12–14px radii, grouped grey fields, and presents the calendar and modal as sheets that slide up from the bottom.
+**Why:** Adesh: on iPhone it should feel like what iPhone users already know. Detected from the user agent plus a phone-width media query, so a desktop Safari window is unaffected.
+**Cost:** Any accent used as text needs a contrast-corrected shade (`readableAccent`); plain iOS blue on white is 3.9:1 and failed our own axe run.
+
+## 2026-09-18 — D27. HTML-first components generate their markup
+**Decision:** The CTA, form and header produce their vanilla HTML from the options (`registry/<slug>/vanilla/render.ts`) instead of shipping a fixed file with a config block. The CTA ships no JavaScript at all.
+**Why:** This was the open question from the session-1 feasibility report (D9): swapping a config block works for JS-driven components, not for markup that must be right in the HTML itself. Generating the markup keeps "no JavaScript" honest for content sections.
+
+## 2026-09-18 — D28. Nav and footer stay short
+**Decision:** The header links to Catalogue, How it works and Testing; the footer carries the brand, one catalogue link and what the tests cover. Neither lists components.
+**Why:** Adesh: the catalogue already lists everything, so repeating it twice is noise.

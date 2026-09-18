@@ -1,0 +1,72 @@
+/* CTA section — plain CSS, no JavaScript. Colours come from the inline custom properties on the section. */
+.cta {
+  --cta-accent: #2563eb;
+  --cta-on-accent: #ffffff;
+  --cta-ring: #2563eb;
+  --cta-radius: 8px;
+  --cta-surface: #f7f7fb;
+  --cta-text: #16121f;
+  --cta-muted: #4d4a57;
+  --cta-border: #6f6b7a;
+  padding: 4rem 1.5rem;
+  background: var(--cta-surface);
+  color: var(--cta-text);
+}
+.cta *, .cta *::before, .cta *::after { box-sizing: border-box; }
+.cta--compact { padding: 2.5rem 1.5rem; }
+.cta--spacious { padding: 6rem 1.5rem; }
+@media (min-width: 640px) {
+  .cta { padding: 5rem 1.5rem; }
+  .cta--compact { padding: 3rem 1.5rem; }
+  .cta--spacious { padding: 8rem 1.5rem; }
+}
+
+/* Follow the device when the theme is set to "system". */
+@media (prefers-color-scheme: dark) {
+  .cta--theme-system {
+    --cta-surface: #16161c;
+    --cta-text: #f6f5fa;
+    --cta-muted: #b6b3c2;
+    --cta-border: #8d8a99;
+  }
+}
+
+.cta-inner { max-width: 48rem; margin: 0 auto; }
+.cta--centered .cta-inner { text-align: center; }
+
+.cta-heading {
+  margin: 0;
+  font-size: 1.875rem;
+  line-height: 1.15;
+  font-weight: 700;
+  text-wrap: balance;
+}
+@media (min-width: 640px) {
+  .cta-heading { font-size: 2.25rem; }
+}
+.cta-body {
+  max-width: 42rem;
+  margin: 1rem 0 0;
+  font-size: 1.125rem;
+  color: var(--cta-muted);
+  text-wrap: pretty;
+}
+.cta--centered .cta-body { margin-inline: auto; }
+
+.cta-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.cta--centered .cta-actions { justify-content: center; }
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--cta-radius);
+  font-weight: 600;
+  text-decoration: none;
+}
+.cta-button--primary { background: var(--cta-accent); color: var(--cta-on-accent); }
+.cta-button--secondary { border-color: var(--cta-border); color: var(--cta-text); }
+.cta-button:focus-visible { outline: 2px solid var(--cta-ring); outline-offset: 2px; }
+
+.cta-note { margin: 1rem 0 0; font-size: 0.875rem; color: var(--cta-muted); }
