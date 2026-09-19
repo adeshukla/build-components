@@ -58,26 +58,29 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
   }, []);
 
   return (
-    <div
-      ref={boxRef}
-      style={surfaces[dark ? "dark" : "light"]}
-      className={slug === "cta" || slug === "header" || slug === "footer" ? "" : "p-6 sm:p-8"}
-    >
-      {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
-      {slug === "cta" && <Cta config={config as unknown as CtaConfig} />}
-      {slug === "header" && <HeaderPart config={config as unknown as HeaderConfig} />}
-      {slug === "footer" && <FooterPart config={config as unknown as FooterConfig} />}
-      {slug === "form" && <ContactForm config={config as unknown as FormConfig} />}
-      {slug === "searchable-select" && <SearchableSelect config={config as unknown as SearchableSelectConfig} />}
-      {slug === "tabs" && <Tabs config={config as unknown as TabsConfig} />}
-      {slug === "modal" && (
-        <>
-          <Modal config={config as unknown as ModalConfig} onAction={setLastAction} />
-          <p className="mt-3 font-mono text-xs text-neutral-600" aria-live="polite">
-            Last result: {lastAction ?? "not closed yet"}
-          </p>
-        </>
-      )}
+    // The outer box paints the whole frame; only the inner one is measured, so reporting its
+    // height back to the editor can never grow the frame a second time.
+    <div style={surfaces[dark ? "dark" : "light"]} className="min-h-dvh">
+      <div
+        ref={boxRef}
+        className={slug === "cta" || slug === "header" || slug === "footer" ? "" : "p-6 sm:p-8"}
+      >
+        {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
+        {slug === "cta" && <Cta config={config as unknown as CtaConfig} />}
+        {slug === "header" && <HeaderPart config={config as unknown as HeaderConfig} />}
+        {slug === "footer" && <FooterPart config={config as unknown as FooterConfig} />}
+        {slug === "form" && <ContactForm config={config as unknown as FormConfig} />}
+        {slug === "searchable-select" && <SearchableSelect config={config as unknown as SearchableSelectConfig} />}
+        {slug === "tabs" && <Tabs config={config as unknown as TabsConfig} />}
+        {slug === "modal" && (
+          <>
+            <Modal config={config as unknown as ModalConfig} onAction={setLastAction} />
+            <p className="mt-3 font-mono text-xs text-neutral-600" aria-live="polite">
+              Last result: {lastAction ?? "not closed yet"}
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }

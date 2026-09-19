@@ -139,7 +139,8 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
                     key={query}
                     title={`${part.name}, HTML/CSS/JS output`}
                     sandbox="allow-scripts"
-                    className="block h-[30rem] w-full rounded-md"
+                    style={{ height: `${MIN_PREVIEW_HEIGHT}px` }}
+                    className="block w-full rounded-md"
                     srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark")}
                   />
                 )}
@@ -205,6 +206,9 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
 }
 
 
+/** Both outputs start at the same height, so switching between them does not move the page. */
+const MIN_PREVIEW_HEIGHT = 480;
+
 /** The React output runs on its own page in a frame, so its dialogs stay inside the bench. */
 function PreviewFrame({
   slug,
@@ -218,7 +222,7 @@ function PreviewFrame({
   initialQuery: string;
 }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState(320);
+  const [height, setHeight] = useState(MIN_PREVIEW_HEIGHT);
   const [ready, setReady] = useState(false);
   // The frame keeps one URL for the session; later changes arrive by message.
   const [src] = useState(`/preview/${slug}${initialQuery ? `?${initialQuery}` : ""}`);
@@ -228,7 +232,7 @@ function PreviewFrame({
       if (event.origin !== window.location.origin) return;
       if (event.data?.type === "preview-ready") setReady(true);
       if (event.data?.type === "preview-height") {
-        setHeight(Math.min(760, Math.max(220, Number(event.data.height) + 4)));
+        setHeight(Math.min(760, Math.max(MIN_PREVIEW_HEIGHT, Number(event.data.height) + 4)));
       }
     }
     window.addEventListener("message", onMessage);
@@ -257,7 +261,7 @@ function vanillaDocument(html: string, css: string, js: string, dark: boolean) {
   return html
     .replace(
       /<link rel="stylesheet" href="[^"]+">/,
-      () => `<style>body{margin:0;padding:32px;font-family:system-ui,sans-serif;${page}}${css}</style>`,
+      () => `<style>body{margin:0;min-height:100dvh;padding:32px;font-family:system-ui,sans-serif;${page}}${css}</style>`,
     )
     .replace(/<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `<script>${js}</script>`));
 }
