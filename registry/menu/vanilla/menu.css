@@ -1,0 +1,81 @@
+/* Dropdown menu — plain CSS. Colours come from the inline custom properties. */
+.mn {
+  --mn-accent-text: #1b4ab0;
+  --mn-radius: 10px;
+  --mn-surface: #ffffff;
+  --mn-text: #16121f;
+  --mn-muted: #4d4a57;
+  --mn-line: #d9d5e4;
+  --mn-hover: #f4f3f8;
+  position: relative;
+  display: inline-block;
+  background: var(--mn-surface);
+  color: var(--mn-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .mn--theme-system {
+    --mn-surface: #141019;
+    --mn-text: #f6f5fa;
+    --mn-muted: #b6b3c2;
+    --mn-line: #3a3448;
+    --mn-hover: #221d2e;
+  }
+}
+
+.mn-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--mn-line);
+  border-radius: var(--mn-radius);
+  background: none;
+  color: var(--mn-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.mn-chevron { width: 1rem; height: 1rem; }
+.mn-button[aria-expanded="true"] .mn-chevron { transform: rotate(180deg); }
+
+.mn-list {
+  position: absolute;
+  z-index: 20;
+  min-width: 13rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--mn-line);
+  border-radius: var(--mn-radius);
+  background: var(--mn-surface);
+  box-shadow: 0 16px 40px -24px rgb(0 0 0 / 0.55);
+}
+.mn--start .mn-list { left: 0; }
+.mn--end .mn-list { right: 0; }
+
+.mn-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: calc(var(--mn-radius) - 4px);
+  background: none;
+  color: var(--mn-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mn-item:hover { background: var(--mn-hover); }
+
+.mn-button:focus-visible,
+.mn-item:focus-visible {
+  outline: 2px solid var(--mn-accent-text);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mn-chevron { transition: transform 200ms ease; }
+}

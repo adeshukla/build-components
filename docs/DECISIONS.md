@@ -176,3 +176,21 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 ## 2026-09-20 — D31. Both outputs open at the same height in the test bench
 **Decision:** The React frame and the HTML/CSS/JS frame both start at 480px, and the React frame grows from there for taller components. The preview frame paints its own surface.
 **Why:** Adesh: the React box did not match the HTML/JS box. The React frame measured its content, so a short component gave a half-height box and the page jumped when the output was switched.
+
+## 2026-09-20 — D32. The form is field-driven, with the rules as options
+**Decision:** The form no longer has five fixed fields. A `fields` list sets the label, type (text, email, tel, url, number, date, textarea, select, checkbox), whether it is required, a minimum and maximum, a custom pattern, the choices for a select and a hint. Checking happens on blur, as you type, or on submit; a field that is already wrong is re-checked as it is corrected whichever you pick.
+**Why:** Adesh: "no validation controls are given". Validation worked, but the rules were baked in, so the part could only ever be the contact form we happened to write.
+**How:** One rule set, written twice (React and plain JS) and asserted by the same tests. Messages name the problem and the fix, in the style of the GOV.UK Design System.
+
+## 2026-09-20 — D33. One page for every part
+**Decision:** Per-component `page.tsx` and `editor.tsx` files are gone. A part page is `app/(site)/[slug]`, and `lib/registry.ts` carries title, description, schema, keyboard map, checklist and HTML renderer for every component.
+**Why:** Eleven near-identical file pairs, about to become thirty-five. Adding a component is now four files in `registry/<slug>/` plus one entry.
+
+## 2026-09-20 — D34. What gets built next, and why those
+**Decision:** The list is picked on two axes: how often developers reach for it, and how hard it is to get right by hand. First five: accordion, tooltip, dropdown menu, popover and notifications. Then: data table, pagination, breadcrumbs, stepper, sidebar, file upload, multi-select, password field, one-time code, range slider, switch, rating, time picker, skeleton, empty state, alert banner, avatars, pricing table, stats, cookie consent, timeline, lightbox.
+**Why:** Adesh asked for the components developers struggle to build from scratch. Accessibility guidance is consistent about which those are: comboboxes and autocompletes, dates, tables, trees and drag-and-drop are the hard ones, and menus, tooltips and live-region messages are the ones people get subtly wrong.
+**Grounding:** The A11Y Project's guide to troublesome components, Adam Silver on accessible autocompletes, and the published component sets of Radix, Base UI and shadcn (what they carry is a fair proxy for what people use).
+
+## 2026-09-20 — D35. Hover-pause only where hovering exists
+**Decision:** A message that clears itself pauses on hover only on devices that really hover (`(hover: hover)`); focus always pauses it.
+**Why:** The iPhone test run caught it: a message that appears where the finger tapped keeps an emulated hover, so it would never clear itself on a phone.

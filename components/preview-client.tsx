@@ -13,6 +13,16 @@ import { Modal, type ModalAction, type ModalConfig } from "@/registry/modal/reac
 import { SearchableSelect, type SearchableSelectConfig } from "@/registry/searchable-select/react/searchable-select";
 import { Tabs, type TabsConfig } from "@/registry/tabs/react/tabs";
 
+import { Accordion, type AccordionConfig } from "@/registry/accordion/react/accordion";
+
+import { Tooltip, type TooltipConfig } from "@/registry/tooltip/react/tooltip";
+
+import { Menu, type MenuConfig } from "@/registry/menu/react/menu";
+
+import { Popover, type PopoverConfig } from "@/registry/popover/react/popover";
+
+import { Toast, type ToastConfig } from "@/registry/toast/react/toast";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -68,6 +78,11 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
         ref={boxRef}
         className={["cta", "header", "footer", "mega-menu"].includes(slug) ? "" : "p-6 sm:p-8"}
       >
+        {slug === "accordion" && <Accordion config={config as unknown as AccordionConfig} />}
+        {slug === "tooltip" && <Tooltip config={config as unknown as TooltipConfig} />}
+        {slug === "menu" && <Menu config={config as unknown as MenuConfig} />}
+        {slug === "popover" && <Popover config={config as unknown as PopoverConfig} />}
+        {slug === "toast" && <Toast config={config as unknown as ToastConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

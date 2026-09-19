@@ -1,0 +1,130 @@
+/* Notifications — plain CSS. Colours come from the inline custom properties. */
+.to {
+  --to-accent-text: #1b4ab0;
+  --to-radius: 12px;
+  --to-page: #ffffff;
+  --to-surface: #ffffff;
+  --to-text: #16121f;
+  --to-muted: #4d4a57;
+  --to-line: #d9d5e4;
+  --to-good: #1a7f52;
+  --to-bad: #b4232b;
+  display: block;
+  background: var(--to-page);
+  color: var(--to-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .to--theme-system {
+    --to-page: #141019;
+    --to-surface: #221d2e;
+    --to-text: #f6f5fa;
+    --to-muted: #b6b3c2;
+    --to-line: #3a3448;
+    --to-good: #6ddba4;
+    --to-bad: #ff8f8f;
+  }
+}
+
+.to-triggers { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.to-trigger {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--to-line);
+  border-radius: var(--to-radius);
+  background: none;
+  color: var(--to-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.to-stack {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  width: min(24rem, calc(100vw - 2rem));
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.to-live { display: contents; }
+
+.to-stack--top-right { top: 1rem; right: 1rem; align-items: flex-end; }
+.to-stack--top-center { top: 1rem; left: 50%; translate: -50% 0; align-items: center; }
+.to-stack--bottom-right { bottom: 1rem; right: 1rem; align-items: flex-end; }
+.to-stack--bottom-center { bottom: 1rem; left: 50%; translate: -50% 0; align-items: center; }
+
+.to-item {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--to-line);
+  border-radius: var(--to-radius);
+  background: var(--to-surface);
+  box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.6);
+  pointer-events: auto;
+}
+
+.to-icon { flex-shrink: 0; margin-top: 0.125rem; }
+.to-icon svg { width: 1.25rem; height: 1.25rem; }
+.to-icon--good { color: var(--to-good); }
+.to-icon--bad { color: var(--to-bad); }
+
+.to-body { flex: 1; min-width: 0; }
+.to-text { margin: 0; font-size: 0.875rem; text-wrap: pretty; }
+.to-action {
+  margin-top: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--to-accent-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.to-close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.25rem;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.to-close svg { width: 1rem; height: 1rem; }
+
+.to-trigger:focus-visible,
+.to-action:focus-visible,
+.to-close:focus-visible {
+  outline: 2px solid var(--to-accent-text);
+  outline-offset: 2px;
+}
+
+.to-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .to-item { animation: to-in 200ms ease-out; }
+  @keyframes to-in {
+    from { opacity: 0; translate: 0 0.5rem; }
+  }
+}

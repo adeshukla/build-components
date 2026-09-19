@@ -1,0 +1,70 @@
+/* Accordion — plain CSS. Colours come from the inline custom properties on the wrapper. */
+.ac {
+  --ac-accent: #2563eb;
+  --ac-accent-text: #1b4ab0;
+  --ac-radius: 10px;
+  --ac-surface: #ffffff;
+  --ac-sunk: #f4f3f8;
+  --ac-text: #16121f;
+  --ac-muted: #4d4a57;
+  --ac-line: #d9d5e4;
+  display: block;
+  background: var(--ac-surface);
+  color: var(--ac-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ac--theme-system {
+    --ac-surface: #141019;
+    --ac-sunk: #221d2e;
+    --ac-text: #f6f5fa;
+    --ac-muted: #b6b3c2;
+    --ac-line: #3a3448;
+  }
+}
+
+.ac--bordered { border: 1px solid var(--ac-line); border-radius: var(--ac-radius); }
+.ac--bordered .ac-item + .ac-item,
+.ac--plain .ac-item + .ac-item { border-top: 1px solid var(--ac-line); }
+.ac--separated { display: flex; flex-direction: column; gap: 0.75rem; }
+.ac--separated .ac-item { border: 1px solid var(--ac-line); border-radius: var(--ac-radius); }
+
+.ac-heading { margin: 0; font-size: inherit; font-weight: inherit; }
+.ac-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.ac-button:hover { background: var(--ac-sunk); }
+.ac-button:focus-visible { outline: 2px solid var(--ac-accent-text); outline-offset: -2px; }
+
+.ac-icon {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  color: var(--ac-accent-text);
+}
+.ac-icon svg { width: 1.25rem; height: 1.25rem; }
+.ac--icon-chevron .ac-button[aria-expanded="true"] .ac-icon { transform: rotate(180deg); }
+.ac--icon-plus .ac-button[aria-expanded="true"] .ac-icon { transform: rotate(45deg); }
+
+.ac-panel { padding: 0 1rem 1rem; color: var(--ac-muted); text-wrap: pretty; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ac-icon { transition: transform 200ms ease-out; }
+}

@@ -33,6 +33,21 @@ import * as searchableSelectDocs from "@/registry/searchable-select/docs";
 import { tabsSchema } from "@/registry/tabs/schema";
 import * as tabsDocs from "@/registry/tabs/docs";
 import { renderTabsHtml } from "@/registry/tabs/vanilla/render";
+import { accordionSchema } from "@/registry/accordion/schema";
+import * as accordionDocs from "@/registry/accordion/docs";
+import { renderAccordionHtml } from "@/registry/accordion/vanilla/render";
+import { tooltipSchema } from "@/registry/tooltip/schema";
+import * as tooltipDocs from "@/registry/tooltip/docs";
+import { renderTooltipHtml } from "@/registry/tooltip/vanilla/render";
+import { menuSchema } from "@/registry/menu/schema";
+import * as menuDocs from "@/registry/menu/docs";
+import { renderMenuHtml } from "@/registry/menu/vanilla/render";
+import { popoverSchema } from "@/registry/popover/schema";
+import * as popoverDocs from "@/registry/popover/docs";
+import { renderPopoverHtml } from "@/registry/popover/vanilla/render";
+import { toastSchema } from "@/registry/toast/schema";
+import * as toastDocs from "@/registry/toast/docs";
+import { renderToastHtml } from "@/registry/toast/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -118,6 +133,41 @@ export const registry = {
     schema: tabsSchema,
     ...tabsDocs,
     renderHtml: (config) => renderTabsHtml(config as never),
+  },
+  "accordion": {
+    title: "Accordion",
+    description: "An accessible accordion (WAI-ARIA accordion pattern) with headings, one or many open at a time.",
+    schema: accordionSchema,
+    ...accordionDocs,
+    renderHtml: (config) => renderAccordionHtml(config as never),
+  },
+  "tooltip": {
+    title: "Tooltip",
+    description: "An accessible tooltip (WAI-ARIA tooltip pattern) that opens on hover and on focus.",
+    schema: tooltipSchema,
+    ...tooltipDocs,
+    renderHtml: (config) => renderTooltipHtml(config as never),
+  },
+  "menu": {
+    title: "Dropdown menu",
+    description: "An accessible dropdown menu (WAI-ARIA menu button pattern) with arrow keys and type-ahead.",
+    schema: menuSchema,
+    ...menuDocs,
+    renderHtml: (config) => renderMenuHtml(config as never),
+  },
+  "popover": {
+    title: "Popover",
+    description: "An accessible popover: an anchored panel that takes focus, closes on Escape and returns it.",
+    schema: popoverSchema,
+    ...popoverDocs,
+    renderHtml: (config) => renderPopoverHtml(config as never),
+  },
+  "toast": {
+    title: "Notifications",
+    description: "Accessible notification messages: a live region that is already in the page, with pause and close.",
+    schema: toastSchema,
+    ...toastDocs,
+    renderHtml: (config) => renderToastHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

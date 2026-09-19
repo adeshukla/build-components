@@ -19,6 +19,21 @@ import type { FormConfig } from "../registry/form/react/form";
 import { renderHeaderHtml } from "../registry/header/vanilla/render";
 import { headerSchema } from "../registry/header/schema";
 import type { HeaderConfig } from "../registry/header/react/header";
+import { accordionSchema } from "../registry/accordion/schema";
+import type { AccordionConfig } from "../registry/accordion/react/accordion";
+import { renderAccordionHtml } from "../registry/accordion/vanilla/render";
+import { tooltipSchema } from "../registry/tooltip/schema";
+import type { TooltipConfig } from "../registry/tooltip/react/tooltip";
+import { renderTooltipHtml } from "../registry/tooltip/vanilla/render";
+import { menuSchema } from "../registry/menu/schema";
+import type { MenuConfig } from "../registry/menu/react/menu";
+import { renderMenuHtml } from "../registry/menu/vanilla/render";
+import { popoverSchema } from "../registry/popover/schema";
+import type { PopoverConfig } from "../registry/popover/react/popover";
+import { renderPopoverHtml } from "../registry/popover/vanilla/render";
+import { toastSchema } from "../registry/toast/schema";
+import type { ToastConfig } from "../registry/toast/react/toast";
+import { renderToastHtml } from "../registry/toast/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -142,6 +157,51 @@ export const components: Record<
       default: "",
       sheet:
         "position=bottom&animation=none&closeButton=false&secondaryButton=false&closeOnBackdrop=false&initialFocus=primary&size=lg",
+    },
+  },
+  "accordion": {
+    exportName: "Accordion",
+    schema: accordionSchema,
+    renderHtml: (config) => renderAccordionHtml(config as unknown as AccordionConfig),
+    variants: {
+      default: "",
+      cards: "allowMultiple=true&openFirst=false&icon=plus&look=separated&theme=dark&headingLevel=h2",
+    },
+  },
+  "tooltip": {
+    exportName: "Tooltip",
+    schema: tooltipSchema,
+    renderHtml: (config) => renderTooltipHtml(config as unknown as TooltipConfig),
+    variants: {
+      default: "",
+      icon: "trigger=icon&placement=right&delay=0&arrow=false&theme=dark&triggerText=What+is+this%3F&text=We+use+this+to+work+out+delivery.",
+    },
+  },
+  "menu": {
+    exportName: "Menu",
+    schema: menuSchema,
+    renderHtml: (config) => renderMenuHtml(config as unknown as MenuConfig),
+    variants: {
+      default: "",
+      plain: "typeAhead=false&chevron=false&align=end&theme=dark&buttonText=Options&items=%5B%7B%22label%22%3A%22Rename%22%2C%22href%22%3A%22%22%7D%2C%7B%22label%22%3A%22Download%22%2C%22href%22%3A%22%22%7D%5D",
+    },
+  },
+  "popover": {
+    exportName: "Popover",
+    schema: popoverSchema,
+    renderHtml: (config) => renderPopoverHtml(config as unknown as PopoverConfig),
+    variants: {
+      default: "",
+      sticky: "closeOnOutside=false&placement=right&closeButton=false&secondaryButton=false&theme=dark&triggerText=Filters&heading=Filters&primaryText=Apply&body=Narrow+the+list+to+what+you+need.",
+    },
+  },
+  "toast": {
+    exportName: "Toast",
+    schema: toastSchema,
+    renderHtml: (config) => renderToastHtml(config as unknown as ToastConfig),
+    variants: {
+      default: "",
+      quick: "duration=1&position=top-center&icon=false&actionText=&maxVisible=1&theme=dark",
     },
   },
 };

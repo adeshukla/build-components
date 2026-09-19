@@ -1,0 +1,70 @@
+/* Tooltip — plain CSS. Colours come from the inline custom properties. */
+.tt {
+  --tt-accent-text: #1b4ab0;
+  --tt-radius: 8px;
+  --tt-surface: #ffffff;
+  --tt-tip: #16121f;
+  --tt-tip-text: #ffffff;
+  --tt-text: #16121f;
+  --tt-line: #d9d5e4;
+  display: inline-block;
+  background: var(--tt-surface);
+  color: var(--tt-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tt--theme-system {
+    --tt-surface: #141019;
+    --tt-tip: #f6f5fa;
+    --tt-tip-text: #16121f;
+    --tt-text: #f6f5fa;
+    --tt-line: #3a3448;
+  }
+}
+
+.tt-anchor { position: relative; display: inline-flex; }
+
+.tt-trigger {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--tt-line);
+  border-radius: var(--tt-radius);
+  background: none;
+  color: var(--tt-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.tt-trigger:focus-visible { outline: 2px solid var(--tt-accent-text); outline-offset: 2px; }
+.tt--icon .tt-trigger { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; }
+.tt--icon .tt-trigger svg { width: 1.25rem; height: 1.25rem; }
+
+.tt-tip {
+  position: absolute;
+  z-index: 20;
+  width: max-content;
+  max-width: 16rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--tt-radius);
+  background: var(--tt-tip);
+  color: var(--tt-tip-text);
+  font-size: 0.875rem;
+  box-shadow: 0 12px 28px -18px rgb(0 0 0 / 0.7);
+}
+.tt-arrow {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--tt-tip);
+  rotate: 45deg;
+}
+
+.tt--top .tt-tip { bottom: 100%; left: 50%; translate: -50% 0; margin-bottom: 0.5rem; }
+.tt--top .tt-arrow { top: 100%; left: 50%; translate: -50% -50%; }
+.tt--bottom .tt-tip { top: 100%; left: 50%; translate: -50% 0; margin-top: 0.5rem; }
+.tt--bottom .tt-arrow { bottom: 100%; left: 50%; translate: -50% 50%; }
+.tt--left .tt-tip { right: 100%; top: 50%; translate: 0 -50%; margin-right: 0.5rem; }
+.tt--left .tt-arrow { left: 100%; top: 50%; translate: -50% -50%; }
+.tt--right .tt-tip { left: 100%; top: 50%; translate: 0 -50%; margin-left: 0.5rem; }
+.tt--right .tt-arrow { right: 100%; top: 50%; translate: 50% -50%; }

@@ -1,0 +1,125 @@
+/* Popover — plain CSS. Colours come from the inline custom properties. */
+.pv {
+  --pv-accent: #2563eb;
+  --pv-accent-text: #1b4ab0;
+  --pv-on-accent: #ffffff;
+  --pv-radius: 12px;
+  --pv-width: 320px;
+  --pv-surface: #ffffff;
+  --pv-text: #16121f;
+  --pv-muted: #4d4a57;
+  --pv-line: #d9d5e4;
+  --pv-hover: #f4f3f8;
+  position: relative;
+  display: inline-block;
+  background: var(--pv-surface);
+  color: var(--pv-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .pv--theme-system {
+    --pv-surface: #141019;
+    --pv-text: #f6f5fa;
+    --pv-muted: #b6b3c2;
+    --pv-line: #3a3448;
+    --pv-hover: #221d2e;
+  }
+}
+
+.pv-trigger {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--pv-radius);
+  background: none;
+  color: var(--pv-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pv-panel {
+  position: absolute;
+  z-index: 20;
+  width: var(--pv-width);
+  max-width: calc(100vw - 2rem);
+  padding: 1rem;
+  border: 1px solid var(--pv-line);
+  border-radius: var(--pv-radius);
+  background: var(--pv-surface);
+  box-shadow: 0 24px 50px -28px rgb(0 0 0 / 0.65);
+}
+
+.pv--bottom .pv-panel { top: 100%; margin-top: 0.5rem; }
+.pv--top .pv-panel { bottom: 100%; margin-bottom: 0.5rem; }
+.pv--right .pv-panel { top: 0; left: 100%; margin-left: 0.5rem; }
+.pv--bottom.pv--start .pv-panel,
+.pv--top.pv--start .pv-panel { left: 0; }
+.pv--bottom.pv--end .pv-panel,
+.pv--top.pv--end .pv-panel { right: 0; }
+
+.pv-arrow {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--pv-surface);
+  rotate: 45deg;
+}
+.pv--bottom .pv-arrow { bottom: 100%; translate: 0 50%; border-top: 1px solid var(--pv-line); border-left: 1px solid var(--pv-line); }
+.pv--top .pv-arrow { top: 100%; translate: 0 -50%; border-right: 1px solid var(--pv-line); border-bottom: 1px solid var(--pv-line); }
+.pv--right .pv-arrow { right: 100%; top: 1rem; translate: 50% 0; border-bottom: 1px solid var(--pv-line); border-left: 1px solid var(--pv-line); }
+.pv--start .pv-arrow { left: 1rem; }
+.pv--end .pv-arrow { right: 1rem; }
+
+.pv-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.pv-heading { margin: 0; font-weight: 600; }
+.pv-body { margin: 0.5rem 0 0; color: var(--pv-muted); font-size: 0.875rem; text-wrap: pretty; }
+
+.pv-close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.25rem;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.pv-close:hover { background: var(--pv-hover); }
+.pv-close svg { width: 1rem; height: 1rem; }
+
+.pv-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+.pv-button {
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--pv-radius);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.pv-button--primary { background: var(--pv-accent); color: var(--pv-on-accent); }
+.pv-button--secondary { border: 1px solid var(--pv-line); background: none; color: var(--pv-text); font-weight: 500; }
+
+.pv-trigger:focus-visible,
+.pv-close:focus-visible,
+.pv-button:focus-visible {
+  outline: 2px solid var(--pv-accent-text);
+  outline-offset: 2px;
+}
+
+.pv-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
