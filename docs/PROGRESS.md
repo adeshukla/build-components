@@ -1,8 +1,8 @@
 # Progress
 
-Last updated: 2026-09-20 (session 5)
+Last updated: 2026-09-20 (session 6)
 
-## Current status (session 5)
+## Current status (session 6)
 
 ### How Adesh can test
 ```
@@ -10,13 +10,13 @@ cd C:\dev\component-platform
 pnpm dev
 ```
 Open http://localhost:3000.
-- **Home:** the board hero with three live parts mounted on it, the catalogue (all eleven parts), how it works, and the test report.
+- **Home:** the board hero with three live parts mounted on it, the catalogue (every part in stock), how it works, and the test report.
 - **Theme:** the System / Light / Dark control sits in the header and is remembered per browser.
 - **Any part page:** Configure on the left (tabs with changed counts, plus a search across every option), the test bench in the middle (React + Tailwind or HTML/CSS/JS, phone/tablet/desktop), the keyboard map and manual checklist under it, and the install command and code below.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The eleven parts, all in stock
+### The sixteen parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -30,6 +30,11 @@ Open http://localhost:3000.
 | **Cargo** | Basket | Native dialog + live totals |
 | **Chartroom** | Mega menu | APG Disclosure navigation |
 | **Capstan** | Carousel | APG Carousel |
+| **Bellows** | Accordion | APG Accordion |
+| **Pennant** | Tooltip | APG Tooltip |
+| **Helm** | Dropdown menu | APG Menu Button |
+| **Spyglass** | Popover | Anchored dialog |
+| **Klaxon** | Notifications | ARIA live region |
 
 ### Done in session 4 (2026-09-18)
 - **Fixed what Adesh reported:**
@@ -59,6 +64,21 @@ Open http://localhost:3000.
   - **Capstan** (carousel): a scroll-snap row that swipes on a phone, with previous/next, dots, a counter and optional rotation that pauses and never runs under reduced motion.
 - **Real bugs the tests caught:** carousel dots under the 24px minimum target size; last-slide maths that ignored how many slides are on screen; a mega-menu panel covering the next row of a wrapped bar on a phone.
 - **Test count:** 385 passing, 2 skipped, across Chromium, WebKit and an emulated iPhone. Production build green.
+
+### Done in session 6 (2026-09-20)
+- **Fixed what Adesh reported:**
+  - **Form:** rebuilt as a field list with real validation controls (D32) — type, required, min, max, custom pattern, choices, hint; checking on blur, on input or on submit.
+  - **Mega menu:** below the breakpoint the bar becomes a menu button and each menu opens as its own step, with a back button. Escape steps back, then closes.
+  - **Carousel:** a repeat option that wraps at both ends, and controls that respond to hover and press.
+  - **CTA:** an eyebrow, three looks (plain, card, bold gradient panel), a split layout and larger display type.
+  - **The site:** one header row on a phone with the theme control inside the menu, the test bench before the options panel on small screens, tighter spacing and type everywhere, and a counted strip in the hero.
+- **Refactor (D33):** one page for every part; `lib/registry.ts` is the single entry point per component.
+- **Five new parts (D34):** Bellows, Pennant, Helm, Spyglass, Klaxon.
+- **Real bugs the tests caught:** menu focus racing a fast keypress; a notification pinned open for ever by an emulated hover after a tap; the CTA eyebrow failing contrast as a tinted pill; carousel dots under the minimum target size.
+- **Test count:** 634 passing, 2 skipped. Production build green.
+
+### Still to build (D34 list, in order)
+Data table · pagination · breadcrumbs · stepper · sidebar nav · file upload (drag and drop) · multi-select · password field · one-time code · range slider · switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
 
 ### In progress
 Nothing half-finished.
