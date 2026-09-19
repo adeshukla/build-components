@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { applyConfig } from "../lib/export";
+import { renderCarouselHtml } from "../registry/carousel/vanilla/render";
+import { carouselSchema } from "../registry/carousel/schema";
+import type { CarouselConfig } from "../registry/carousel/react/carousel";
 import { renderCtaHtml } from "../registry/cta/vanilla/render";
 import { ctaSchema } from "../registry/cta/schema";
 import type { CtaConfig } from "../registry/cta/react/cta";
@@ -97,6 +100,15 @@ export const components: Record<
     variants: {
       default: "",
       wide: "mobileBreakpoint=sm&ctaButton=false&sticky=true&height=compact&theme=dark&skipLink=false&logoText=Harbour",
+    },
+  },
+  carousel: {
+    exportName: "Carousel",
+    schema: carouselSchema,
+    renderHtml: (config) => renderCarouselHtml(config as unknown as CarouselConfig),
+    variants: {
+      default: "",
+      auto: "perView=2&autoRotate=true&interval=2&counter=true&dots=false&theme=dark&aspect=1%2F1&label=Case+studies",
     },
   },
   "mega-menu": {

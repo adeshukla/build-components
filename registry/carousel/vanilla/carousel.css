@@ -1,0 +1,131 @@
+/* Carousel — plain CSS. Colours come from the inline custom properties on the section. */
+.cr {
+  --cr-accent: #2563eb;
+  --cr-accent-text: #1b4ab0;
+  --cr-radius: 12px;
+  --cr-surface: #ffffff;
+  --cr-slide: #f4f3f8;
+  --cr-text: #16121f;
+  --cr-muted: #4d4a57;
+  --cr-line: #d9d5e4;
+  --cr-aspect: 16/9;
+  --cr-width: 100%;
+  display: block;
+  background: var(--cr-surface);
+  color: var(--cr-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .cr--theme-system {
+    --cr-surface: #141019;
+    --cr-slide: #221d2e;
+    --cr-text: #f6f5fa;
+    --cr-muted: #b6b3c2;
+    --cr-line: #3a3448;
+  }
+}
+
+.cr-track {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+.cr-track:focus-visible,
+.cr-control:focus-visible,
+.cr-dot:focus-visible {
+  outline: 2px solid var(--cr-accent-text);
+  outline-offset: 2px;
+}
+
+.cr-slide {
+  flex: 0 0 auto;
+  width: var(--cr-width);
+  overflow: hidden;
+  border-radius: var(--cr-radius);
+  background: var(--cr-slide);
+  scroll-snap-align: start;
+}
+
+.cr-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--cr-aspect);
+  object-fit: cover;
+}
+.cr-image--empty { background: var(--cr-line); opacity: 0.35; }
+
+.cr-body { padding: 1.25rem; }
+.cr-title { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.cr-text { margin: 0.25rem 0 0; color: var(--cr-muted); text-wrap: pretty; }
+
+.cr-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cr-control {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--cr-line);
+  border-radius: 9999px;
+  background: var(--cr-surface);
+  color: var(--cr-text);
+  cursor: pointer;
+}
+.cr-control svg { width: 1rem; height: 1rem; }
+.cr-control:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* The play/pause button shows one icon at a time, from its pressed state. */
+.cr-control[aria-pressed="true"] .cr-icon-play,
+.cr-control[aria-pressed="false"] .cr-icon-pause { display: none; }
+
+.cr-dots { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+/* The button is 24px square (the minimum target size); only the dot inside is small. */
+.cr-dot {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  cursor: pointer;
+}
+.cr-dot::before {
+  content: "";
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1px solid var(--cr-line);
+  border-radius: 9999px;
+}
+.cr-dot[aria-current="true"]::before { background: var(--cr-accent); }
+
+.cr-counter { margin: 0 0 0 auto; color: var(--cr-muted); font-size: 0.875rem; }
+
+.cr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cr-track { scroll-behavior: smooth; }
+}

@@ -70,6 +70,15 @@ export const parts: Part[] = [
     status: "in-stock",
   },
   {
+    slug: "carousel",
+    codename: "Capstan",
+    name: "Carousel",
+    summary: "A row of slides that scrolls, swipes and steps, with dots, a counter and optional rotation.",
+    pattern: "APG Carousel",
+    accent: "#43c6ac",
+    status: "in-stock",
+  },
+  {
     slug: "mega-menu",
     codename: "Chartroom",
     name: "Mega menu",

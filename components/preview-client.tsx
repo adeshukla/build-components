@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
 import { DatePicker, type DatePickerConfig } from "@/registry/date-picker/react/date-picker";
 import { SiteFooter as FooterPart, type FooterConfig } from "@/registry/footer/react/footer";
@@ -67,6 +68,7 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
         className={["cta", "header", "footer", "mega-menu"].includes(slug) ? "" : "p-6 sm:p-8"}
       >
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
+        {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cta" && <Cta config={config as unknown as CtaConfig} />}
         {slug === "header" && <HeaderPart config={config as unknown as HeaderConfig} />}
         {slug === "footer" && <FooterPart config={config as unknown as FooterConfig} />}

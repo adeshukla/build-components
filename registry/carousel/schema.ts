@@ -1,0 +1,148 @@
+import type { ConfigOf, Schema } from "@/lib/schema";
+import type { CarouselConfig } from "./react/carousel";
+
+export const carouselSchema = [
+  {
+    key: "label",
+    label: "Carousel name",
+    description: "Announced to screen readers, so they know what these slides are.",
+    group: "Content",
+    type: "text",
+    default: "Customer stories",
+    maxLength: 60,
+  },
+  {
+    key: "slides",
+    label: "Slides",
+    description: "One row per slide. Leave the image empty for a plain panel; fill alt whenever you add one.",
+    group: "Content",
+    type: "list",
+    default: [
+      {
+        title: "Harbour Studio",
+        text: "Shipped a booking flow in a week, with the keyboard tests already written.",
+        image: "",
+        alt: "",
+      },
+      {
+        title: "Northwind",
+        text: "Replaced three half-finished component libraries with files their team owns.",
+        image: "",
+        alt: "",
+      },
+      {
+        title: "Pilot Labs",
+        text: "Passed an accessibility audit with no changes to the parts they took.",
+        image: "",
+        alt: "",
+      },
+      {
+        title: "Meridian",
+        text: "Handed the code to a client who has no design system of their own.",
+        image: "",
+        alt: "",
+      },
+    ],
+    fields: [
+      { key: "title", label: "Title", maxLength: 60 },
+      { key: "text", label: "Text", maxLength: 200 },
+      { key: "image", label: "Image URL", maxLength: 300, format: "url" },
+      { key: "alt", label: "Image description", maxLength: 140 },
+    ],
+    maxItems: 10,
+    itemLabel: "Slide",
+  },
+  {
+    key: "perView",
+    label: "Slides on screen",
+    description: "How many slides are visible at once on a wide screen.",
+    group: "Behaviour",
+    type: "select",
+    default: "1",
+    options: ["1", "2", "3"],
+  },
+  {
+    key: "autoRotate",
+    label: "Move on its own",
+    description: "Adds a stop button, pauses while you are inside it, and never runs with reduced motion on.",
+    group: "Behaviour",
+    type: "boolean",
+    default: false,
+  },
+  {
+    key: "interval",
+    label: "Seconds per slide",
+    description: "How long each slide stays before the next one.",
+    group: "Behaviour",
+    type: "number",
+    default: 6,
+    min: 2,
+    max: 20,
+    dependsOn: { key: "autoRotate", equals: true },
+  },
+  {
+    key: "arrows",
+    label: "Previous and next buttons",
+    description: "Round buttons under the slides.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "dots",
+    label: "Slide dots",
+    description: "One dot per position, to jump straight there.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "counter",
+    label: "Slide counter",
+    description: "Reads out which slide you are on, e.g. Slide 2 of 4.",
+    group: "Add-ons",
+    type: "boolean",
+    default: false,
+  },
+  {
+    key: "theme",
+    label: "Theme",
+    description: "Light, dark, or whatever the visitor's device is set to.",
+    group: "Style",
+    type: "select",
+    default: "light",
+    options: ["light", "dark", "system"],
+  },
+  {
+    key: "accentColor",
+    label: "Accent colour",
+    description: "The current dot and focus rings. Contrast-corrected before it is used as text.",
+    group: "Style",
+    type: "color",
+    default: "#2563eb",
+  },
+  {
+    key: "aspect",
+    label: "Image shape",
+    description: "The shape of the picture area at the top of each slide.",
+    group: "Style",
+    type: "select",
+    default: "16/9",
+    options: ["16/9", "4/3", "1/1"],
+  },
+  {
+    key: "radius",
+    label: "Corner radius (px)",
+    description: "Roundness of each slide.",
+    group: "Style",
+    type: "number",
+    default: 12,
+    min: 0,
+    max: 28,
+  },
+] as const satisfies Schema;
+
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+
+// Compile error if the schema and the component's config type drift apart.
+export const schemaMatchesComponent: Same<ConfigOf<typeof carouselSchema>, CarouselConfig> = true;

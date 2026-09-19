@@ -1,4 +1,5 @@
 // One place that knows every component: used by the registry route, the preview frame and the editor.
+import { carouselSchema } from "@/registry/carousel/schema";
 import { ctaSchema } from "@/registry/cta/schema";
 import { datePickerSchema } from "@/registry/date-picker/schema";
 import { footerSchema } from "@/registry/footer/schema";
@@ -14,6 +15,11 @@ export const registry = {
     title: "Date picker",
     description: "Accessible date picker (WAI-ARIA dialog + grid) with single or range selection.",
     schema: datePickerSchema,
+  },
+  carousel: {
+    title: "Carousel",
+    description: "An accessible carousel (WAI-ARIA carousel pattern) that scrolls, swipes and steps.",
+    schema: carouselSchema,
   },
   form: {
     title: "Form with validation",
