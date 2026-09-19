@@ -1,24 +1,28 @@
 "use client";
 
-import { useId, useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent } from "react";
+import { useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent } from "react";
+
+export type FormField = {
+  label: string;
+  type: string;
+  required: string;
+  min: string;
+  max: string;
+  pattern: string;
+  options: string;
+  help: string;
+};
 
 export type FormConfig = {
   title: string;
+  intro: string;
   submitText: string;
   successMessage: string;
-  nameLabel: string;
-  emailLabel: string;
-  phoneField: boolean;
-  phoneLabel: string;
-  phoneRequired: boolean;
-  messageField: boolean;
-  messageLabel: string;
-  messageMinLength: number;
-  consentField: boolean;
-  consentLabel: string;
-  validateOn: "blur" | "submit";
+  fields: FormField[];
+  validateOn: "blur" | "input" | "submit";
   errorSummary: boolean;
-  optionalMarker: boolean;
+  marker: "optional" | "required" | "none";
+  counter: boolean;
   layout: "one" | "two";
   theme: "light" | "dark" | "system";
   accentColor: string;
@@ -28,21 +32,48 @@ export type FormConfig = {
 // @config-start
 const defaultConfig: FormConfig = {
   title: "Send us a message",
+  intro: "We answer every message within two working days.",
   submitText: "Send message",
   successMessage: "Thanks. Your message has been sent.",
-  nameLabel: "Full name",
-  emailLabel: "Email address",
-  phoneField: true,
-  phoneLabel: "Phone number",
-  phoneRequired: false,
-  messageField: true,
-  messageLabel: "Message",
-  messageMinLength: 20,
-  consentField: true,
-  consentLabel: "I agree to be contacted about this enquiry",
+  fields: [
+    { label: "Full name", type: "text", required: "yes", min: "2", max: "60", pattern: "", options: "", help: "" },
+    { label: "Email address", type: "email", required: "yes", min: "", max: "", pattern: "", options: "", help: "" },
+    { label: "Phone number", type: "tel", required: "no", min: "", max: "", pattern: "", options: "", help: "" },
+    {
+      label: "How can we help",
+      type: "select",
+      required: "yes",
+      min: "",
+      max: "",
+      pattern: "",
+      options: "New project, Support, Something else",
+      help: "",
+    },
+    {
+      label: "Message",
+      type: "textarea",
+      required: "yes",
+      min: "20",
+      max: "500",
+      pattern: "",
+      options: "",
+      help: "Tell us what you need and when you need it.",
+    },
+    {
+      label: "I agree to be contacted about this enquiry",
+      type: "checkbox",
+      required: "yes",
+      min: "",
+      max: "",
+      pattern: "",
+      options: "",
+      help: "",
+    },
+  ],
   validateOn: "blur",
   errorSummary: true,
-  optionalMarker: true,
+  marker: "optional",
+  counter: true,
   layout: "two",
   theme: "light",
   accentColor: "#2563eb",
@@ -50,16 +81,9 @@ const defaultConfig: FormConfig = {
 };
 // @config-end
 
-export type FormValues = { name: string; email: string; phone: string; message: string; consent: boolean };
-type FieldName = keyof FormValues;
-type Errors = Partial<Record<FieldName, string>>;
-
-const emptyValues: FormValues = { name: "", email: "", phone: "", message: "", consent: false };
-const order: FieldName[] = ["name", "email", "phone", "message", "consent"];
-
 const palettes = {
-  light: { surface: "#ffffff", sunk: "#f5f4f9", text: "#16121f", muted: "#4d4a57", border: "#6f6b7a", error: "#b3261e", errorBg: "#fdf2f2", success: "#0f6b45", successBg: "#eaf6f0" },
-  dark: { surface: "#141019", sunk: "#1d1826", text: "#f6f5fa", muted: "#b6b3c2", border: "#8d8a99", error: "#ff8a8a", errorBg: "#2a1414", success: "#6ee7a8", successBg: "#10251c" },
+  light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#8d8a99", sunk: "#f4f3f8", error: "#b4232b" },
+  dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#8d8a99", sunk: "#221d2e", error: "#ff8f8f" },
 };
 
 const darkMedia = {
@@ -71,7 +95,7 @@ const darkMedia = {
   get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
 };
 
-// WCAG relative luminance, used to keep button text readable on any accent colour.
+// WCAG relative luminance, used to keep text on the accent readable.
 function luminance(hex: string) {
   const [r, g, b] = [1, 3, 5].map((i) => {
     const c = parseInt(hex.slice(i, i + 2), 16) / 255;
@@ -80,177 +104,212 @@ function luminance(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Every message names the problem and what to do about it. */
-export function validateField(field: FieldName, values: FormValues, config: FormConfig): string {
-  const value = values[field];
-  if (field === "name") {
-    return typeof value === "string" && value.trim() === "" ? `Enter your ${config.nameLabel.toLowerCase()}.` : "";
+/** Darkens or lightens the accent until it clears 4.5:1 against the surface it sits on. */
+function readableAccent(hex: string, onDark: boolean) {
+  const channels = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  const surface = onDark ? 0.02 : 1;
+  for (let step = 0; step <= 20; step++) {
+    const shifted = channels.map((c) => Math.round(onDark ? c + (255 - c) * (step / 20) : c * (1 - step / 20)));
+    const value = `#${shifted.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
+    const l = luminance(value);
+    const contrast = (Math.max(l, surface) + 0.05) / (Math.min(l, surface) + 0.05);
+    if (contrast >= 4.5) return value;
   }
-  if (field === "email") {
-    const email = String(value).trim();
-    if (email === "") return `Enter your ${config.emailLabel.toLowerCase()}.`;
-    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
-      ? ""
-      : "Enter an email address in the correct format, like name@example.com.";
+  return onDark ? "#ffffff" : "#000000";
+}
+
+const types = ["text", "email", "tel", "url", "number", "date", "textarea", "select", "checkbox"];
+
+/** A field's name attribute, from its label: "Full name" becomes "full-name". */
+export function fieldName(label: string) {
+  return label.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "field";
+}
+
+const isRequired = (field: FormField) => /^(yes|true|y|1)$/i.test(field.required.trim());
+const fieldType = (field: FormField) => (types.includes(field.type.trim().toLowerCase()) ? field.type.trim().toLowerCase() : "text");
+const choices = (field: FormField) => field.options.split(",").map((option) => option.trim()).filter(Boolean);
+const limit = (value: string) => (value.trim() === "" || !Number.isFinite(Number(value)) ? null : Number(value));
+
+/**
+ * One rule set for both outputs. Messages name the problem and the fix, in the style of the
+ * GOV.UK Design System: "Enter your full name", not "Invalid input".
+ */
+export function validateField(field: FormField, value: string, checked: boolean) {
+  const type = fieldType(field);
+  const label = field.label.trim();
+  const lower = label.charAt(0).toLowerCase() + label.slice(1);
+  const min = limit(field.min);
+  const max = limit(field.max);
+  const required = isRequired(field);
+
+  if (type === "checkbox") return required && !checked ? `Select “${label}” to continue.` : "";
+
+  const text = value.trim();
+  if (text === "") {
+    if (!required) return "";
+    if (type === "select") return `Select ${lower}.`;
+    if (type === "date") return `Enter ${lower}, for example 27 03 2026.`;
+    return `Enter ${lower}.`;
   }
-  if (field === "phone") {
-    if (!config.phoneField) return "";
-    const phone = String(value).trim();
-    if (phone === "") return config.phoneRequired ? `Enter your ${config.phoneLabel.toLowerCase()}.` : "";
-    const digits = phone.replace(/[^0-9]/g, "");
-    return /^\+?[0-9\s()-]+$/.test(phone) && digits.length >= 7
-      ? ""
-      : "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.";
+
+  if (type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
+    return "Enter an email address in the correct format, like name@example.com.";
   }
-  if (field === "message") {
-    if (!config.messageField || config.messageMinLength === 0) return "";
-    const message = String(value).trim();
-    if (message === "") return `Enter your ${config.messageLabel.toLowerCase()}.`;
-    return message.length < config.messageMinLength
-      ? `Your ${config.messageLabel.toLowerCase()} must be at least ${config.messageMinLength} characters. You have written ${message.length}.`
-      : "";
+  if (type === "tel" && !/^[\d\s()+-]{7,}$/.test(text)) {
+    return "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.";
   }
-  if (field === "consent") {
-    return config.consentField && value !== true ? "Select the checkbox to agree before sending." : "";
+  if (type === "url" && !/^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(text)) {
+    return "Enter a web address in the correct format, like https://example.com.";
+  }
+  if (type === "select" && choices(field).length > 0 && !choices(field).includes(text)) {
+    return `Select ${lower} from the list.`;
+  }
+
+  if (type === "number" || type === "date") {
+    if (type === "number" && !Number.isFinite(Number(text))) return `${label} must be a number.`;
+    const size = type === "number" ? Number(text) : Date.parse(text);
+    const low = type === "number" ? min : field.min.trim() === "" ? null : Date.parse(field.min);
+    const high = type === "number" ? max : field.max.trim() === "" ? null : Date.parse(field.max);
+    if (low !== null && size < low) return `${label} must be ${field.min} or later.`.replace("or later", type === "number" ? "or more" : "or later");
+    if (high !== null && size > high) return `${label} must be ${field.max} or earlier.`.replace("or earlier", type === "number" ? "or less" : "or earlier");
+    return "";
+  }
+
+  if (min !== null && text.length < min) {
+    return `${label} must be at least ${min} characters. You have entered ${text.length}.`;
+  }
+  if (max !== null && text.length > max) {
+    return `${label} must be ${max} characters or fewer. You have entered ${text.length}.`;
+  }
+  if (field.pattern.trim() !== "") {
+    try {
+      if (!new RegExp(field.pattern).test(text)) {
+        return field.help.trim() !== ""
+          ? `Enter ${lower} in the format described: ${field.help.trim()}`
+          : `Enter ${lower} in the requested format.`;
+      }
+    } catch {
+      // An unusable pattern must never block the visitor.
+    }
   }
   return "";
 }
 
-function validateAll(values: FormValues, config: FormConfig): Errors {
-  const errors: Errors = {};
-  for (const field of order) {
-    const message = validateField(field, values, config);
-    if (message) errors[field] = message;
-  }
-  return errors;
-}
-
-export function ContactForm({
-  config = defaultConfig,
-  onSubmit,
-}: {
-  config?: FormConfig;
-  /** Called with the values once everything is valid. Wire it to your own endpoint. */
-  onSubmit?: (values: FormValues) => void;
-}) {
-  const id = useId();
-  const [values, setValues] = useState<FormValues>(emptyValues);
-  const [errors, setErrors] = useState<Errors>({});
+export function ContactForm({ config = defaultConfig }: { config?: FormConfig }) {
+  const fields = config.fields.filter((field) => field.label.trim() !== "");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [sent, setSent] = useState(false);
+  const [shown, setShown] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLParagraphElement>(null);
-
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
-  const accentLuminance = luminance(config.accentColor);
+
+  const valueOf = (field: FormField) => values[fieldName(field.label)] ?? "";
+  const checkedOf = (field: FormField) => checks[fieldName(field.label)] ?? false;
+
+  function check(field: FormField, next?: { value?: string; checked?: boolean }) {
+    const name = fieldName(field.label);
+    const message = validateField(
+      field,
+      next?.value ?? valueOf(field),
+      next?.checked ?? checkedOf(field),
+    );
+    setErrors((current) => ({ ...current, [name]: message }));
+    return message;
+  }
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const found: Record<string, string> = {};
+    for (const field of fields) {
+      const message = validateField(field, valueOf(field), checkedOf(field));
+      if (message !== "") found[fieldName(field.label)] = message;
+    }
+    setErrors(found);
+    setShown(true);
+
+    const names = Object.keys(found);
+    if (names.length > 0) {
+      // Focus goes to the summary when there is one, or to the first field that needs fixing.
+      requestAnimationFrame(() => {
+        if (config.errorSummary) summaryRef.current?.focus();
+        else formRef.current?.querySelector<HTMLElement>(`[name="${names[0]}"]`)?.focus();
+      });
+      return;
+    }
+
+    setSent(true);
+    setValues({});
+    setChecks({});
+    setShown(false);
+    requestAnimationFrame(() => successRef.current?.focus());
+  }
+
   const style = {
     "--fm-accent": config.accentColor,
-    "--fm-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--fm-ring": accentLuminance <= 0.35 || dark ? config.accentColor : palette.text,
+    "--fm-accent-text": readableAccent(config.accentColor, dark),
+    "--fm-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
     "--fm-radius": `${config.radius}px`,
     "--fm-surface": palette.surface,
     "--fm-sunk": palette.sunk,
     "--fm-text": palette.text,
     "--fm-muted": palette.muted,
-    "--fm-border": palette.border,
+    "--fm-line": palette.line,
     "--fm-error": palette.error,
-    "--fm-error-bg": palette.errorBg,
-    "--fm-success": palette.success,
-    "--fm-success-bg": palette.successBg,
   } as CSSProperties;
 
-  const shown = order.filter(
-    (field) =>
-      (field !== "phone" || config.phoneField) &&
-      (field !== "message" || config.messageField) &&
-      (field !== "consent" || config.consentField),
-  );
-  const labels: Record<FieldName, string> = {
-    name: config.nameLabel,
-    email: config.emailLabel,
-    phone: config.phoneLabel,
-    message: config.messageLabel,
-    consent: config.consentLabel,
-  };
-  const optional: Record<FieldName, boolean> = {
-    name: false,
-    email: false,
-    phone: !config.phoneRequired,
-    message: config.messageMinLength === 0,
-    consent: false,
-  };
-  const listed = shown.filter((field) => errors[field]);
-
-  function change(field: FieldName, value: string | boolean) {
-    const next = { ...values, [field]: value };
-    setValues(next);
-    // Once a field is marked wrong, correcting it clears the message as you type.
-    if (errors[field]) setErrors({ ...errors, [field]: validateField(field, next, config) || undefined });
-  }
-
-  function blur(field: FieldName) {
-    if (config.validateOn !== "blur") return;
-    const message = validateField(field, values, config);
-    setErrors({ ...errors, [field]: message || undefined });
-  }
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const next = validateAll(values, config);
-    setErrors(next);
-    const firstBad = shown.find((field) => next[field]);
-    if (firstBad) {
-      // Move to the summary when there is one, otherwise straight to the first problem.
-      requestAnimationFrame(() =>
-        config.errorSummary ? summaryRef.current?.focus() : document.getElementById(`${id}-${firstBad}`)?.focus(),
-      );
-      return;
-    }
-    onSubmit?.(values);
-    setValues(emptyValues);
-    setSent(true);
-    requestAnimationFrame(() => successRef.current?.focus());
-  }
-
-  const fieldClass = (field: FieldName) =>
-    `mt-1.5 block w-full rounded-(--fm-radius) border bg-(--fm-surface) px-3 py-2.5 text-(--fm-text) outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fm-ring) ${errors[field] ? "border-2 border-(--fm-error)" : "border-(--fm-border)"}`;
+  const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fm-accent-text)";
+  const control = `w-full rounded-(--fm-radius) border bg-(--fm-surface) px-3 py-2 text-(--fm-text) ${focus}`;
+  const listed = fields.filter((field) => (errors[fieldName(field.label)] ?? "") !== "");
 
   return (
-    <div style={style} className="text-(--fm-text)">
-      <form noValidate onSubmit={submit} className="w-full max-w-2xl">
-        <h2 className="text-2xl font-bold">{config.title}</h2>
+    <section style={style} className="bg-(--fm-surface) text-(--fm-text)">
+      <form ref={formRef} noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
+        <div>
+          <h2 className="text-2xl font-semibold">{config.title}</h2>
+          {config.intro.trim() !== "" && <p className="mt-1 text-pretty text-(--fm-muted)">{config.intro}</p>}
+        </div>
 
         {sent && (
           <p
             ref={successRef}
-            tabIndex={-1}
             role="status"
-            className="mt-4 rounded-(--fm-radius) border border-(--fm-success) bg-(--fm-success-bg) px-4 py-3 font-medium text-(--fm-success) outline-none"
+            tabIndex={-1}
+            className="rounded-(--fm-radius) border-l-4 border-(--fm-accent) bg-(--fm-sunk) px-4 py-3 font-medium"
           >
             {config.successMessage}
           </p>
         )}
 
-        {config.errorSummary && listed.length > 0 && (
+        {config.errorSummary && shown && listed.length > 0 && (
           <div
             ref={summaryRef}
-            tabIndex={-1}
             role="alert"
-            aria-labelledby={`${id}-summary-title`}
-            className="mt-4 rounded-(--fm-radius) border-2 border-(--fm-error) bg-(--fm-error-bg) p-4 outline-none"
+            aria-labelledby="form-summary-title"
+            tabIndex={-1}
+            className="rounded-(--fm-radius) border-2 border-(--fm-error) p-4"
           >
-            <h3 id={`${id}-summary-title`} className="font-bold text-(--fm-error)">
+            <h3 id="form-summary-title" className="font-semibold text-(--fm-error)">
               There is a problem
             </h3>
-            <ul className="mt-2 space-y-1">
+            <ul className="mt-2 flex list-none flex-col gap-1 p-0">
               {listed.map((field) => (
-                <li key={field}>
+                <li key={fieldName(field.label)}>
                   <a
-                    href={`#${id}-${field}`}
-                    className="inline-block min-h-6 py-0.5 font-medium text-(--fm-error) underline"
+                    href={`#${fieldName(field.label)}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      formRef.current?.querySelector<HTMLElement>(`[name="${fieldName(field.label)}"]`)?.focus();
+                    }}
+                    // At least 24px tall, so the link is a large enough target (WCAG 2.2).
+                    className={`inline-block min-h-6 py-0.5 text-(--fm-error) underline ${focus}`}
                   >
-                    {errors[field]}
+                    {errors[fieldName(field.label)]}
                   </a>
                 </li>
               ))}
@@ -258,89 +317,146 @@ export function ContactForm({
           </div>
         )}
 
-        <div className={`mt-6 grid gap-5 ${config.layout === "two" ? "sm:grid-cols-2" : ""}`}>
-          {shown
-            .filter((field) => field !== "consent")
-            .map((field) => {
-              const isMessage = field === "message";
-              const describedBy = errors[field] ? `${id}-${field}-error` : undefined;
+        <div className={config.layout === "two" ? "grid gap-5 sm:grid-cols-2" : "flex flex-col gap-5"}>
+          {fields.map((field) => {
+            const name = fieldName(field.label);
+            const type = fieldType(field);
+            const error = errors[name] ?? "";
+            const required = isRequired(field);
+            const max = limit(field.max);
+            const wide = type === "textarea" || type === "checkbox";
+            const describedBy = [field.help.trim() !== "" ? `${name}-help` : "", error !== "" ? `${name}-error` : ""]
+              .filter(Boolean)
+              .join(" ");
+
+            if (type === "checkbox") {
               return (
-                <div key={field} className={isMessage && config.layout === "two" ? "sm:col-span-2" : ""}>
-                  <label htmlFor={`${id}-${field}`} className="font-medium">
-                    {labels[field]}
-                    {config.optionalMarker && optional[field] && (
-                      <span className="font-normal text-(--fm-muted)"> (optional)</span>
-                    )}
-                  </label>
-                  {errors[field] && (
-                    <p id={`${id}-${field}-error`} className="mt-1 font-medium text-(--fm-error)">
-                      <span className="sr-only">Error: </span>
-                      {errors[field]}
-                    </p>
-                  )}
-                  {isMessage ? (
-                    <textarea
-                      id={`${id}-${field}`}
-                      name={field}
-                      rows={5}
-                      value={values.message}
-                      aria-invalid={errors[field] ? true : undefined}
-                      aria-describedby={describedBy}
-                      onChange={(event) => change(field, event.target.value)}
-                      onBlur={() => blur(field)}
-                      className={`${fieldClass(field)} resize-y`}
-                    />
-                  ) : (
+                <div key={name} className={config.layout === "two" ? "sm:col-span-2" : ""}>
+                  <div className="flex items-start gap-3">
                     <input
-                      id={`${id}-${field}`}
-                      name={field}
-                      type={field === "email" ? "email" : field === "phone" ? "tel" : "text"}
-                      autoComplete={field === "email" ? "email" : field === "phone" ? "tel" : "name"}
-                      value={String(values[field])}
-                      aria-invalid={errors[field] ? true : undefined}
-                      aria-describedby={describedBy}
-                      onChange={(event) => change(field, event.target.value)}
-                      onBlur={() => blur(field)}
-                      className={fieldClass(field)}
+                      id={name}
+                      name={name}
+                      type="checkbox"
+                      checked={checkedOf(field)}
+                      aria-describedby={describedBy || undefined}
+                      aria-invalid={error !== "" || undefined}
+                      onChange={(event) => {
+                        setChecks((current) => ({ ...current, [name]: event.target.checked }));
+                        if (config.validateOn !== "submit" || error !== "") check(field, { checked: event.target.checked });
+                      }}
+                      className={`mt-1 size-5 shrink-0 accent-(--fm-accent) ${focus}`}
                     />
+                    <label htmlFor={name} className="text-pretty">
+                      {field.label}
+                    </label>
+                  </div>
+                  {error !== "" && (
+                    <p id={`${name}-error`} className="mt-1 font-medium text-(--fm-error)">
+                      <span className="sr-only">Error: </span>
+                      {error}
+                    </p>
                   )}
                 </div>
               );
-            })}
+            }
+
+            return (
+              <div key={name} className={wide && config.layout === "two" ? "sm:col-span-2" : ""}>
+                <label htmlFor={name} className="block font-medium">
+                  {field.label}
+                  {config.marker === "optional" && !required && <span className="text-(--fm-muted)"> (optional)</span>}
+                  {config.marker === "required" && required && <span className="text-(--fm-muted)"> (required)</span>}
+                </label>
+                {field.help.trim() !== "" && (
+                  <p id={`${name}-help`} className="mt-0.5 text-sm text-(--fm-muted)">
+                    {field.help}
+                  </p>
+                )}
+                {error !== "" && (
+                  <p id={`${name}-error`} className="mt-1 font-medium text-(--fm-error)">
+                    <span className="sr-only">Error: </span>
+                    {error}
+                  </p>
+                )}
+
+                {type === "textarea" ? (
+                  <textarea
+                    id={name}
+                    name={name}
+                    rows={5}
+                    value={valueOf(field)}
+                    maxLength={max ?? undefined}
+                    aria-describedby={describedBy || undefined}
+                    aria-invalid={error !== "" || undefined}
+                    onChange={(event) => {
+                      setValues((current) => ({ ...current, [name]: event.target.value }));
+                      if (config.validateOn === "input" || error !== "") check(field, { value: event.target.value });
+                    }}
+                    onBlur={() => config.validateOn === "blur" && check(field)}
+                    className={`${control} mt-1 ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
+                  />
+                ) : type === "select" ? (
+                  <select
+                    id={name}
+                    name={name}
+                    value={valueOf(field)}
+                    aria-describedby={describedBy || undefined}
+                    aria-invalid={error !== "" || undefined}
+                    onChange={(event) => {
+                      setValues((current) => ({ ...current, [name]: event.target.value }));
+                      if (config.validateOn !== "submit" || error !== "") check(field, { value: event.target.value });
+                    }}
+                    onBlur={() => config.validateOn === "blur" && check(field)}
+                    className={`${control} mt-1 ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
+                  >
+                    <option value="">Choose one</option>
+                    {choices(field).map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id={name}
+                    name={name}
+                    type={type === "number" ? "text" : type}
+                    inputMode={type === "number" ? "numeric" : undefined}
+                    value={valueOf(field)}
+                    min={type === "date" && field.min.trim() !== "" ? field.min : undefined}
+                    max={type === "date" && field.max.trim() !== "" ? field.max : undefined}
+                    maxLength={type === "text" && max !== null ? max : undefined}
+                    autoComplete={type === "email" ? "email" : type === "tel" ? "tel" : undefined}
+                    aria-describedby={describedBy || undefined}
+                    aria-invalid={error !== "" || undefined}
+                    onChange={(event) => {
+                      setValues((current) => ({ ...current, [name]: event.target.value }));
+                      if (config.validateOn === "input" || error !== "") check(field, { value: event.target.value });
+                    }}
+                    onBlur={() => config.validateOn === "blur" && check(field)}
+                    className={`${control} mt-1 ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
+                  />
+                )}
+
+                {config.counter && max !== null && (type === "text" || type === "textarea") && (
+                  <p aria-live="polite" className="mt-1 text-sm text-(--fm-muted)">
+                    {Math.max(0, max - valueOf(field).length)} characters remaining
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {config.consentField && (
-          <div className="mt-5">
-            {errors.consent && (
-              <p id={`${id}-consent-error`} className="mb-1 font-medium text-(--fm-error)">
-                <span className="sr-only">Error: </span>
-                {errors.consent}
-              </p>
-            )}
-            <label className="flex items-start gap-3">
-              <input
-                id={`${id}-consent`}
-                name="consent"
-                type="checkbox"
-                checked={values.consent}
-                aria-invalid={errors.consent ? true : undefined}
-                aria-describedby={errors.consent ? `${id}-consent-error` : undefined}
-                onChange={(event) => change("consent", event.target.checked)}
-                onBlur={() => blur("consent")}
-                className="mt-1 size-5 shrink-0 accent-(--fm-accent)"
-              />
-              {config.consentLabel}
-            </label>
-          </div>
-        )}
-
-        <button
-          type="submit"
-          className="mt-7 min-h-11 cursor-pointer rounded-(--fm-radius) bg-(--fm-accent) px-5 font-semibold text-(--fm-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fm-ring)"
-        >
-          {config.submitText}
-        </button>
+        <div>
+          <button
+            type="submit"
+            className={`cursor-pointer rounded-(--fm-radius) bg-(--fm-accent) px-5 py-3 font-semibold text-(--fm-on-accent) ${focus}`}
+          >
+            {config.submitText}
+          </button>
+        </div>
       </form>
-    </div>
+    </section>
   );
 }

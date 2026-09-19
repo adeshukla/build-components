@@ -1,106 +1,95 @@
-/* Form with validation — plain CSS. Colours come from the inline custom properties on the wrapper. */
+/* Form with validation — plain CSS. Colours come from the inline custom properties. */
 .fm {
   --fm-accent: #2563eb;
+  --fm-accent-text: #1b4ab0;
   --fm-on-accent: #ffffff;
-  --fm-ring: #2563eb;
   --fm-radius: 8px;
   --fm-surface: #ffffff;
-  --fm-sunk: #f5f4f9;
+  --fm-sunk: #f4f3f8;
   --fm-text: #16121f;
   --fm-muted: #4d4a57;
-  --fm-border: #6f6b7a;
-  --fm-error: #b3261e;
-  --fm-error-bg: #fdf2f2;
-  --fm-success: #0f6b45;
-  --fm-success-bg: #eaf6f0;
+  --fm-line: #8d8a99;
+  --fm-error: #b4232b;
+  display: block;
+  background: var(--fm-surface);
   color: var(--fm-text);
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-.fm *, .fm *::before, .fm *::after { box-sizing: border-box; }
-.fm [hidden] { display: none !important; }
 
+/* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
   .fm--theme-system {
     --fm-surface: #141019;
-    --fm-sunk: #1d1826;
+    --fm-sunk: #221d2e;
     --fm-text: #f6f5fa;
     --fm-muted: #b6b3c2;
-    --fm-border: #8d8a99;
-    --fm-error: #ff8a8a;
-    --fm-error-bg: #2a1414;
-    --fm-success: #6ee7a8;
-    --fm-success-bg: #10251c;
+    --fm-error: #ff8f8f;
   }
 }
 
-.fm-form { width: 100%; max-width: 42rem; }
-.fm-title { margin: 0; font-size: 1.5rem; font-weight: 700; }
+.fm form { display: flex; flex-direction: column; gap: 1.25rem; }
+.fm-intro { display: grid; gap: 0.25rem; }
+.fm-title { margin: 0; font-size: 1.5rem; font-weight: 600; }
+.fm-muted { margin: 0; color: var(--fm-muted); text-wrap: pretty; }
+.fm-hint { margin: 0.125rem 0 0; color: var(--fm-muted); font-size: 0.875rem; }
 
-.fm-success {
-  margin: 1rem 0 0;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--fm-success);
-  border-radius: var(--fm-radius);
-  background: var(--fm-success-bg);
-  color: var(--fm-success);
-  font-weight: 500;
-  outline: none;
-}
-
-.fm-summary {
-  margin: 1rem 0 0;
-  padding: 1rem;
-  border: 2px solid var(--fm-error);
-  border-radius: var(--fm-radius);
-  background: var(--fm-error-bg);
-  outline: none;
-}
-.fm-summary-title { margin: 0; color: var(--fm-error); font-size: 1rem; font-weight: 700; }
-.fm-summary-list { margin: 0.5rem 0 0; padding-left: 1.25rem; }
-/* Minimum 24px target (WCAG 2.2 AA, 2.5.8). */
-.fm-summary-list a { display: inline-block; min-height: 1.5rem; padding: 0.125rem 0; color: var(--fm-error); font-weight: 500; }
-
-.fm-grid { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+.fm-fields { display: grid; gap: 1.25rem; }
 @media (min-width: 640px) {
-  .fm--two .fm-grid { grid-template-columns: 1fr 1fr; }
-  .fm--two .fm-field--wide { grid-column: 1 / -1; }
+  .fm--two .fm-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fm--two .fm-row--wide { grid-column: 1 / -1; }
 }
 
 .fm-label { display: block; font-weight: 500; }
-.fm-optional { color: var(--fm-muted); font-weight: 400; }
-.fm-error { margin: 0.25rem 0 0; color: var(--fm-error); font-weight: 500; }
-
 .fm-control {
-  display: block;
   width: 100%;
-  margin-top: 0.375rem;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--fm-border);
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--fm-line);
   border-radius: var(--fm-radius);
   background: var(--fm-surface);
   color: var(--fm-text);
   font: inherit;
 }
-textarea.fm-control { resize: vertical; }
-[data-invalid] .fm-control { border-width: 2px; border-color: var(--fm-error); }
+.fm-control--error { border: 2px solid var(--fm-error); }
 .fm-control:focus-visible,
-.fm-checkbox input:focus-visible,
-.fm-submit:focus-visible { outline: 2px solid var(--fm-ring); outline-offset: 2px; }
+.fm-checkbox:focus-visible,
+.fm-submit:focus-visible,
+.fm-summary-link:focus-visible {
+  outline: 2px solid var(--fm-accent-text);
+  outline-offset: 2px;
+}
 
-.fm-consent { margin-top: 1.25rem; }
-.fm-checkbox { display: flex; align-items: flex-start; gap: 0.75rem; }
-.fm-checkbox input {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-top: 0.125rem;
-  flex-shrink: 0;
-  accent-color: var(--fm-accent);
+.fm-check { display: flex; align-items: flex-start; gap: 0.75rem; }
+.fm-checkbox { width: 1.25rem; height: 1.25rem; margin-top: 0.25rem; flex-shrink: 0; accent-color: var(--fm-accent); }
+
+.fm-error { margin: 0.25rem 0 0; color: var(--fm-error); font-weight: 500; }
+
+.fm-summary {
+  padding: 1rem;
+  border: 2px solid var(--fm-error);
+  border-radius: var(--fm-radius);
+}
+.fm-summary-title { margin: 0; color: var(--fm-error); font-size: 1rem; font-weight: 600; }
+.fm-summary-list { display: flex; flex-direction: column; gap: 0.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+/* At least 24px tall, so each link is a large enough target (WCAG 2.2). */
+.fm-summary-link {
+  display: inline-block;
+  min-height: 1.5rem;
+  padding: 0.125rem 0;
+  color: var(--fm-error);
+}
+
+.fm-success {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--fm-accent);
+  border-radius: var(--fm-radius);
+  background: var(--fm-sunk);
+  font-weight: 500;
 }
 
 .fm-submit {
-  min-height: 2.75rem;
-  margin-top: 1.75rem;
-  padding: 0 1.25rem;
+  padding: 0.75rem 1.25rem;
   border: 0;
   border-radius: var(--fm-radius);
   background: var(--fm-accent);
@@ -108,4 +97,15 @@ textarea.fm-control { resize: vertical; }
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+.fm-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

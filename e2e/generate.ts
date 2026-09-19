@@ -93,7 +93,8 @@ export const components: Record<
     renderHtml: (config) => renderFormHtml(config as unknown as FormConfig),
     variants: {
       default: "",
-      strict: "validateOn=submit&errorSummary=false&phoneRequired=true&messageMinLength=0&layout=one&consentField=false&optionalMarker=false",
+      // A different set of fields entirely: a pattern, a number range, and checks on submit only.
+      strict: "fields=%5B%7B%22label%22%3A%20%22Full%20name%22%2C%20%22type%22%3A%20%22text%22%2C%20%22required%22%3A%20%22yes%22%2C%20%22min%22%3A%20%222%22%2C%20%22max%22%3A%20%2260%22%2C%20%22pattern%22%3A%20%22%22%2C%20%22options%22%3A%20%22%22%2C%20%22help%22%3A%20%22%22%7D%2C%20%7B%22label%22%3A%20%22Order%20number%22%2C%20%22type%22%3A%20%22text%22%2C%20%22required%22%3A%20%22yes%22%2C%20%22min%22%3A%20%22%22%2C%20%22max%22%3A%20%22%22%2C%20%22pattern%22%3A%20%22%5E%5BA-Z%5D%7B2%7D-%5C%5Cd%7B4%7D%24%22%2C%20%22options%22%3A%20%22%22%2C%20%22help%22%3A%20%22Two%20letters%2C%20a%20dash%20and%20four%20digits%2C%20like%20AB-1234%22%7D%2C%20%7B%22label%22%3A%20%22Quantity%22%2C%20%22type%22%3A%20%22number%22%2C%20%22required%22%3A%20%22yes%22%2C%20%22min%22%3A%20%221%22%2C%20%22max%22%3A%20%2210%22%2C%20%22pattern%22%3A%20%22%22%2C%20%22options%22%3A%20%22%22%2C%20%22help%22%3A%20%22%22%7D%5D&validateOn=submit&errorSummary=false&marker=required&counter=false&layout=one&title=Report+a+problem",
     },
   },
   header: {

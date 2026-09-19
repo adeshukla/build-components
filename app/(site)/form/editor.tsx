@@ -7,7 +7,7 @@ import { renderFormHtml } from "@/registry/form/vanilla/render";
 
 const keyboard: KeyboardRow[] = [
   [["Tab", "Shift + Tab"], "Move between the fields in reading order."],
-  [["Space"], "Tick or untick the consent checkbox."],
+  [["Space"], "Tick or untick a checkbox, or open a choice list."],
   [["Enter"], "In a single-line field: send the form."],
   [["Enter"], "On an error summary link: jump to the field that needs fixing."],
 ];
@@ -18,7 +18,8 @@ const checklist = [
   "Follow a link in the summary: focus lands on the field it names.",
   "Fix a field and watch the message disappear as you type.",
   "Submit a valid form: the success message is announced, not just shown.",
-  "Check the phone and message rules match what your back end accepts.",
+  "Check every rule you set here matches what your back end accepts: they are two separate gates.",
+  "A custom pattern needs a hint that says the format in words, or the message cannot explain itself.",
   "On a real iPhone in Safari: the right keyboard appears for email and phone fields.",
 ];
 

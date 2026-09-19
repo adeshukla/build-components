@@ -1,151 +1,184 @@
 /**
  * Form with validation — plain JavaScript, no dependencies.
- * The markup ships as real HTML; this adds the checks and the messages.
- * Every message names the problem and what to do about it.
+ * Every field carries its rules as data attributes, so this file works for any set of fields.
+ * Messages name the problem and the fix, in the style of the GOV.UK Design System.
  */
 (function () {
-  // @config-start
-  const defaultConfig = {
-    title: "Send us a message",
-    submitText: "Send message",
-    successMessage: "Thanks. Your message has been sent.",
-    nameLabel: "Full name",
-    emailLabel: "Email address",
-    phoneField: true,
-    phoneLabel: "Phone number",
-    phoneRequired: false,
-    messageField: true,
-    messageLabel: "Message",
-    messageMinLength: 20,
-    consentField: true,
-    consentLabel: "I agree to be contacted about this enquiry",
-    validateOn: "blur",
-    errorSummary: true,
-    optionalMarker: true,
-    layout: "two",
-    theme: "light",
-    accentColor: "#2563eb",
-    radius: 8,
-  };
-  // @config-end
+  function createForm(root) {
+    const form = root.querySelector("[data-form-element]");
+    const rows = Array.from(root.querySelectorAll("[data-field]"));
+    if (!form || rows.length === 0) return;
 
-  function validateField(name, values, config) {
-    if (name === "name") {
-      return values.name.trim() === "" ? `Enter your ${config.nameLabel.toLowerCase()}.` : "";
-    }
-    if (name === "email") {
-      const email = values.email.trim();
-      if (email === "") return `Enter your ${config.emailLabel.toLowerCase()}.`;
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
-        ? ""
-        : "Enter an email address in the correct format, like name@example.com.";
-    }
-    if (name === "phone") {
-      if (!config.phoneField) return "";
-      const phone = values.phone.trim();
-      if (phone === "") return config.phoneRequired ? `Enter your ${config.phoneLabel.toLowerCase()}.` : "";
-      const digits = phone.replace(/[^0-9]/g, "");
-      return /^\+?[0-9\s()-]+$/.test(phone) && digits.length >= 7
-        ? ""
-        : "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.";
-    }
-    if (name === "message") {
-      if (!config.messageField || config.messageMinLength === 0) return "";
-      const message = values.message.trim();
-      if (message === "") return `Enter your ${config.messageLabel.toLowerCase()}.`;
-      return message.length < config.messageMinLength
-        ? `Your ${config.messageLabel.toLowerCase()} must be at least ${config.messageMinLength} characters. You have written ${message.length}.`
-        : "";
-    }
-    if (name === "consent") {
-      return config.consentField && !values.consent ? "Select the checkbox to agree before sending." : "";
-    }
-    return "";
-  }
+    const validateOn = root.dataset.validateOn || "blur";
+    const summary = root.querySelector("[data-summary]");
+    const summaryList = root.querySelector("[data-summary-list]");
+    const success = root.querySelector("[data-success]");
 
-  function createForm(root, config) {
-    const form = root.querySelector(".fm-form");
-    const summary = root.querySelector(".fm-summary");
-    const summaryList = root.querySelector(".fm-summary-list");
-    const success = root.querySelector(".fm-success");
-    const controls = [...root.querySelectorAll("[name]")];
-    const useSummary = root.dataset.summary === "true";
-
-    function readValues() {
-      const values = { name: "", email: "", phone: "", message: "", consent: false };
-      controls.forEach((control) => {
-        values[control.name] = control.type === "checkbox" ? control.checked : control.value;
-      });
-      return values;
+    function controlOf(row) {
+      return row.querySelector(".fm-control, .fm-checkbox");
     }
 
-    function showError(name, message) {
-      const control = root.querySelector(`[name="${name}"]`);
-      const errorText = root.querySelector(`#fm-${name}-error`);
-      if (!control || !errorText) return;
-      errorText.hidden = !message;
-      errorText.textContent = message ? `Error: ${message}` : "";
-      if (message) {
-        control.setAttribute("aria-invalid", "true");
-        control.setAttribute("aria-describedby", `fm-${name}-error`);
-      } else {
-        control.removeAttribute("aria-invalid");
-        control.removeAttribute("aria-describedby");
+    function limit(value) {
+      return value === undefined || value === "" || !isFinite(Number(value)) ? null : Number(value);
+    }
+
+    /** The same rules as the React output. */
+    function validate(row) {
+      const type = row.dataset.type;
+      const label = row.dataset.label || "";
+      const lower = label.charAt(0).toLowerCase() + label.slice(1);
+      const required = row.dataset.required === "true";
+      const control = controlOf(row);
+      const min = limit(row.dataset.min);
+      const max = limit(row.dataset.max);
+
+      if (type === "checkbox") return required && !control.checked ? "Select “" + label + "” to continue." : "";
+
+      const text = (control.value || "").trim();
+      if (text === "") {
+        if (!required) return "";
+        if (type === "select") return "Select " + lower + ".";
+        if (type === "date") return "Enter " + lower + ", for example 27 03 2026.";
+        return "Enter " + lower + ".";
       }
-      const wrapper = control.closest(".fm-field, .fm-consent");
-      if (wrapper) wrapper.toggleAttribute("data-invalid", !!message);
+
+      if (type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
+        return "Enter an email address in the correct format, like name@example.com.";
+      }
+      if (type === "tel" && !/^[\d\s()+-]{7,}$/.test(text)) {
+        return "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.";
+      }
+      if (type === "url" && !/^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(text)) {
+        return "Enter a web address in the correct format, like https://example.com.";
+      }
+      if (type === "select" && row.dataset.options && row.dataset.options.split("|").indexOf(text) === -1) {
+        return "Select " + lower + " from the list.";
+      }
+
+      if (type === "number" || type === "date") {
+        if (type === "number" && !isFinite(Number(text))) return label + " must be a number.";
+        const size = type === "number" ? Number(text) : Date.parse(text);
+        const low = type === "number" ? min : row.dataset.min ? Date.parse(row.dataset.min) : null;
+        const high = type === "number" ? max : row.dataset.max ? Date.parse(row.dataset.max) : null;
+        if (low !== null && size < low) return label + " must be " + row.dataset.min + (type === "number" ? " or more." : " or later.");
+        if (high !== null && size > high) return label + " must be " + row.dataset.max + (type === "number" ? " or less." : " or earlier.");
+        return "";
+      }
+
+      if (min !== null && text.length < min) {
+        return label + " must be at least " + min + " characters. You have entered " + text.length + ".";
+      }
+      if (max !== null && text.length > max) {
+        return label + " must be " + max + " characters or fewer. You have entered " + text.length + ".";
+      }
+      if (row.dataset.pattern) {
+        try {
+          if (!new RegExp(row.dataset.pattern).test(text)) {
+            return row.dataset.help
+              ? "Enter " + lower + " in the format described: " + row.dataset.help
+              : "Enter " + lower + " in the requested format.";
+          }
+        } catch {
+          // An unusable pattern must never block the visitor.
+        }
+      }
+      return "";
     }
 
-    controls.forEach((control) => {
-      control.addEventListener("blur", () => {
-        if (root.dataset.validateOn !== "blur") return;
-        showError(control.name, validateField(control.name, readValues(), config));
+    function paint(row, message) {
+      const control = controlOf(row);
+      const error = row.querySelector(".fm-error");
+      const name = row.dataset.field;
+      error.hidden = message === "";
+      error.querySelector("[data-message]").textContent = message;
+
+      const described = [];
+      if (row.dataset.help) described.push(name + "-help");
+      if (message !== "") described.push(name + "-error");
+      if (described.length > 0) control.setAttribute("aria-describedby", described.join(" "));
+      else control.removeAttribute("aria-describedby");
+
+      if (message === "") {
+        control.removeAttribute("aria-invalid");
+        control.classList.remove("fm-control--error");
+      } else {
+        control.setAttribute("aria-invalid", "true");
+        control.classList.add("fm-control--error");
+      }
+    }
+
+    function paintSummary(problems) {
+      if (!summary) return;
+      summary.hidden = problems.length === 0;
+      summaryList.innerHTML = "";
+      problems.forEach(function (problem) {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.className = "fm-summary-link";
+        link.href = "#" + problem.name;
+        link.textContent = problem.message;
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          const control = form.querySelector('[name="' + problem.name + '"]');
+          if (control) control.focus();
+        });
+        item.appendChild(link);
+        summaryList.appendChild(item);
       });
-      control.addEventListener("input", () => {
-        // Once a field is marked wrong, correcting it clears the message as you type.
-        const errorText = root.querySelector(`#fm-${control.name}-error`);
-        if (errorText && !errorText.hidden) showError(control.name, validateField(control.name, readValues(), config));
+    }
+
+    function counterFor(row) {
+      const counter = row.querySelector("[data-counter]");
+      if (!counter) return;
+      const max = limit(row.dataset.max);
+      if (max === null) return;
+      const length = (controlOf(row).value || "").length;
+      counter.textContent = Math.max(0, max - length) + " characters remaining";
+    }
+
+    rows.forEach(function (row) {
+      const control = controlOf(row);
+      const recheck = function () {
+        const wrong = row.querySelector(".fm-error").hidden === false;
+        if (validateOn === "input" || wrong) paint(row, validate(row));
+        counterFor(row);
+      };
+      control.addEventListener("input", recheck);
+      control.addEventListener("change", function () {
+        if (validateOn !== "submit" || row.querySelector(".fm-error").hidden === false) paint(row, validate(row));
+      });
+      control.addEventListener("blur", function () {
+        if (validateOn === "blur") paint(row, validate(row));
       });
     });
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", function (event) {
       event.preventDefault();
-      const values = readValues();
       const problems = [];
-      controls.forEach((control) => {
-        const message = validateField(control.name, values, config);
-        showError(control.name, message);
-        if (message) problems.push({ name: control.name, message });
+      rows.forEach(function (row) {
+        const message = validate(row);
+        paint(row, message);
+        if (message !== "") problems.push({ name: row.dataset.field, message: message });
       });
+      paintSummary(problems);
 
       if (problems.length > 0) {
-        if (useSummary) {
-          summaryList.replaceChildren(
-            ...problems.map((problem) => {
-              const item = document.createElement("li");
-              const link = document.createElement("a");
-              link.href = `#fm-${problem.name}`;
-              link.textContent = problem.message;
-              item.append(link);
-              return item;
-            }),
-          );
-          summary.hidden = false;
-          summary.focus();
-        } else {
-          root.querySelector(`[name="${problems[0].name}"]`).focus();
-        }
+        if (summary) summary.focus();
+        else form.querySelector('[name="' + problems[0].name + '"]').focus();
         return;
       }
 
-      summary.hidden = true;
       form.reset();
-      controls.forEach((control) => showError(control.name, ""));
-      success.hidden = false;
-      success.focus();
-      root.dispatchEvent(new CustomEvent("form-submit", { detail: { values } }));
+      rows.forEach(function (row) {
+        paint(row, "");
+        counterFor(row);
+      });
+      if (success) {
+        success.hidden = false;
+        success.focus();
+      }
     });
   }
 
-  document.querySelectorAll("[data-form]").forEach((root) => createForm(root, defaultConfig));
+  document.querySelectorAll("[data-form]").forEach(createForm);
 })();
