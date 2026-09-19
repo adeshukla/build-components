@@ -24,13 +24,13 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `registry/<slug>/` is the product. Per component:
   - `schema.ts` — options (`as const satisfies Schema`) plus a compile-time check against the component's config type.
   - `react/<slug>.tsx` — one `// @config-start … // @config-end` block.
-  - `vanilla/<slug>.{css,js}` — plain output. JS-driven parts also ship `<slug>.html`; HTML-first parts (cta, form, header) generate markup from the options in `vanilla/render.ts` instead.
+  - `vanilla/<slug>.{css,js}` — plain output. JS-driven parts also ship `<slug>.html`; HTML-first parts (cta, form, header, footer, tabs, mega-menu, carousel, cart) generate markup from the options in `vanilla/render.ts` instead.
 - Every component supports `theme` (light / dark / system, detected at runtime) and, where it matters, `iosOnPhone` (Apple system font, iOS blue, 44px targets, bottom sheets on iPhone/iPad).
 - `lib/export.ts` → `applyConfig(source, config)`: swap the config block. Files without one come back unchanged.
 - `lib/schema.ts` — option types incl. `list` (repeatable items) and URL-safe `format: "url"`; `parseConfig` validates untrusted query params; `isDefault`, `toSearchParams`, `isVisible`.
 - `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.
 - `lib/registry.ts` — the one map of slug → title, description, schema. Used by the registry route and the preview page.
-- `lib/parts.ts` — catalogue: part name (Almanac, Porthole, Sextant, Logbook, Masthead, Beacon), plain name, pattern, accent, status.
+- `lib/parts.ts` — catalogue: part name (Almanac, Porthole, Sextant, Logbook, Masthead, Cargo, Chartroom, Capstan, Compass, Keel, Beacon), plain name, pattern, accent, status.
 - `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
 - `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
 - Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
@@ -66,6 +66,8 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Only one `next dev` can run per project (lock in `.next/dev`). If Adesh's `pnpm dev` is already running on :3000, run tests with `E2E_PORT=3000` so Playwright reuses it. Never kill his server.
 - Tests run in 3 Playwright projects: chromium, webkit (Safari engine) and iphone (emulated iPhone 15). Playwright's WebKit is close to Safari but not identical; a real-device check stays on the manual checklist.
 - Playwright refuses to click `aria-disabled` elements. Use `click({ force: true })` when testing that a disabled item can't be picked.
+- Both preview frames open at `MIN_PREVIEW_HEIGHT` (480px, `components/editor.tsx`) so switching output never moves the page; the React frame grows past it for taller components.
+- Money and dates in exported components are formatted by hand, never by locale: `Intl` output differs between the server and the browser and breaks hydration.
 - ESLint enforces `react-hooks/set-state-in-effect`. Read browser storage with `useSyncExternalStore` (see the checklist in `components/editor.tsx`), not `setState` inside `useEffect`.
 - Next injects `#__next-route-announcer__` with `role="alert"`: scope alert locators by name or to `main`.
 - Safari does not focus a button when it is clicked. Components that close on Escape must listen on `document`, not on their own root (this bit the header menu).
