@@ -70,6 +70,15 @@ export const parts: Part[] = [
     status: "in-stock",
   },
   {
+    slug: "cart",
+    codename: "Cargo",
+    name: "Basket",
+    summary: "Lines, quantities, removing, delivery and totals, as a panel or a drawer.",
+    pattern: "Native dialog + live totals",
+    accent: "#f2a65a",
+    status: "in-stock",
+  },
+  {
     slug: "carousel",
     codename: "Capstan",
     name: "Carousel",

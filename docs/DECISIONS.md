@@ -165,3 +165,14 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 **Why:** Tabs are the most-asked-for interactive pattern left and are easy to get wrong by hand; the footer completes the pair with Masthead and costs almost nothing because it needs no script. Mega menu, tooltip, slider and lazy loading are still waiting on Adesh to say which comes next.
 **How they are built:** Both are HTML-first (D27) — the markup is generated from the options; tabs add a small script for the keyboard only, so the first panel is already open without JavaScript.
 **Tests:** Both run the same suite against both outputs in Chromium, WebKit and an emulated iPhone. The tabs spec covers wrapping, Home/End, manual activation and that the panel itself can take focus; the footer spec asserts that a `javascript:` link from a shared URL is neutralised.
+
+## 2026-09-20 — D30. Three parts that are hard to hand-build: Cargo, Chartroom, Capstan
+**Decision:** Added the three Adesh asked for by name: **Cargo** (basket — lines, quantity steppers, removing, delivery with a free-delivery threshold, totals, as a panel or a drawer), **Chartroom** (mega menu — columns of links under each heading, click or hover, Escape and outside click to close) and **Capstan** (carousel — a scroll-snap row with previous/next, dots, a counter and optional rotation).
+**Why:** Adesh: the platform should carry the components people find hard to build from scratch, not the easy ones. Each of these has a real trap: money arithmetic and announcements in the basket, focus and overlay behaviour in the mega menu, and rotation that must pause, respect reduced motion and still be usable by keyboard in the carousel.
+**How they are built:** All three are HTML-first (D27): the markup and the first totals ship in the HTML, and the script only adds behaviour. The basket's drawer is a native `<dialog>` (D12), so the top layer, the inert page and Escape come from the browser.
+**Money:** prices are formatted by hand (`symbol + value.toFixed(2)`), never by locale, so the server and the browser can never disagree and hydrate differently.
+**Found by the tests:** the carousel's dots were under the 24px minimum target size (WCAG 2.2 AA), and its last-slide maths ignored how many slides are on screen; the mega menu's panel covered the next row of a wrapped bar on a phone.
+
+## 2026-09-20 — D31. Both outputs open at the same height in the test bench
+**Decision:** The React frame and the HTML/CSS/JS frame both start at 480px, and the React frame grows from there for taller components. The preview frame paints its own surface.
+**Why:** Adesh: the React box did not match the HTML/JS box. The React frame measured its content, so a short component gave a half-height box and the page jumped when the output was switched.

@@ -57,7 +57,6 @@
   aspect-ratio: var(--cr-aspect);
   object-fit: cover;
 }
-.cr-image--empty { background: var(--cr-line); opacity: 0.35; }
 
 .cr-body { padding: 1.25rem; }
 .cr-title { margin: 0; font-size: 1.125rem; font-weight: 600; }

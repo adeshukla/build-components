@@ -1,8 +1,8 @@
 # Progress
 
-Last updated: 2026-09-18 (end of session 4)
+Last updated: 2026-09-20 (session 5)
 
-## Current status (session 4)
+## Current status (session 5)
 
 ### How Adesh can test
 ```
@@ -10,13 +10,13 @@ cd C:\dev\component-platform
 pnpm dev
 ```
 Open http://localhost:3000.
-- **Home:** the board hero with three live parts mounted on it, the catalogue (all eight parts), how it works, and the test report.
+- **Home:** the board hero with three live parts mounted on it, the catalogue (all eleven parts), how it works, and the test report.
 - **Theme:** the System / Light / Dark control sits in the header and is remembered per browser.
 - **Any part page:** Configure on the left (tabs with changed counts, plus a search across every option), the test bench in the middle (React + Tailwind or HTML/CSS/JS, phone/tablet/desktop), the keyboard map and manual checklist under it, and the install command and code below.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The eight parts, all in stock
+### The eleven parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -27,6 +27,9 @@ Open http://localhost:3000.
 | **Compass** | Tabs | APG Tabs |
 | **Keel** | Site footer | Landmark contentinfo |
 | **Beacon** | CTA section | Landmark section |
+| **Cargo** | Basket | Native dialog + live totals |
+| **Chartroom** | Mega menu | APG Disclosure navigation |
+| **Capstan** | Carousel | APG Carousel |
 
 ### Done in session 4 (2026-09-18)
 - **Fixed what Adesh reported:**
@@ -48,6 +51,15 @@ Open http://localhost:3000.
 - **Two more parts (D29):** **Compass** (tabs — arrow keys, Home/End, automatic or manual activation, row or side) and **Keel** (site footer — links, social profiles, legal line, no JavaScript). Both outputs, registry entry, editor page, keyboard map, checklist and tests each.
 - **Test count:** 256 passing, 2 skipped, across Chromium, WebKit and an emulated iPhone. Production build green.
 
+### Done in session 5 (2026-09-20)
+- **Fixed what Adesh reported:** both outputs now open at the same height in the test bench and fill their frame (D31), and a component opened with `theme=dark` is dark on first paint.
+- **Three parts that are hard to build by hand (D30):**
+  - **Cargo** (basket): quantity steppers, removing a line, delivery with a free-delivery progress bar, totals that add up, as a panel or a drawer. Every change is announced once, politely, with the new subtotal.
+  - **Chartroom** (mega menu): flat rows in the editor (menu, column, link, description) become grouped panels. Click or hover opens; Escape, outside clicks and picking a link close.
+  - **Capstan** (carousel): a scroll-snap row that swipes on a phone, with previous/next, dots, a counter and optional rotation that pauses and never runs under reduced motion.
+- **Real bugs the tests caught:** carousel dots under the 24px minimum target size; last-slide maths that ignored how many slides are on screen; a mega-menu panel covering the next row of a wrapped bar on a phone.
+- **Test count:** 385 passing, 2 skipped, across Chromium, WebKit and an emulated iPhone. Production build green.
+
 ### In progress
 Nothing half-finished.
 
@@ -57,12 +69,12 @@ Nothing half-finished.
 - A "copy all files" button for the HTML/CSS/JS output.
 
 ### Next — needs Adesh's answers first
-- Components beyond these eight (mega menu, tooltip, slider, lazy loading, or something else): which ones, in what order?
-- The Mitosis / Web Components question (D6) is still open. Eight components now exist in two hand-written outputs each; that is the cost a third output would multiply.
+- Components beyond these eleven (tooltip, lazy loading, pagination, table, toast, or something else): which ones, in what order?
+- The Mitosis / Web Components question (D6) is still open. Eleven components now exist in two hand-written outputs each; that is the cost a third output would multiply.
 
 ### Blockers & questions for Adesh
 1. **Final name**: "Build Components" is still the logo only. Make it the product name everywhere?
-2. **Next components**: tabs and the footer are done. Which of mega menu, tooltip, slider and lazy loading do you want next?
+2. **Next components**: the basket, mega menu and slider are done. Tooltip, lazy loading, pagination, data table, toast — which next?
 3. **Tailwind v4 only** for the React output?
 4. **Private GitHub repo?** Still no remote, so no backup and no CI.
 5. **Manual checks**: please run the checklists with NVDA and on a real iPhone. Emulation is not a real device.

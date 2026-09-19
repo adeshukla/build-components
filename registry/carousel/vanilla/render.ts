@@ -59,13 +59,11 @@ export function renderCarouselMarkup(config: CarouselConfig) {
   const items = slides
     .map((slide, index) => {
       const image = safeImage(slide.image);
-      const media =
-        image !== ""
-          ? `          <img class="cr-image" src="${escapeHtml(image)}" alt="${escapeHtml(slide.alt)}">`
-          : `          <div class="cr-image cr-image--empty" aria-hidden="true"></div>`;
+      // No image means no picture area at all, rather than an empty box.
+      const media = image !== "" ? `          <img class="cr-image" src="${escapeHtml(image)}" alt="${escapeHtml(slide.alt)}">
+` : "";
       return `        <div class="cr-slide" role="group" aria-roledescription="slide" aria-label="${index + 1} of ${slides.length}">
-${media}
-          <div class="cr-body">
+${media}          <div class="cr-body">
 ${slide.title.trim() ? `            <p class="cr-title">${escapeHtml(slide.title)}</p>\n` : ""}${slide.text.trim() ? `            <p class="cr-text">${escapeHtml(slide.text)}</p>\n` : ""}          </div>
         </div>`;
     })

@@ -4,6 +4,9 @@ import { applyConfig } from "../lib/export";
 import { renderCarouselHtml } from "../registry/carousel/vanilla/render";
 import { carouselSchema } from "../registry/carousel/schema";
 import type { CarouselConfig } from "../registry/carousel/react/carousel";
+import { renderCartHtml } from "../registry/cart/vanilla/render";
+import { cartSchema } from "../registry/cart/schema";
+import type { CartConfig } from "../registry/cart/react/cart";
 import { renderCtaHtml } from "../registry/cta/vanilla/render";
 import { ctaSchema } from "../registry/cta/schema";
 import type { CtaConfig } from "../registry/cta/react/cta";
@@ -100,6 +103,15 @@ export const components: Record<
     variants: {
       default: "",
       wide: "mobileBreakpoint=sm&ctaButton=false&sticky=true&height=compact&theme=dark&skipLink=false&logoText=Harbour",
+    },
+  },
+  cart: {
+    exportName: "Cart",
+    schema: cartSchema,
+    renderHtml: (config) => renderCartHtml(config as unknown as CartConfig),
+    variants: {
+      default: "",
+      drawer: "layout=drawer&currency=USD&quantityStepper=false&shipping=false&taxNote=&theme=dark&title=Your+cart&openText=Cart",
     },
   },
   carousel: {

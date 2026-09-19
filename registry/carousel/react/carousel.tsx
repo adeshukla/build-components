@@ -198,21 +198,11 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
               style={{ width: `calc((100% - ${perView - 1} * 1rem) / ${perView})` }}
               className="shrink-0 snap-start overflow-hidden rounded-(--cr-radius) bg-(--cr-slide)"
             >
-              {image !== "" ? (
+              {/* No image means no picture area at all, rather than an empty box. */}
+              {image !== "" && (
                 // Exported code must not depend on next/image: this file runs in any React project.
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={image}
-                  alt={slide.alt}
-                  className="w-full object-cover"
-                  style={{ aspectRatio: config.aspect }}
-                />
-              ) : (
-                <div
-                  aria-hidden="true"
-                  className="w-full bg-(--cr-line)"
-                  style={{ aspectRatio: config.aspect, opacity: 0.35 }}
-                />
+                <img src={image} alt={slide.alt} className="w-full object-cover" style={{ aspectRatio: config.aspect }} />
               )}
               <div className="p-5">
                 {slide.title.trim() !== "" && <p className="text-lg font-semibold">{slide.title}</p>}
