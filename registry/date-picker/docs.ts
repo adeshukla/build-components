@@ -1,10 +1,6 @@
-"use client";
+import type { KeyboardRow } from "@/components/editor";
 
-import { Editor, type KeyboardRow, type Sources } from "@/components/editor";
-import type { DatePickerConfig } from "@/registry/date-picker/react/date-picker";
-import { datePickerSchema } from "@/registry/date-picker/schema";
-
-const keyboard: KeyboardRow[] = [
+export const keyboard: KeyboardRow[] = [
   [["Enter", "Space"], "On the calendar button: open the calendar. On a day: pick it."],
   [["Left arrow", "Right arrow"], "Previous or next day."],
   [["Up arrow", "Down arrow"], "Same day in the previous or next week."],
@@ -16,7 +12,7 @@ const keyboard: KeyboardRow[] = [
   [["Tab", "Shift + Tab"], "Move between the heading buttons and the calendar. Focus stays inside."],
 ];
 
-const checklist = [
+export const checklist = [
   "Screen reader (NVDA or Narrator): the field reads its label and the date format.",
   "Open the calendar: the focused day is read with its weekday and full date.",
   "Month and year heading: the year and month views are announced and easy to follow.",
@@ -26,16 +22,3 @@ const checklist = [
   "Browser zoom at 200%: nothing overlaps or is cut off.",
   "On a real iPhone in Safari: open the calendar, pick a date, and scroll with the calendar open.",
 ];
-
-export function DatePickerEditor({ initialConfig, sources }: { initialConfig: DatePickerConfig; sources: Sources }) {
-  return (
-    <Editor
-      slug="date-picker"
-      schema={datePickerSchema}
-      initialConfig={initialConfig}
-      sources={sources}
-      keyboard={keyboard}
-      checklist={checklist}
-    />
-  );
-}

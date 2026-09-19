@@ -1,10 +1,6 @@
-"use client";
+import type { KeyboardRow } from "@/components/editor";
 
-import { Editor, type KeyboardRow, type Sources } from "@/components/editor";
-import type { SearchableSelectConfig } from "@/registry/searchable-select/react/searchable-select";
-import { searchableSelectSchema } from "@/registry/searchable-select/schema";
-
-const keyboard: KeyboardRow[] = [
+export const keyboard: KeyboardRow[] = [
   [["Down arrow"], "Open the list. Opened already: move to the next option."],
   [["Up arrow"], "Move to the previous option, or open the list at the last one."],
   [["Alt + Down arrow"], "Open the list without moving to an option."],
@@ -14,7 +10,7 @@ const keyboard: KeyboardRow[] = [
   [["Any character"], "Filter the list, with matching text highlighted, and announce how many results are left."],
 ];
 
-const checklist = [
+export const checklist = [
   "Screen reader (NVDA or Narrator): the field reads its label and says it's a combobox.",
   "Type a few letters: the number of results is announced without moving focus.",
   "Arrow through the options: each option is read out as it's highlighted.",
@@ -24,22 +20,3 @@ const checklist = [
   "Browser zoom at 200%: the list stays usable and doesn't cover the field.",
   "On a real iPhone in Safari: the list scrolls and options are easy to tap.",
 ];
-
-export function SearchableSelectEditor({
-  initialConfig,
-  sources,
-}: {
-  initialConfig: SearchableSelectConfig;
-  sources: Sources;
-}) {
-  return (
-    <Editor
-      slug="searchable-select"
-      schema={searchableSelectSchema}
-      initialConfig={initialConfig}
-      sources={sources}
-      keyboard={keyboard}
-      checklist={checklist}
-    />
-  );
-}
