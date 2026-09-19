@@ -16,6 +16,9 @@ import type { HeaderConfig } from "../registry/header/react/header";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
+import { renderMegaMenuHtml } from "../registry/mega-menu/vanilla/render";
+import { megaMenuSchema } from "../registry/mega-menu/schema";
+import type { MegaMenuConfig } from "../registry/mega-menu/react/mega-menu";
 import { modalSchema } from "../registry/modal/schema";
 import { searchableSelectSchema } from "../registry/searchable-select/schema";
 import { renderTabsHtml } from "../registry/tabs/vanilla/render";
@@ -94,6 +97,15 @@ export const components: Record<
     variants: {
       default: "",
       wide: "mobileBreakpoint=sm&ctaButton=false&sticky=true&height=compact&theme=dark&skipLink=false&logoText=Harbour",
+    },
+  },
+  "mega-menu": {
+    exportName: "MegaMenu",
+    schema: megaMenuSchema,
+    renderHtml: (config) => renderMegaMenuHtml(config as unknown as MegaMenuConfig),
+    variants: {
+      default: "",
+      wide: "openOn=hover&panel=full&columns=3&descriptions=false&ctaButton=false&theme=dark&logoText=Harbour&label=Primary",
     },
   },
   modal: {

@@ -1,0 +1,123 @@
+/* Mega menu — plain CSS. Colours come from the inline custom properties on the nav. */
+.mm {
+  --mm-accent: #2563eb;
+  --mm-accent-text: #1b4ab0;
+  --mm-on-accent: #ffffff;
+  --mm-radius: 10px;
+  --mm-surface: #ffffff;
+  --mm-text: #16121f;
+  --mm-muted: #4d4a57;
+  --mm-line: #e4e1ec;
+  --mm-hover: #f4f3f8;
+  position: relative;
+  display: block;
+  background: var(--mm-surface);
+  color: var(--mm-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .mm--theme-system {
+    --mm-surface: #141019;
+    --mm-text: #f6f5fa;
+    --mm-muted: #b6b3c2;
+    --mm-line: #2c2838;
+    --mm-hover: #221d2e;
+  }
+}
+
+.mm-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--mm-line);
+}
+
+.mm-logo { margin-right: 0.5rem; font-weight: 600; }
+.mm-menu { position: static; }
+
+.mm-top {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--mm-radius);
+  background: none;
+  color: var(--mm-text);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mm-top:hover { background: var(--mm-hover); }
+.mm-top:focus-visible,
+.mm-link:focus-visible,
+.mm-cta:focus-visible {
+  outline: 2px solid var(--mm-accent-text);
+  outline-offset: 2px;
+}
+.mm-button[aria-expanded="true"] { background: var(--mm-hover); }
+.mm-chevron { width: 1rem; height: 1rem; }
+.mm-button[aria-expanded="true"] .mm-chevron { transform: rotate(180deg); }
+
+.mm-panel {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  right: 1rem;
+  left: 1rem;
+  margin-top: 0.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--mm-line);
+  border-radius: var(--mm-radius);
+  background: var(--mm-surface);
+  box-shadow: 0 16px 40px -24px rgb(0 0 0 / 0.55);
+}
+
+.mm-columns { display: grid; gap: 1.5rem 2rem; }
+.mm-group-name {
+  margin: 0 0 0.5rem;
+  color: var(--mm-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mm-links { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+.mm-link {
+  display: block;
+  padding: 0.5rem;
+  border-radius: var(--mm-radius);
+  text-decoration: none;
+}
+.mm-link:hover { background: var(--mm-hover); }
+.mm-link-label { display: block; color: var(--mm-text); font-weight: 500; }
+.mm-link-description { display: block; color: var(--mm-muted); font-size: 0.875rem; }
+
+.mm-cta {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  border-radius: var(--mm-radius);
+  background: var(--mm-accent);
+  color: var(--mm-on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Panels sit under their own button once there is room; on phones they span the bar. */
+@media (min-width: 640px) {
+  .mm--panel-aligned .mm-menu { position: relative; }
+  .mm--panel-aligned .mm-panel { top: auto; right: auto; left: 0; min-width: 34rem; }
+  .mm--cols-2 .mm-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mm--cols-3 .mm-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mm--cols-4 .mm-columns { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mm-chevron { transition: transform 200ms ease; }
+}

@@ -70,6 +70,15 @@ export const parts: Part[] = [
     status: "in-stock",
   },
   {
+    slug: "mega-menu",
+    codename: "Chartroom",
+    name: "Mega menu",
+    summary: "Several columns of links under one heading, opened by click or hover, closed by Escape.",
+    pattern: "APG Disclosure navigation",
+    accent: "#7f9cf5",
+    status: "in-stock",
+  },
+  {
     slug: "footer",
     codename: "Keel",
     name: "Site footer",

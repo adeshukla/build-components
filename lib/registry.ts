@@ -4,6 +4,7 @@ import { datePickerSchema } from "@/registry/date-picker/schema";
 import { footerSchema } from "@/registry/footer/schema";
 import { formSchema } from "@/registry/form/schema";
 import { headerSchema } from "@/registry/header/schema";
+import { megaMenuSchema } from "@/registry/mega-menu/schema";
 import { modalSchema } from "@/registry/modal/schema";
 import { searchableSelectSchema } from "@/registry/searchable-select/schema";
 import { tabsSchema } from "@/registry/tabs/schema";
@@ -28,6 +29,11 @@ export const registry = {
     title: "Site header",
     description: "A site header with links, a call to action and a small-screen menu (APG disclosure navigation).",
     schema: headerSchema,
+  },
+  "mega-menu": {
+    title: "Mega menu",
+    description: "A mega menu: columns of links under each heading (WAI-ARIA disclosure navigation).",
+    schema: megaMenuSchema,
   },
   modal: {
     title: "Modal",

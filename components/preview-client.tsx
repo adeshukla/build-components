@@ -6,6 +6,7 @@ import { DatePicker, type DatePickerConfig } from "@/registry/date-picker/react/
 import { SiteFooter as FooterPart, type FooterConfig } from "@/registry/footer/react/footer";
 import { ContactForm, type FormConfig } from "@/registry/form/react/form";
 import { SiteHeader as HeaderPart, type HeaderConfig } from "@/registry/header/react/header";
+import { MegaMenu, type MegaMenuConfig } from "@/registry/mega-menu/react/mega-menu";
 import { Modal, type ModalAction, type ModalConfig } from "@/registry/modal/react/modal";
 import { SearchableSelect, type SearchableSelectConfig } from "@/registry/searchable-select/react/searchable-select";
 import { Tabs, type TabsConfig } from "@/registry/tabs/react/tabs";
@@ -63,12 +64,13 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
     <div style={surfaces[dark ? "dark" : "light"]} className="min-h-dvh">
       <div
         ref={boxRef}
-        className={slug === "cta" || slug === "header" || slug === "footer" ? "" : "p-6 sm:p-8"}
+        className={["cta", "header", "footer", "mega-menu"].includes(slug) ? "" : "p-6 sm:p-8"}
       >
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "cta" && <Cta config={config as unknown as CtaConfig} />}
         {slug === "header" && <HeaderPart config={config as unknown as HeaderConfig} />}
         {slug === "footer" && <FooterPart config={config as unknown as FooterConfig} />}
+        {slug === "mega-menu" && <MegaMenu config={config as unknown as MegaMenuConfig} />}
         {slug === "form" && <ContactForm config={config as unknown as FormConfig} />}
         {slug === "searchable-select" && <SearchableSelect config={config as unknown as SearchableSelectConfig} />}
         {slug === "tabs" && <Tabs config={config as unknown as TabsConfig} />}
