@@ -80,7 +80,7 @@ ${slide.title.trim() ? `            <p class="cr-title">${escapeHtml(slide.title
     ? `        <button class="cr-control" type="button" data-play aria-pressed="true"><span class="cr-sr" data-play-label>Stop automatic slide changes</span>${icons.pause}${icons.play}</button>\n`
     : "";
   const arrows = config.arrows
-    ? `        <button class="cr-control" type="button" data-previous disabled><span class="cr-sr">Previous slide</span>${icons.previous}</button>
+    ? `        <button class="cr-control" type="button" data-previous${config.loop ? "" : " disabled"}><span class="cr-sr">Previous slide</span>${icons.previous}</button>
         <button class="cr-control" type="button" data-next><span class="cr-sr">Next slide</span>${icons.next}</button>\n`
     : "";
   const dotRow = config.dots ? `        <div class="cr-dots">\n${dots}\n        </div>\n` : "";
@@ -88,7 +88,7 @@ ${slide.title.trim() ? `            <p class="cr-title">${escapeHtml(slide.title
     ? `        <p class="cr-counter" aria-live="polite" data-counter>Slide 1 of ${lastIndex + 1}</p>\n`
     : "";
 
-  return `    <section class="cr cr--theme-${config.theme}" style="${vars}" aria-roledescription="carousel" aria-label="${escapeHtml(config.label)}" data-carousel data-interval="${config.interval}" data-auto="${config.autoRotate}" data-per-view="${perView}">
+  return `    <section class="cr cr--theme-${config.theme}" style="${vars}" aria-roledescription="carousel" aria-label="${escapeHtml(config.label)}" data-carousel data-interval="${config.interval}" data-auto="${config.autoRotate}" data-per-view="${perView}" data-loop="${config.loop}">
       <div class="cr-track" role="group" aria-label="${escapeHtml(config.label)} slides" tabindex="0" data-track>
 ${items}
       </div>

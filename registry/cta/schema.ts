@@ -3,12 +3,21 @@ import type { CtaConfig } from "./react/cta";
 
 export const ctaSchema = [
   {
+    key: "eyebrow",
+    label: "Eyebrow",
+    description: "A short label above the heading. Leave empty to drop it.",
+    group: "Content",
+    type: "text",
+    default: "Ready when you are",
+    maxLength: 40,
+  },
+  {
     key: "heading",
     label: "Heading",
     description: "The one line that has to land.",
     group: "Content",
     type: "text",
-    default: "Ready to start your project?",
+    default: "Build it once. Take the code with you.",
     maxLength: 120,
   },
   {
@@ -17,7 +26,8 @@ export const ctaSchema = [
     description: "One or two sentences under the heading. Leave empty to drop it.",
     group: "Content",
     type: "text",
-    default: "Tell us what you need and we will come back to you within two working days.",
+    default:
+      "Set the options, test the exact files you will export, then drop them into your project. No library, no lock-in.",
     maxLength: 300,
   },
   {
@@ -51,11 +61,11 @@ export const ctaSchema = [
   {
     key: "layout",
     label: "Alignment",
-    description: "Centred, or aligned to the start of the line.",
+    description: "Centred, aligned to the start of the line, or split with the buttons to one side.",
     group: "Behaviour",
     type: "select",
     default: "centered",
-    options: ["centered", "left"],
+    options: ["centered", "left", "split"],
   },
   {
     key: "secondaryButton",
@@ -92,7 +102,7 @@ export const ctaSchema = [
     description: "Small print such as response times or terms.",
     group: "Add-ons",
     type: "boolean",
-    default: false,
+    default: true,
   },
   {
     key: "noteText",
@@ -100,9 +110,18 @@ export const ctaSchema = [
     description: "Keep it to one line.",
     group: "Add-ons",
     type: "text",
-    default: "No commitment. We reply to every message.",
+    default: "No commitment. We reply to every message within two working days.",
     maxLength: 120,
     dependsOn: { key: "note", equals: true },
+  },
+  {
+    key: "look",
+    label: "Look",
+    description: "Plain on the page, a bordered card, or a bold panel filled with your accent colour.",
+    group: "Style",
+    type: "select",
+    default: "bold",
+    options: ["plain", "card", "bold"],
   },
   {
     key: "theme",
@@ -116,7 +135,7 @@ export const ctaSchema = [
   {
     key: "accentColor",
     label: "Accent colour",
-    description: "The main button. Its text colour adjusts for contrast.",
+    description: "The bold panel and the main button. Text on it adjusts for contrast.",
     group: "Style",
     type: "color",
     default: "#2563eb",
@@ -124,10 +143,10 @@ export const ctaSchema = [
   {
     key: "radius",
     label: "Corner radius (px)",
-    description: "Roundness of the buttons.",
+    description: "Roundness of the panel and the buttons.",
     group: "Style",
     type: "number",
-    default: 8,
+    default: 14,
     min: 0,
     max: 24,
   },

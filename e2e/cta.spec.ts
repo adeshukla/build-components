@@ -3,7 +3,7 @@ import { components } from "./generate";
 import { expectNoAxeViolations, open, targets } from "./helpers";
 
 const variants = Object.keys(components.cta.variants);
-const section = (page: Page) => page.getByRole("region", { name: /Ready to start|Book a call/ });
+const section = (page: Page) => page.getByRole("region", { name: /Build it once|Book a call|Ready when you are/ });
 
 for (const target of targets("cta")) {
   test.describe(`CTA section — ${target.name} export`, () => {
@@ -16,8 +16,9 @@ for (const target of targets("cta")) {
 
     test("default: heading, supporting text and two working links", async ({ page }) => {
       await open(page, target.url("default"));
-      await expect(page.getByRole("heading", { level: 2, name: "Ready to start your project?" })).toBeVisible();
-      await expect(page.getByText("Tell us what you need")).toBeVisible();
+      await expect(page.getByRole("heading", { level: 2, name: "Build it once. Take the code with you." })).toBeVisible();
+      await expect(page.getByText("Set the options, test the exact files")).toBeVisible();
+      await expect(page.getByText("Ready when you are")).toBeVisible(); // the eyebrow
 
       const primary = page.getByRole("link", { name: "Get in touch" });
       await expect(primary).toHaveAttribute("href", "/contact");
@@ -40,8 +41,15 @@ for (const target of targets("cta")) {
       await expect(page.getByRole("heading", { level: 3, name: "Book a call" })).toBeVisible();
       await expect(page.getByRole("link", { name: "Choose a time" })).toHaveAttribute("href", "/call");
       await expect(page.getByRole("link", { name: "See our work" })).toHaveCount(0);
-      await expect(page.getByText("No commitment. We reply to every message.")).toBeVisible();
-      await expect(section(page)).toHaveCSS("background-color", "rgb(22, 22, 28)");
+      await expect(page.getByText("No commitment. We reply to every message")).toBeVisible();
+      await expect(page.locator(".cta-panel, section > div").first()).toHaveCSS("background-color", "rgb(20, 16, 25)");
+    });
+
+    test("split variant: the card look, with the actions in their own block", async ({ page }) => {
+      await open(page, target.url("split"));
+      await expect(page.getByRole("heading", { level: 2, name: "Ready when you are" })).toBeVisible();
+      await expect(page.getByRole("link", { name: /^Get in touch/ })).toBeVisible();
+      await expect(page.getByRole("link", { name: "See our work" })).toBeVisible();
     });
   });
 }

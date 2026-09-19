@@ -75,7 +75,8 @@ export const components: Record<
     renderHtml: (config) => renderCtaHtml(config as unknown as CtaConfig),
     variants: {
       default: "",
-      plain: "layout=left&secondaryButton=false&note=true&theme=dark&spacing=compact&headingLevel=h3&heading=Book+a+call&primaryText=Choose+a+time&primaryHref=%2Fcall",
+      plain: "look=plain&layout=left&secondaryButton=false&note=true&theme=dark&spacing=compact&headingLevel=h3&eyebrow=&heading=Book+a+call&primaryText=Choose+a+time&primaryHref=%2Fcall",
+      split: "look=card&layout=split&theme=light&heading=Ready+when+you+are",
     },
   },
   footer: {
@@ -122,6 +123,7 @@ export const components: Record<
     variants: {
       default: "",
       auto: "perView=2&autoRotate=true&interval=2&counter=true&dots=false&theme=dark&aspect=1%2F1&label=Case+studies",
+      repeat: "loop=true&label=On+repeat",
     },
   },
   "mega-menu": {

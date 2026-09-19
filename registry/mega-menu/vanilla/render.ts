@@ -42,11 +42,18 @@ function groupItems(items: MegaMenuItem[]) {
 
 const panelId = (name: string) => `mega-panel-${name.replace(/\W+/g, "-").toLowerCase()}`;
 
-const chevron = `<svg class="mm-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>`;
+const icons = {
+  chevronDown: `<svg class="mm-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>`,
+  chevronRight: `<svg class="mm-forward" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>`,
+  chevronLeft: `<svg class="mm-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>`,
+  burger: `<svg class="mm-icon mm-icon-open" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>`,
+  close: `<svg class="mm-icon mm-icon-close" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>`,
+};
 
 /**
  * The mega menu ships as real HTML with every panel written into the page and hidden, so its
- * markup is generated from the options. The script only opens and closes the panels.
+ * markup is generated from the options. The script opens and closes the panels, and on a narrow
+ * screen turns the bar into a menu button with one step at a time.
  */
 export function renderMegaMenuMarkup(config: MegaMenuConfig) {
   const dark = config.theme === "dark";
@@ -88,10 +95,13 @@ ${config.descriptions && link.description.trim() ? `                    <span cl
 
       return `          <div class="mm-menu" data-menu="${escapeHtml(menu.name)}">
             <button class="mm-top mm-button" type="button" aria-expanded="false" aria-controls="${id}">
-              ${escapeHtml(menu.name)}
-              ${chevron}
+              <span class="mm-button-text">${escapeHtml(menu.name)}</span>
+              ${icons.chevronDown}
+              ${icons.chevronRight}
             </button>
             <div class="mm-panel" id="${id}" hidden>
+              <button class="mm-top mm-back" type="button" data-back>${icons.chevronLeft}${escapeHtml(config.backLabel)}</button>
+              <p class="mm-panel-title">${escapeHtml(menu.name)}</p>
               <div class="mm-columns">
 ${groups}
               </div>
@@ -103,20 +113,24 @@ ${groups}
   const links = config.links
     .filter((link) => link.label.trim() !== "")
     .map(
-      (link) =>
-        `          <a class="mm-top" href="${escapeHtml(safeHref(link.href))}">${escapeHtml(link.label)}</a>`,
+      (link) => `          <a class="mm-top" href="${escapeHtml(safeHref(link.href))}">${escapeHtml(link.label)}</a>`,
     )
     .join("\n");
   const cta = config.ctaButton
     ? `          <a class="mm-cta" href="${escapeHtml(safeHref(config.ctaHref))}">${escapeHtml(config.ctaText)}</a>\n`
     : "";
 
-  return `    <nav class="${classes}" style="${vars}" aria-label="${escapeHtml(config.label)}" data-mega-menu data-open-on="${config.openOn}">
+  return `    <nav class="${classes}" style="${vars}" aria-label="${escapeHtml(config.label)}" data-mega-menu data-open-on="${config.openOn}" data-breakpoint="${config.mobileBreakpoint}">
       <div class="mm-bar">
         <span class="mm-logo">${escapeHtml(config.logoText)}</span>
+        <button class="mm-top mm-toggle" type="button" data-toggle aria-expanded="false" aria-controls="mega-drawer">
+          ${icons.burger}${icons.close}${escapeHtml(config.menuLabel)}
+        </button>
+        <div class="mm-items" id="mega-drawer">
 ${menus}
 ${links}
-${cta}      </div>
+${cta}        </div>
+      </div>
     </nav>`;
 }
 

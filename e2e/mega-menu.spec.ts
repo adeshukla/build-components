@@ -21,6 +21,9 @@ async function holdLinks(page: Page) {
 
 for (const target of targets("mega-menu")) {
   test.describe(`mega menu — ${target.name} export`, () => {
+    // Wide enough for the full bar, whichever device the project emulates.
+    test.use({ viewport: { width: 1280, height: 900 } });
+
     test("no axe violations: closed, and with a panel open", async ({ page }) => {
       for (const variant of variants) {
         await open(page, target.url(variant));
@@ -92,6 +95,65 @@ for (const target of targets("mega-menu")) {
       await expect(menu(page, "Products")).toHaveAttribute("aria-expanded", "true");
       await expect(page.getByText("Install by URL")).toHaveCount(0);
       await expect(page.getByRole("link", { name: "Registry" })).toBeVisible();
+    });
+  });
+}
+
+for (const target of targets("mega-menu")) {
+  test.describe(`mega menu on a narrow screen — ${target.name} export`, () => {
+    test.use({ viewport: { width: 375, height: 780 } });
+
+    test("no axe violations: closed, open, and inside a menu", async ({ page }) => {
+      await open(page, target.url("default"));
+      await expectNoAxeViolations(page);
+      await menu(page, "Menu").click();
+      await expectNoAxeViolations(page);
+      await menu(page, "Products").click();
+      await expectNoAxeViolations(page);
+    });
+
+    test("the bar becomes a menu button, and the links are hidden until it is pressed", async ({ page }) => {
+      await open(page, target.url("default"));
+      const toggle = menu(page, "Menu");
+      await expect(toggle).toBeVisible();
+      await expect(toggle).toHaveAttribute("aria-expanded", "false");
+      await expect(menu(page, "Products")).toBeHidden();
+
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-expanded", "true");
+      await expect(menu(page, "Products")).toBeVisible();
+      await expect(page.getByRole("link", { name: "Pricing" })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Start free" })).toBeVisible();
+    });
+
+    test("picking a menu is the second step: its links replace the list, and Back returns", async ({ page }) => {
+      await open(page, target.url("default"));
+      await menu(page, "Menu").click();
+      await menu(page, "Products").click();
+
+      // Step two shows this menu only.
+      await expect(page.getByRole("link", { name: /^Editor/ })).toBeVisible();
+      await expect(menu(page, "Solutions")).toBeHidden();
+      await expect(page.getByRole("link", { name: "Pricing" })).toBeHidden();
+
+      await menu(page, "Back").click();
+      await expect(menu(page, "Solutions")).toBeVisible();
+      await expect(page.getByRole("link", { name: /^Editor/ })).toBeHidden();
+    });
+
+    test("Escape steps back out of a menu, then closes the whole thing", async ({ page }) => {
+      await open(page, target.url("default"));
+      const toggle = menu(page, "Menu");
+      await toggle.click();
+      await menu(page, "Products").click();
+
+      await page.keyboard.press("Escape");
+      await expect(menu(page, "Solutions")).toBeVisible(); // back at the list of menus
+      await expect(toggle).toBeFocused();
+
+      await page.keyboard.press("Escape");
+      await expect(toggle).toHaveAttribute("aria-expanded", "false");
+      await expect(menu(page, "Products")).toBeHidden();
     });
   });
 }

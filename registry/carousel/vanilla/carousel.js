@@ -17,6 +17,7 @@
     // The last position is the last slide that can be first on screen, whether or not dots are on.
     const perView = Math.max(1, Number(root.dataset.perView) || 1);
     const lastIndex = Math.max(0, slides.length - perView);
+    const loop = root.dataset.loop === "true";
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let current = 0;
     let timer = null;
@@ -26,14 +27,21 @@
     }
 
     function goTo(index) {
-      const clamped = Math.min(lastIndex, Math.max(0, index));
-      track.scrollTo({ left: slideWidth() * clamped, behavior: reduceMotion.matches ? "auto" : "smooth" });
+      // Repeat wraps at both ends; without it the ends simply hold.
+      const wrapped = loop
+        ? index < 0
+          ? lastIndex
+          : index > lastIndex
+            ? 0
+            : index
+        : Math.min(lastIndex, Math.max(0, index));
+      track.scrollTo({ left: slideWidth() * wrapped, behavior: reduceMotion.matches ? "auto" : "smooth" });
     }
 
     function paint(index) {
       current = index;
-      if (previous) previous.disabled = index === 0;
-      if (next) next.disabled = index >= lastIndex;
+      if (previous) previous.disabled = !loop && index === 0;
+      if (next) next.disabled = !loop && index >= lastIndex;
       dots.forEach(function (dot, i) {
         if (i === index) dot.setAttribute("aria-current", "true");
         else dot.removeAttribute("aria-current");

@@ -9,8 +9,11 @@ export type MegaMenuConfig = {
   label: string;
   items: MegaMenuItem[];
   links: { label: string; href: string }[];
+  menuLabel: string;
+  backLabel: string;
   openOn: "click" | "hover";
   panel: "aligned" | "full";
+  mobileBreakpoint: "sm" | "md" | "lg";
   columns: "2" | "3" | "4";
   descriptions: boolean;
   ctaButton: boolean;
@@ -38,8 +41,11 @@ const defaultConfig: MegaMenuConfig = {
     { label: "Pricing", href: "/pricing" },
     { label: "Docs", href: "/docs" },
   ],
+  menuLabel: "Menu",
+  backLabel: "Back",
   openOn: "click",
   panel: "aligned",
+  mobileBreakpoint: "md",
   columns: "2",
   descriptions: true,
   ctaButton: true,
@@ -56,6 +62,8 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#2c2838", hover: "#221d2e" },
 };
 
+const widths = { sm: 640, md: 768, lg: 1024 };
+
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
@@ -64,6 +72,18 @@ const darkMedia = {
   },
   get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
 };
+
+/** True while the screen is narrower than the breakpoint, so the bar becomes a menu button. */
+function phoneMedia(width: number) {
+  return {
+    subscribe: (onChange: () => void) => {
+      const list = window.matchMedia(`(max-width: ${width - 1}px)`);
+      list.addEventListener("change", onChange);
+      return () => list.removeEventListener("change", onChange);
+    },
+    get: () => window.matchMedia(`(max-width: ${width - 1}px)`).matches,
+  };
+}
 
 // WCAG relative luminance, used to keep text on the accent readable.
 function luminance(hex: string) {
@@ -113,30 +133,45 @@ function groupItems(items: MegaMenuItem[]) {
   return menus;
 }
 
+const panelId = (name: string) => `mega-panel-${name.replace(/\W+/g, "-").toLowerCase()}`;
+
 export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }) {
   const [open, setOpen] = useState<string | null>(null);
+  const [drawer, setDrawer] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
+  const media = phoneMedia(widths[config.mobileBreakpoint]);
+  const phone = useSyncExternalStore(media.subscribe, media.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
   const accentLuminance = luminance(config.accentColor);
   const menus = groupItems(config.items);
   const links = config.links.filter((link) => link.label.trim() !== "");
+  const step = phone && drawer ? open : null;
 
   // Escape and outside clicks are handled on the document: Safari does not focus a button when it
   // is tapped, so a listener on the nav alone would never hear the key.
   useEffect(() => {
-    if (open === null) return;
+    if (open === null && !drawer) return;
     function onKeyDown(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
       event.preventDefault();
-      const button = open === null ? null : buttonRefs.current[open];
-      setOpen(null);
-      button?.focus();
+      // On a phone, Escape steps back out of a menu first, then closes the drawer.
+      if (open !== null) {
+        const button = buttonRefs.current[open];
+        setOpen(null);
+        (phone ? toggleRef.current : button)?.focus();
+        return;
+      }
+      setDrawer(false);
+      toggleRef.current?.focus();
     }
     function onPointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(null);
+      if (rootRef.current?.contains(event.target as Node)) return;
+      setOpen(null);
+      setDrawer(false);
     }
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown);
@@ -144,7 +179,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [open]);
+  }, [open, drawer, phone]);
 
   const style = {
     "--mm-accent": config.accentColor,
@@ -158,8 +193,131 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
     "--mm-hover": palette.hover,
   } as CSSProperties;
   const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mm-accent-text)";
-  const top = `flex items-center gap-1 rounded-(--mm-radius) px-3 py-2 font-medium no-underline text-(--mm-text) hover:bg-(--mm-hover) ${focus}`;
+  const top = `flex items-center gap-1 rounded-(--mm-radius) px-3 py-2 font-medium text-(--mm-text) no-underline hover:bg-(--mm-hover) ${focus}`;
   const columns = { "2": "sm:grid-cols-2", "3": "sm:grid-cols-3", "4": "sm:grid-cols-4" }[config.columns];
+
+  const linkList = (menu: { name: string; groups: { name: string; links: MegaMenuItem[] }[] }) => (
+    <div className={`grid gap-x-8 gap-y-6 ${phone ? "" : columns}`}>
+      {menu.groups.map((group) => (
+        <div key={group.name}>
+          {group.name.trim() !== "" && (
+            <p className="mb-2 text-xs font-semibold tracking-wide text-(--mm-muted) uppercase">{group.name}</p>
+          )}
+          <ul className="flex list-none flex-col gap-1 p-0">
+            {group.links.map((link, index) => (
+              <li key={index}>
+                <a
+                  href={safeHref(link.href)}
+                  onClick={() => {
+                    setOpen(null);
+                    setDrawer(false);
+                  }}
+                  className={`block rounded-(--mm-radius) px-2 py-2 no-underline hover:bg-(--mm-hover) ${focus}`}
+                >
+                  <span className="block font-medium text-(--mm-text)">{link.label}</span>
+                  {config.descriptions && link.description.trim() !== "" && (
+                    <span className="block text-sm text-(--mm-muted)">{link.description}</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+
+  const plainLinks = links.map((link, index) => (
+    <a
+      key={index}
+      href={safeHref(link.href)}
+      onClick={() => setDrawer(false)}
+      className={`${top} ${phone ? "w-full" : ""}`}
+    >
+      {link.label}
+    </a>
+  ));
+
+  const cta = config.ctaButton && (
+    <a
+      href={safeHref(config.ctaHref)}
+      className={`rounded-(--mm-radius) bg-(--mm-accent) px-4 py-2 text-center font-semibold text-(--mm-on-accent) no-underline ${focus} ${
+        phone ? "w-full" : "ml-auto"
+      }`}
+    >
+      {config.ctaText}
+    </a>
+  );
+
+  // Phone: a menu button, then one step at a time — the list of menus, then the menu you picked.
+  if (phone) {
+    const current = menus.find((menu) => menu.name === step);
+    return (
+      <nav ref={rootRef} aria-label={config.label} style={style} className="relative bg-(--mm-surface) text-(--mm-text)">
+        <div className="flex items-center justify-between gap-2 border-b border-(--mm-line) px-4 py-3">
+          <span className="font-semibold">{config.logoText}</span>
+          <button
+            ref={toggleRef}
+            type="button"
+            aria-expanded={drawer}
+            aria-controls="mega-drawer"
+            onClick={() => {
+              setDrawer(!drawer);
+              setOpen(null);
+            }}
+            className={`cursor-pointer ${top}`}
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
+              {drawer ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+            {config.menuLabel}
+          </button>
+        </div>
+
+        <div id="mega-drawer" hidden={!drawer} className="border-b border-(--mm-line) px-4 py-3">
+          {current ? (
+            <div>
+              <button
+                type="button"
+                onClick={() => setOpen(null)}
+                className={`mb-2 cursor-pointer ${top} w-full justify-start`}
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
+                  <path d="M15 6l-6 6 6 6" />
+                </svg>
+                {config.backLabel}
+              </button>
+              <p className="mb-3 px-2 text-xs font-semibold tracking-wide text-(--mm-muted) uppercase">{current.name}</p>
+              {linkList(current)}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {menus.map((menu) => (
+                <button
+                  key={menu.name}
+                  ref={(node) => {
+                    buttonRefs.current[menu.name] = node;
+                  }}
+                  type="button"
+                  aria-expanded={false}
+                  aria-controls={panelId(menu.name)}
+                  onClick={() => setOpen(menu.name)}
+                  className={`cursor-pointer ${top} w-full justify-between`}
+                >
+                  {menu.name}
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
+                    <path d="M9 6l6 6-6 6" />
+                  </svg>
+                </button>
+              ))}
+              {plainLinks}
+              {cta}
+            </div>
+          )}
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav
@@ -186,7 +344,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
                 }}
                 type="button"
                 aria-expanded={expanded}
-                aria-controls={`mega-panel-${menu.name.replace(/\W+/g, "-").toLowerCase()}`}
+                aria-controls={panelId(menu.name)}
                 onClick={() => setOpen(expanded ? null : menu.name)}
                 onKeyDown={(event) => {
                   if (event.key !== "ArrowDown") return;
@@ -213,7 +371,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
               </button>
 
               <div
-                id={`mega-panel-${menu.name.replace(/\W+/g, "-").toLowerCase()}`}
+                id={panelId(menu.name)}
                 data-panel={menu.name}
                 hidden={!expanded}
                 // Below the whole bar by default, so a wrapped bar never gets covered; once there
@@ -222,52 +380,14 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
                   config.panel === "full" ? "" : "sm:inset-x-auto sm:top-auto sm:left-0 sm:min-w-[34rem]"
                 }`}
               >
-                <div className={`grid gap-x-8 gap-y-6 ${columns}`}>
-                  {menu.groups.map((group) => (
-                    <div key={group.name}>
-                      {group.name.trim() !== "" && (
-                        <p className="mb-2 text-xs font-semibold tracking-wide text-(--mm-muted) uppercase">
-                          {group.name}
-                        </p>
-                      )}
-                      <ul className="flex list-none flex-col gap-1 p-0">
-                        {group.links.map((link, index) => (
-                          <li key={index}>
-                            <a
-                              href={safeHref(link.href)}
-                              onClick={() => setOpen(null)}
-                              className={`block rounded-(--mm-radius) px-2 py-2 no-underline hover:bg-(--mm-hover) ${focus}`}
-                            >
-                              <span className="block font-medium text-(--mm-text)">{link.label}</span>
-                              {config.descriptions && link.description.trim() !== "" && (
-                                <span className="block text-sm text-(--mm-muted)">{link.description}</span>
-                              )}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+                {linkList(menu)}
               </div>
             </div>
           );
         })}
 
-        {links.map((link, index) => (
-          <a key={index} href={safeHref(link.href)} className={top}>
-            {link.label}
-          </a>
-        ))}
-
-        {config.ctaButton && (
-          <a
-            href={safeHref(config.ctaHref)}
-            className={`ml-auto rounded-(--mm-radius) bg-(--mm-accent) px-4 py-2 font-semibold text-(--mm-on-accent) no-underline ${focus}`}
-          >
-            {config.ctaText}
-          </a>
-        )}
+        {plainLinks}
+        {cta}
       </div>
     </nav>
   );

@@ -1,72 +1,183 @@
-/* CTA section — plain CSS, no JavaScript. Colours come from the inline custom properties on the section. */
+/* CTA section — plain CSS, no JavaScript. Colours come from the inline custom properties. */
 .cta {
   --cta-accent: #2563eb;
   --cta-on-accent: #ffffff;
-  --cta-ring: #2563eb;
-  --cta-radius: 8px;
-  --cta-surface: #f7f7fb;
+  --cta-accent-text: #1b4ab0;
+  --cta-deep: #1a478a;
+  --cta-radius: 14px;
+  --cta-surface: #ffffff;
   --cta-text: #16121f;
   --cta-muted: #4d4a57;
-  --cta-border: #6f6b7a;
+  --cta-border: #d9d5e4;
+  --cta-outer: transparent;
+  display: block;
+  background: var(--cta-outer);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .cta--theme-system:not(.cta--bold) {
+    --cta-surface: #141019;
+    --cta-text: #f6f5fa;
+    --cta-muted: #b6b3c2;
+    --cta-border: #3a3448;
+  }
+  .cta--theme-system.cta--card { --cta-outer: #1c1726; }
+}
+
+.cta--card { padding: 1rem; }
+@media (min-width: 640px) {
+  .cta--card { padding: 1.5rem; }
+}
+
+.cta-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 4rem 1.5rem;
   background: var(--cta-surface);
   color: var(--cta-text);
 }
-.cta *, .cta *::before, .cta *::after { box-sizing: border-box; }
-.cta--compact { padding: 2.5rem 1.5rem; }
-.cta--spacious { padding: 6rem 1.5rem; }
+.cta--compact .cta-panel { padding: 2.5rem 1.5rem; }
+.cta--spacious .cta-panel { padding: 6rem 1.5rem; }
+.cta--card .cta-panel,
+.cta--bold .cta-panel { border-radius: var(--cta-radius); }
+.cta--card .cta-panel { border: 1px solid var(--cta-border); }
+.cta--bold .cta-panel { box-shadow: 0 24px 60px -32px rgb(0 0 0 / 0.65); }
+
 @media (min-width: 640px) {
-  .cta { padding: 5rem 1.5rem; }
-  .cta--compact { padding: 3rem 1.5rem; }
-  .cta--spacious { padding: 8rem 1.5rem; }
+  .cta-panel { padding: 5rem 3rem; }
+  .cta--compact .cta-panel { padding: 3rem 2.5rem; }
+  .cta--spacious .cta-panel { padding: 7rem 4rem; }
 }
 
-/* Follow the device when the theme is set to "system". */
-@media (prefers-color-scheme: dark) {
-  .cta--theme-system {
-    --cta-surface: #16161c;
-    --cta-text: #f6f5fa;
-    --cta-muted: #b6b3c2;
-    --cta-border: #8d8a99;
-  }
+/* Depth without an image: a diagonal wash and one soft light behind the text. */
+.cta-wash {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(135deg, var(--cta-accent) 0%, var(--cta-deep) 100%);
+}
+.cta-glow {
+  position: absolute;
+  z-index: -1;
+  top: -6rem;
+  right: -4rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 9999px;
+  background: var(--cta-on-accent);
+  opacity: 0.25;
+  filter: blur(48px);
 }
 
-.cta-inner { max-width: 48rem; margin: 0 auto; }
-.cta--centered .cta-inner { text-align: center; }
+.cta-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+.cta-words { max-width: 42rem; }
+.cta--centered .cta-inner { align-items: center; text-align: center; }
+.cta--centered .cta-words { margin: 0 auto; }
+
+/* Plain text, not a tinted pill: a tint under small text costs the contrast the accent was
+   corrected for, and this label is only 12px. */
+.cta-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  color: var(--cta-accent-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.cta-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+.cta--centered .cta-eyebrow { justify-content: center; }
+.cta--bold .cta-eyebrow { color: var(--cta-on-accent); }
 
 .cta-heading {
   margin: 0;
   font-size: 1.875rem;
-  line-height: 1.15;
+  line-height: 1.08;
   font-weight: 700;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
+.cta-body {
+  margin: 1rem 0 0;
+  color: var(--cta-muted);
+  font-size: 1.125rem;
+  text-wrap: pretty;
+}
+.cta--bold .cta-body { color: var(--cta-text); opacity: 0.9; }
+
 @media (min-width: 640px) {
   .cta-heading { font-size: 2.25rem; }
 }
-.cta-body {
-  max-width: 42rem;
-  margin: 1rem 0 0;
-  font-size: 1.125rem;
-  color: var(--cta-muted);
-  text-wrap: pretty;
+@media (min-width: 1024px) {
+  .cta-heading { font-size: 3rem; }
 }
-.cta--centered .cta-body { margin-inline: auto; }
 
-.cta-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.cta-actions-block { display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+.cta--centered .cta-actions-block { align-items: center; }
+.cta-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .cta--centered .cta-actions { justify-content: center; }
+
 .cta-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid transparent;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
   border-radius: var(--cta-radius);
   font-weight: 600;
   text-decoration: none;
 }
-.cta-button--primary { background: var(--cta-accent); color: var(--cta-on-accent); }
-.cta-button--secondary { border-color: var(--cta-border); color: var(--cta-text); }
-.cta-button:focus-visible { outline: 2px solid var(--cta-ring); outline-offset: 2px; }
+.cta-button:focus-visible { outline: 2px solid var(--cta-accent-text); outline-offset: 2px; }
+.cta--bold .cta-button:focus-visible { outline-color: var(--cta-on-accent); }
+.cta-arrow { width: 1rem; height: 1rem; }
 
-.cta-note { margin: 1rem 0 0; font-size: 0.875rem; color: var(--cta-muted); }
+.cta-button--primary {
+  background: var(--cta-accent);
+  color: var(--cta-on-accent);
+  box-shadow: 0 10px 24px -14px var(--cta-accent);
+}
+.cta--bold .cta-button--primary {
+  background: var(--cta-on-accent);
+  color: var(--cta-accent);
+  box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.6);
+}
+.cta-button--secondary {
+  border: 1px solid var(--cta-border);
+  color: var(--cta-text);
+}
+.cta-button--secondary:hover { background: color-mix(in srgb, var(--cta-accent) 5%, transparent); }
+.cta--bold .cta-button--secondary:hover { background: color-mix(in srgb, var(--cta-on-accent) 10%, transparent); }
+
+.cta-note { margin: 0; color: var(--cta-muted); font-size: 0.875rem; }
+.cta--bold .cta-note { color: var(--cta-text); opacity: 0.8; }
+
+/* Split: the words on one side, the actions on the other, once there is room. */
+@media (min-width: 1024px) {
+  .cta--split .cta-inner { flex-direction: row; align-items: center; justify-content: space-between; }
+  .cta--split .cta-actions-block { flex-shrink: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cta-button { transition: transform 200ms ease-out, box-shadow 200ms ease-out, background-color 200ms ease-out; }
+  .cta-button:hover { transform: translateY(-2px); }
+  .cta-button:active { transform: translateY(0); }
+}

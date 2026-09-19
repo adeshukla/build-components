@@ -8,6 +8,7 @@ export type CarouselConfig = {
   label: string;
   slides: CarouselSlide[];
   perView: "1" | "2" | "3";
+  loop: boolean;
   autoRotate: boolean;
   interval: number;
   arrows: boolean;
@@ -29,6 +30,7 @@ const defaultConfig: CarouselConfig = {
     { title: "Meridian", text: "Handed the code to a client who has no design system of their own.", image: "", alt: "" },
   ],
   perView: "1",
+  loop: false,
   autoRotate: false,
   interval: 6,
   arrows: true,
@@ -106,13 +108,22 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
   const perView = Number(config.perView);
   const lastIndex = Math.max(0, slides.length - perView);
 
-  /** Scrolls the track so that `index` is the first slide on show. */
+  /** Scrolls the track so that `index` is the first slide on show. Repeat wraps at both ends. */
   function goTo(index: number) {
     const track = trackRef.current;
     if (!track) return;
-    const clamped = Math.min(lastIndex, Math.max(0, index));
-    track.scrollTo({ left: (track.scrollWidth / Math.max(1, slides.length)) * clamped, behavior: reduceMotion ? "auto" : "smooth" });
-    setCurrent(clamped);
+    const wrapped = config.loop
+      ? index < 0
+        ? lastIndex
+        : index > lastIndex
+          ? 0
+          : index
+      : Math.min(lastIndex, Math.max(0, index));
+    track.scrollTo({
+      left: (track.scrollWidth / Math.max(1, slides.length)) * wrapped,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+    setCurrent(wrapped);
   }
 
   // The scroll position is the source of truth: swiping keeps the dots and buttons honest.
@@ -161,7 +172,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
     "--cr-line": palette.line,
   } as CSSProperties;
   const control =
-    "inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-(--cr-line) bg-(--cr-surface) text-(--cr-text) disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cr-accent-text)";
+    "inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-(--cr-line) bg-(--cr-surface) text-(--cr-text) transition-[background-color,transform,opacity] duration-200 ease-out hover:bg-(--cr-slide) active:scale-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cr-accent-text)";
 
   if (slides.length === 0) return null;
 
@@ -225,13 +236,18 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
 
         {config.arrows && (
           <>
-            <button type="button" onClick={() => goTo(current - 1)} disabled={current === 0} className={control}>
+            <button type="button" onClick={() => goTo(current - 1)} disabled={!config.loop && current === 0} className={control}>
               <span className="sr-only">Previous slide</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                 <path d="M15 6l-6 6 6 6" />
               </svg>
             </button>
-            <button type="button" onClick={() => goTo(current + 1)} disabled={current >= lastIndex} className={control}>
+            <button
+              type="button"
+              onClick={() => goTo(current + 1)}
+              disabled={!config.loop && current >= lastIndex}
+              className={control}
+            >
               <span className="sr-only">Next slide</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                 <path d="M9 6l6 6-6 6" />
@@ -253,8 +269,8 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
               >
                 <span
                   aria-hidden="true"
-                  className={`block size-3 rounded-full border border-(--cr-line) ${
-                    index === current ? "bg-(--cr-accent)" : "bg-transparent"
+                  className={`block size-3 rounded-full border border-(--cr-line) transition-[background-color,scale] duration-200 ease-out motion-reduce:transition-none ${
+                    index === current ? "scale-125 bg-(--cr-accent)" : "bg-transparent"
                   }`}
                 />
                 <span className="sr-only">

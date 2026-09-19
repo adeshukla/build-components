@@ -62,6 +62,14 @@ export const carouselSchema = [
     options: ["1", "2", "3"],
   },
   {
+    key: "loop",
+    label: "Repeat",
+    description: "Next from the last slide goes back to the first, and previous from the first goes to the last.",
+    group: "Behaviour",
+    type: "boolean",
+    default: false,
+  },
+  {
     key: "autoRotate",
     label: "Move on its own",
     description: "Adds a stop button, pauses while you are inside it, and never runs with reduced motion on.",

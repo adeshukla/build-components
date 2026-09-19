@@ -51,6 +51,17 @@ for (const target of targets("carousel")) {
       await expect(track).toBeFocused();
     });
 
+    test("repeat variant: the ends wrap instead of stopping", async ({ page }) => {
+      await open(page, target.url("repeat"));
+      // Previous is available from the start here, because it wraps to the last slide.
+      await expect(dot(page, "Previous slide")).toBeEnabled();
+      await dot(page, "Previous slide").click();
+      await expect(dot(page, /^Slide 4:/)).toHaveAttribute("aria-current", "true");
+
+      await dot(page, "Next slide").click();
+      await expect(dot(page, /^Slide 1:/)).toHaveAttribute("aria-current", "true");
+    });
+
     test("auto variant: two on screen, a stop button and a live counter", async ({ page }) => {
       await open(page, target.url("auto"));
       await expect(page.getByRole("group", { name: "Case studies slides" })).toBeVisible();

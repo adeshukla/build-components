@@ -84,6 +84,8 @@
   cursor: pointer;
 }
 .cr-control svg { width: 1rem; height: 1rem; }
+.cr-control:hover { background: var(--cr-slide); }
+.cr-control:active:not(:disabled) { scale: 0.9; }
 .cr-control:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* The play/pause button shows one icon at a time, from its pressed state. */
@@ -110,7 +112,7 @@
   border: 1px solid var(--cr-line);
   border-radius: 9999px;
 }
-.cr-dot[aria-current="true"]::before { background: var(--cr-accent); }
+.cr-dot[aria-current="true"]::before { background: var(--cr-accent); scale: 1.25; }
 
 .cr-counter { margin: 0 0 0 auto; color: var(--cr-muted); font-size: 0.875rem; }
 
@@ -127,4 +129,6 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .cr-track { scroll-behavior: smooth; }
+  .cr-control { transition: background-color 200ms ease-out, scale 200ms ease-out, opacity 200ms ease-out; }
+  .cr-dot::before { transition: background-color 200ms ease-out, scale 200ms ease-out; }
 }
