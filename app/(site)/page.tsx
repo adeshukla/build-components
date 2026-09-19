@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BoardTraces } from "@/components/board-traces";
 import { MountedPart } from "@/components/mounted-part";
-import { parts } from "@/lib/parts";
+import { inStock, parts } from "@/lib/parts";
 import { DatePicker } from "@/registry/date-picker/react/date-picker";
 import { Modal } from "@/registry/modal/react/modal";
 import { SearchableSelect } from "@/registry/searchable-select/react/searchable-select";
@@ -40,22 +40,22 @@ export default function Home() {
       <section aria-labelledby="hero-heading" className="on-board relative isolate overflow-hidden bg-board text-silk">
         <div aria-hidden="true" className="board-grid absolute inset-0 -z-20 opacity-50" />
         <BoardTraces />
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:py-24">
           <div>
             <h1
               id="hero-heading"
-              className="font-display text-[clamp(3.5rem,10vw,6rem)] leading-[0.88] font-bold tracking-[-0.01em] uppercase"
+              className="font-display text-[clamp(2.75rem,9vw,6rem)] leading-[0.9] font-bold tracking-[-0.01em] uppercase"
             >
               <span className="slab-line">Accessible parts.</span>
               <span className="slab-line text-pad" style={{ animationDelay: "140ms" }}>
                 Plain code.
               </span>
             </h1>
-            <p className="mt-7 max-w-xl text-lg text-pretty text-silk-muted">
+            <p className="mt-5 max-w-xl text-base text-pretty text-silk-muted sm:mt-7 sm:text-lg">
               Set up a component without writing code, test the exact files you will export, then take them into your
               project as React + Tailwind or HTML/CSS/JS. No library to install.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link href="#catalogue" className="btn-pad">
                 Open the catalogue
                 <Arrow />
@@ -64,12 +64,25 @@ export default function Home() {
                 Try Almanac, the date picker
               </Link>
             </div>
-            <p className="mt-8 font-mono text-xs tracking-wide text-silk-muted">
-              Every part ships tested in Chromium, WebKit and on iPhone.
-            </p>
+            {/* Counted from the catalogue, not typed in, so it cannot go stale. */}
+            <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-board-line pt-5 font-mono text-xs tracking-wide text-silk-muted">
+              {[
+                [inStock.length, "parts in stock"],
+                [2, "outputs each"],
+                [0, "runtime dependencies"],
+              ].map(([value, term]) => (
+                <div key={term as string}>
+                  <dt className="sr-only">{term}</dt>
+                  <dd>
+                    <span className="mr-2 font-display text-2xl leading-none font-bold text-pad">{value}</span>
+                    {term}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:gap-10">
+          <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-1 lg:gap-10">
             <MountedPart caption="Almanac · date picker · live, try it">
               <DatePicker />
             </MountedPart>
@@ -89,9 +102,9 @@ export default function Home() {
 
       {/* Catalogue */}
       <section id="catalogue" aria-labelledby="catalogue-heading" className="scroll-mt-4">
-        <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
           <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-5">
-            <h2 id="catalogue-heading" className="font-display text-5xl leading-none font-bold uppercase sm:text-6xl">
+            <h2 id="catalogue-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
               Parts catalogue
             </h2>
             <p className="max-w-md text-pretty text-ink-muted">
@@ -106,7 +119,7 @@ export default function Home() {
                 <li
                   key={part.slug}
                   style={{ ["--part-accent" as string]: part.accent }}
-                  className={`reveal group relative grid gap-x-8 gap-y-2 border-b border-rule py-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_11rem] md:items-center ${inStock ? "transition-colors hover:bg-paper-sunk" : ""}`}
+                  className={`reveal group relative grid gap-x-8 gap-y-2 border-b border-rule py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_11rem] md:items-center ${inStock ? "transition-colors hover:bg-paper-sunk" : ""}`}
                 >
                   {inStock && (
                     <span
@@ -119,7 +132,7 @@ export default function Home() {
                       aria-hidden="true"
                       className={`size-2.5 shrink-0 rounded-full ${inStock ? "bg-(--part-accent)" : "border border-rule-strong"}`}
                     />
-                    <h3 className="font-display text-3xl leading-none font-semibold uppercase">
+                    <h3 className="font-display text-2xl leading-none font-semibold uppercase sm:text-3xl">
                       {inStock ? (
                         <Link href={`/${part.slug}`} className="after:absolute after:inset-0 hover:underline">
                           {part.codename}
@@ -155,11 +168,11 @@ export default function Home() {
 
       {/* How it works */}
       <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 border-y border-rule bg-paper-sunk">
-        <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
-          <h2 id="how-heading" className="font-display text-5xl leading-none font-bold uppercase sm:text-6xl">
+        <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
+          <h2 id="how-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
             From this page to your project
           </h2>
-          <ol className="relative mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+          <ol className="relative mt-10 grid gap-8 md:grid-cols-3">
             <span
               aria-hidden="true"
               className="absolute top-5 right-[16%] left-[16%] hidden h-0.5 bg-rule-strong md:block"
@@ -185,9 +198,9 @@ export default function Home() {
 
       {/* Test report */}
       <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4">
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
           <div>
-            <h2 id="report-heading" className="font-display text-5xl leading-none font-bold uppercase sm:text-6xl">
+            <h2 id="report-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
               Test report
             </h2>
             <p className="mt-5 max-w-md text-pretty text-ink-muted">
@@ -238,8 +251,8 @@ export default function Home() {
         className="on-board relative isolate overflow-hidden bg-board-raised text-silk"
       >
         <div aria-hidden="true" className="board-grid absolute inset-0 -z-10 opacity-40" />
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-8 px-4 py-16 sm:px-6">
-          <h2 id="close-heading" className="max-w-2xl font-display text-5xl leading-none font-bold uppercase">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-6 px-4 py-12 sm:gap-8 sm:px-6 sm:py-16">
+          <h2 id="close-heading" className="max-w-2xl font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
             Pick a part and try it
           </h2>
           <div className="flex flex-wrap gap-3">

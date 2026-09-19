@@ -77,8 +77,8 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
   }
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
-      <aside aria-label="Options" className="lg:sticky lg:top-4">
+    <div className="grid items-start gap-4 sm:gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
+      <aside aria-label="Options" className="order-2 lg:sticky lg:top-4 lg:order-1">
         <OptionsPanel
           schema={schema}
           config={config}
@@ -87,7 +87,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
         />
       </aside>
 
-      <div className="min-w-0 space-y-6">
+      <div className="order-1 min-w-0 space-y-4 sm:space-y-6 lg:order-2">
         {/* Test bench */}
         <section aria-labelledby={`${idBase}-bench-heading`} className="overflow-hidden rounded-lg border border-rule bg-paper">
           <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 border-b border-rule p-4">
@@ -97,8 +97,8 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
               </h2>
               <p className="mt-1 text-sm text-ink-muted">Runs the exported code, not a mock-up.</p>
             </div>
-            <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
-              <div className="w-72 max-w-full">
+            <div className="flex w-full flex-wrap items-end gap-x-4 gap-y-3 sm:w-auto">
+              <div className="w-full max-w-full sm:w-72">
                 <Segmented
                   name={`${idBase}-output`}
                   legend={<span className="text-sm">Output</span>}
@@ -110,7 +110,8 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
                   ]}
                 />
               </div>
-              <div className="w-64 max-w-full">
+              {/* On a phone you are already at phone width, so the switcher would only take room. */}
+              <div className="hidden w-64 max-w-full sm:block">
                 <Segmented
                   name={`${idBase}-width`}
                   legend={<span className="text-sm">Screen width</span>}

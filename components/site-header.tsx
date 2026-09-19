@@ -5,15 +5,17 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export function SiteHeader() {
   return (
     <header className="on-board relative z-20 border-b border-board-line bg-board text-silk">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
-        <Link href="/" className="group flex items-center gap-3 rounded-sm">
-          <ChipMark />
-          <span className="font-display text-2xl leading-none font-semibold tracking-wide uppercase">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:gap-x-6 sm:px-6 sm:py-3">
+        <Link href="/" className="group flex items-center gap-2.5 rounded-sm sm:gap-3">
+          <ChipMark className="size-7 sm:size-9" />
+          <span className="font-display text-xl leading-none font-semibold tracking-wide uppercase sm:text-2xl">
             Build Components
           </span>
         </Link>
         <HeaderNav />
-        <ThemeToggle />
+        <div className="hidden sm:flex">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
