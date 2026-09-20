@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-09-20 (session 6)
+Last updated: 2026-09-21 (session 6)
 
 ## Current status (session 6)
 
@@ -76,6 +76,15 @@ Open http://localhost:3000.
 - **Five new parts (D34):** Bellows, Pennant, Helm, Spyglass, Klaxon.
 - **Real bugs the tests caught:** menu focus racing a fast keypress; a notification pinned open for ever by an emulated hover after a tap; the CTA eyebrow failing contrast as a tinted pill; carousel dots under the minimum target size.
 - **Test count:** 634 passing, 2 skipped. Production build green.
+
+### Audit round (2026-09-21)
+Adesh was right that the tests proved behaviour and never looked at the result. A sweep of all sixteen parts, both outputs, at 375, 768 and 1280, in their closed and open states, found:
+- **Vanilla exports had no `box-sizing` of their own**, so on any page without a CSS reset a full-width field overflowed. Every component now sets it, scoped to itself.
+- **Five targets under the 24px minimum**: footer links, the basket's remove button, the form checkbox, the notification action, the header logo.
+- **Three components fell back to Times** on a plain HTML page: the searchable select, date picker and modal used `font: inherit`.
+- **The mega menu's step chevron had no size**, so on a phone the plain-JS output showed a giant arrow per row.
+- **The form's two columns did not line up** and every problem was said twice.
+All fixed. `e2e/layout.spec.ts` now runs those checks on every component, in both outputs, at three widths (D37), so none of it can come back quietly. 928 tests passing.
 
 ### Still to build (D34 list, in order)
 Data table · pagination · breadcrumbs · stepper · sidebar nav · file upload (drag and drop) · multi-select · password field · one-time code · range slider · switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
