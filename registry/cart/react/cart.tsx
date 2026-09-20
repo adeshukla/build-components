@@ -186,7 +186,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
         <ul className="flex list-none flex-col gap-4 p-0">
           {lines.map((line) => (
             <li key={line.id} className="flex flex-wrap items-start gap-3 border-b border-(--ct-line) pb-4">
-              <div className="min-w-40 flex-1">
+              <div className="min-w-40 flex-1 basis-full sm:basis-auto">
                 <p className="font-medium">{line.name}</p>
                 {line.variant.trim() !== "" && <p className="text-sm text-(--ct-muted)">{line.variant}</p>}
                 <p className="mt-1 text-sm text-(--ct-muted)">
@@ -227,13 +227,13 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
                 <p className="text-sm text-(--ct-muted)">Quantity {line.quantity}</p>
               )}
 
-              <div className="flex min-w-24 flex-col items-end gap-1">
+              <div className="ml-auto flex flex-col items-end gap-1 sm:min-w-24">
                 <p className="font-semibold">{money(amount(line.price) * line.quantity, config.currency)}</p>
                 {config.removeButton && (
                   <button
                     type="button"
                     onClick={() => remove(line.id)}
-                    className={`cursor-pointer rounded-(--ct-radius) px-1 py-0.5 text-sm text-(--ct-accent-text) underline ${focus}`}
+                    className={`min-h-6 cursor-pointer rounded-(--ct-radius) p-1 text-sm text-(--ct-accent-text) underline ${focus}`}
                   >
                     <span className="sr-only">Remove {line.name} from the basket</span>
                     <span aria-hidden="true">Remove</span>

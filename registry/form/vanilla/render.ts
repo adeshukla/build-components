@@ -84,7 +84,9 @@ export function renderFormMarkup(config: FormConfig) {
               <input class="fm-checkbox" id="${name}" name="${name}" type="checkbox"${describedBy}>
               <label for="${name}">${escapeHtml(field.label)}</label>
             </div>
-            <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">Error: </span><span data-message></span></p>
+            <div class="fm-message">
+              <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">Error: </span><span data-message></span></p>
+            </div>
           </div>`;
       }
 
@@ -106,10 +108,14 @@ ${choices(field)
           : "";
 
       return `          <div class="fm-row${wide ? " fm-row--wide" : ""}" ${rules}>
-            <label class="fm-label" for="${name}">${escapeHtml(field.label)}${marker}</label>
-${hint}            <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">Error: </span><span data-message></span></p>
+            <div class="fm-top">
+              <label class="fm-label" for="${name}">${escapeHtml(field.label)}${marker}</label>
+${hint}            </div>
 ${input}
-${counter}          </div>`;
+            <div class="fm-message">
+              <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">Error: </span><span data-message></span></p>
+${counter}            </div>
+          </div>`;
     })
     .join("\n");
 

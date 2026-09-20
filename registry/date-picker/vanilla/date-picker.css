@@ -14,7 +14,7 @@
   --dp-disabled: #a3a3a3;
   --dp-error: #b3261e;
   --dp-hover: #f2f2f7;
-  --dp-font: inherit;
+  --dp-font: system-ui, -apple-system, "Segoe UI", sans-serif;
   --dp-field-height: 2.5rem;
   --dp-cell: 2.5rem;
   display: flex;

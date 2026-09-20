@@ -16,6 +16,12 @@
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Sizes include padding and border, whatever the host page does. */
+.fm,
+.fm *,
+.fm *::before,
+.fm *::after { box-sizing: border-box; }
+
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
   .fm--theme-system {
@@ -34,15 +40,21 @@
 .fm-hint { margin: 0.125rem 0 0; color: var(--fm-muted); font-size: 0.875rem; }
 
 .fm-fields { display: grid; gap: 1.25rem; }
+.fm-row { display: grid; align-content: start; gap: 0.25rem; }
+.fm-message { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.25rem 0.75rem; font-size: 0.875rem; }
+.fm-counter { margin: 0 0 0 auto; color: var(--fm-muted); }
+
+/* Subgrid keeps labels, inputs and messages on the same lines across both columns, however
+   long a label or hint runs. */
 @media (min-width: 640px) {
   .fm--two .fm-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fm--two .fm-row { grid-row: span 3; grid-template-rows: subgrid; }
   .fm--two .fm-row--wide { grid-column: 1 / -1; }
 }
 
 .fm-label { display: block; font-weight: 500; }
 .fm-control {
   width: 100%;
-  margin-top: 0.25rem;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--fm-line);
   border-radius: var(--fm-radius);
@@ -60,9 +72,9 @@
 }
 
 .fm-check { display: flex; align-items: flex-start; gap: 0.75rem; }
-.fm-checkbox { width: 1.25rem; height: 1.25rem; margin-top: 0.25rem; flex-shrink: 0; accent-color: var(--fm-accent); }
+.fm-checkbox { width: 1.5rem; height: 1.5rem; margin-top: 0.125rem; flex-shrink: 0; accent-color: var(--fm-accent); }
 
-.fm-error { margin: 0.25rem 0 0; color: var(--fm-error); font-weight: 500; }
+.fm-error { margin: 0; color: var(--fm-error); font-weight: 500; }
 
 .fm-summary {
   padding: 1rem;

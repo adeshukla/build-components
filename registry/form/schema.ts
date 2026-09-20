@@ -114,15 +114,16 @@ export const formSchema = [
   {
     key: "errorSummary",
     label: "Error summary",
-    description: "Lists every problem at the top and moves focus there on submit.",
+    description:
+      "Off by default: each message sits under its own field. On, a list of every problem also appears at the top and takes focus on submit, as the GOV.UK Design System does.",
     group: "Add-ons",
     type: "boolean",
-    default: true,
+    default: false,
   },
   {
     key: "counter",
     label: "Characters remaining",
-    description: "Counts down under any text field that has a maximum.",
+    description: "Counts down beside any text field that has a maximum, once there is something to count.",
     group: "Add-ons",
     type: "boolean",
     default: true,

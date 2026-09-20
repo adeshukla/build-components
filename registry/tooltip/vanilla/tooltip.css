@@ -13,6 +13,12 @@
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Sizes include padding and border, whatever the host page does. */
+.tt,
+.tt *,
+.tt *::before,
+.tt *::after { box-sizing: border-box; }
+
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
   .tt--theme-system {

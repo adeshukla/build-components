@@ -11,7 +11,7 @@
   --modal-border: #737373;
   --modal-line: #d4d4d4;
   --modal-hover: #f2f2f7;
-  --modal-font: inherit;
+  --modal-font: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-family: var(--modal-font);
 }
 .mdl *, .mdl *::before, .mdl *::after { box-sizing: border-box; }

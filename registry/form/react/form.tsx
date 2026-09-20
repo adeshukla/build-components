@@ -71,7 +71,7 @@ const defaultConfig: FormConfig = {
     },
   ],
   validateOn: "blur",
-  errorSummary: true,
+  errorSummary: false,
   marker: "optional",
   counter: true,
   layout: "two",
@@ -317,7 +317,15 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
           </div>
         )}
 
-        <div className={config.layout === "two" ? "grid gap-5 sm:grid-cols-2" : "flex flex-col gap-5"}>
+        {/* Subgrid keeps labels, inputs and messages on the same lines across both columns,
+            however long a label or hint runs. */}
+        <div
+          className={
+            config.layout === "two"
+              ? "grid gap-x-5 gap-y-5 sm:grid-cols-2 sm:[grid-template-rows:repeat(auto-fill,auto)]"
+              : "flex flex-col gap-5"
+          }
+        >
           {fields.map((field) => {
             const name = fieldName(field.label);
             const type = fieldType(field);
@@ -344,14 +352,14 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                         setChecks((current) => ({ ...current, [name]: event.target.checked }));
                         if (config.validateOn !== "submit" || error !== "") check(field, { checked: event.target.checked });
                       }}
-                      className={`mt-1 size-5 shrink-0 accent-(--fm-accent) ${focus}`}
+                      className={`mt-0.5 size-6 shrink-0 accent-(--fm-accent) ${focus}`}
                     />
                     <label htmlFor={name} className="text-pretty">
                       {field.label}
                     </label>
                   </div>
                   {error !== "" && (
-                    <p id={`${name}-error`} className="mt-1 font-medium text-(--fm-error)">
+                    <p id={`${name}-error`} className="mt-1 text-sm font-medium text-(--fm-error)">
                       <span className="sr-only">Error: </span>
                       {error}
                     </p>
@@ -361,23 +369,24 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
             }
 
             return (
-              <div key={name} className={wide && config.layout === "two" ? "sm:col-span-2" : ""}>
-                <label htmlFor={name} className="block font-medium">
-                  {field.label}
-                  {config.marker === "optional" && !required && <span className="text-(--fm-muted)"> (optional)</span>}
-                  {config.marker === "required" && required && <span className="text-(--fm-muted)"> (required)</span>}
-                </label>
-                {field.help.trim() !== "" && (
-                  <p id={`${name}-help`} className="mt-0.5 text-sm text-(--fm-muted)">
-                    {field.help}
-                  </p>
-                )}
-                {error !== "" && (
-                  <p id={`${name}-error`} className="mt-1 font-medium text-(--fm-error)">
-                    <span className="sr-only">Error: </span>
-                    {error}
-                  </p>
-                )}
+              <div
+                key={name}
+                className={`grid content-start gap-y-1 sm:[grid-template-rows:subgrid] sm:row-span-3 ${
+                  wide && config.layout === "two" ? "sm:col-span-2" : ""
+                }`}
+              >
+                <div>
+                  <label htmlFor={name} className="block font-medium">
+                    {field.label}
+                    {config.marker === "optional" && !required && <span className="text-(--fm-muted)"> (optional)</span>}
+                    {config.marker === "required" && required && <span className="text-(--fm-muted)"> (required)</span>}
+                  </label>
+                  {field.help.trim() !== "" && (
+                    <p id={`${name}-help`} className="mt-0.5 text-sm text-(--fm-muted)">
+                      {field.help}
+                    </p>
+                  )}
+                </div>
 
                 {type === "textarea" ? (
                   <textarea
@@ -393,7 +402,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                       if (config.validateOn === "input" || error !== "") check(field, { value: event.target.value });
                     }}
                     onBlur={() => config.validateOn === "blur" && check(field)}
-                    className={`${control} mt-1 ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
+                    className={`${control} ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
                   />
                 ) : type === "select" ? (
                   <select
@@ -407,7 +416,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                       if (config.validateOn !== "submit" || error !== "") check(field, { value: event.target.value });
                     }}
                     onBlur={() => config.validateOn === "blur" && check(field)}
-                    className={`${control} mt-1 ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
+                    className={`${control} ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
                   >
                     <option value="">Choose one</option>
                     {choices(field).map((option) => (
@@ -434,15 +443,28 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                       if (config.validateOn === "input" || error !== "") check(field, { value: event.target.value });
                     }}
                     onBlur={() => config.validateOn === "blur" && check(field)}
-                    className={`${control} mt-1 ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
+                    className={`${control} ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
                   />
                 )}
 
-                {config.counter && max !== null && (type === "text" || type === "textarea") && (
-                  <p aria-live="polite" className="mt-1 text-sm text-(--fm-muted)">
-                    {Math.max(0, max - valueOf(field).length)} characters remaining
-                  </p>
-                )}
+                {/* The message line: the error sits under its field, where every other design
+                    system puts it, and the counter shares the line once there is something to
+                    count. Both live in one row so the grid stays aligned. */}
+                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 text-sm">
+                  {error !== "" ? (
+                    <p id={`${name}-error`} className="font-medium text-(--fm-error)">
+                      <span className="sr-only">Error: </span>
+                      {error}
+                    </p>
+                  ) : (
+                    <span />
+                  )}
+                  {config.counter && max !== null && (type === "text" || type === "textarea") && valueOf(field) !== "" && (
+                    <p aria-live="polite" className="ml-auto text-(--fm-muted)">
+                      {Math.max(0, max - valueOf(field).length)} characters remaining
+                    </p>
+                  )}
+                </div>
               </div>
             );
           })}

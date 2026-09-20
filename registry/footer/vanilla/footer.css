@@ -11,6 +11,12 @@
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Sizes include padding and border, whatever the host page does. */
+.ft,
+.ft *,
+.ft *::before,
+.ft *::after { box-sizing: border-box; }
+
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
   .ft--theme-system {
@@ -47,7 +53,11 @@
 
 .ft-social { margin-top: 2rem; }
 
+/* inline-block with a minimum height: a standalone link still needs a 24px target (WCAG 2.2). */
 .ft-link {
+  display: inline-block;
+  min-height: 1.5rem;
+  padding: 0.125rem 0;
   color: var(--ft-muted);
   text-decoration: none;
 }

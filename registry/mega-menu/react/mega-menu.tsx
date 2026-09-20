@@ -201,7 +201,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
       {menu.groups.map((group) => (
         <div key={group.name}>
           {group.name.trim() !== "" && (
-            <p className="mb-2 text-xs font-semibold tracking-wide text-(--mm-muted) uppercase">{group.name}</p>
+            <p className="mb-2 px-2 text-xs font-semibold tracking-wide text-(--mm-muted) uppercase">{group.name}</p>
           )}
           <ul className="flex list-none flex-col gap-1 p-0">
             {group.links.map((link, index) => (

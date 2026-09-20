@@ -16,6 +16,12 @@
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Sizes include padding and border, whatever the host page does. */
+.mm,
+.mm *,
+.mm *::before,
+.mm *::after { box-sizing: border-box; }
+
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
   .mm--theme-system {
@@ -62,8 +68,10 @@
   outline-offset: 2px;
 }
 .mm-button[aria-expanded="true"] { background: var(--mm-hover); }
-.mm-chevron { width: 1rem; height: 1rem; }
-.mm-icon { width: 1.25rem; height: 1.25rem; }
+.mm-chevron { width: 1rem; height: 1rem; flex-shrink: 0; }
+/* Every icon needs its own size: an SVG with no size fills whatever box it lands in. */
+.mm-icon,
+.mm-forward { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
 .mm-button[aria-expanded="true"] .mm-chevron { transform: rotate(180deg); }
 
 /* The menu button, the back button, the step chevron and the panel title are phone-only. */
@@ -90,6 +98,7 @@
 .mm-columns { display: grid; gap: 1.5rem 2rem; }
 .mm-group-name {
   margin: 0 0 0.5rem;
+  padding: 0 0.5rem;
   color: var(--mm-muted);
   font-size: 0.75rem;
   font-weight: 600;

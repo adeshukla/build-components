@@ -186,7 +186,7 @@ export function Toast({ config = defaultConfig }: { config?: ToastConfig }) {
                   <button
                     type="button"
                     onClick={() => setToasts((current) => current.filter((entry) => entry.id !== toast.id))}
-                    className={`mt-1 cursor-pointer text-sm font-semibold text-(--to-accent-text) underline ${focus}`}
+                    className={`mt-1 inline-block min-h-6 cursor-pointer py-0.5 text-sm font-semibold text-(--to-accent-text) underline ${focus}`}
                   >
                     {config.actionText}
                   </button>

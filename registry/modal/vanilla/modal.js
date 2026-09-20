@@ -57,6 +57,7 @@
     return color;
   }
 
+  const SYSTEM_FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
   const IOS_FONT = '-apple-system, "SF Pro Text", "SF Pro Display", system-ui, sans-serif';
   const IOS_BLUE = { light: "#007aff", dark: "#0a84ff" };
   const palettes = {
@@ -94,7 +95,7 @@
       root.style.setProperty("--modal-on-accent", accentLuminance > 0.179 ? "#000000" : "#ffffff");
       root.style.setProperty("--modal-ring", accentLuminance <= 0.35 || dark ? accent : "#000000");
       root.style.setProperty("--modal-radius", `${ios ? 14 : config.radius}px`);
-      root.style.setProperty("--modal-font", ios ? IOS_FONT : "inherit");
+      root.style.setProperty("--modal-font", ios ? IOS_FONT : SYSTEM_FONT);
     }
 
     applyAppearance();

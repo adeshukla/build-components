@@ -194,3 +194,13 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 ## 2026-09-20 — D35. Hover-pause only where hovering exists
 **Decision:** A message that clears itself pauses on hover only on devices that really hover (`(hover: hover)`); focus always pauses it.
 **Why:** The iPhone test run caught it: a message that appears where the finger tapped keeps an emulated hover, so it would never clear itself on a phone.
+
+## 2026-09-21 — D36. Messages sit under their field, and the summary is opt-in
+**Decision:** Each field's error message goes directly under the field, as Bootstrap, Material and Ant do. The error summary at the top of the form is still there, but off by default; turning it on gives the GOV.UK arrangement (summary plus inline messages).
+**Why:** Adesh: "in react it shows stack of validation errors … use standard method follows in the industry". With the summary on by default every problem was said twice.
+**Also:** the two-column layout now uses CSS subgrid, so labels, inputs and messages line up across columns however long a label or hint runs. That was the misalignment in the screenshots.
+
+## 2026-09-21 — D37. Layout is tested, not just behaviour
+**Decision:** `e2e/layout.spec.ts` loads every component, in both outputs, at 375, 768 and 1280, and fails on: the page scrolling sideways, any element running past the right edge that is not inside a scroller or clipped, and any pressable thing under 24px.
+**Why:** Adesh: "you are not testing the components and their responsiveness, alignment, accessibility also their usability". Every test so far proved behaviour; none of them looked at the result. The first run found seven real problems.
+**Found by it:** vanilla exports with no `box-sizing` of their own overflowed any page without a CSS reset (the form ran off the side); footer links, the basket's remove button, the form checkbox, the notification action and the header logo were all under the minimum target size; the searchable select, date picker and modal fell back to Times on a plain HTML page because their font was `inherit`.

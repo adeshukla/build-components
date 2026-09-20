@@ -109,8 +109,9 @@ export function SiteFooter({ config = defaultConfig }: { config?: FooterConfig }
     "--ft-muted": palette.muted,
     "--ft-line": palette.line,
   } as CSSProperties;
+  // inline-block with a minimum height: a standalone link still needs a 24px target (WCAG 2.2).
   const link =
-    "text-(--ft-muted) no-underline hover:text-(--ft-accent) hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ft-accent)";
+    "inline-block min-h-6 py-0.5 text-(--ft-muted) no-underline hover:text-(--ft-accent) hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ft-accent)";
 
   return (
     <footer

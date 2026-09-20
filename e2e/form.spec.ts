@@ -17,8 +17,20 @@ for (const target of targets("form")) {
       }
     });
 
-    test("submitting an empty form lists every problem and moves focus to the summary", async ({ page }) => {
+    test("by default each message sits under its own field, with no summary", async ({ page }) => {
       await open(page, target.url("default"));
+      await submit(page).click();
+
+      await expect(page.getByRole("alert", { name: "There is a problem" })).toHaveCount(0);
+      // Focus goes to the first field that needs fixing.
+      await expect(field(page, /^Full name/)).toBeFocused();
+      await expect(field(page, /^Full name/)).toHaveAttribute("aria-invalid", "true");
+      await expect(field(page, /^Full name/)).toHaveAccessibleDescription("Error: Enter full name.");
+      await expect(page.getByText("Enter full name.")).toHaveCount(1); // said once, not twice
+    });
+
+    test("summary variant: every problem is listed at the top and takes focus", async ({ page }) => {
+      await open(page, target.url("summary"));
       await submit(page).click();
 
       const summary = page.getByRole("alert", { name: "There is a problem" });
@@ -33,7 +45,7 @@ for (const target of targets("form")) {
     });
 
     test("a summary link moves focus to the field that needs fixing", async ({ page }) => {
-      await open(page, target.url("default"));
+      await open(page, target.url("summary"));
       await submit(page).click();
       await page.getByRole("link", { name: "Enter email address." }).click();
       await expect(field(page, /^Email address/)).toBeFocused();
@@ -76,6 +88,8 @@ for (const target of targets("form")) {
       await expect(phone).not.toHaveAttribute("aria-invalid");
       await expect(page.getByText("(optional)")).toBeVisible();
 
+      // The counter only appears once there is something to count.
+      await expect(page.getByText("500 characters remaining")).toBeHidden();
       await field(page, /^Message/).fill("Twelve chars");
       await expect(page.getByText("488 characters remaining")).toBeVisible(); // 500 - 12
     });

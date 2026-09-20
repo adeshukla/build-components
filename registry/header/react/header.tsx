@@ -156,7 +156,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
         </a>
       )}
       <div className={`mx-auto flex w-full max-w-7xl items-center gap-6 px-4 sm:px-6 ${heights[config.height]}`}>
-        <a href="/" className={`text-lg font-bold tracking-tight text-(--hd-text) no-underline ${focusRing}`}>
+        <a href="/" className={`inline-flex min-h-6 items-center text-lg font-bold tracking-tight text-(--hd-text) no-underline ${focusRing}`}>
           {config.logoText}
         </a>
 

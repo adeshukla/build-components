@@ -15,6 +15,12 @@
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* Sizes include padding and border, whatever the host page does. */
+.to,
+.to *,
+.to *::before,
+.to *::after { box-sizing: border-box; }
+
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
   .to--theme-system {
@@ -77,8 +83,10 @@
 .to-body { flex: 1; min-width: 0; }
 .to-text { margin: 0; font-size: 0.875rem; text-wrap: pretty; }
 .to-action {
+  display: inline-block;
+  min-height: 1.5rem;
   margin-top: 0.25rem;
-  padding: 0;
+  padding: 0.125rem 0;
   border: 0;
   background: none;
   color: var(--to-accent-text);

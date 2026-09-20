@@ -133,11 +133,14 @@
       const max = limit(row.dataset.max);
       if (max === null) return;
       const length = (controlOf(row).value || "").length;
+      // Nothing typed yet, nothing to count: an empty field does not need a countdown.
+      counter.hidden = length === 0;
       counter.textContent = Math.max(0, max - length) + " characters remaining";
     }
 
     rows.forEach(function (row) {
       const control = controlOf(row);
+      counterFor(row);
       const recheck = function () {
         const wrong = row.querySelector(".fm-error").hidden === false;
         if (validateOn === "input" || wrong) paint(row, validate(row));
