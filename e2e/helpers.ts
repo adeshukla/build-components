@@ -6,8 +6,15 @@ import { expect, type Page } from "@playwright/test";
 /** Navigate, and on React harness pages wait until hydration has finished. */
 export async function open(page: Page, url: string) {
   await page.goto(url, { waitUntil: "load" });
-  if (url.startsWith("/harness")) {
-    await page.locator('[data-hydrated="true"]').first().waitFor({ state: "attached", timeout: 30_000 });
+  if (!url.startsWith("/harness")) return;
+  const hydrated = page.locator('[data-hydrated="true"]').first();
+  try {
+    await hydrated.waitFor({ state: "attached", timeout: 5_000 });
+  } catch {
+    // A harness route written moments ago is sometimes not registered by the dev server yet:
+    // one reload is enough, and it is only ever the first visit in a run.
+    await page.goto(url, { waitUntil: "load" });
+    await hydrated.waitFor({ state: "attached", timeout: 30_000 });
   }
 }
 

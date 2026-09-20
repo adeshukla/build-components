@@ -1,0 +1,82 @@
+/* Stepper — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.st {
+  --st-accent: #2563eb;
+  --st-accent-text: #1b4ab0;
+  --st-on-accent: #ffffff;
+  --st-surface: #ffffff;
+  --st-text: #16121f;
+  --st-muted: #4d4a57;
+  --st-line: #d9d5e4;
+  --st-done: #1a7f52;
+  display: block;
+  background: var(--st-surface);
+  color: var(--st-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.st,
+.st *,
+.st *::before,
+.st *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .st--theme-system {
+    --st-surface: #141019;
+    --st-text: #f6f5fa;
+    --st-muted: #b6b3c2;
+    --st-line: #3a3448;
+    --st-done: #6ddba4;
+  }
+}
+
+.st-summary { margin: 0 0 0.75rem; color: var(--st-muted); font-size: 0.875rem; }
+
+.st-list { display: flex; flex-direction: column; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.st-step { display: flex; min-width: 0; flex: 1; align-items: flex-start; gap: 0.75rem; }
+.st-link,
+.st-static { display: flex; min-width: 0; align-items: flex-start; gap: 0.75rem; text-decoration: none; color: inherit; }
+.st-link:focus-visible { outline: 2px solid var(--st-accent-text); outline-offset: 2px; }
+
+.st-marker {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  place-items: center;
+  border: 2px solid var(--st-line);
+  border-radius: 9999px;
+  color: var(--st-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.st-marker svg { width: 1rem; height: 1rem; }
+.st-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: currentColor; }
+.st-marker--done { border-color: var(--st-done); color: var(--st-done); }
+.st-marker--current { border-color: var(--st-accent); background: var(--st-accent); color: var(--st-on-accent); }
+
+.st-words { min-width: 0; }
+.st-label { display: block; font-weight: 500; }
+.st-step--todo .st-label,
+.st-step--done .st-label { color: var(--st-muted); }
+.st-detail { display: block; color: var(--st-muted); font-size: 0.875rem; }
+
+/* Along the page once there is room; stacked on a phone either way. */
+@media (min-width: 640px) {
+  .st--horizontal .st-list { flex-direction: row; align-items: flex-start; }
+  .st--horizontal .st-step { flex-direction: column; gap: 0.5rem; }
+  .st--horizontal .st-link,
+  .st--horizontal .st-static { flex-direction: row; }
+}
+
+.st-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

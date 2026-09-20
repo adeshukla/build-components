@@ -1,0 +1,106 @@
+/* Data table — plain CSS. Colours come from the inline custom properties. */
+.tl {
+  --tl-accent: #2563eb;
+  --tl-accent-text: #1b4ab0;
+  --tl-radius: 10px;
+  --tl-surface: #ffffff;
+  --tl-sunk: #f7f7fb;
+  --tl-text: #16121f;
+  --tl-muted: #4d4a57;
+  --tl-line: #d9d5e4;
+  --tl-hover: #f0eff6;
+  --tl-pad: 0.75rem 1rem;
+  display: block;
+  background: var(--tl-surface);
+  color: var(--tl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.tl,
+.tl *,
+.tl *::before,
+.tl *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tl--theme-system {
+    --tl-surface: #141019;
+    --tl-sunk: #1c1726;
+    --tl-text: #f6f5fa;
+    --tl-muted: #b6b3c2;
+    --tl-line: #3a3448;
+    --tl-hover: #221d2e;
+  }
+}
+
+.tl--compact { --tl-pad: 0.5rem 0.75rem; }
+.tl-count { margin: 0 0 0.5rem; color: var(--tl-muted); font-size: 0.875rem; }
+.tl-empty { margin: 0; padding: 1.5rem; border: 1px solid var(--tl-line); border-radius: var(--tl-radius); color: var(--tl-muted); }
+
+.tl-frame {
+  overflow-x: auto;
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+}
+.tl--sticky .tl-frame { max-height: 24rem; overflow-y: auto; }
+
+.tl-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left; }
+.tl-caption { padding: var(--tl-pad); font-weight: 600; text-align: left; }
+.tl-table thead { background: var(--tl-sunk); }
+.tl--sticky .tl-table thead { position: sticky; top: 0; z-index: 1; }
+.tl-table th,
+.tl-table td { padding: var(--tl-pad); font-weight: normal; }
+.tl-table thead th { font-weight: 600; }
+.tl-table tbody tr { border-top: 1px solid var(--tl-line); }
+.tl-table tbody tr:hover { background: var(--tl-hover); }
+.tl--zebra .tl-table tbody tr.tl-odd { background: var(--tl-sunk); }
+.tl-number { text-align: right; font-variant-numeric: tabular-nums; }
+.tl-pick { width: 3rem; }
+.tl-pick input { width: 1.5rem; height: 1.5rem; accent-color: var(--tl-accent); }
+
+.tl-sort {
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tl-arrow { opacity: 0.3; }
+th[aria-sort="ascending"] .tl-arrow,
+th[aria-sort="descending"] .tl-arrow { opacity: 1; }
+
+.tl-sort:focus-visible,
+.tl-pick input:focus-visible {
+  outline: 2px solid var(--tl-accent-text);
+  outline-offset: -2px;
+}
+
+/* On a phone each row becomes a card, and every cell carries its column name. */
+@media (max-width: 639px) {
+  .tl--stack .tl-table,
+  .tl--stack .tl-table tbody,
+  .tl--stack .tl-table tr,
+  .tl--stack .tl-table td,
+  .tl--stack .tl-table th { display: block; }
+  .tl--stack .tl-table thead { display: none; }
+  /* The caption is block too, or it shrinks to a word per line. */
+  .tl--stack .tl-caption { display: block; }
+  .tl--stack .tl-table tbody tr { padding: 0.5rem 0.25rem; }
+  .tl--stack .tl-table td,
+  .tl--stack .tl-table tbody th { padding: 0.25rem 0.75rem; }
+  /* Only cells that name a column get the prefix: the picker column has no name. */
+  .tl--stack .tl-table td[data-label]::before,
+  .tl--stack .tl-table tbody th[data-label]::before {
+    content: attr(data-label) ": ";
+    color: var(--tl-muted);
+    font-weight: 500;
+  }
+  .tl--stack .tl-number { text-align: left; }
+}

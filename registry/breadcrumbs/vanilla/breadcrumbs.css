@@ -1,0 +1,63 @@
+/* Breadcrumbs — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.bc {
+  --bc-accent-text: #1b4ab0;
+  --bc-surface: #ffffff;
+  --bc-text: #16121f;
+  --bc-muted: #4d4a57;
+  display: block;
+  background: var(--bc-surface);
+  color: var(--bc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.bc,
+.bc *,
+.bc *::before,
+.bc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .bc--theme-system {
+    --bc-surface: #141019;
+    --bc-text: #f6f5fa;
+    --bc-muted: #b6b3c2;
+  }
+}
+
+.bc-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+.bc-item { display: flex; align-items: center; gap: 0.25rem; }
+.bc-sep { padding: 0 0.25rem; color: var(--bc-muted); }
+.bc-gap { padding-left: 0.5rem; color: var(--bc-muted); }
+
+.bc-link {
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0;
+  color: var(--bc-muted);
+  text-decoration: underline;
+}
+.bc-link:hover { color: var(--bc-accent-text); }
+.bc-link:focus-visible { outline: 2px solid var(--bc-accent-text); outline-offset: 2px; }
+.bc-home { width: 1rem; height: 1rem; }
+
+.bc-current { display: inline-flex; min-height: 1.5rem; align-items: center; font-weight: 500; }
+
+/* On a phone only the first step and the current page are shown. */
+@media (min-width: 640px) {
+  .bc-gap { display: none; }
+}
+@media (max-width: 639px) {
+  .bc-hide { display: none; }
+}

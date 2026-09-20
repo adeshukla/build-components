@@ -48,6 +48,21 @@ import { renderPopoverHtml } from "@/registry/popover/vanilla/render";
 import { toastSchema } from "@/registry/toast/schema";
 import * as toastDocs from "@/registry/toast/docs";
 import { renderToastHtml } from "@/registry/toast/vanilla/render";
+import { tableSchema } from "@/registry/table/schema";
+import * as tableDocs from "@/registry/table/docs";
+import { renderTableHtml } from "@/registry/table/vanilla/render";
+import { paginationSchema } from "@/registry/pagination/schema";
+import * as paginationDocs from "@/registry/pagination/docs";
+import { renderPaginationHtml } from "@/registry/pagination/vanilla/render";
+import { breadcrumbsSchema } from "@/registry/breadcrumbs/schema";
+import * as breadcrumbsDocs from "@/registry/breadcrumbs/docs";
+import { renderBreadcrumbsHtml } from "@/registry/breadcrumbs/vanilla/render";
+import { stepperSchema } from "@/registry/stepper/schema";
+import * as stepperDocs from "@/registry/stepper/docs";
+import { renderStepperHtml } from "@/registry/stepper/vanilla/render";
+import { sidebarSchema } from "@/registry/sidebar/schema";
+import * as sidebarDocs from "@/registry/sidebar/docs";
+import { renderSidebarHtml } from "@/registry/sidebar/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -168,6 +183,41 @@ export const registry = {
     schema: toastSchema,
     ...toastDocs,
     renderHtml: (config) => renderToastHtml(config as never),
+  },
+  "table": {
+    title: "Data table",
+    description: "An accessible data table: sortable columns, row selection and a phone layout that still reads.",
+    schema: tableSchema,
+    ...tableDocs,
+    renderHtml: (config) => renderTableHtml(config as never),
+  },
+  "pagination": {
+    title: "Pagination",
+    description: "Accessible pagination: named navigation, a current page that says so, and gaps that are never controls.",
+    schema: paginationSchema,
+    ...paginationDocs,
+    renderHtml: (config) => renderPaginationHtml(config as never),
+  },
+  "breadcrumbs": {
+    title: "Breadcrumbs",
+    description: "An accessible breadcrumb trail: named navigation, a current page that is not a link, no script.",
+    schema: breadcrumbsSchema,
+    ...breadcrumbsDocs,
+    renderHtml: (config) => renderBreadcrumbsHtml(config as never),
+  },
+  "stepper": {
+    title: "Stepper",
+    description: "An accessible progress stepper: named flow, states in words, finished steps you can go back to.",
+    schema: stepperSchema,
+    ...stepperDocs,
+    renderHtml: (config) => renderStepperHtml(config as never),
+  },
+  "sidebar": {
+    title: "Sidebar navigation",
+    description: "An accessible sidebar: sections as headings, aria-current on the page you are on, a drawer on a phone.",
+    schema: sidebarSchema,
+    ...sidebarDocs,
+    renderHtml: (config) => renderSidebarHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

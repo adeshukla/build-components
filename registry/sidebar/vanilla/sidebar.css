@@ -1,0 +1,158 @@
+/* Sidebar navigation — plain CSS. Colours come from the inline custom properties. */
+.sb {
+  --sb-accent: #2563eb;
+  --sb-accent-text: #1b4ab0;
+  --sb-radius: 10px;
+  --sb-width: 260px;
+  --sb-surface: #ffffff;
+  --sb-sunk: #f4f3f8;
+  --sb-text: #16121f;
+  --sb-muted: #4d4a57;
+  --sb-line: #d9d5e4;
+  --sb-hover: #f0eff6;
+  display: block;
+  background: var(--sb-surface);
+  color: var(--sb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sb,
+.sb *,
+.sb *::before,
+.sb *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sb--theme-system {
+    --sb-surface: #141019;
+    --sb-sunk: #1c1726;
+    --sb-text: #f6f5fa;
+    --sb-muted: #b6b3c2;
+    --sb-line: #3a3448;
+    --sb-hover: #221d2e;
+  }
+}
+
+.sb-panel {
+  width: var(--sb-width);
+  padding: 0.5rem;
+  border: 1px solid var(--sb-line);
+  border-radius: var(--sb-radius);
+}
+.sb-nav { display: flex; flex-direction: column; gap: 1rem; }
+.sb-heading { margin: 0; font-size: 0.75rem; }
+.sb-heading--static {
+  padding: 0.5rem 0.75rem;
+  color: var(--sb-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sb-toggle-section {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--sb-radius);
+  background: none;
+  color: var(--sb-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.sb-toggle-section:hover { background: var(--sb-hover); }
+.sb-chevron { width: 1rem; height: 1rem; flex-shrink: 0; }
+.sb-toggle-section[aria-expanded="false"] .sb-chevron { transform: rotate(-90deg); }
+
+.sb-links { display: flex; flex-direction: column; gap: 0.125rem; margin: 0; padding: 0; list-style: none; }
+/* A display rule beats the hidden attribute unless it is said again. */
+.sb-links[hidden] { display: none; }
+.sb-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--sb-radius);
+  color: var(--sb-text);
+  text-decoration: none;
+}
+.sb-link:hover { background: var(--sb-hover); }
+.sb-active { background: var(--sb-sunk); color: var(--sb-accent-text); font-weight: 600; }
+
+.sb-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--sb-sunk);
+  color: var(--sb-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.sb-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--sb-line);
+  border-radius: var(--sb-radius);
+  background: none;
+  color: var(--sb-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sb-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+.sb-icon-close { display: none; }
+.sb-toggle[aria-expanded="true"] .sb-icon-open { display: none; }
+.sb-toggle[aria-expanded="true"] .sb-icon-close { display: block; }
+
+.sb-toggle:focus-visible,
+.sb-toggle-section:focus-visible,
+.sb-link:focus-visible {
+  outline: 2px solid var(--sb-accent-text);
+  outline-offset: -2px;
+}
+
+/*
+ * Narrow screens: the sidebar becomes a button that opens a drawer under it.
+ * The rules repeat per breakpoint because a media query cannot read a data attribute.
+ */
+@media (max-width: 639px) {
+  [data-breakpoint="sm"] .sb-toggle { display: flex; }
+  [data-breakpoint="sm"] .sb-panel { width: 100%; margin-top: 0.5rem; }
+  [data-breakpoint="sm"]:not([data-open="true"]) .sb-panel { display: none; }
+}
+@media (max-width: 767px) {
+  [data-breakpoint="md"] .sb-toggle { display: flex; }
+  [data-breakpoint="md"] .sb-panel { width: 100%; margin-top: 0.5rem; }
+  [data-breakpoint="md"]:not([data-open="true"]) .sb-panel { display: none; }
+}
+@media (max-width: 1023px) {
+  [data-breakpoint="lg"] .sb-toggle { display: flex; }
+  [data-breakpoint="lg"] .sb-panel { width: 100%; margin-top: 0.5rem; }
+  [data-breakpoint="lg"]:not([data-open="true"]) .sb-panel { display: none; }
+}
+
+.sb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sb-chevron { transition: transform 200ms ease; }
+}

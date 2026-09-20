@@ -23,6 +23,16 @@ import { Popover, type PopoverConfig } from "@/registry/popover/react/popover";
 
 import { Toast, type ToastConfig } from "@/registry/toast/react/toast";
 
+import { Table, type TableConfig } from "@/registry/table/react/table";
+
+import { Pagination, type PaginationConfig } from "@/registry/pagination/react/pagination";
+
+import { Breadcrumbs, type BreadcrumbsConfig } from "@/registry/breadcrumbs/react/breadcrumbs";
+
+import { Stepper, type StepperConfig } from "@/registry/stepper/react/stepper";
+
+import { Sidebar, type SidebarConfig } from "@/registry/sidebar/react/sidebar";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -83,6 +93,11 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
         {slug === "menu" && <Menu config={config as unknown as MenuConfig} />}
         {slug === "popover" && <Popover config={config as unknown as PopoverConfig} />}
         {slug === "toast" && <Toast config={config as unknown as ToastConfig} />}
+        {slug === "table" && <Table config={config as unknown as TableConfig} />}
+        {slug === "pagination" && <Pagination config={config as unknown as PaginationConfig} />}
+        {slug === "breadcrumbs" && <Breadcrumbs config={config as unknown as BreadcrumbsConfig} />}
+        {slug === "stepper" && <Stepper config={config as unknown as StepperConfig} />}
+        {slug === "sidebar" && <Sidebar config={config as unknown as SidebarConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

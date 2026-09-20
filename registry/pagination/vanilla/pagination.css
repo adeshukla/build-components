@@ -1,0 +1,69 @@
+/* Pagination — plain CSS. Colours come from the inline custom properties. */
+.pg {
+  --pg-accent: #2563eb;
+  --pg-accent-text: #1b4ab0;
+  --pg-on-accent: #ffffff;
+  --pg-radius: 8px;
+  --pg-surface: #ffffff;
+  --pg-text: #16121f;
+  --pg-muted: #4d4a57;
+  --pg-line: #d9d5e4;
+  --pg-hover: #f4f3f8;
+  display: block;
+  background: var(--pg-surface);
+  color: var(--pg-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.pg,
+.pg *,
+.pg *::before,
+.pg *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .pg--theme-system {
+    --pg-surface: #141019;
+    --pg-text: #f6f5fa;
+    --pg-muted: #b6b3c2;
+    --pg-line: #3a3448;
+    --pg-hover: #221d2e;
+  }
+}
+
+.pg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.pg-list { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+.pg-ends { display: flex; gap: 0.25rem; }
+
+.pg-step {
+  display: inline-flex;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--pg-line);
+  border-radius: var(--pg-radius);
+  background: var(--pg-surface);
+  color: var(--pg-text);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.pg-step svg { width: 1rem; height: 1rem; }
+.pg-step:hover { background: var(--pg-hover); }
+.pg-step:disabled { opacity: 0.4; cursor: not-allowed; }
+.pg-step:focus-visible { outline: 2px solid var(--pg-accent-text); outline-offset: 2px; }
+
+.pg-current,
+.pg-current:hover {
+  border-color: var(--pg-accent);
+  background: var(--pg-accent);
+  color: var(--pg-on-accent);
+}
+
+.pg-gap { padding: 0 0.25rem; color: var(--pg-muted); }
+.pg-summary { margin: 0; color: var(--pg-muted); font-size: 0.875rem; }

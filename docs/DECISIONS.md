@@ -204,3 +204,14 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 **Decision:** `e2e/layout.spec.ts` loads every component, in both outputs, at 375, 768 and 1280, and fails on: the page scrolling sideways, any element running past the right edge that is not inside a scroller or clipped, and any pressable thing under 24px.
 **Why:** Adesh: "you are not testing the components and their responsiveness, alignment, accessibility also their usability". Every test so far proved behaviour; none of them looked at the result. The first run found seven real problems.
 **Found by it:** vanilla exports with no `box-sizing` of their own overflowed any page without a CSS reset (the form ran off the side); footer links, the basket's remove button, the form checkbox, the notification action and the header logo were all under the minimum target size; the searchable select, date picker and modal fell back to Times on a plain HTML page because their font was `inherit`.
+
+## 2026-09-21 — D38. Five navigation and data parts
+**Decision:** Manifest (data table), Ladder (pagination), Wake (breadcrumbs), Course (stepper) and Gangway (sidebar navigation).
+**Why:** Next on the D34 list, and the table is the one accessibility guidance singles out as hard to get right.
+**Notable choices:**
+- The table is written as comma-separated lines with the first line naming the columns, so a whole dataset is one field you can paste into. A cell cannot contain a comma; that is the ceiling, and it is noted in the code.
+- Money and counts sort by value, not as text: sorted as text, £186.00 comes before £24.50.
+- Stacking a table into cards on a phone changes `display`, and **that strips a table of its semantics**. Every role is therefore spelled out in the markup, so a screen reader still reads a table either way.
+- Breadcrumbs and the stepper ship with no JavaScript at all.
+- The stepper says finished, current and not started in words, because a tick and a colour are not available to everyone.
+**Found while building:** a `hidden` attribute loses to a `display` class, so folding a sidebar section away did nothing until the class was conditional too. A brand-new harness route is sometimes not registered by the dev server before the tests reach it, so `open()` now reloads once.

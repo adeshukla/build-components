@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-09-21 (session 6)
+Last updated: 2026-09-21 (session 7)
 
 ## Current status (session 6)
 
@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The sixteen parts, all in stock
+### The twenty-one parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -35,6 +35,11 @@ Open http://localhost:3000.
 | **Helm** | Dropdown menu | APG Menu Button |
 | **Spyglass** | Popover | Anchored dialog |
 | **Klaxon** | Notifications | ARIA live region |
+| **Manifest** | Data table | HTML table + aria-sort |
+| **Ladder** | Pagination | Navigation + aria-current |
+| **Wake** | Breadcrumbs | Navigation + aria-current |
+| **Course** | Stepper | Navigation + aria-current=step |
+| **Gangway** | Sidebar navigation | Navigation + disclosure |
 
 ### Done in session 4 (2026-09-18)
 - **Fixed what Adesh reported:**
@@ -87,7 +92,7 @@ Adesh was right that the tests proved behaviour and never looked at the result. 
 All fixed. `e2e/layout.spec.ts` now runs those checks on every component, in both outputs, at three widths (D37), so none of it can come back quietly. 928 tests passing.
 
 ### Still to build (D34 list, in order)
-Data table · pagination · breadcrumbs · stepper · sidebar nav · file upload (drag and drop) · multi-select · password field · one-time code · range slider · switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
+File upload (drag and drop) · multi-select · password field · one-time code · range slider · switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
 
 ### In progress
 Nothing half-finished.

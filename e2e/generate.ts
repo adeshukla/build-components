@@ -34,6 +34,21 @@ import { renderPopoverHtml } from "../registry/popover/vanilla/render";
 import { toastSchema } from "../registry/toast/schema";
 import type { ToastConfig } from "../registry/toast/react/toast";
 import { renderToastHtml } from "../registry/toast/vanilla/render";
+import { tableSchema } from "../registry/table/schema";
+import type { TableConfig } from "../registry/table/react/table";
+import { renderTableHtml } from "../registry/table/vanilla/render";
+import { paginationSchema } from "../registry/pagination/schema";
+import type { PaginationConfig } from "../registry/pagination/react/pagination";
+import { renderPaginationHtml } from "../registry/pagination/vanilla/render";
+import { breadcrumbsSchema } from "../registry/breadcrumbs/schema";
+import type { BreadcrumbsConfig } from "../registry/breadcrumbs/react/breadcrumbs";
+import { renderBreadcrumbsHtml } from "../registry/breadcrumbs/vanilla/render";
+import { stepperSchema } from "../registry/stepper/schema";
+import type { StepperConfig } from "../registry/stepper/react/stepper";
+import { renderStepperHtml } from "../registry/stepper/vanilla/render";
+import { sidebarSchema } from "../registry/sidebar/schema";
+import type { SidebarConfig } from "../registry/sidebar/react/sidebar";
+import { renderSidebarHtml } from "../registry/sidebar/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -203,6 +218,53 @@ export const components: Record<
     variants: {
       default: "",
       quick: "duration=1&position=top-center&icon=false&actionText=&maxVisible=1&theme=dark",
+    },
+  },
+  "table": {
+    exportName: "Table",
+    schema: tableSchema,
+    renderHtml: (config) => renderTableHtml(config as unknown as TableConfig),
+    variants: {
+      default: "",
+      plain: "sortable=false&selectable=false&zebra=false&density=compact&theme=dark&small=scroll",
+      empty: "data=&emptyText=Nothing%20to%20show%20yet.",
+    },
+  },
+  "pagination": {
+    exportName: "Pagination",
+    schema: paginationSchema,
+    renderHtml: (config) => renderPaginationHtml(config as unknown as PaginationConfig),
+    variants: {
+      default: "",
+      links: "hrefPattern=%2Forders%3Fpage%3D%7Bpage%7D",
+      compact: "look=compact&summary=true&theme=dark&prevText=Newer&nextText=Older",
+    },
+  },
+  "breadcrumbs": {
+    exportName: "Breadcrumbs",
+    schema: breadcrumbsSchema,
+    renderHtml: (config) => renderBreadcrumbsHtml(config as unknown as BreadcrumbsConfig),
+    variants: {
+      default: "",
+      plain: "separator=slash&homeIcon=false&collapse=false&theme=dark&label=You+are+here",
+    },
+  },
+  "stepper": {
+    exportName: "Stepper",
+    schema: stepperSchema,
+    renderHtml: (config) => renderStepperHtml(config as unknown as StepperConfig),
+    variants: {
+      default: "",
+      locked: "current=2&linkDone=false&summary=false&marker=dot&orientation=vertical&theme=dark&details=false",
+    },
+  },
+  "sidebar": {
+    exportName: "Sidebar",
+    schema: sidebarSchema,
+    renderHtml: (config) => renderSidebarHtml(config as unknown as SidebarConfig),
+    variants: {
+      default: "",
+      plain: "collapsible=false&badges=false&theme=dark&width=200&activeHref=%2Fteam&label=Admin",
     },
   },
 };
