@@ -225,3 +225,10 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 - **One-time code:** a labelled group, boxes that name themselves (“Character 3 of 6”), paste fills across the boxes, and only the first box carries `autocomplete="one-time-code"`. A single-field layout is offered too, because it is simpler for screen readers and password managers.
 - **Slider:** native range inputs throughout, so the keyboard and the announcements come from the browser. A range is two inputs on one track, with only the thumbs taking the pointer so the top one does not swallow clicks meant for the other.
 **Found while building:** in single-file mode the upload counted the old file against the limit, so a new file was refused instead of replacing it; a remove button whose name was built from joined text nodes read “Testing , remove”, so every such button is now named outright.
+
+## 2026-09-22 — D40. A global search that takes any data
+**Decision:** Lookout, a ⌘K / Ctrl+K search. You give it JSON — an array, an object, nested as deep as you like — and it walks the whole thing: every object with a title becomes a result, and the titles above it become its breadcrumb. Which key is the title and which fields are searched are options; nothing about the shape is declared up front.
+**Why:** Adesh asked for a search you just attach data to.
+**How it matches:** every word typed must appear somewhere in the entry (so "accessibility audit" finds one person, not everything about accessibility). A title that starts with the first word ranks first, then titles containing every word, then matches elsewhere.
+**How it ships:** the React file carries the data in its config; the HTML version carries it in a JSON script block with "<" escaped, so replacing the data is one edit and needs no build step. Links in the data are checked when followed, so a `javascript:` URL goes nowhere.
+**Found while building:** with grouping off, the top of every trail vanished, because it was only ever shown as the group heading; and a highlighted match in the accent colour failed contrast on the tinted active row, so matches are now bold and underlined in the text colour.

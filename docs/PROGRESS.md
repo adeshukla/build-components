@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The twenty-six parts, all in stock
+### The twenty-seven parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -45,6 +45,7 @@ Open http://localhost:3000.
 | **Cipher** | Password field | Labelled input + live rules |
 | **Semaphore** | One-time code | Grouped inputs + one-time-code |
 | **Fathom** | Range slider | Native range inputs |
+| **Lookout** | Global search | APG Combobox in a dialog |
 
 ### Done in session 4 (2026-09-18)
 - **Fixed what Adesh reported:**

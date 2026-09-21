@@ -1,0 +1,122 @@
+/* Search — plain CSS. Colours come from the inline custom properties. */
+.se {
+  --se-accent: #2563eb;
+  --se-accent-text: #1b4ab0;
+  --se-radius: 12px;
+  --se-surface: #ffffff;
+  --se-sunk: #f4f3f8;
+  --se-text: #16121f;
+  --se-muted: #4d4a57;
+  --se-line: #d9d5e4;
+  --se-hover: #eeecf5;
+  display: block;
+  background: var(--se-surface);
+  color: var(--se-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.se,
+.se *,
+.se *::before,
+.se *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .se--theme-system {
+    --se-surface: #141019;
+    --se-sunk: #221d2e;
+    --se-text: #f6f5fa;
+    --se-muted: #b6b3c2;
+    --se-line: #3a3448;
+    --se-hover: #2a2438;
+  }
+}
+
+.se-label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+.se-field { position: relative; }
+.se-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+.se-field .se-icon { position: absolute; top: 50%; left: 0.75rem; translate: 0 -50%; color: var(--se-muted); pointer-events: none; }
+
+.se-input {
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid var(--se-line);
+  border-radius: var(--se-radius);
+  background: var(--se-surface);
+  color: var(--se-text);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.se-empty { margin: 0; padding: 1rem 0.25rem; color: var(--se-muted); text-align: center; }
+.se-empty[hidden],
+.se-results[hidden] { display: none; }
+
+.se-results { max-height: 24rem; margin-top: 0.5rem; overflow-y: auto; }
+.se-group {
+  margin: 0;
+  padding: 0.75rem 0.75rem 0.25rem;
+  color: var(--se-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.se-option { padding: 0.5rem 0.75rem; border-radius: calc(var(--se-radius) - 4px); cursor: pointer; }
+.se-option[aria-selected="true"] { background: var(--se-hover); }
+.se-title { display: block; font-weight: 500; }
+/* Weight and an underline, in the text colour: an accent colour would have to clear 4.5:1 on
+   the highlighted row as well as on white. */
+.se-mark {
+  background: none;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline 2px var(--se-accent);
+  text-underline-offset: 2px;
+}
+.se-detail { display: block; color: var(--se-muted); font-size: 0.875rem; }
+
+.se-trigger {
+  display: flex;
+  width: 100%;
+  max-width: 24rem;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--se-line);
+  border-radius: var(--se-radius);
+  background: var(--se-surface);
+  color: var(--se-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.se-trigger-text { flex: 1; text-align: left; }
+.se-kbd { padding: 0 0.375rem; border: 1px solid var(--se-line); border-radius: 4px; font-size: 0.75rem; }
+
+.se-dialog {
+  width: min(40rem, calc(100vw - 2rem));
+  margin: 12vh auto auto;
+  padding: 0.75rem;
+  border: 1px solid var(--se-line);
+  border-radius: var(--se-radius);
+  background: var(--se-surface);
+  color: var(--se-text);
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+.se-dialog::backdrop { background: rgb(0 0 0 / 0.4); }
+
+.se-input:focus-visible,
+.se-trigger:focus-visible { outline: 2px solid var(--se-accent-text); outline-offset: 2px; }
+
+.se-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

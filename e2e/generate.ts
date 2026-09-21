@@ -64,6 +64,9 @@ import { renderOtpHtml } from "../registry/otp/vanilla/render";
 import { sliderSchema } from "../registry/slider/schema";
 import type { SliderConfig } from "../registry/slider/react/slider";
 import { renderSliderHtml } from "../registry/slider/vanilla/render";
+import { searchSchema } from "../registry/search/schema";
+import type { SearchConfig } from "../registry/search/react/search";
+import { renderSearchHtml } from "../registry/search/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -325,6 +328,15 @@ export const components: Record<
     variants: {
       default: "",
       single: "mode=single&min=0&max=100&step=5&startValue=30&prefix=&suffix=%25&label=Volume&hint=&theme=dark",
+    },
+  },
+  "search": {
+    exportName: "Search",
+    schema: searchSchema,
+    renderHtml: (config) => renderSearchHtml(config as unknown as SearchConfig),
+    variants: {
+      default: "",
+      inline: "layout=inline&groups=false&theme=dark&label=Search+the+menu&placeholder=Coffee%2C+cake%2C+anything&data=%5B%7B%22title%22%3A%20%22Coffee%22%2C%20%22items%22%3A%20%5B%7B%22title%22%3A%20%22Oat%20milk%20flat%20white%22%2C%20%22description%22%3A%20%22Double%20shot%2C%20oat%20milk%22%2C%20%22url%22%3A%20%22/menu/flat-white%22%2C%20%22tags%22%3A%20%5B%22dairy%20free%22%5D%7D%2C%20%7B%22title%22%3A%20%22Espresso%22%2C%20%22description%22%3A%20%22Single%20or%20double%22%2C%20%22url%22%3A%20%22/menu/espresso%22%7D%5D%7D%2C%20%7B%22title%22%3A%20%22Food%22%2C%20%22items%22%3A%20%5B%7B%22title%22%3A%20%22Banana%20bread%22%2C%20%22description%22%3A%20%22Toasted%2C%20with%20butter%22%2C%20%22url%22%3A%20%22/menu/banana-bread%22%2C%20%22tags%22%3A%20%5B%22vegetarian%22%5D%7D%5D%7D%5D",
     },
   },
 };

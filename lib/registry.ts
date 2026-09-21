@@ -78,6 +78,9 @@ import { renderOtpHtml } from "@/registry/otp/vanilla/render";
 import { sliderSchema } from "@/registry/slider/schema";
 import * as sliderDocs from "@/registry/slider/docs";
 import { renderSliderHtml } from "@/registry/slider/vanilla/render";
+import { searchSchema } from "@/registry/search/schema";
+import * as searchDocs from "@/registry/search/docs";
+import { renderSearchHtml } from "@/registry/search/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -268,6 +271,13 @@ export const registry = {
     schema: sliderSchema,
     ...sliderDocs,
     renderHtml: (config) => renderSliderHtml(config as never),
+  },
+  "search": {
+    title: "Global search",
+    description: "A global search: give it any JSON, nested as deep as you like, and search it with ⌘K.",
+    schema: searchSchema,
+    ...searchDocs,
+    renderHtml: (config) => renderSearchHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

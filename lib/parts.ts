@@ -249,6 +249,15 @@ export const parts: Part[] = [
     accent: "#6ec6ca",
     status: "in-stock",
   },
+  {
+    slug: "search",
+    codename: "Lookout",
+    name: "Global search",
+    summary: "Point it at any data, nested or flat, and search it from anywhere with ⌘K.",
+    pattern: "APG Combobox in a dialog",
+    accent: "#ffb86b",
+    status: "in-stock",
+  },
 ];
 
 export const inStock = parts.filter((part) => part.status === "in-stock");

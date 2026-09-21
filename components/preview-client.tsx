@@ -43,6 +43,8 @@ import { Otp, type OtpConfig } from "@/registry/otp/react/otp";
 
 import { Slider, type SliderConfig } from "@/registry/slider/react/slider";
 
+import { Search, type SearchConfig } from "@/registry/search/react/search";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -113,6 +115,7 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
         {slug === "password" && <Password config={config as unknown as PasswordConfig} />}
         {slug === "otp" && <Otp config={config as unknown as OtpConfig} />}
         {slug === "slider" && <Slider config={config as unknown as SliderConfig} />}
+        {slug === "search" && <Search config={config as unknown as SearchConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}
