@@ -21,7 +21,8 @@ export function MountedPart({ caption, children }: { caption: ReactNode; childre
           ))}
         </div>
       ))}
-      <div className="relative rounded-lg bg-paper p-6 text-ink shadow-[0_30px_60px_-24px_rgb(8_3_24/0.7)] sm:p-8">
+      {/* Always white: the parts on it use their light theme, whatever the site theme is. */}
+      <div className="relative rounded-lg bg-white p-6 text-[#16121f] shadow-[0_30px_60px_-24px_rgb(8_3_24/0.7)] sm:p-8">
         <span aria-hidden="true" className="absolute top-0 left-1/2 h-3 w-8 -translate-x-1/2 rounded-b-full bg-board" />
         <span aria-hidden="true" className="absolute top-4 left-4 size-2 rounded-full bg-rule-strong" />
         {children}

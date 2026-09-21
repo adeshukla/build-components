@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BoardTraces } from "@/components/board-traces";
+import { Catalogue } from "@/components/catalogue";
 import { MountedPart } from "@/components/mounted-part";
 import { inStock, parts } from "@/lib/parts";
 import { DatePicker } from "@/registry/date-picker/react/date-picker";
@@ -108,61 +109,11 @@ export default function Home() {
               Parts catalogue
             </h2>
             <p className="max-w-md text-pretty text-ink-muted">
-              Every part in the catalogue is in stock, and every one of them is tested on both outputs.
+              Every part is in stock and tested on both outputs. Filter by type, or open one to configure it.
             </p>
           </div>
 
-          <ul>
-            {parts.map((part) => {
-              const inStock = part.status === "in-stock";
-              return (
-                <li
-                  key={part.slug}
-                  style={{ ["--part-accent" as string]: part.accent }}
-                  className={`reveal group relative grid gap-x-8 gap-y-2 border-b border-rule py-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_11rem] md:items-center ${inStock ? "transition-colors hover:bg-paper-sunk" : ""}`}
-                >
-                  {inStock && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute top-0 bottom-0 -left-4 w-1 origin-center scale-y-0 rounded-full bg-(--part-accent) transition-transform duration-500 ease-out-expo group-hover:scale-y-100"
-                    />
-                  )}
-                  <div className="flex items-baseline gap-3">
-                    <span
-                      aria-hidden="true"
-                      className={`size-2.5 shrink-0 rounded-full ${inStock ? "bg-(--part-accent)" : "border border-rule-strong"}`}
-                    />
-                    <h3 className="font-display text-2xl leading-none font-semibold uppercase sm:text-3xl">
-                      {inStock ? (
-                        <Link href={`/${part.slug}`} className="after:absolute after:inset-0 hover:underline">
-                          {part.codename}
-                        </Link>
-                      ) : (
-                        <span className="text-ink-muted">{part.codename}</span>
-                      )}
-                    </h3>
-                  </div>
-                  <div>
-                    <p className="font-medium">{part.name}</p>
-                    <p className="mt-0.5 text-pretty text-ink-muted">{part.summary}</p>
-                    <p className="mt-1 text-sm text-ink-muted">Pattern: {part.pattern}</p>
-                  </div>
-                  <p className="md:text-right">
-                    {inStock ? (
-                      <span className="inline-flex items-center gap-2 font-semibold text-link">
-                        Configure and test
-                        <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
-                      </span>
-                    ) : (
-                      <span className="inline-block rounded border border-dashed border-rule-strong px-2 py-1 font-mono text-xs text-ink-muted uppercase">
-                        Coming soon
-                      </span>
-                    )}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
+          <Catalogue parts={parts} />
         </div>
       </section>
 

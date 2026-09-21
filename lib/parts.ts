@@ -12,11 +12,17 @@ export type Part = {
   /** Accent used for this part across the catalogue and its page. */
   accent: string;
   status: "in-stock" | "coming";
+  /** Groups the catalogue so it can be filtered instead of scrolled. */
+  category: Category;
 };
+
+export const categories = ["Inputs", "Navigation", "Overlays", "Content", "Page sections"] as const;
+export type Category = (typeof categories)[number];
 
 export const parts: Part[] = [
   {
     slug: "date-picker",
+    category: "Inputs",
     codename: "Almanac",
     name: "Date picker",
     summary: "One date or a range, typed in your format, with month and year views and earliest/latest dates.",
@@ -26,6 +32,7 @@ export const parts: Part[] = [
   },
   {
     slug: "modal",
+    category: "Overlays",
     codename: "Porthole",
     name: "Modal",
     summary: "Centred dialog or bottom sheet. Focus stays inside, Escape closes, motion respects reduced-motion settings.",
@@ -35,6 +42,7 @@ export const parts: Part[] = [
   },
   {
     slug: "searchable-select",
+    category: "Inputs",
     codename: "Sextant",
     name: "Searchable select",
     summary: "Type to filter a long list, pick with the keyboard or the mouse, with matches highlighted.",
@@ -44,6 +52,7 @@ export const parts: Part[] = [
   },
   {
     slug: "form",
+    category: "Inputs",
     codename: "Logbook",
     name: "Form with validation",
     summary: "Your rules, and error messages that say what went wrong and how to fix it.",
@@ -53,6 +62,7 @@ export const parts: Part[] = [
   },
   {
     slug: "header",
+    category: "Page sections",
     codename: "Masthead",
     name: "Site header",
     summary: "Logo, links, call to action and a mobile menu that behaves.",
@@ -62,6 +72,7 @@ export const parts: Part[] = [
   },
   {
     slug: "tabs",
+    category: "Navigation",
     codename: "Compass",
     name: "Tabs",
     summary: "One area, several panels. Arrow keys move between tabs, in a row or down the side.",
@@ -71,6 +82,7 @@ export const parts: Part[] = [
   },
   {
     slug: "cart",
+    category: "Content",
     codename: "Cargo",
     name: "Basket",
     summary: "Lines, quantities, removing, delivery and totals, as a panel or a drawer.",
@@ -80,6 +92,7 @@ export const parts: Part[] = [
   },
   {
     slug: "carousel",
+    category: "Content",
     codename: "Capstan",
     name: "Carousel",
     summary: "A row of slides that scrolls, swipes and steps, with dots, a counter and optional rotation.",
@@ -89,6 +102,7 @@ export const parts: Part[] = [
   },
   {
     slug: "mega-menu",
+    category: "Navigation",
     codename: "Chartroom",
     name: "Mega menu",
     summary: "Several columns of links under one heading, opened by click or hover, closed by Escape.",
@@ -98,6 +112,7 @@ export const parts: Part[] = [
   },
   {
     slug: "footer",
+    category: "Page sections",
     codename: "Keel",
     name: "Site footer",
     summary: "Brand, links, social profiles and the legal line. Plain HTML, no JavaScript.",
@@ -107,6 +122,7 @@ export const parts: Part[] = [
   },
   {
     slug: "cta",
+    category: "Page sections",
     codename: "Beacon",
     name: "CTA section",
     summary: "Heading, supporting text and actions. Plain HTML, no JavaScript.",
@@ -116,6 +132,7 @@ export const parts: Part[] = [
   },
   {
     slug: "accordion",
+    category: "Content",
     codename: "Bellows",
     name: "Accordion",
     summary: "Sections that open one at a time, or all at once, with the content in the page from the start.",
@@ -125,6 +142,7 @@ export const parts: Part[] = [
   },
   {
     slug: "tooltip",
+    category: "Overlays",
     codename: "Pennant",
     name: "Tooltip",
     summary: "A short note on a control, opened by hover and by keyboard focus, closed by Escape.",
@@ -134,6 +152,7 @@ export const parts: Part[] = [
   },
   {
     slug: "menu",
+    category: "Navigation",
     codename: "Helm",
     name: "Dropdown menu",
     summary: "A button that opens a list of actions: arrow keys, type to jump, Escape to close.",
@@ -143,6 +162,7 @@ export const parts: Part[] = [
   },
   {
     slug: "popover",
+    category: "Overlays",
     codename: "Spyglass",
     name: "Popover",
     summary: "An anchored panel you can use: focus moves in, Escape closes it and comes back out.",
@@ -152,6 +172,7 @@ export const parts: Part[] = [
   },
   {
     slug: "toast",
+    category: "Overlays",
     codename: "Klaxon",
     name: "Notifications",
     summary: "Messages that appear, announce themselves, pause while you read and clear themselves.",
@@ -161,6 +182,7 @@ export const parts: Part[] = [
   },
   {
     slug: "table",
+    category: "Content",
     codename: "Manifest",
     name: "Data table",
     summary: "Rows that sort by value, select by row and stack into cards on a phone.",
@@ -170,6 +192,7 @@ export const parts: Part[] = [
   },
   {
     slug: "pagination",
+    category: "Navigation",
     codename: "Ladder",
     name: "Pagination",
     summary: "Numbered pages with gaps, previous and next, as links or as buttons.",
@@ -179,6 +202,7 @@ export const parts: Part[] = [
   },
   {
     slug: "breadcrumbs",
+    category: "Navigation",
     codename: "Wake",
     name: "Breadcrumbs",
     summary: "The trail back up the site, collapsing to first and current on a phone. No JavaScript.",
@@ -188,6 +212,7 @@ export const parts: Part[] = [
   },
   {
     slug: "stepper",
+    category: "Navigation",
     codename: "Course",
     name: "Stepper",
     summary: "Where you are in a multi-step flow, with each state said in words. No JavaScript.",
@@ -197,6 +222,7 @@ export const parts: Part[] = [
   },
   {
     slug: "sidebar",
+    category: "Navigation",
     codename: "Gangway",
     name: "Sidebar navigation",
     summary: "Sections of links with the current page marked, folding into a drawer on a phone.",
@@ -206,6 +232,7 @@ export const parts: Part[] = [
   },
   {
     slug: "upload",
+    category: "Inputs",
     codename: "Hoist",
     name: "File upload",
     summary: "Choose or drop files, with the kind and size checked and every change announced.",
@@ -215,6 +242,7 @@ export const parts: Part[] = [
   },
   {
     slug: "multi-select",
+    category: "Inputs",
     codename: "Trawl",
     name: "Multi-select",
     summary: "Pick several from a long list, with each choice removable and every change announced.",
@@ -224,6 +252,7 @@ export const parts: Part[] = [
   },
   {
     slug: "password",
+    category: "Inputs",
     codename: "Cipher",
     name: "Password field",
     summary: "Rules read with the field, strength said in words, and a show button that says its state.",
@@ -233,6 +262,7 @@ export const parts: Part[] = [
   },
   {
     slug: "otp",
+    category: "Inputs",
     codename: "Semaphore",
     name: "One-time code",
     summary: "Boxes that fill as you type, take a pasted code whole, and say when the code is complete.",
@@ -242,6 +272,7 @@ export const parts: Part[] = [
   },
   {
     slug: "slider",
+    category: "Inputs",
     codename: "Fathom",
     name: "Range slider",
     summary: "One value or a range, on native range inputs that keep their keyboard and announce their unit.",
@@ -251,6 +282,7 @@ export const parts: Part[] = [
   },
   {
     slug: "search",
+    category: "Navigation",
     codename: "Lookout",
     name: "Global search",
     summary: "Point it at any data, nested or flat, and search it from anywhere with ⌘K.",
