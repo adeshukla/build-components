@@ -1,0 +1,129 @@
+/* File upload — plain CSS. Colours come from the inline custom properties. */
+.up {
+  --up-accent: #2563eb;
+  --up-accent-text: #1b4ab0;
+  --up-on-accent: #ffffff;
+  --up-radius: 12px;
+  --up-surface: #ffffff;
+  --up-sunk: #f4f3f8;
+  --up-text: #16121f;
+  --up-muted: #4d4a57;
+  --up-line: #8d8a99;
+  --up-error: #b4232b;
+  display: block;
+  background: var(--up-surface);
+  color: var(--up-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.up,
+.up *,
+.up *::before,
+.up *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .up--theme-system {
+    --up-surface: #141019;
+    --up-sunk: #221d2e;
+    --up-text: #f6f5fa;
+    --up-muted: #b6b3c2;
+    --up-error: #ff8f8f;
+  }
+}
+
+.up-label { margin: 0; font-weight: 500; }
+.up-hint { margin: 0.125rem 0 0; color: var(--up-muted); font-size: 0.875rem; }
+
+.up-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 1.5rem;
+  border: 2px dashed var(--up-line);
+  border-radius: var(--up-radius);
+  text-align: center;
+}
+.up-drop--over { border-color: var(--up-accent); background: var(--up-sunk); }
+.up-drop-text { color: var(--up-muted); font-size: 0.875rem; }
+
+.up-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--up-radius);
+  background: var(--up-accent);
+  color: var(--up-on-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+.up-button:focus-within { outline: 2px solid var(--up-accent-text); outline-offset: 2px; }
+
+/* Off-screen, not display:none: a hidden input cannot be focused or read out. */
+.up-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.up-problems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--up-error);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.up-files { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0 0; padding: 0; list-style: none; }
+.up-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--up-line);
+  border-radius: var(--up-radius);
+}
+.up-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-size { margin-left: 0.5rem; color: var(--up-muted); font-size: 0.875rem; }
+
+.up-remove {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.up-remove:hover { background: var(--up-sunk); }
+.up-remove svg { width: 1rem; height: 1rem; }
+.up-remove:focus-visible { outline: 2px solid var(--up-accent-text); outline-offset: 2px; }
+
+.up-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

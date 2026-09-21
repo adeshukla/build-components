@@ -63,6 +63,21 @@ import { renderStepperHtml } from "@/registry/stepper/vanilla/render";
 import { sidebarSchema } from "@/registry/sidebar/schema";
 import * as sidebarDocs from "@/registry/sidebar/docs";
 import { renderSidebarHtml } from "@/registry/sidebar/vanilla/render";
+import { uploadSchema } from "@/registry/upload/schema";
+import * as uploadDocs from "@/registry/upload/docs";
+import { renderUploadHtml } from "@/registry/upload/vanilla/render";
+import { multiSelectSchema } from "@/registry/multi-select/schema";
+import * as multiSelectDocs from "@/registry/multi-select/docs";
+import { renderMultiSelectHtml } from "@/registry/multi-select/vanilla/render";
+import { passwordSchema } from "@/registry/password/schema";
+import * as passwordDocs from "@/registry/password/docs";
+import { renderPasswordHtml } from "@/registry/password/vanilla/render";
+import { otpSchema } from "@/registry/otp/schema";
+import * as otpDocs from "@/registry/otp/docs";
+import { renderOtpHtml } from "@/registry/otp/vanilla/render";
+import { sliderSchema } from "@/registry/slider/schema";
+import * as sliderDocs from "@/registry/slider/docs";
+import { renderSliderHtml } from "@/registry/slider/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -218,6 +233,41 @@ export const registry = {
     schema: sidebarSchema,
     ...sidebarDocs,
     renderHtml: (config) => renderSidebarHtml(config as never),
+  },
+  "upload": {
+    title: "File upload",
+    description: "An accessible file upload: a real file input, a drop shortcut, and checks that say which file and why.",
+    schema: uploadSchema,
+    ...uploadDocs,
+    renderHtml: (config) => renderUploadHtml(config as never),
+  },
+  "multi-select": {
+    title: "Multi-select",
+    description: "An accessible multi-select combobox: virtual focus, removable choices, live counts.",
+    schema: multiSelectSchema,
+    ...multiSelectDocs,
+    renderHtml: (config) => renderMultiSelectHtml(config as never),
+  },
+  "password": {
+    title: "Password field",
+    description: "An accessible password field: rules described with the field, strength in words, caps-lock warning.",
+    schema: passwordSchema,
+    ...passwordDocs,
+    renderHtml: (config) => renderPasswordHtml(config as never),
+  },
+  "otp": {
+    title: "One-time code",
+    description: "An accessible one-time code field: a labelled group, boxes that name themselves, paste across boxes.",
+    schema: otpSchema,
+    ...otpDocs,
+    renderHtml: (config) => renderOtpHtml(config as never),
+  },
+  "slider": {
+    title: "Range slider",
+    description: "An accessible slider: native range inputs, a two-ended range that cannot cross, values read with their unit.",
+    schema: sliderSchema,
+    ...sliderDocs,
+    renderHtml: (config) => renderSliderHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

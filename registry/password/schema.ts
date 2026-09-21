@@ -1,0 +1,121 @@
+import type { ConfigOf, Schema } from "@/lib/schema";
+import type { PasswordConfig } from "./react/password";
+
+export const passwordSchema = [
+  {
+    key: "label",
+    label: "Label",
+    description: "What the field is for.",
+    group: "Content",
+    type: "text",
+    default: "New password",
+    maxLength: 60,
+  },
+  {
+    key: "hint",
+    label: "Hint",
+    description: "Advice under the label. Leave empty to drop it.",
+    group: "Content",
+    type: "text",
+    default: "Use something you have not used elsewhere.",
+    maxLength: 160,
+  },
+  {
+    key: "minLength",
+    label: "Shortest allowed",
+    description: "Length does more for a password than any other rule.",
+    group: "Behaviour",
+    type: "number",
+    default: 12,
+    min: 6,
+    max: 64,
+  },
+  {
+    key: "requireNumber",
+    label: "Needs a number",
+    description: "Adds it to the rules and to the strength.",
+    group: "Behaviour",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "requireUpper",
+    label: "Needs a capital letter",
+    description: "Adds it to the rules and to the strength.",
+    group: "Behaviour",
+    type: "boolean",
+    default: false,
+  },
+  {
+    key: "requireSymbol",
+    label: "Needs a symbol",
+    description: "Adds it to the rules and to the strength.",
+    group: "Behaviour",
+    type: "boolean",
+    default: false,
+  },
+  {
+    key: "showToggle",
+    label: "Show password button",
+    description: "Lets people check what they typed instead of guessing.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "showMeter",
+    label: "Strength meter",
+    description: "Four steps, with the word carrying the meaning and the bars only picturing it.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "showRules",
+    label: "Rules list",
+    description: "Each rule with whether it is met yet. Read out with the field.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "capsWarning",
+    label: "Caps Lock warning",
+    description: "Says so when Caps Lock is on, which is the usual cause of a rejected password.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "theme",
+    label: "Theme",
+    description: "Light, dark, or whatever the visitor's device is set to.",
+    group: "Style",
+    type: "select",
+    default: "light",
+    options: ["light", "dark", "system"],
+  },
+  {
+    key: "accentColor",
+    label: "Accent colour",
+    description: "The strength bars and focus rings. Contrast-corrected before it is used as text.",
+    group: "Style",
+    type: "color",
+    default: "#2563eb",
+  },
+  {
+    key: "radius",
+    label: "Corner radius (px)",
+    description: "Roundness of the field and the button.",
+    group: "Style",
+    type: "number",
+    default: 8,
+    min: 0,
+    max: 24,
+  },
+] as const satisfies Schema;
+
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+
+// Compile error if the schema and the component's config type drift apart.
+export const schemaMatchesComponent: Same<ConfigOf<typeof passwordSchema>, PasswordConfig> = true;

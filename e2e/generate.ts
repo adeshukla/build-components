@@ -49,6 +49,21 @@ import { renderStepperHtml } from "../registry/stepper/vanilla/render";
 import { sidebarSchema } from "../registry/sidebar/schema";
 import type { SidebarConfig } from "../registry/sidebar/react/sidebar";
 import { renderSidebarHtml } from "../registry/sidebar/vanilla/render";
+import { uploadSchema } from "../registry/upload/schema";
+import type { UploadConfig } from "../registry/upload/react/upload";
+import { renderUploadHtml } from "../registry/upload/vanilla/render";
+import { multiSelectSchema } from "../registry/multi-select/schema";
+import type { MultiSelectConfig } from "../registry/multi-select/react/multi-select";
+import { renderMultiSelectHtml } from "../registry/multi-select/vanilla/render";
+import { passwordSchema } from "../registry/password/schema";
+import type { PasswordConfig } from "../registry/password/react/password";
+import { renderPasswordHtml } from "../registry/password/vanilla/render";
+import { otpSchema } from "../registry/otp/schema";
+import type { OtpConfig } from "../registry/otp/react/otp";
+import { renderOtpHtml } from "../registry/otp/vanilla/render";
+import { sliderSchema } from "../registry/slider/schema";
+import type { SliderConfig } from "../registry/slider/react/slider";
+import { renderSliderHtml } from "../registry/slider/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -265,6 +280,51 @@ export const components: Record<
     variants: {
       default: "",
       plain: "collapsible=false&badges=false&theme=dark&width=200&activeHref=%2Fteam&label=Admin",
+    },
+  },
+  "upload": {
+    exportName: "Upload",
+    schema: uploadSchema,
+    renderHtml: (config) => renderUploadHtml(config as unknown as UploadConfig),
+    variants: {
+      default: "",
+      small: "multiple=false&maxSizeMb=1&maxFiles=1&accept=.png%2C.jpg&theme=dark&label=Upload+a+photo&hint=PNG+or+JPG%2C+up+to+1+MB.&showSize=false",
+    },
+  },
+  "multi-select": {
+    exportName: "MultiSelect",
+    schema: multiSelectSchema,
+    renderHtml: (config) => renderMultiSelectHtml(config as unknown as MultiSelectConfig),
+    variants: {
+      default: "",
+      capped: "maxSelected=2&clearAll=false&filter=startsWith&theme=dark&label=Colours&hint=Pick+up+to+two.&placeholder=Search+colours&options=%5B%7B%22label%22%3A%20%22Red%22%7D%2C%20%7B%22label%22%3A%20%22Green%22%7D%2C%20%7B%22label%22%3A%20%22Blue%22%7D%2C%20%7B%22label%22%3A%20%22Yellow%22%7D%5D",
+    },
+  },
+  "password": {
+    exportName: "Password",
+    schema: passwordSchema,
+    renderHtml: (config) => renderPasswordHtml(config as unknown as PasswordConfig),
+    variants: {
+      default: "",
+      strict: "minLength=16&requireUpper=true&requireSymbol=true&showMeter=false&theme=dark&label=Choose+a+password&hint=",
+    },
+  },
+  "otp": {
+    exportName: "Otp",
+    schema: otpSchema,
+    renderHtml: (config) => renderOtpHtml(config as unknown as OtpConfig),
+    variants: {
+      default: "",
+      single: "mode=single&allowLetters=true&theme=dark&label=Enter+your+code&hint=Six+characters%2C+letters+or+numbers.&completeText=That+is+the+whole+code.&resendText=",
+    },
+  },
+  "slider": {
+    exportName: "Slider",
+    schema: sliderSchema,
+    renderHtml: (config) => renderSliderHtml(config as unknown as SliderConfig),
+    variants: {
+      default: "",
+      single: "mode=single&min=0&max=100&step=5&startValue=30&prefix=&suffix=%25&label=Volume&hint=&theme=dark",
     },
   },
 };

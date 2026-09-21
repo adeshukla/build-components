@@ -215,3 +215,13 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 - Breadcrumbs and the stepper ship with no JavaScript at all.
 - The stepper says finished, current and not started in words, because a tick and a colour are not available to everyone.
 **Found while building:** a `hidden` attribute loses to a `display` class, so folding a sidebar section away did nothing until the class was conditional too. A brand-new harness route is sometimes not registered by the dev server before the tests reach it, so `open()` now reloads once.
+
+## 2026-09-22 — D39. Five input parts
+**Decision:** Hoist (file upload), Trawl (multi-select), Cipher (password field), Semaphore (one-time code) and Fathom (range slider).
+**Notable choices:**
+- **Upload:** dropping is a shortcut, never the only way in — a real file input does the work, kept off-screen rather than `display:none` so it can still be focused and read out. The accept list is checked again after a drop, because a drop ignores it.
+- **Multi-select:** the APG combobox focus model — the caret never leaves the box, and the highlighted option is pointed at with `aria-activedescendant`. Each chosen item is a button named “Remove X”.
+- **Password:** the rules are part of the field's description, so they are known before typing; each rule and the strength are said in words, not only ticks and bars. The strength is a hint, never a gate.
+- **One-time code:** a labelled group, boxes that name themselves (“Character 3 of 6”), paste fills across the boxes, and only the first box carries `autocomplete="one-time-code"`. A single-field layout is offered too, because it is simpler for screen readers and password managers.
+- **Slider:** native range inputs throughout, so the keyboard and the announcements come from the browser. A range is two inputs on one track, with only the thumbs taking the pointer so the top one does not swallow clicks meant for the other.
+**Found while building:** in single-file mode the upload counted the old file against the limit, so a new file was refused instead of replacing it; a remove button whose name was built from joined text nodes read “Testing , remove”, so every such button is now named outright.

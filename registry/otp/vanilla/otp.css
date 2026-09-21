@@ -1,0 +1,82 @@
+/* One-time code — plain CSS. Colours come from the inline custom properties. */
+.ot {
+  --ot-accent: #2563eb;
+  --ot-accent-text: #1b4ab0;
+  --ot-radius: 10px;
+  --ot-surface: #ffffff;
+  --ot-text: #16121f;
+  --ot-muted: #4d4a57;
+  --ot-line: #8d8a99;
+  display: block;
+  background: var(--ot-surface);
+  color: var(--ot-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ot,
+.ot *,
+.ot *::before,
+.ot *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ot--theme-system {
+    --ot-surface: #141019;
+    --ot-text: #f6f5fa;
+    --ot-muted: #b6b3c2;
+  }
+}
+
+.ot-group { margin: 0; padding: 0; border: 0; }
+.ot-label { padding: 0; font-weight: 500; }
+.ot-hint { margin: 0.125rem 0 0; color: var(--ot-muted); font-size: 0.875rem; }
+
+.ot-boxes { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.ot-box {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--ot-line);
+  border-radius: var(--ot-radius);
+  background: var(--ot-surface);
+  color: var(--ot-text);
+  font: inherit;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.ot-single {
+  width: 12rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ot-line);
+  border-radius: var(--ot-radius);
+  background: var(--ot-surface);
+  color: var(--ot-text);
+  font: inherit;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+.ot-box:focus-visible,
+.ot-single:focus-visible,
+.ot-resend:focus-visible {
+  outline: 2px solid var(--ot-accent-text);
+  outline-offset: 2px;
+}
+
+.ot-status { margin: 0.5rem 0 0; color: var(--ot-muted); font-size: 0.875rem; }
+.ot-resend {
+  display: inline-block;
+  min-height: 1.5rem;
+  margin-top: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+}

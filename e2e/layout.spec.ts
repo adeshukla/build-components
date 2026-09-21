@@ -43,9 +43,13 @@ async function problemsOn(page: Page, width: number) {
       const pressable = element.matches(
         "button, a[href], input:not([type=hidden]), select, textarea, [role=tab], [role=menuitem]",
       );
-      if (pressable && (box.width < 24 || box.height < 24) && !seen.has(`small${name}`)) {
+      // A control wrapped in its label is pressed through the label, so that is the target to
+      // measure — this is how a visually hidden file input with a styled button works.
+      const target = element.matches("input") ? (element.closest("label") ?? element) : element;
+      const size = target.getBoundingClientRect();
+      if (pressable && (size.width < 24 || size.height < 24) && !seen.has(`small${name}`)) {
         seen.add(`small${name}`);
-        found.push(`${name} is ${Math.round(box.width)}x${Math.round(box.height)}, under the 24px minimum`);
+        found.push(`${name} is ${Math.round(size.width)}x${Math.round(size.height)}, under the 24px minimum`);
       }
     }
     return found;

@@ -1,0 +1,111 @@
+import type { ConfigOf, Schema } from "@/lib/schema";
+import type { MultiSelectConfig } from "./react/multi-select";
+
+export const multiSelectSchema = [
+  {
+    key: "label",
+    label: "Label",
+    description: "What is being chosen.",
+    group: "Content",
+    type: "text",
+    default: "Skills",
+    maxLength: 60,
+  },
+  {
+    key: "hint",
+    label: "Hint",
+    description: "Under the label. Say that several can be picked.",
+    group: "Content",
+    type: "text",
+    default: "Type to narrow the list. Pick as many as apply.",
+    maxLength: 160,
+  },
+  {
+    key: "placeholder",
+    label: "Placeholder",
+    description: "Inside the box. It is not a label and never replaces one.",
+    group: "Content",
+    type: "text",
+    default: "Search skills",
+    maxLength: 40,
+  },
+  {
+    key: "options",
+    label: "Options",
+    description: "What can be chosen, in this order.",
+    group: "Content",
+    type: "list",
+    default: [
+      { label: "Accessibility" },
+      { label: "Animation" },
+      { label: "Design systems" },
+      { label: "Performance" },
+      { label: "Prototyping" },
+      { label: "Research" },
+      { label: "Testing" },
+      { label: "Typography" },
+    ],
+    fields: [{ key: "label", label: "Option", maxLength: 60 }],
+    maxItems: 30,
+    itemLabel: "Option",
+  },
+  {
+    key: "maxSelected",
+    label: "Most that can be picked",
+    description: "0 means as many as they like.",
+    group: "Behaviour",
+    type: "number",
+    default: 0,
+    min: 0,
+    max: 20,
+  },
+  {
+    key: "filter",
+    label: "Match",
+    description: "Anywhere in the option, or only at the start.",
+    group: "Behaviour",
+    type: "select",
+    default: "contains",
+    options: ["contains", "startsWith"],
+  },
+  {
+    key: "clearAll",
+    label: "Clear all",
+    description: "A button that takes every choice off at once.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "theme",
+    label: "Theme",
+    description: "Light, dark, or whatever the visitor's device is set to.",
+    group: "Style",
+    type: "select",
+    default: "light",
+    options: ["light", "dark", "system"],
+  },
+  {
+    key: "accentColor",
+    label: "Accent colour",
+    description: "The tick on a chosen option. Its text colour adjusts for contrast.",
+    group: "Style",
+    type: "color",
+    default: "#2563eb",
+  },
+  {
+    key: "radius",
+    label: "Corner radius (px)",
+    description: "Roundness of the box and the list.",
+    group: "Style",
+    type: "number",
+    default: 10,
+    min: 0,
+    max: 24,
+  },
+] as const satisfies Schema;
+
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+
+// Compile error if the schema and the component's config type drift apart.
+export const schemaMatchesComponent: Same<ConfigOf<typeof multiSelectSchema>, MultiSelectConfig> = true;

@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The twenty-one parts, all in stock
+### The twenty-six parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -40,6 +40,11 @@ Open http://localhost:3000.
 | **Wake** | Breadcrumbs | Navigation + aria-current |
 | **Course** | Stepper | Navigation + aria-current=step |
 | **Gangway** | Sidebar navigation | Navigation + disclosure |
+| **Hoist** | File upload | File input + drop area |
+| **Trawl** | Multi-select | APG Combobox, multi-select |
+| **Cipher** | Password field | Labelled input + live rules |
+| **Semaphore** | One-time code | Grouped inputs + one-time-code |
+| **Fathom** | Range slider | Native range inputs |
 
 ### Done in session 4 (2026-09-18)
 - **Fixed what Adesh reported:**
@@ -92,7 +97,7 @@ Adesh was right that the tests proved behaviour and never looked at the result. 
 All fixed. `e2e/layout.spec.ts` now runs those checks on every component, in both outputs, at three widths (D37), so none of it can come back quietly. 928 tests passing.
 
 ### Still to build (D34 list, in order)
-File upload (drag and drop) · multi-select · password field · one-time code · range slider · switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
+Switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
 
 ### In progress
 Nothing half-finished.

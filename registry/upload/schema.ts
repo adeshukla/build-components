@@ -1,0 +1,118 @@
+import type { ConfigOf, Schema } from "@/lib/schema";
+import type { UploadConfig } from "./react/upload";
+
+export const uploadSchema = [
+  {
+    key: "label",
+    label: "Label",
+    description: "What you are asking for.",
+    group: "Content",
+    type: "text",
+    default: "Attach your brief",
+    maxLength: 80,
+  },
+  {
+    key: "hint",
+    label: "Hint",
+    description: "Which kinds of file, and how big. Say it here as well as enforcing it.",
+    group: "Content",
+    type: "text",
+    default: "PDF, Word or an image, up to 5 MB each.",
+    maxLength: 160,
+  },
+  {
+    key: "buttonText",
+    label: "Button text",
+    description: "The button that opens the file picker.",
+    group: "Content",
+    type: "text",
+    default: "Choose files",
+    maxLength: 40,
+  },
+  {
+    key: "dropText",
+    label: "Drop text",
+    description: "Beside the button. Dropping is a shortcut, never the only way in.",
+    group: "Content",
+    type: "text",
+    default: "or drop them here",
+    maxLength: 60,
+  },
+  {
+    key: "accept",
+    label: "Accepted kinds",
+    description: "Comma-separated, e.g. .pdf,.png. Checked again after the picker, because a drop ignores it.",
+    group: "Behaviour",
+    type: "text",
+    default: ".pdf,.doc,.docx,.png,.jpg,.jpeg",
+    maxLength: 200,
+  },
+  {
+    key: "maxSizeMb",
+    label: "Largest file (MB)",
+    description: "0 turns the size check off.",
+    group: "Behaviour",
+    type: "number",
+    default: 5,
+    min: 0,
+    max: 100,
+  },
+  {
+    key: "maxFiles",
+    label: "Most files",
+    description: "How many can be attached at once.",
+    group: "Behaviour",
+    type: "number",
+    default: 5,
+    min: 1,
+    max: 20,
+  },
+  {
+    key: "multiple",
+    label: "Several at once",
+    description: "Off replaces the file each time instead of adding to the list.",
+    group: "Behaviour",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "showSize",
+    label: "Show file sizes",
+    description: "Beside each name in the list.",
+    group: "Add-ons",
+    type: "boolean",
+    default: true,
+  },
+  {
+    key: "theme",
+    label: "Theme",
+    description: "Light, dark, or whatever the visitor's device is set to.",
+    group: "Style",
+    type: "select",
+    default: "light",
+    options: ["light", "dark", "system"],
+  },
+  {
+    key: "accentColor",
+    label: "Accent colour",
+    description: "The button and the drop highlight. Its text colour adjusts for contrast.",
+    group: "Style",
+    type: "color",
+    default: "#2563eb",
+  },
+  {
+    key: "radius",
+    label: "Corner radius (px)",
+    description: "Roundness of the drop area, the button and each file.",
+    group: "Style",
+    type: "number",
+    default: 12,
+    min: 0,
+    max: 24,
+  },
+] as const satisfies Schema;
+
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+
+// Compile error if the schema and the component's config type drift apart.
+export const schemaMatchesComponent: Same<ConfigOf<typeof uploadSchema>, UploadConfig> = true;

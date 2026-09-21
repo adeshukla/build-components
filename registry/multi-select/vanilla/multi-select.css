@@ -1,0 +1,131 @@
+/* Multi-select — plain CSS. Colours come from the inline custom properties. */
+.ms {
+  --ms-accent: #2563eb;
+  --ms-accent-text: #1b4ab0;
+  --ms-on-accent: #ffffff;
+  --ms-radius: 10px;
+  --ms-surface: #ffffff;
+  --ms-sunk: #f4f3f8;
+  --ms-text: #16121f;
+  --ms-muted: #4d4a57;
+  --ms-line: #8d8a99;
+  --ms-hover: #f0eff6;
+  position: relative;
+  display: block;
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ms,
+.ms *,
+.ms *::before,
+.ms *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ms--theme-system {
+    --ms-surface: #141019;
+    --ms-sunk: #221d2e;
+    --ms-text: #f6f5fa;
+    --ms-muted: #b6b3c2;
+    --ms-hover: #2a2438;
+  }
+}
+
+.ms-label { display: block; font-weight: 500; }
+.ms-hint { margin: 0.125rem 0 0; color: var(--ms-muted); font-size: 0.875rem; }
+
+.ms-chosen { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.ms-chosen[hidden] { display: none; }
+.ms-chip,
+.ms-clear {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--ms-sunk);
+  color: var(--ms-text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.ms-chip svg { width: 1rem; height: 1rem; }
+.ms-clear { padding: 0.25rem 0.75rem; background: none; text-decoration: underline; }
+
+.ms-input {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ms-line);
+  border-radius: var(--ms-radius);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  font: inherit;
+}
+
+.ms-input:focus-visible,
+.ms-chip:focus-visible,
+.ms-clear:focus-visible {
+  outline: 2px solid var(--ms-accent-text);
+  outline-offset: 2px;
+}
+
+.ms-list {
+  position: absolute;
+  z-index: 20;
+  width: 100%;
+  max-height: 15rem;
+  margin: 0.25rem 0 0;
+  padding: 0.25rem;
+  overflow-y: auto;
+  border: 1px solid var(--ms-line);
+  border-radius: var(--ms-radius);
+  background: var(--ms-surface);
+  list-style: none;
+  box-shadow: 0 16px 40px -24px rgb(0 0 0 / 0.55);
+}
+.ms-list[hidden] { display: none; }
+
+.ms-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: calc(var(--ms-radius) - 4px);
+  cursor: pointer;
+}
+.ms-option[hidden] { display: none; }
+.ms-active { background: var(--ms-hover); }
+.ms-full { opacity: 0.5; }
+
+.ms-box {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid var(--ms-line);
+  border-radius: 4px;
+}
+.ms-box svg { width: 0.75rem; height: 0.75rem; opacity: 0; }
+.ms-option[aria-selected="true"] .ms-box { border-color: var(--ms-accent); background: var(--ms-accent); color: var(--ms-on-accent); }
+.ms-option[aria-selected="true"] .ms-box svg { opacity: 1; }
+
+.ms-empty { padding: 0.5rem 0.75rem; color: var(--ms-muted); }
+.ms-empty[hidden] { display: none; }
+
+.ms-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

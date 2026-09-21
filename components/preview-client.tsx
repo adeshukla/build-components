@@ -33,6 +33,16 @@ import { Stepper, type StepperConfig } from "@/registry/stepper/react/stepper";
 
 import { Sidebar, type SidebarConfig } from "@/registry/sidebar/react/sidebar";
 
+import { Upload, type UploadConfig } from "@/registry/upload/react/upload";
+
+import { MultiSelect, type MultiSelectConfig } from "@/registry/multi-select/react/multi-select";
+
+import { Password, type PasswordConfig } from "@/registry/password/react/password";
+
+import { Otp, type OtpConfig } from "@/registry/otp/react/otp";
+
+import { Slider, type SliderConfig } from "@/registry/slider/react/slider";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -98,6 +108,11 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
         {slug === "breadcrumbs" && <Breadcrumbs config={config as unknown as BreadcrumbsConfig} />}
         {slug === "stepper" && <Stepper config={config as unknown as StepperConfig} />}
         {slug === "sidebar" && <Sidebar config={config as unknown as SidebarConfig} />}
+        {slug === "upload" && <Upload config={config as unknown as UploadConfig} />}
+        {slug === "multi-select" && <MultiSelect config={config as unknown as MultiSelectConfig} />}
+        {slug === "password" && <Password config={config as unknown as PasswordConfig} />}
+        {slug === "otp" && <Otp config={config as unknown as OtpConfig} />}
+        {slug === "slider" && <Slider config={config as unknown as SliderConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}
