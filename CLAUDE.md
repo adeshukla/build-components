@@ -1,10 +1,10 @@
 @AGENTS.md
 
-# Component Platform (working name)
+# Build Components
 
 Ready-made, accessible UI components that developers configure visually and take into their own project as plain code — no component library to install.
 
-Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives at `C:\dev\component-platform` — keep it outside OneDrive.
+Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives at `C:\Users\shukl\OneDrive\Desktop\build-components` (moved from `C:\dev\component-platform` on 2026-09-21 at Adesh's request). It is inside OneDrive: if `next dev` shows stale or missing files, pause OneDrive syncing and delete `.next`.
 
 ## Start of every session
 1. Read this file and `docs/PROGRESS.md`.
@@ -13,7 +13,7 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 
 ## Decisions (don't reopen without new evidence — full log in docs/DECISIONS.md)
 1. Separate project: own repo, own deploy, eventually own subdomain. Not a section of DevStash.
-2. Needs its own name. "Component Platform" is a neutral working name. Never register or publish under a name without Adesh's approval.
+2. Name: **Build Components**, at `build-components.devstash.me`, listed as a project on devstash.me (D41). URL, name and author live in `lib/site.ts`.
 3. Schema-driven: ONE options schema per component drives the editor panel, URL state, live preview and every exporter.
 4. No runtime dependency for users: copy code, or install by URL through a shadcn-compatible registry (`/r/<name>.json`). No hosted render API or embed script.
 5. MVP outputs: React + Tailwind v4, and vanilla HTML/CSS/JS.
@@ -57,7 +57,8 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Turbopack has crashed on Adesh's machine before. If `next dev` crashes, use `next dev --webpack` (and the same in `playwright.config.ts`).
 - Tailwind v4: design tokens go in `@theme` in CSS; there is no `tailwind.config`. The exported React file uses v4-only syntax (`bg-(--dp-accent)`), so users need Tailwind v4.
 - Tailwind skips gitignored paths when scanning for classes; harness files work because the same classes exist in `registry/`.
-- The registry route reads `registry/` with `fs` at request time. On Vercel this may need `outputFileTracingIncludes` — not verified yet.
+- Part pages and the registry route read `registry/` with `fs` at request time. `outputFileTracingIncludes` in `next.config.ts` ships it; not yet verified on a real Vercel deploy.
+- `next.config.ts` sets a CSP. Adding any external script, font, image or analytics means updating it, or the browser will block the resource.
 - Config JSON is escaped (`<` → `\u003c`) because the vanilla JS gets inlined into the preview iframe's `<script>`.
 - PowerShell shows pnpm's `$ cmd` echo as a red NativeCommandError. That is not a failure — check the exit code.
 - Next injects `#__next-route-announcer__` with `role="alert"` on every page. Scope test locators to `main`.

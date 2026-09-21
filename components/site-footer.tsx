@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChipMark } from "@/components/site-header";
+import { author } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -32,10 +33,29 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-board-line">
-        <p className="mx-auto flex w-full max-w-7xl flex-wrap justify-between gap-2 px-4 py-4 font-mono text-xs text-silk-muted sm:px-6">
-          <span>Catalogue rev 0.2</span>
-          <span>Plain code. No runtime dependency.</span>
-        </p>
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3 font-mono text-xs text-silk-muted sm:px-6">
+          <p>
+            Built by {author.name} ·{" "}
+            <a href={author.url} className="inline-block py-1.5 underline underline-offset-2 hover:text-silk">
+              devstash.me
+            </a>
+          </p>
+          <nav aria-label="Footer">
+            <ul className="flex flex-wrap gap-x-4">
+              {[
+                ["/about", "About"],
+                ["/accessibility", "Accessibility"],
+                ["/sitemap.xml", "Sitemap"],
+              ].map(([href, label]) => (
+                <li key={href}>
+                  <Link href={href} className="inline-block py-1.5 underline-offset-2 hover:text-silk hover:underline">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
     </footer>
   );

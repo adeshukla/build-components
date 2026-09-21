@@ -1,12 +1,12 @@
 # Progress
 
-Last updated: 2026-09-21 (session 7)
+Last updated: 2026-09-22 (session 8)
 
-## Current status (session 6)
+## Current status (session 8)
 
 ### How Adesh can test
 ```
-cd C:\dev\component-platform
+cd C:\Users\shukl\OneDrive\Desktop\build-components
 pnpm dev
 ```
 Open http://localhost:3000.
@@ -88,6 +88,17 @@ Open http://localhost:3000.
 - **Real bugs the tests caught:** menu focus racing a fast keypress; a notification pinned open for ever by an emulated hover after a tap; the CTA eyebrow failing contrast as a tinted pill; carousel dots under the minimum target size.
 - **Test count:** 634 passing, 2 skipped. Production build green.
 
+### Session 8 (2026-09-22): production readiness (D41-D43)
+- **Moved** to `C:\Users\shukl\OneDrive\Desktop\build-components`. The old `C:\dev` folder was deleted at Adesh's request.
+- **Name and address:** Build Components, at `build-components.devstash.me`, part of devstash.me (D41). Not deployed yet.
+- **Favicon:** the create-next-app Vercel favicon is gone. `app/icon.svg` is the chip mark in the board colours.
+- **Security audit:** no vulnerabilities found. Options from links are validated, frame messages check their origin, the HTML preview is sandboxed, and exported JS sets text with `textContent`. Added a CSP and security headers, removed `X-Powered-By`, and stopped shipping the internal design-direction comment in every page (D42).
+- **Content audit:** no copied text, no third-party images, no invented numbers. Brand names appear only as footer link labels (GitHub, LinkedIn). Fonts are OFL (Geist, Barlow Condensed), self-hosted by next/font.
+- **SEO:** metadataBase, title template, a description and canonical URL per part (query-string options canonicalise to the plain page), an Open Graph image, `sitemap.xml` and `robots.txt`.
+- **New pages (D43):** About, an accessibility statement, and a 404 inside the site chrome. The header and footer link to them.
+- **Deploy safety:** `outputFileTracingIncludes` ships `/registry` with the server functions, because part pages and `/r/*` read it at request time.
+- **Checked:** every sitemap page returns 200 on `next start` with no console errors under the CSP, and the sandboxed HTML/CSS/JS preview runs on all 27 part pages.
+
 ### Audit round (2026-09-21)
 Adesh was right that the tests proved behaviour and never looked at the result. A sweep of all sixteen parts, both outputs, at 375, 768 and 1280, in their closed and open states, found:
 - **Vanilla exports had no `box-sizing` of their own**, so on any page without a CSS reset a full-width field overflowed. Every component now sets it, scoped to itself.
@@ -113,10 +124,10 @@ Nothing half-finished.
 - The Mitosis / Web Components question (D6) is still open. Eleven components now exist in two hand-written outputs each; that is the cost a third output would multiply.
 
 ### Blockers & questions for Adesh
-1. **Final name**: "Build Components" is still the logo only. Make it the product name everywhere?
+1. **Licence** for the exported code: users copy it into their projects, so the site should say what they may do with it (MIT is the usual choice). Not chosen yet.
 2. **Next components**: the basket, mega menu and slider are done. Tooltip, lazy loading, pagination, data table, toast — which next?
 3. **Tailwind v4 only** for the React output?
-4. **Private GitHub repo?** Still no remote, so no backup and no CI.
+4. **Deploy:** a Vercel project plus a `build-components` CNAME on devstash.me. Adesh deploys; nothing goes to production from here until he says "ship".
 5. **Manual checks**: please run the checklists with NVDA and on a real iPhone. Emulation is not a real device.
 
 ---

@@ -8,11 +8,12 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const links = [
   { href: "/#catalogue", label: "Catalogue" },
   { href: "/#how", label: "How it works" },
-  { href: "/#tests", label: "Testing" },
+  { href: "/accessibility", label: "Accessibility" },
+  { href: "/about", label: "About" },
 ];
 
 /**
- * The three site links. On a phone they sit behind a menu button, so the header stays one row;
+ * The site links. On a phone they sit behind a menu button, so the header stays one row;
  * from 640px up they are always shown.
  */
 export function HeaderNav() {

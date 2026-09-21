@@ -232,3 +232,18 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 **How it matches:** every word typed must appear somewhere in the entry (so "accessibility audit" finds one person, not everything about accessibility). A title that starts with the first word ranks first, then titles containing every word, then matches elsewhere.
 **How it ships:** the React file carries the data in its config; the HTML version carries it in a JSON script block with "<" escaped, so replacing the data is one edit and needs no build step. Links in the data are checked when followed, so a `javascript:` URL goes nowhere.
 **Found while building:** with grouping off, the top of every trail vanished, because it was only ever shown as the group heading; and a highlighted match in the accent colour failed contrast on the tinted active row, so matches are now bold and underlined in the text colour.
+
+## 2026-09-22 — D41. Build Components, at build-components.devstash.me
+**Decision:** The product is called Build Components and will live at `build-components.devstash.me`, listed as a project on devstash.me.
+**Why:** Adesh named the subdomain himself and asked for the site to be made production-ready under it. This settles decision 2 (the name) and the domain question in CLAUDE.md.
+**How it's wired:** `lib/site.ts` holds the URL, name and author once; `NEXT_PUBLIC_SITE_URL` overrides the URL for preview deploys.
+
+## 2026-09-22 — D42. Security headers and a static CSP
+**Decision:** A Content-Security-Policy on every route (`'self'` for everything, `frame-ancestors 'self'`, `object-src 'none'`), plus nosniff, a referrer policy, a permissions policy and HSTS. No `X-Powered-By`. Registry items get `Access-Control-Allow-Origin: *` so any tool can fetch them.
+**Why not nonces:** Next's bootstrap scripts, the theme script and the HTML/CSS/JS preview (an inline srcdoc frame) are all inline. A nonce CSP would make every page dynamic for no gain while there are no third-party scripts. Revisit if analytics or any external script is added.
+**Also:** the design-direction comment that was rendered into every page's HTML is gone. It was internal notes, not product.
+
+## 2026-09-22 — D43. About, Accessibility and 404 pages
+**Decision:** Add an About page (why it exists, how it differs from a component library, who makes it), an accessibility statement (target WCAG 2.2 AA, what is tested, known limits, how to report a problem) and a 404 inside the site chrome.
+**Why:** A production site listed on devstash.me needs somewhere to say who is behind it and how to report problems. An accessibility statement is expected from a site whose whole claim is accessibility.
+**Content rule kept:** no invented numbers or claims. The part count is read from the catalogue, and contact goes through devstash.me rather than an address that does not exist yet.

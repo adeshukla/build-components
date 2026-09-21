@@ -15,7 +15,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   if (!isRegistrySlug(slug)) return {};
-  return { title: `${registry[slug].title}: configure, test and export` };
+  const { title, description } = registry[slug];
+  return {
+    title: `${title}: configure, test and export`,
+    description,
+    // Options in the query string are the same page; point search engines at the plain one.
+    alternates: { canonical: `/${slug}` },
+    openGraph: { title, description, url: `/${slug}`, images: "/opengraph-image" },
+  };
 }
 
 export default async function PartPage({ params, searchParams }: PageProps<"/[slug]">) {
