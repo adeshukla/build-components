@@ -13,6 +13,7 @@
   --modal-hover: #f2f2f7;
   --modal-font: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-family: var(--modal-font);
+  line-height: 1.5;
 }
 .mdl *, .mdl *::before, .mdl *::after { box-sizing: border-box; }
 

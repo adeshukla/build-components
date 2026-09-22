@@ -30,7 +30,7 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `lib/schema.ts` — option types incl. `list` (repeatable items) and URL-safe `format: "url"`; `parseConfig` validates untrusted query params; `isDefault`, `toSearchParams`, `isVisible`.
 - `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.
 - `lib/registry.ts` — the one map of slug → title, description, schema. Used by the registry route and the preview page.
-- `lib/parts.ts` — catalogue: part name (Almanac, Porthole, Sextant, Logbook, Masthead, Cargo, Chartroom, Capstan, Compass, Keel, Beacon), plain name, pattern, accent, status.
+- `lib/parts.ts` — catalogue: ship-themed part name (Almanac, Porthole, …), plain name, pattern, accent, status and `category` (drives the home filters).
 - `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
 - `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
 - Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
@@ -38,7 +38,8 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - Tests:
   - `e2e/generate.ts` holds the `components` map (schema, variants, optional `renderHtml`). Writes React output to `app/(bare)/harness/<slug>-<variant>` and vanilla output to `e2e/.generated/<slug>/<variant>`. Both gitignored.
   - `e2e/helpers.ts`: `targets(slug)`, `expectNoAxeViolations`, and `open(page, url)` which waits for `data-hydrated` on React harness pages.
-- Adding a component touches: `registry/<slug>/`, `app/(site)/<slug>/`, `lib/parts.ts`, `lib/registry.ts`, `components/preview-client.tsx`, `components` in `e2e/generate.ts`, `e2e/<slug>.spec.ts`.
+- Adding a component touches: `registry/<slug>/` (schema, docs, react, vanilla), `lib/parts.ts` (with a category), `lib/registry.ts`, `components/preview-client.tsx`, `components` in `e2e/generate.ts`, `e2e/<slug>.spec.ts`. The part page itself is the generic `app/(site)/[slug]/page.tsx`.
+- `render.ts` must not import functions from the React file: it is a client module, so the server gets references instead of functions. Duplicate small helpers.
 
 ## Stack (installed versions — check before upgrading or coding against a lib)
 Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9.3 (strict) · Tailwind CSS 4.3.3 · ESLint 9 + eslint-config-next 16.3.5 · Playwright 1.63.0 + @axe-core/playwright 4.13.0 · pnpm 11.5.0 · Node 24.15.0. Zod not installed (if added: v4 API).
@@ -58,6 +59,10 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Tailwind v4: design tokens go in `@theme` in CSS; there is no `tailwind.config`. The exported React file uses v4-only syntax (`bg-(--dp-accent)`), so users need Tailwind v4.
 - Tailwind skips gitignored paths when scanning for classes; harness files work because the same classes exist in `registry/`.
 - Part pages and the registry route read `registry/` with `fs` at request time. `outputFileTracingIncludes` in `next.config.ts` ships it; not yet verified on a real Vercel deploy.
+- The HTML/CSS/JS preview is a sandboxed srcdoc frame (`allow-scripts allow-forms`, no shared origin): storage throws there, so parts must fall back to memory. `e2e/editor.spec.ts` runs every part in the real editor frames; component specs alone never see sandbox problems.
+- Every HTML/CSS/JS stylesheet sets `line-height: 1.5` and a system font on its root, to match what Tailwind's reset gives the React output.
+- An error that disappears on blur can move the submit button out from under the pointer mid-click. Once an error shows, re-check the field as the user types.
+- Dev server + OneDrive: a newly generated harness route can stay 404 until its page file is touched.
 - `next.config.ts` sets a CSP. Adding any external script, font, image or analytics means updating it, or the browser will block the resource.
 - Config JSON is escaped (`<` → `\u003c`) because the vanilla JS gets inlined into the preview iframe's `<script>`.
 - PowerShell shows pnpm's `$ cmd` echo as a red NativeCommandError. That is not a failure — check the exit code.

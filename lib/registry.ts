@@ -81,6 +81,36 @@ import { renderSliderHtml } from "@/registry/slider/vanilla/render";
 import { searchSchema } from "@/registry/search/schema";
 import * as searchDocs from "@/registry/search/docs";
 import { renderSearchHtml } from "@/registry/search/vanilla/render";
+import { timePickerSchema } from "@/registry/time-picker/schema";
+import * as timePickerDocs from "@/registry/time-picker/docs";
+import { renderTimePickerHtml } from "@/registry/time-picker/vanilla/render";
+import { treeViewSchema } from "@/registry/tree-view/schema";
+import * as treeViewDocs from "@/registry/tree-view/docs";
+import { renderTreeViewHtml } from "@/registry/tree-view/vanilla/render";
+import { sortableListSchema } from "@/registry/sortable-list/schema";
+import * as sortableListDocs from "@/registry/sortable-list/docs";
+import { renderSortableListHtml } from "@/registry/sortable-list/vanilla/render";
+import { drawerSchema } from "@/registry/drawer/schema";
+import * as drawerDocs from "@/registry/drawer/docs";
+import { renderDrawerHtml } from "@/registry/drawer/vanilla/render";
+import { cookieConsentSchema } from "@/registry/cookie-consent/schema";
+import * as cookieConsentDocs from "@/registry/cookie-consent/docs";
+import { renderCookieConsentHtml } from "@/registry/cookie-consent/vanilla/render";
+import { cardFieldsSchema } from "@/registry/card-fields/schema";
+import * as cardFieldsDocs from "@/registry/card-fields/docs";
+import { renderCardFieldsHtml } from "@/registry/card-fields/vanilla/render";
+import { tourSchema } from "@/registry/tour/schema";
+import * as tourDocs from "@/registry/tour/docs";
+import { renderTourHtml } from "@/registry/tour/vanilla/render";
+import { feedSchema } from "@/registry/feed/schema";
+import * as feedDocs from "@/registry/feed/docs";
+import { renderFeedHtml } from "@/registry/feed/vanilla/render";
+import { lightboxSchema } from "@/registry/lightbox/schema";
+import * as lightboxDocs from "@/registry/lightbox/docs";
+import { renderLightboxHtml } from "@/registry/lightbox/vanilla/render";
+import { resizablePanelsSchema } from "@/registry/resizable-panels/schema";
+import * as resizablePanelsDocs from "@/registry/resizable-panels/docs";
+import { renderResizablePanelsHtml } from "@/registry/resizable-panels/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -278,6 +308,76 @@ export const registry = {
     schema: searchSchema,
     ...searchDocs,
     renderHtml: (config) => renderSearchHtml(config as never),
+  },
+  "time-picker": {
+    title: "Time picker",
+    description: "An accessible time picker: type a time or pick one from a list of slots.",
+    schema: timePickerSchema,
+    ...timePickerDocs,
+    renderHtml: (config) => renderTimePickerHtml(config as never),
+  },
+  "tree-view": {
+    title: "Tree view",
+    description: "An accessible tree view (WAI-ARIA tree pattern) built from simple paths.",
+    schema: treeViewSchema,
+    ...treeViewDocs,
+    renderHtml: (config) => renderTreeViewHtml(config as never),
+  },
+  "sortable-list": {
+    title: "Sortable list",
+    description: "A list people can reorder by dragging, by keyboard or with buttons.",
+    schema: sortableListSchema,
+    ...sortableListDocs,
+    renderHtml: (config) => renderSortableListHtml(config as never),
+  },
+  "drawer": {
+    title: "Drawer",
+    description: "An accessible drawer (side sheet or bottom sheet) on a native modal dialog.",
+    schema: drawerSchema,
+    ...drawerDocs,
+    renderHtml: (config) => renderDrawerHtml(config as never),
+  },
+  "cookie-consent": {
+    title: "Cookie consent",
+    description: "A cookie consent banner with equal accept and reject, and saved preferences.",
+    schema: cookieConsentSchema,
+    ...cookieConsentDocs,
+    renderHtml: (config) => renderCookieConsentHtml(config as never),
+  },
+  "card-fields": {
+    title: "Card payment fields",
+    description: "Accessible card payment fields with formatting, card type and Luhn checks.",
+    schema: cardFieldsSchema,
+    ...cardFieldsDocs,
+    renderHtml: (config) => renderCardFieldsHtml(config as never),
+  },
+  "tour": {
+    title: "Guided tour",
+    description: "An accessible product tour: step-by-step pointers with focus management.",
+    schema: tourSchema,
+    ...tourDocs,
+    renderHtml: (config) => renderTourHtml(config as never),
+  },
+  "feed": {
+    title: "Load-more feed",
+    description: "An accessible feed (WAI-ARIA feed pattern) with a load-more button or scroll loading.",
+    schema: feedSchema,
+    ...feedDocs,
+    renderHtml: (config) => renderFeedHtml(config as never),
+  },
+  "lightbox": {
+    title: "Lightbox",
+    description: "An accessible image gallery and full-screen viewer.",
+    schema: lightboxSchema,
+    ...lightboxDocs,
+    renderHtml: (config) => renderLightboxHtml(config as never),
+  },
+  "resizable-panels": {
+    title: "Resizable panels",
+    description: "Resizable split panels on the WAI-ARIA window splitter pattern.",
+    schema: resizablePanelsSchema,
+    ...resizablePanelsDocs,
+    renderHtml: (config) => renderResizablePanelsHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

@@ -67,6 +67,36 @@ import { renderSliderHtml } from "../registry/slider/vanilla/render";
 import { searchSchema } from "../registry/search/schema";
 import type { SearchConfig } from "../registry/search/react/search";
 import { renderSearchHtml } from "../registry/search/vanilla/render";
+import { timePickerSchema } from "../registry/time-picker/schema";
+import type { TimePickerConfig } from "../registry/time-picker/react/time-picker";
+import { renderTimePickerHtml } from "../registry/time-picker/vanilla/render";
+import { treeViewSchema } from "../registry/tree-view/schema";
+import type { TreeViewConfig } from "../registry/tree-view/react/tree-view";
+import { renderTreeViewHtml } from "../registry/tree-view/vanilla/render";
+import { sortableListSchema } from "../registry/sortable-list/schema";
+import type { SortableListConfig } from "../registry/sortable-list/react/sortable-list";
+import { renderSortableListHtml } from "../registry/sortable-list/vanilla/render";
+import { drawerSchema } from "../registry/drawer/schema";
+import type { DrawerConfig } from "../registry/drawer/react/drawer";
+import { renderDrawerHtml } from "../registry/drawer/vanilla/render";
+import { cookieConsentSchema } from "../registry/cookie-consent/schema";
+import type { CookieConsentConfig } from "../registry/cookie-consent/react/cookie-consent";
+import { renderCookieConsentHtml } from "../registry/cookie-consent/vanilla/render";
+import { cardFieldsSchema } from "../registry/card-fields/schema";
+import type { CardFieldsConfig } from "../registry/card-fields/react/card-fields";
+import { renderCardFieldsHtml } from "../registry/card-fields/vanilla/render";
+import { tourSchema } from "../registry/tour/schema";
+import type { TourConfig } from "../registry/tour/react/tour";
+import { renderTourHtml } from "../registry/tour/vanilla/render";
+import { feedSchema } from "../registry/feed/schema";
+import type { FeedConfig } from "../registry/feed/react/feed";
+import { renderFeedHtml } from "../registry/feed/vanilla/render";
+import { lightboxSchema } from "../registry/lightbox/schema";
+import type { LightboxConfig } from "../registry/lightbox/react/lightbox";
+import { renderLightboxHtml } from "../registry/lightbox/vanilla/render";
+import { resizablePanelsSchema } from "../registry/resizable-panels/schema";
+import type { ResizablePanelsConfig } from "../registry/resizable-panels/react/resizable-panels";
+import { renderResizablePanelsHtml } from "../registry/resizable-panels/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -337,6 +367,96 @@ export const components: Record<
     variants: {
       default: "",
       inline: "layout=inline&groups=false&theme=dark&label=Search+the+menu&placeholder=Coffee%2C+cake%2C+anything&data=%5B%7B%22title%22%3A%20%22Coffee%22%2C%20%22items%22%3A%20%5B%7B%22title%22%3A%20%22Oat%20milk%20flat%20white%22%2C%20%22description%22%3A%20%22Double%20shot%2C%20oat%20milk%22%2C%20%22url%22%3A%20%22/menu/flat-white%22%2C%20%22tags%22%3A%20%5B%22dairy%20free%22%5D%7D%2C%20%7B%22title%22%3A%20%22Espresso%22%2C%20%22description%22%3A%20%22Single%20or%20double%22%2C%20%22url%22%3A%20%22/menu/espresso%22%7D%5D%7D%2C%20%7B%22title%22%3A%20%22Food%22%2C%20%22items%22%3A%20%5B%7B%22title%22%3A%20%22Banana%20bread%22%2C%20%22description%22%3A%20%22Toasted%2C%20with%20butter%22%2C%20%22url%22%3A%20%22/menu/banana-bread%22%2C%20%22tags%22%3A%20%5B%22vegetarian%22%5D%7D%5D%7D%5D",
+    },
+  },
+  "time-picker": {
+    exportName: "TimePicker",
+    schema: timePickerSchema,
+    renderHtml: (config) => renderTimePickerHtml(config as unknown as TimePickerConfig),
+    variants: {
+      default: "",
+      twelve: "format=12h&interval=15&startValue=09:30&label=Pickup%20time&hint=&theme=dark",
+    },
+  },
+  "tree-view": {
+    exportName: "TreeView",
+    schema: treeViewSchema,
+    renderHtml: (config) => renderTreeViewHtml(config as unknown as TreeViewConfig),
+    variants: {
+      default: "",
+      open: "startOpen=all&showIcons=false&showSelection=false&label=Sections&theme=dark",
+    },
+  },
+  "sortable-list": {
+    exportName: "SortableList",
+    schema: sortableListSchema,
+    renderHtml: (config) => renderSortableListHtml(config as unknown as SortableListConfig),
+    variants: {
+      default: "",
+      plain: "moveButtons=false&numbered=false&theme=dark",
+    },
+  },
+  "drawer": {
+    exportName: "Drawer",
+    schema: drawerSchema,
+    renderHtml: (config) => renderDrawerHtml(config as unknown as DrawerConfig),
+    variants: {
+      default: "",
+      bottom: "side=bottom&size=lg&secondaryButton=false&theme=dark",
+    },
+  },
+  "cookie-consent": {
+    exportName: "CookieConsent",
+    schema: cookieConsentSchema,
+    renderHtml: (config) => renderCookieConsentHtml(config as unknown as CookieConsentConfig),
+    variants: {
+      default: "",
+      corner: "position=corner&showReopen=false&theme=dark",
+    },
+  },
+  "card-fields": {
+    exportName: "CardFields",
+    schema: cardFieldsSchema,
+    renderHtml: (config) => renderCardFieldsHtml(config as unknown as CardFieldsConfig),
+    variants: {
+      default: "",
+      lean: "showName=false&showPostcode=false&buttonText=Pay%20now&theme=dark",
+    },
+  },
+  "tour": {
+    exportName: "Tour",
+    schema: tourSchema,
+    renderHtml: (config) => renderTourHtml(config as unknown as TourConfig),
+    variants: {
+      default: "",
+      lean: "showProgress=false&theme=dark",
+    },
+  },
+  "feed": {
+    exportName: "Feed",
+    schema: feedSchema,
+    renderHtml: (config) => renderFeedHtml(config as unknown as FeedConfig),
+    variants: {
+      default: "",
+      scroll: "mode=scroll&pageSize=3&theme=dark",
+    },
+  },
+  "lightbox": {
+    exportName: "Lightbox",
+    schema: lightboxSchema,
+    renderHtml: (config) => renderLightboxHtml(config as unknown as LightboxConfig),
+    variants: {
+      default: "",
+      noloop: "loop=false&columns=4&showCaptions=false&theme=dark",
+    },
+  },
+  "resizable-panels": {
+    exportName: "ResizablePanels",
+    schema: resizablePanelsSchema,
+    renderHtml: (config) => renderResizablePanelsHtml(config as unknown as ResizablePanelsConfig),
+    variants: {
+      default: "",
+      vertical: "orientation=vertical&startSize=50&collapsible=false&theme=dark",
     },
   },
 };

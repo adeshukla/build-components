@@ -32,9 +32,15 @@
 
     function setOpen(open) {
       input.setAttribute("aria-expanded", String(open));
+      const opening = open && list.hidden;
       list.hidden = !open;
       if (!open) input.removeAttribute("aria-activedescendant");
       else paintActive();
+      // Opening says how many options there are, as the React output does.
+      if (opening) {
+        const count = matches().length;
+        say(count + " option" + (count === 1 ? "" : "s") + " available.");
+      }
     }
 
     function paintActive() {

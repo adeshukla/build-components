@@ -247,3 +247,32 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 **Decision:** Add an About page (why it exists, how it differs from a component library, who makes it), an accessibility statement (target WCAG 2.2 AA, what is tested, known limits, how to report a problem) and a 404 inside the site chrome.
 **Why:** A production site listed on devstash.me needs somewhere to say who is behind it and how to report problems. An accessibility statement is expected from a site whose whole claim is accessibility.
 **Content rule kept:** no invented numbers or claims. The part count is read from the catalogue, and contact goes through devstash.me rather than an address that does not exist yet.
+
+## 2026-09-22 — D44. The catalogue is a filtered grid, not a list
+**Decision:** The home catalogue shows compact cards in a grid (up to four across), filtered by type with native radio buttons. "All" shows the first 8 with a "Show all" toggle. Each part now has a `category` in `lib/parts.ts`.
+**Why:** Adesh said the long list made the page too long. At 27 parts the list was about 3,000px; the grid is 924px at 800px wide, and it stays short as parts are added.
+**Accessibility:** filters are a labelled group of radios, so arrow keys work and the choice is announced; a polite live region says how many parts are shown. Each card is one link.
+
+## 2026-09-22 — D45. Tier 1: the parts that are hardest to get right
+**Decision:** Build next the parts developers most often get wrong: time picker, tree view, sortable list, drawer, cookie consent. Then Tier 2 (card fields, guided tour, feed, lightbox, resizable panels), then quick wins. Pricing table, stats and timeline move down.
+**Why:** The catalogue's value is in the accessibility work people cannot easily do themselves; page sections show little of it.
+**Notable choices:**
+- **Time picker:** an editable combobox rather than spin buttons. Any time in range can be typed, and the list is a shortcut, not a gate.
+- **Tree view:** paths instead of nested data in the editor, so the option stays a flat list anyone can edit.
+- **Sortable list:** move buttons on by default. WCAG 2.2 (2.5.7) needs a way to reorder without dragging.
+- **Drawer:** a native modal dialog, like Porthole, so the page behind is inert without extra code.
+- **Cookie consent:** a non-modal region, not a modal; it never takes focus. Accept and Reject are styled identically. It stores the choice and fires an event; blocking scripts until consent is the site's job, and the checklist says so.
+
+## 2026-09-22 — D46. Test every part in the editor's real frames
+**Decision:** `e2e/editor.spec.ts` loads every part page, runs both outputs in the frames visitors see (the HTML/CSS/JS one sandboxed), and fails on any console error or a frame shorter than its content. The HTML/CSS/JS frame allows forms (`allow-scripts allow-forms`) but never shares the site's origin.
+**Why:** Adesh found the cookie banner could not save in the preview. The component tests load the exported files directly, where forms and storage just work, so a sandbox-only failure was invisible to them.
+**Also:** both previews now match: same font (the system stack the HTML/CSS/JS output declares), same padding, same line height (1.5 in every HTML/CSS/JS stylesheet), and the HTML/CSS/JS frame grows with its content through a preview-only height script that is never exported.
+
+## 2026-09-22 — D47. Tier 2 parts
+**Decision:** card payment fields, guided tour, load-more feed, lightbox, resizable panels.
+**Notable choices:**
+- **Card fields:** a UI pattern, not a payment integration. Brands are named in words, never as logos. Errors clear as you type once shown ("reward early"), because clearing on blur moved the Pay button out from under the pointer. The checklist says real card data belongs in the payment provider's hosted fields.
+- **Guided tour:** each step is a non-modal dialog that takes focus; Skip and Escape work at every step. Steps whose target is missing are skipped, so the tour never points at nothing.
+- **Feed:** the WAI-ARIA feed pattern with a Load more button that stays even in scroll mode, so nobody depends on scrolling. Pressing it moves focus to the first new item; scroll loading never moves focus.
+- **Lightbox:** demo pictures are drawn gradients, so nothing is loaded from a third party. Focus returns to the thumbnail of the picture you were on, not the one you opened.
+- **Resizable panels:** the APG window splitter: a focusable separator with a value, arrow keys, Home/End and Enter to collapse. The visible line is thin; the grab area is 30px.

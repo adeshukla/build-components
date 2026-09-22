@@ -22,6 +22,7 @@
   gap: 0.375rem;
   color: var(--ss-text);
   font-family: var(--ss-font);
+  line-height: 1.5;
 }
 .ss--sm { --ss-height: 2rem; --ss-row: 2rem; }
 .ss--lg { --ss-height: 3rem; --ss-row: 2.75rem; }

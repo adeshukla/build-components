@@ -13,6 +13,7 @@
   background: var(--se-surface);
   color: var(--se-text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
 }
 
 /* Sizes include padding and border, whatever the host page does. */

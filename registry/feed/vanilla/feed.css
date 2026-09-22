@@ -1,0 +1,73 @@
+/* Feed — plain CSS. Colours come from the inline custom properties. */
+.fd {
+  --fd-accent: #2563eb;
+  --fd-accent-text: #1b4ab0;
+  --fd-surface: #ffffff;
+  --fd-raised: #ffffff;
+  --fd-text: #16121f;
+  --fd-muted: #4d4a57;
+  --fd-line: #d9d5e4;
+  --fd-border: #737373;
+  --fd-hover: #eeecf5;
+  display: block;
+  max-width: 36rem;
+  background: var(--fd-surface);
+  color: var(--fd-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.fd,
+.fd *,
+.fd *::before,
+.fd *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .fd--theme-system {
+    --fd-surface: #141019;
+    --fd-raised: #1f1a29;
+    --fd-text: #f6f5fa;
+    --fd-muted: #b6b3c2;
+    --fd-line: #3a3448;
+    --fd-border: #8e8a99;
+    --fd-hover: #2a2438;
+  }
+}
+
+.fd-label { margin: 0; font-weight: 500; }
+.fd-list { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
+.fd-item { padding: 1rem; border: 1px solid var(--fd-line); border-radius: 0.5rem; background: var(--fd-raised); }
+.fd-item:focus-visible { outline: 2px solid var(--fd-accent-text); outline-offset: 2px; }
+.fd-title { margin: 0; font-weight: 600; }
+.fd-summary { margin: 0.25rem 0 0; color: var(--fd-muted); font-size: 0.875rem; }
+.fd-sentinel { height: 1px; }
+.fd-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+.fd-count { margin: 0; color: var(--fd-muted); font-size: 0.875rem; }
+
+.fd-more {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--fd-border);
+  border-radius: 0.5rem;
+  background: var(--fd-surface);
+  color: var(--fd-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.fd-more:hover { background: var(--fd-hover); }
+.fd-more:focus-visible { outline: 2px solid var(--fd-accent-text); outline-offset: 2px; }
+.fd-more[aria-disabled="true"] { cursor: wait; }
+
+.fd-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

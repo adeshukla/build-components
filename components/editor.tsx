@@ -5,7 +5,7 @@ import { OptionsPanel } from "@/components/options-panel";
 import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
 import { applyConfig } from "@/lib/export";
-import { partBySlug } from "@/lib/parts";
+import { fullBleed, partBySlug } from "@/lib/parts";
 import { toSearchParams, type Schema } from "@/lib/schema";
 
 export type Sources = { react: string; html: string; css: string; js: string };
@@ -136,13 +136,10 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
                 {output === "react" ? (
                   <PreviewFrame slug={slug} title={part.name} config={config} initialQuery={initialQuery} />
                 ) : (
-                  <iframe
+                  <VanillaFrame
                     key={query}
                     title={`${part.name}, HTML/CSS/JS output`}
-                    sandbox="allow-scripts"
-                    style={{ height: `${MIN_PREVIEW_HEIGHT}px` }}
-                    className="block w-full rounded-md"
-                    srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark")}
+                    srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark", fullBleed.includes(slug))}
                   />
                 )}
               </div>
@@ -256,15 +253,53 @@ function PreviewFrame({
   );
 }
 
+/**
+ * The HTML/CSS/JS output in a sandboxed frame. It can't be measured from outside (no shared origin),
+ * so a preview-only script inside reports its content height, and the frame grows like the React one.
+ */
+function VanillaFrame({ title, srcDoc }: { title: string; srcDoc: string }) {
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const [height, setHeight] = useState(MIN_PREVIEW_HEIGHT);
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      // A sandboxed frame's origin is "null", so check which window sent it instead.
+      if (event.source !== frameRef.current?.contentWindow || event.data?.type !== "vanilla-height") return;
+      setHeight(Math.min(760, Math.max(MIN_PREVIEW_HEIGHT, Number(event.data.height) + 4)));
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  return (
+    <iframe
+      ref={frameRef}
+      title={title}
+      // Scripts and forms, but never this site's origin: the exported code runs as it would on a
+      // plain page (forms and <form method="dialog"> included) and can't touch the editor.
+      sandbox="allow-scripts allow-forms"
+      style={{ height: `${height}px` }}
+      className="block w-full rounded-md"
+      srcDoc={srcDoc}
+    />
+  );
+}
+
+/** Preview only, never exported: reports the height of the page's content (not of the frame). */
+const reportHeight = `<script>(function(){function send(){var b=document.body,bottom=0;for(var i=0;i<b.children.length;i++){var c=b.children[i];if(c.tagName==="SCRIPT"||getComputedStyle(c).position==="fixed")continue;bottom=Math.max(bottom,c.getBoundingClientRect().bottom+window.scrollY)}parent.postMessage({type:"vanilla-height",height:Math.ceil(bottom+parseFloat(getComputedStyle(b).paddingBottom))},"*")}var o=new ResizeObserver(send);for(var i=0;i<document.body.children.length;i++)o.observe(document.body.children[i]);send()})()</script>`;
+
 /** Inlines the exported CSS and JS into the exported HTML page, so the frame runs the real files. */
-function vanillaDocument(html: string, css: string, js: string, dark: boolean) {
+function vanillaDocument(html: string, css: string, js: string, dark: boolean, bleed: boolean) {
   const page = dark ? "background:#141019;color:#f6f5fa" : "background:#ffffff;color:#16121f";
+  // The same padding as the React frame (24px, 32px from 640px), none for full-width parts.
+  const padding = bleed ? "" : "body{padding:24px}@media (min-width:640px){body{padding:32px}}";
   return html
     .replace(
       /<link rel="stylesheet" href="[^"]+">/,
-      () => `<style>body{margin:0;min-height:100dvh;padding:32px;font-family:system-ui,sans-serif;${page}}${css}</style>`,
+      () => `<style>body{box-sizing:border-box;margin:0;min-height:100dvh;font-family:system-ui,sans-serif;${page}}${padding}${css}</style>`,
     )
-    .replace(/<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `<script>${js}</script>`));
+    .replace(/<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `<script>${js}</script>`))
+    .replace("</body>", () => `${reportHeight}\n  </body>`);
 }
 
 function InstallPanel({ slug, command }: { slug: string; command: string }) {

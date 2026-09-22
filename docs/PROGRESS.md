@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The twenty-seven parts, all in stock
+### The thirty-seven parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -46,6 +46,45 @@ Open http://localhost:3000.
 | **Semaphore** | One-time code | Grouped inputs + one-time-code |
 | **Fathom** | Range slider | Native range inputs |
 | **Lookout** | Global search | APG Combobox in a dialog |
+| **Chronometer** | Time picker | APG Combobox (editable) |
+| **Rigging** | Tree view | APG Tree View |
+| **Muster** | Sortable list | Toggle-button handles + live region |
+| **Hatch** | Drawer | APG Dialog (Modal) |
+| **Customs** | Cookie consent | Landmark region + dialog |
+| **Purser** | Card payment fields | Native form + autocomplete cc-* |
+| **Pilot** | Guided tour | Non-modal dialog steps |
+| **Current** | Load-more feed | APG Feed |
+| **Lantern** | Lightbox | APG Dialog (Modal) gallery |
+| **Bulkhead** | Resizable panels | APG Window Splitter |
+
+### Session 8, part 3 (2026-09-22): parity audit and Tier 2 (D46, D47)
+- **What Adesh reported:** the cookie banner's HTML/JS preview could not save from Choose cookies ("Blocked form submission ... 'allow-forms' permission is not set"), and the two outputs looked different in places.
+- **Why the tests missed it:** the component tests load the HTML/JS files directly, never through the editor's sandboxed frame. `e2e/editor.spec.ts` now opens every part in the real editor, in both outputs, and fails on any console error; it also saves cookie choices inside the sandboxed frame.
+- **Parity audit** (every part, both outputs, desktop and phone, closed and opened; accessibility trees diffed, screenshots side by side). Found and fixed:
+  1. Preview frame blocked forms (`sandbox` now `allow-scripts allow-forms`, still no shared origin).
+  2. HTML/JS frame stuck at 480px, cutting off the form and basket; it now reports its content height and grows like the React one.
+  3. Full-width parts (header, footer, CTA, mega menu) had 32px of padding only in the HTML/JS preview; padding now matches React at every width.
+  4. React preview borrowed the site's Geist font; both previews now use the system font the HTML/JS output declares.
+  5. Line height: React got 1.5 from Tailwind's reset, HTML/JS got the browser's ~1.2, so every HTML/JS part was tighter. All 37 stylesheets now set 1.5.
+  6. Table on a phone (React): caption a word per line and values right-aligned; now stacks like the HTML/JS output.
+  7. Basket progress bar: green in one output, blue in the other; now drawn explicitly in both.
+  8. Upload (HTML/JS): an empty file list was exposed to screen readers (`display: flex` beat `hidden`).
+  9. Multi-select (HTML/JS): did not announce the option count on opening.
+  10. Cookie consent (HTML/JS): after saving, focus fell to the page because the browser returns focus to the dialog's opener on close; focus now moves after the dialog closes.
+  11. Preview body scrolled 64px inside its frame (`content-box` + `min-height: 100dvh` + padding).
+- **Five Tier 2 parts**, each with both outputs, docs, a registry entry and tests: Purser (card fields), Pilot (guided tour), Current (feed), Lantern (lightbox), Bulkhead (resizable panels).
+- **Real bugs the new tests caught:** submitting the card form after fixing an error missed the Pay button, because the error vanished on blur and the button jumped up mid-click (errors now clear as you type); the lightbox's enlarged picture rendered at zero size in HTML/JS (and small in React); the tour's demo search squeezed to a sliver on a phone.
+
+### Session 8, part 2 (2026-09-22): catalogue and Tier 1 (D44, D45)
+- **Shorter home page:** the catalogue is a grid of compact cards with type filters (Inputs, Navigation, Overlays, Content, Page sections). "All" shows 8 with a "Show all" button. The section went from about 3,000px to 924px at 800px wide.
+- **Bug found:** the live parts in the hero sat on a chip that turned dark in dark mode while the parts stayed light, so their labels were near-black on near-black. The chip is now always white.
+- **Five Tier 1 parts**, each with both outputs, docs, a registry entry and its own tests:
+  - **Chronometer** (time picker): type 2pm, 14, 1430 or 2:30 pm, or pick from a list. Times between the listed slots are kept, and times outside the allowed hours are explained.
+  - **Rigging** (tree view): the full APG keyboard model, including type-ahead and `*`. Built from plain paths (`src/app/page.tsx`), so the editor stays a flat list.
+  - **Muster** (sortable list): drag, keyboard pick-up (Space, arrows, Escape to cancel), and move buttons as the no-drag alternative WCAG 2.2 requires. Every move is announced.
+  - **Hatch** (drawer): right, left or bottom, on a native modal dialog, with swipe to close on touch.
+  - **Customs** (cookie consent): non-modal banner, Accept and Reject styled the same, nothing pre-ticked, per-category preferences and a Cookie settings button. The choice is saved to localStorage and broadcast as an event. It handles the choice, not the cookies; the checklist says so.
+- **Real bugs the tests caught:** the cookie policy link was 23px tall (under the 24px minimum); dragging in Safari dropped items one place short, because pointer events arrived faster than re-renders.
 
 ### Done in session 4 (2026-09-18)
 - **Fixed what Adesh reported:**
@@ -108,8 +147,10 @@ Adesh was right that the tests proved behaviour and never looked at the result. 
 - **The form's two columns did not line up** and every problem was said twice.
 All fixed. `e2e/layout.spec.ts` now runs those checks on every component, in both outputs, at three widths (D37), so none of it can come back quietly. 928 tests passing.
 
-### Still to build (D34 list, in order)
-Switch · rating · time picker · skeleton · empty state · alert banner · avatars · pricing table · stats · cookie consent · timeline · lightbox.
+### Still to build (D45 order)
+- **Tier 3 (quick wins):** switch · rating · alert banner · skeleton · empty state · avatar group · segmented toggle.
+- **Later:** a kanban board on top of Muster.
+- **Moved down:** pricing table, stats, timeline (page sections with little accessibility work in them).
 
 ### In progress
 Nothing half-finished.

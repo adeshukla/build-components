@@ -12,6 +12,7 @@
   display: block;
   color: var(--ct-text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
 }
 
 /* Sizes include padding and border, whatever the host page does. */
@@ -105,7 +106,11 @@
 
 .ct-progress-box { padding: 0.75rem; border-radius: var(--ct-radius); background: var(--ct-sunk); }
 .ct-progress-box p { margin: 0; }
-.ct-progress { width: 100%; height: 0.5rem; margin-top: 0.5rem; accent-color: var(--ct-accent); }
+/* Drawn explicitly: a bare accent-color progress bar looks different in every browser. */
+.ct-progress { display: block; width: 100%; height: 0.5rem; margin-top: 0.5rem; overflow: hidden; border: 0; border-radius: 9999px; background: var(--ct-line); appearance: none; }
+.ct-progress::-webkit-progress-bar { background: var(--ct-line); }
+.ct-progress::-webkit-progress-value { background: var(--ct-accent); }
+.ct-progress::-moz-progress-bar { background: var(--ct-accent); }
 
 .ct-totals { display: flex; flex-direction: column; gap: 0.25rem; margin: 1.25rem 0 0; }
 .ct-total-row { display: flex; justify-content: space-between; gap: 1rem; }

@@ -1,0 +1,77 @@
+/* Resizable panels — plain CSS. Colours come from the inline custom properties. */
+.rp {
+  --rp-accent: #2563eb;
+  --rp-accent-text: #1b4ab0;
+  --rp-surface: #ffffff;
+  --rp-sunk: #f4f3f8;
+  --rp-text: #16121f;
+  --rp-muted: #4d4a57;
+  --rp-line: #d9d5e4;
+  --rp-handle: #8e8a99;
+  display: flex;
+  height: 18rem;
+  overflow: hidden;
+  border: 1px solid var(--rp-line);
+  border-radius: 0.5rem;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+.rp--vertical { flex-direction: column; }
+
+/* Sizes include padding and border, whatever the host page does. */
+.rp,
+.rp *,
+.rp *::before,
+.rp *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .rp--theme-system {
+    --rp-surface: #141019;
+    --rp-sunk: #1f1a29;
+    --rp-text: #f6f5fa;
+    --rp-muted: #b6b3c2;
+    --rp-line: #3a3448;
+  }
+}
+
+.rp-pane { min-width: 0; min-height: 0; overflow: auto; padding: 1rem; }
+.rp-pane[hidden] { display: none; }
+.rp-pane--first { flex-shrink: 0; background: var(--rp-sunk); }
+.rp-pane--second { flex: 1; }
+.rp-title { margin: 0; font-weight: 600; }
+.rp-body { margin: 0.25rem 0 0; color: var(--rp-muted); font-size: 0.875rem; }
+
+.rp-divider {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--rp-line);
+  outline: none;
+  touch-action: none;
+  user-select: none;
+}
+.rp--horizontal .rp-divider { width: 0.375rem; cursor: col-resize; }
+.rp--vertical .rp-divider { height: 0.375rem; cursor: row-resize; }
+.rp-divider:hover,
+.rp-divider:focus-visible { background: var(--rp-accent); }
+
+/* A wider invisible grip: the visible line is thin, the target is not. */
+.rp-grip { position: absolute; }
+.rp--horizontal .rp-grip { top: 0; bottom: 0; left: -0.75rem; right: -0.75rem; }
+.rp--vertical .rp-grip { left: 0; right: 0; top: -0.75rem; bottom: -0.75rem; }
+
+.rp-handle { position: relative; border-radius: 9999px; background: var(--rp-handle); }
+.rp--horizontal .rp-handle { width: 0.25rem; height: 2rem; }
+.rp--vertical .rp-handle { width: 2rem; height: 0.25rem; }
+.rp-divider:hover .rp-handle,
+.rp-divider:focus-visible .rp-handle { background: var(--rp-surface); }
+
+@media (forced-colors: active) {
+  .rp-divider { background: CanvasText; }
+  .rp-divider:focus-visible { background: Highlight; }
+}

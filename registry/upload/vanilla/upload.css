@@ -14,6 +14,7 @@
   background: var(--up-surface);
   color: var(--up-text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
 }
 
 /* Sizes include padding and border, whatever the host page does. */
@@ -89,6 +90,9 @@
 }
 
 .up-files { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0 0; padding: 0; list-style: none; }
+/* A display rule beats the hidden attribute, so say it again: an empty list must be gone for screen readers too. */
+.up-files[hidden],
+.up-problems[hidden] { display: none; }
 .up-file {
   display: flex;
   align-items: center;

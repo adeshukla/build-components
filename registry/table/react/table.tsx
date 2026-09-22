@@ -155,7 +155,8 @@ export function Table({ config = defaultConfig }: { config?: TableConfig }) {
         {/* The roles are spelled out because stacking the rows on a phone changes `display`,
             and that quietly strips a table of its semantics. */}
         <table role="table" className={`w-full border-collapse text-left text-sm ${stack ? "block sm:table" : ""}`}>
-          <caption className="px-4 py-3 text-left font-semibold">{config.caption}</caption>
+          {/* Block on a phone too, or a stacked table squeezes the caption to a word per line. */}
+          <caption className={`px-4 py-3 text-left font-semibold ${stack ? "block sm:table-caption" : ""}`}>{config.caption}</caption>
           <thead
             role="rowgroup"
             className={`bg-(--tl-sunk) ${config.stickyHeader ? "sticky top-0 z-10" : ""} ${
@@ -245,9 +246,9 @@ export function Table({ config = defaultConfig }: { config?: TableConfig }) {
                       {...(index === 0 ? { scope: "row" as const, role: "rowheader" } : { role: "cell" })}
                       // On a phone each cell carries its column name, so a stacked row still reads.
                       data-label={columns[index]}
-                      className={`${pad} font-normal ${numeric[index] ? "text-right tabular-nums" : ""} ${
+                      className={`${pad} font-normal ${numeric[index] ? `tabular-nums ${stack ? "sm:text-right" : "text-right"}` : ""} ${
                         stack
-                          ? "block before:mr-2 before:font-medium before:text-(--tl-muted) before:content-[attr(data-label)] sm:table-cell sm:before:content-none"
+                          ? "block max-sm:px-3 max-sm:py-1 before:font-medium before:text-(--tl-muted) before:content-[attr(data-label)_':_'] sm:table-cell sm:before:content-none"
                           : ""
                       }`}
                     >

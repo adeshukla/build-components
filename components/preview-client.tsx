@@ -1,5 +1,6 @@
 "use client";
 
+import { fullBleed } from "@/lib/parts";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
 import { Cart, type CartConfig } from "@/registry/cart/react/cart";
@@ -45,6 +46,26 @@ import { Slider, type SliderConfig } from "@/registry/slider/react/slider";
 
 import { Search, type SearchConfig } from "@/registry/search/react/search";
 
+import { TimePicker, type TimePickerConfig } from "@/registry/time-picker/react/time-picker";
+
+import { TreeView, type TreeViewConfig } from "@/registry/tree-view/react/tree-view";
+
+import { SortableList, type SortableListConfig } from "@/registry/sortable-list/react/sortable-list";
+
+import { Drawer, type DrawerConfig } from "@/registry/drawer/react/drawer";
+
+import { CookieConsent, type CookieConsentConfig } from "@/registry/cookie-consent/react/cookie-consent";
+
+import { CardFields, type CardFieldsConfig } from "@/registry/card-fields/react/card-fields";
+
+import { Tour, type TourConfig } from "@/registry/tour/react/tour";
+
+import { Feed, type FeedConfig } from "@/registry/feed/react/feed";
+
+import { Lightbox, type LightboxConfig } from "@/registry/lightbox/react/lightbox";
+
+import { ResizablePanels, type ResizablePanelsConfig } from "@/registry/resizable-panels/react/resizable-panels";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -77,6 +98,19 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
+  // The cookie banner remembers a choice; the preview always starts from "not asked yet" so the
+  // banner can be seen again after trying it.
+  const storageKey = slug === "cookie-consent" ? String(config.storageKey) : "";
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      window.localStorage.removeItem(storageKey);
+      window.dispatchEvent(new Event("cookie-consent"));
+    } catch {
+      // Storage blocked: the component falls back to memory, which starts empty anyway.
+    }
+  }, [storageKey]);
+
   // Tell the editor how tall the frame needs to be.
   useEffect(() => {
     const box = boxRef.current;
@@ -98,7 +132,7 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
     <div style={surfaces[dark ? "dark" : "light"]} className="min-h-dvh">
       <div
         ref={boxRef}
-        className={["cta", "header", "footer", "mega-menu"].includes(slug) ? "" : "p-6 sm:p-8"}
+        className={fullBleed.includes(slug) ? "" : "p-6 sm:p-8"}
       >
         {slug === "accordion" && <Accordion config={config as unknown as AccordionConfig} />}
         {slug === "tooltip" && <Tooltip config={config as unknown as TooltipConfig} />}
@@ -116,6 +150,16 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
         {slug === "otp" && <Otp config={config as unknown as OtpConfig} />}
         {slug === "slider" && <Slider config={config as unknown as SliderConfig} />}
         {slug === "search" && <Search config={config as unknown as SearchConfig} />}
+        {slug === "time-picker" && <TimePicker config={config as unknown as TimePickerConfig} />}
+        {slug === "tree-view" && <TreeView config={config as unknown as TreeViewConfig} />}
+        {slug === "sortable-list" && <SortableList config={config as unknown as SortableListConfig} />}
+        {slug === "drawer" && <Drawer config={config as unknown as DrawerConfig} />}
+        {slug === "cookie-consent" && <CookieConsent config={config as unknown as CookieConsentConfig} />}
+        {slug === "card-fields" && <CardFields config={config as unknown as CardFieldsConfig} />}
+        {slug === "tour" && <Tour config={config as unknown as TourConfig} />}
+        {slug === "feed" && <Feed config={config as unknown as FeedConfig} />}
+        {slug === "lightbox" && <Lightbox config={config as unknown as LightboxConfig} />}
+        {slug === "resizable-panels" && <ResizablePanels config={config as unknown as ResizablePanelsConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

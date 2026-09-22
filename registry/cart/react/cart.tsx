@@ -257,7 +257,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
             value={Math.min(subtotal, freeOver)}
             max={freeOver}
             aria-label="Progress towards free delivery"
-            className="mt-2 h-2 w-full accent-(--ct-accent)"
+            className="mt-2 block h-2 w-full appearance-none overflow-hidden rounded-full border-0 bg-(--ct-line) [&::-moz-progress-bar]:bg-(--ct-accent) [&::-webkit-progress-bar]:bg-(--ct-line) [&::-webkit-progress-value]:bg-(--ct-accent)"
           />
         </div>
       )}

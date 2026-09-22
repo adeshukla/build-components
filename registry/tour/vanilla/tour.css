@@ -1,0 +1,103 @@
+/* Guided tour — plain CSS. Colours come from the inline custom properties. */
+.to {
+  --to-accent: #2563eb;
+  --to-accent-text: #1b4ab0;
+  --to-on-accent: #ffffff;
+  --to-surface: #ffffff;
+  --to-sunk: #f4f3f8;
+  --to-text: #16121f;
+  --to-muted: #4d4a57;
+  --to-border: #737373;
+  --to-line: #d9d5e4;
+  --to-hover: #eeecf5;
+  display: block;
+  color: var(--to-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.to,
+.to *,
+.to *::before,
+.to *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .to--theme-system {
+    --to-surface: #1c1826;
+    --to-sunk: #141019;
+    --to-text: #f6f5fa;
+    --to-muted: #b6b3c2;
+    --to-border: #8e8a99;
+    --to-line: #3a3448;
+    --to-hover: #2a2438;
+  }
+}
+
+.to [hidden] { display: none; }
+
+.to-demo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem; border: 1px solid var(--to-line); border-radius: 0.5rem; background: var(--to-sunk); }
+.to-search { flex: 1 1 10rem; min-width: 10rem; height: 2.5rem; padding: 0 0.75rem; border: 1px solid var(--to-border); border-radius: 0.5rem; background: var(--to-surface); color: var(--to-text); font: inherit; }
+.to-search::placeholder { color: var(--to-muted); opacity: 1; }
+
+.to-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.to-button:focus-visible,
+.to-search:focus-visible { outline: 2px solid var(--to-accent-text); outline-offset: 2px; }
+.to-button--main { background: var(--to-accent); color: var(--to-on-accent); }
+.to-button--quiet { border-color: var(--to-border); background: var(--to-surface); color: var(--to-text); }
+.to-button--quiet:hover { background: var(--to-hover); }
+
+.to-ring {
+  position: fixed;
+  z-index: 40;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 3px var(--to-accent), 0 0 0 9999px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+  transition: all 200ms;
+}
+.to-step {
+  position: fixed;
+  z-index: 50;
+  width: min(20rem, calc(100vw - 1rem));
+  padding: 1rem;
+  border: 1px solid var(--to-line);
+  border-radius: 0.75rem;
+  background: var(--to-surface);
+  color: var(--to-text);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+}
+.to-progress { margin: 0; color: var(--to-muted); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.025em; text-transform: uppercase; }
+.to-progress:empty { display: none; }
+.to-title { margin: 0.25rem 0 0; font-weight: 600; outline: none; }
+.to-body { margin: 0.25rem 0 0; color: var(--to-muted); font-size: 0.875rem; }
+.to-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 1rem; }
+.to-nav { display: flex; gap: 0.5rem; }
+.to-skip { margin-left: -0.5rem; padding: 0 0.5rem; background: transparent; color: var(--to-accent-text); text-decoration: underline; text-underline-offset: 2px; }
+
+.to-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .to-ring { transition: none; }
+}
