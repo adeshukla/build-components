@@ -1,0 +1,73 @@
+/* Tree view — plain CSS. Colours come from the inline custom properties. */
+.tv {
+  --tv-accent: #2563eb;
+  --tv-accent-text: #1b4ab0;
+  --tv-surface: #ffffff;
+  --tv-text: #16121f;
+  --tv-muted: #4d4a57;
+  --tv-line: #d9d5e4;
+  --tv-hover: #eeecf5;
+  --tv-selected: #e4e9fb;
+  display: block;
+  max-width: 24rem;
+  background: var(--tv-surface);
+  color: var(--tv-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.tv,
+.tv *,
+.tv *::before,
+.tv *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tv--theme-system {
+    --tv-surface: #141019;
+    --tv-text: #f6f5fa;
+    --tv-muted: #b6b3c2;
+    --tv-line: #3a3448;
+    --tv-hover: #2a2438;
+    --tv-selected: #26304d;
+  }
+}
+
+.tv-label { margin: 0 0 0.5rem; font-weight: 500; }
+.tv-tree,
+.tv-group { margin: 0; padding: 0; list-style: none; }
+.tv-tree { padding: 0.25rem; border: 1px solid var(--tv-line); border-radius: 0.5rem; }
+.tv-group[hidden] { display: none; }
+
+.tv-item { outline: none; }
+.tv-item:focus-visible > .tv-row { outline: 2px solid var(--tv-accent-text); outline-offset: -2px; }
+
+.tv-row {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+}
+.tv-row:hover { background: var(--tv-hover); }
+.tv-item[aria-selected="true"] > .tv-row { background: var(--tv-selected); font-weight: 500; }
+
+.tv-chevron,
+.tv-icon { display: grid; width: 1rem; height: 1rem; flex-shrink: 0; place-items: center; color: var(--tv-muted); }
+.tv-chevron svg { width: 0.875rem; height: 0.875rem; transition: rotate 150ms; }
+.tv-icon svg { width: 1rem; height: 1rem; }
+.tv-item[aria-expanded="true"] > .tv-row .tv-chevron svg { rotate: 90deg; }
+.tv-item[aria-expanded="true"] > .tv-row .tv-folder-closed,
+.tv-item[aria-expanded="false"] > .tv-row .tv-folder-open { display: none; }
+.tv-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.tv-selection { margin: 0.5rem 0 0; color: var(--tv-muted); font-size: 0.875rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-chevron svg { transition: none; }
+}

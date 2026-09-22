@@ -1,0 +1,97 @@
+/* Sortable list — plain CSS. Colours come from the inline custom properties. */
+.so {
+  --sl-accent: #2563eb;
+  --sl-accent-text: #1b4ab0;
+  --sl-surface: #ffffff;
+  --sl-raised: #ffffff;
+  --sl-text: #16121f;
+  --sl-muted: #4d4a57;
+  --sl-line: #d9d5e4;
+  --sl-hover: #eeecf5;
+  display: block;
+  max-width: 28rem;
+  background: var(--sl-surface);
+  color: var(--sl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.so,
+.so *,
+.so *::before,
+.so *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .so--theme-system {
+    --sl-surface: #141019;
+    --sl-raised: #1f1a29;
+    --sl-text: #f6f5fa;
+    --sl-muted: #b6b3c2;
+    --sl-line: #3a3448;
+    --sl-hover: #2a2438;
+  }
+}
+
+.so-label { margin: 0; font-weight: 500; }
+.so-hint { margin: 0.125rem 0 0; color: var(--sl-muted); font-size: 0.875rem; }
+.so-list { display: grid; gap: 0.5rem; margin: 0.75rem 0 0; padding: 0; list-style: none; }
+
+.so-item {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--sl-line);
+  border-radius: 0.5rem;
+  background: var(--sl-raised);
+  transition: box-shadow 150ms;
+}
+.so-item[data-active] {
+  border-color: var(--sl-accent);
+  box-shadow: 0 0 0 1px var(--sl-accent), 0 10px 25px -10px rgb(0 0 0 / 0.35);
+}
+
+.so-icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--sl-muted);
+  cursor: pointer;
+}
+.so-icon:hover { background: var(--sl-hover); color: var(--sl-text); }
+.so-icon:focus-visible { outline: 2px solid var(--sl-accent-text); outline-offset: 1px; }
+.so-icon[aria-disabled="true"] { opacity: 0.4; cursor: default; }
+.so-icon[aria-disabled="true"]:hover { background: transparent; }
+.so-icon svg { width: 1rem; height: 1rem; }
+/* The handle takes the pointer for dragging, so it must not scroll the page on a phone. */
+.so-handle { cursor: grab; touch-action: none; }
+.so-handle svg { width: 1.25rem; height: 1.25rem; }
+.so-item[data-dragging] .so-handle { cursor: grabbing; }
+
+.so-number { width: 1.25rem; flex-shrink: 0; color: var(--sl-muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; text-align: right; }
+.so-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.so-moves { display: flex; flex-shrink: 0; }
+
+.so-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .so-item { transition: none; }
+}

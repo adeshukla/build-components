@@ -1,0 +1,125 @@
+/* Drawer — plain CSS. Colours come from the inline custom properties. */
+.dr {
+  --dr-accent: #2563eb;
+  --dr-accent-text: #1b4ab0;
+  --dr-on-accent: #ffffff;
+  --dr-surface: #ffffff;
+  --dr-text: #16121f;
+  --dr-muted: #4d4a57;
+  --dr-border: #737373;
+  --dr-line: #d9d5e4;
+  --dr-hover: #eeecf5;
+  --dr-width: 24rem;
+  --dr-height: 60dvh;
+  display: block;
+  color: var(--dr-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.dr,
+.dr *,
+.dr *::before,
+.dr *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .dr--theme-system {
+    --dr-surface: #1c1826;
+    --dr-text: #f6f5fa;
+    --dr-muted: #b6b3c2;
+    --dr-border: #8e8a99;
+    --dr-line: #3a3448;
+    --dr-hover: #2a2438;
+  }
+}
+
+.dr-button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.dr-button:focus-visible,
+.dr-close:focus-visible,
+.dr-choice input:focus-visible { outline: 2px solid var(--dr-accent-text); outline-offset: 2px; }
+.dr-trigger,
+.dr-secondary { border-color: var(--dr-border); background: var(--dr-surface); color: var(--dr-text); }
+.dr-trigger { display: inline-flex; align-items: center; gap: 0.5rem; }
+.dr-trigger svg { width: 1rem; height: 1rem; }
+.dr-trigger:hover,
+.dr-secondary:hover { background: var(--dr-hover); }
+.dr-primary { background: var(--dr-accent); color: var(--dr-on-accent); }
+.dr-status { margin: 0.5rem 0 0; color: var(--dr-muted); font-size: 0.875rem; }
+.dr-status:empty { display: none; }
+
+/* A native dialog is centred with auto margins; a drawer hugs one edge instead. */
+.dr-dialog {
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: var(--dr-surface);
+  color: var(--dr-text);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+  transition: translate 300ms ease-out;
+}
+.dr-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.dr--right .dr-dialog,
+.dr--left .dr-dialog { width: var(--dr-width); max-width: calc(100vw - 3rem); height: 100dvh; max-height: 100dvh; margin-block: 0; }
+.dr--right .dr-dialog { margin-inline: auto 0; }
+.dr--left .dr-dialog { margin-inline: 0 auto; }
+.dr--bottom .dr-dialog { width: 100%; max-width: 100%; max-height: var(--dr-height); margin: auto 0 0; border-radius: 1rem 1rem 0 0; }
+
+@starting-style {
+  .dr--right .dr-dialog[open] { translate: 100% 0; }
+  .dr--left .dr-dialog[open] { translate: -100% 0; }
+  .dr--bottom .dr-dialog[open] { translate: 0 100%; }
+}
+
+.dr-inner { display: flex; height: 100%; max-height: inherit; flex-direction: column; }
+.dr-grabber { width: 2.5rem; height: 0.375rem; flex-shrink: 0; margin: 0.5rem auto 0; border-radius: 9999px; background: var(--dr-line); }
+.dr-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--dr-line); }
+.dr-title { margin: 0; font-size: 1.125rem; font-weight: 600; outline: none; }
+.dr-close {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  place-items: center;
+  margin: -0.375rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--dr-muted);
+  cursor: pointer;
+}
+.dr-close:hover { background: var(--dr-hover); }
+.dr-close svg { width: 1.25rem; height: 1.25rem; }
+
+.dr-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 1rem 1.25rem; }
+.dr-intro { margin: 0; color: var(--dr-muted); }
+.dr-choices { margin: 1rem 0 0; padding: 0; border: 0; }
+.dr-choice { display: flex; min-height: 2.75rem; align-items: center; gap: 0.75rem; border-bottom: 1px solid var(--dr-line); cursor: pointer; }
+.dr-choice:last-of-type { border-bottom: 0; }
+.dr-choice input { width: 1.25rem; height: 1.25rem; margin: 0; accent-color: var(--dr-accent); }
+.dr-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; padding: 1rem 1.25rem; border-top: 1px solid var(--dr-line); }
+
+.dr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dr-dialog { transition: none; }
+}

@@ -1,0 +1,99 @@
+/* Cookie consent — plain CSS. Colours come from the inline custom properties. */
+.cc {
+  --cc-accent: #2563eb;
+  --cc-accent-text: #1b4ab0;
+  --cc-on-accent: #ffffff;
+  --cc-surface: #ffffff;
+  --cc-text: #16121f;
+  --cc-muted: #4d4a57;
+  --cc-border: #737373;
+  --cc-line: #d9d5e4;
+  --cc-hover: #eeecf5;
+  color: var(--cc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.cc,
+.cc *,
+.cc *::before,
+.cc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .cc--theme-system {
+    --cc-surface: #1c1826;
+    --cc-text: #f6f5fa;
+    --cc-muted: #b6b3c2;
+    --cc-border: #8e8a99;
+    --cc-line: #3a3448;
+    --cc-hover: #2a2438;
+  }
+}
+
+.cc [hidden] { display: none; }
+
+.cc-banner {
+  position: fixed;
+  z-index: 40;
+  padding: 1.25rem;
+  border: 1px solid var(--cc-line);
+  background: var(--cc-surface);
+  color: var(--cc-text);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+}
+.cc--bottom .cc-banner { right: 0; bottom: 0; left: 0; border-width: 1px 0 0; }
+.cc--corner .cc-banner { right: 1rem; bottom: 1rem; left: 1rem; max-width: 28rem; border-radius: 0.75rem; }
+@media (min-width: 640px) {
+  .cc--corner .cc-banner { left: auto; }
+}
+
+.cc-banner-inner { display: flex; flex-direction: column; gap: 1rem; }
+.cc--bottom .cc-banner-inner { max-width: 64rem; margin: 0 auto; }
+@media (min-width: 1024px) {
+  .cc--bottom .cc-banner-inner { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+}
+.cc-text { max-width: 42rem; }
+.cc-title { margin: 0; font-size: 1.125rem; font-weight: 600; outline: none; }
+.cc-body { margin: 0.25rem 0 0; color: var(--cc-muted); font-size: 0.875rem; }
+.cc-link { display: inline-block; padding: 0.25rem 0; color: var(--cc-accent-text); font-weight: 500; text-underline-offset: 2px; }
+.cc-actions,
+.cc-dialog-actions { display: flex; flex-shrink: 0; flex-wrap: wrap; gap: 0.5rem; }
+.cc-dialog-actions { justify-content: flex-end; margin-top: 1.25rem; }
+
+.cc-button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cc-button:focus-visible,
+.cc-option input:focus-visible,
+.cc-link:focus-visible { outline: 2px solid var(--cc-accent-text); outline-offset: 2px; }
+/* Accept and reject look the same on purpose: refusing must be as easy as agreeing. */
+.cc-button--choice { background: var(--cc-accent); color: var(--cc-on-accent); }
+.cc-button--quiet { border-color: var(--cc-border); background: transparent; color: var(--cc-text); }
+.cc-button--quiet:hover { background: var(--cc-hover); }
+
+.cc-dialog {
+  width: calc(100% - 2rem);
+  max-width: 32rem;
+  max-height: calc(100% - 2rem);
+  padding: 1.5rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--cc-surface);
+  color: var(--cc-text);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+}
+.cc-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.cc-options { margin: 1rem 0 0; padding: 0; border-block: 1px solid var(--cc-line); list-style: none; }
+.cc-options li + li { border-top: 1px solid var(--cc-line); }
+.cc-option { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; cursor: pointer; }
+.cc-option input { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin: 0.25rem 0 0; accent-color: var(--cc-accent); }
+.cc-option-name { display: block; font-weight: 500; }
+.cc-note { display: block; color: var(--cc-muted); font-size: 0.875rem; }
