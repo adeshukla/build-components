@@ -135,6 +135,10 @@ import { Toolbar, type ToolbarConfig } from "@/registry/toolbar/react/toolbar";
 
 import { Countdown, type CountdownConfig } from "@/registry/countdown/react/countdown";
 
+import { SlotPicker, type SlotPickerConfig } from "@/registry/slot-picker/react/slot-picker";
+
+import { Wizard, type WizardConfig } from "@/registry/wizard/react/wizard";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -318,6 +322,8 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "code-block" && <CodeBlock config={config as unknown as CodeBlockConfig} />}
         {slug === "toolbar" && <Toolbar config={config as unknown as ToolbarConfig} />}
         {slug === "countdown" && <Countdown config={config as unknown as CountdownConfig} />}
+        {slug === "slot-picker" && <SlotPicker config={config as unknown as SlotPickerConfig} />}
+        {slug === "wizard" && <Wizard config={config as unknown as WizardConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

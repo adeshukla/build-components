@@ -379,4 +379,19 @@ export const demos: Record<string, Demo> = {
   "countdown": {
     how: "The digits are aria-hidden and the status line changes only when the minutes do, so a screen reader is not read to every second.",
   },
+  "slot-picker": {
+    how: "Picking a time is one choice, so it is one tab stop: arrow keys cross the days, taken slots are disabled and say so.",
+    steps: [
+      { find: "input[type=radio]:not([disabled])", action: "click", after: 800 },
+      { find: "[data-confirm], button", action: "click", after: 1400 },
+    ],
+  },
+  "wizard": {
+    how: "Next validates just this step; focus goes to the new step's heading, and the step list marks where you are.",
+    steps: [
+      { find: "[data-next], button:last-of-type", action: "click", after: 900 },
+      { find: "[data-field], input[type=text]", action: "type", value: "Kestrel", after: 700 },
+      { find: "[data-next], button:last-of-type", action: "click", after: 1300 },
+    ],
+  },
 };

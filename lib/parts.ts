@@ -730,6 +730,26 @@ export const parts: Part[] = [
     accent: "#fcd34d",
     status: "in-stock",
   },
+  {
+    slug: "slot-picker",
+    category: "Inputs",
+    codename: "Berth",
+    name: "Booking slots",
+    summary: "One radio group across every day, taken slots said in words, and announcements that carry the day as well as the time.",
+    pattern: "Grouped radio group",
+    accent: "#a7f3d0",
+    status: "in-stock",
+  },
+  {
+    slug: "wizard",
+    category: "Navigation",
+    codename: "Pilot",
+    name: "Multi-step wizard",
+    summary: "One step at a time, focus moved to each step's heading, and a needed field you cannot walk past.",
+    pattern: "Steps + per-step validation",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */

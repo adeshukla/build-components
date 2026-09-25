@@ -199,6 +199,12 @@ import { renderToolbarHtml } from "../registry/toolbar/vanilla/render";
 import { countdownSchema } from "../registry/countdown/schema";
 import type { CountdownConfig } from "../registry/countdown/react/countdown";
 import { renderCountdownHtml } from "../registry/countdown/vanilla/render";
+import { slotPickerSchema } from "../registry/slot-picker/schema";
+import type { SlotPickerConfig } from "../registry/slot-picker/react/slot-picker";
+import { renderSlotPickerHtml } from "../registry/slot-picker/vanilla/render";
+import { wizardSchema } from "../registry/wizard/schema";
+import type { WizardConfig } from "../registry/wizard/react/wizard";
+import { renderWizardHtml } from "../registry/wizard/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -866,6 +872,24 @@ export const components: Record<
       default: "",
       minutes: "showSeconds=false&theme=dark&label=Sale+ends+in",
       finished: "target=2020-01-01T00%3A00",
+    },
+  },
+  "slot-picker": {
+    exportName: "SlotPicker",
+    schema: slotPickerSchema,
+    renderHtml: (config) => renderSlotPickerHtml(config as unknown as SlotPickerConfig),
+    variants: {
+      default: "",
+      oneday: "theme=dark&heading=Choose+a+slot&confirmText=Book+it",
+    },
+  },
+  "wizard": {
+    exportName: "Wizard",
+    schema: wizardSchema,
+    renderHtml: (config) => renderWizardHtml(config as unknown as WizardConfig),
+    variants: {
+      default: "",
+      bare: "showProgress=false&theme=dark&heading=Get+a+quote&finishText=Send+the+quote",
     },
   },
 };

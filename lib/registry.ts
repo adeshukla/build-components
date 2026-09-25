@@ -213,6 +213,12 @@ import { renderToolbarHtml } from "@/registry/toolbar/vanilla/render";
 import { countdownSchema } from "@/registry/countdown/schema";
 import * as countdownDocs from "@/registry/countdown/docs";
 import { renderCountdownHtml } from "@/registry/countdown/vanilla/render";
+import { slotPickerSchema } from "@/registry/slot-picker/schema";
+import * as slotPickerDocs from "@/registry/slot-picker/docs";
+import { renderSlotPickerHtml } from "@/registry/slot-picker/vanilla/render";
+import { wizardSchema } from "@/registry/wizard/schema";
+import * as wizardDocs from "@/registry/wizard/docs";
+import { renderWizardHtml } from "@/registry/wizard/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -718,6 +724,20 @@ export const registry = {
     schema: countdownSchema,
     ...countdownDocs,
     renderHtml: (config) => renderCountdownHtml(config as never),
+  },
+  "slot-picker": {
+    title: "Booking slots",
+    description: "A booking slot picker that is one choice, however many days it spans.",
+    schema: slotPickerSchema,
+    ...slotPickerDocs,
+    renderHtml: (config) => renderSlotPickerHtml(config as never),
+  },
+  "wizard": {
+    title: "Multi-step wizard",
+    description: "A multi-step form with focus management and per-step validation.",
+    schema: wizardSchema,
+    ...wizardDocs,
+    renderHtml: (config) => renderWizardHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 
