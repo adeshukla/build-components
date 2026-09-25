@@ -1,0 +1,85 @@
+/* Kanban board — plain CSS. Colours come from the inline custom properties. */
+.kb {
+  --kb-accent: #7c3aed;
+  --kb-accent-text: #6127c4;
+  --kb-surface: #ffffff;
+  --kb-sunk: #f4f3f8;
+  --kb-card: #ffffff;
+  --kb-text: #16121f;
+  --kb-muted: #4d4a57;
+  --kb-line: #c9c4d6;
+  display: block;
+  background: var(--kb-surface);
+  color: var(--kb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.kb,
+.kb *,
+.kb *::before,
+.kb *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .kb--theme-system {
+    --kb-surface: #141019;
+    --kb-sunk: #221d2e;
+    --kb-card: #1c1826;
+    --kb-text: #f6f5fa;
+    --kb-muted: #b6b3c2;
+    --kb-line: #4a4459;
+  }
+}
+
+.kb-board { display: grid; gap: 0.75rem; }
+@media (min-width: 640px) {
+  .kb-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.kb-column { padding: 0.75rem; border: 1px solid var(--kb-line); border-radius: 0.5rem; background: var(--kb-sunk); }
+.kb-column-name { margin: 0; font-size: 0.875rem; font-weight: 600; }
+.kb-count { color: var(--kb-muted); font-weight: 400; }
+
+.kb-list { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.kb-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--kb-line);
+  border-radius: 0.375rem;
+  background: var(--kb-card);
+  font-size: 0.875rem;
+}
+.kb-moves { display: flex; flex-shrink: 0; gap: 0.25rem; }
+.kb-move {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--kb-line);
+  border-radius: 0.25rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.kb-move:focus-visible { outline: 2px solid var(--kb-accent-text); outline-offset: 2px; }
+.kb-move[hidden] { display: none; }
+
+.kb-status { margin: 0.75rem 0 0; color: var(--kb-muted); font-size: 0.875rem; }
+
+.kb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

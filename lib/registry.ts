@@ -162,6 +162,15 @@ import { renderReadingProgressHtml } from "@/registry/reading-progress/vanilla/r
 import { languageSwitcherSchema } from "@/registry/language-switcher/schema";
 import * as languageSwitcherDocs from "@/registry/language-switcher/docs";
 import { renderLanguageSwitcherHtml } from "@/registry/language-switcher/vanilla/render";
+import { filterBarSchema } from "@/registry/filter-bar/schema";
+import * as filterBarDocs from "@/registry/filter-bar/docs";
+import { renderFilterBarHtml } from "@/registry/filter-bar/vanilla/render";
+import { dataGridSchema } from "@/registry/data-grid/schema";
+import * as dataGridDocs from "@/registry/data-grid/docs";
+import { renderDataGridHtml } from "@/registry/data-grid/vanilla/render";
+import { kanbanSchema } from "@/registry/kanban/schema";
+import * as kanbanDocs from "@/registry/kanban/docs";
+import { renderKanbanHtml } from "@/registry/kanban/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -548,6 +557,27 @@ export const registry = {
     schema: languageSwitcherSchema,
     ...languageSwitcherDocs,
     renderHtml: (config) => renderLanguageSwitcherHtml(config as never),
+  },
+  "filter-bar": {
+    title: "Filter bar",
+    description: "Filter chips with removable pills and a spoken summary.",
+    schema: filterBarSchema,
+    ...filterBarDocs,
+    renderHtml: (config) => renderFilterBarHtml(config as never),
+  },
+  "data-grid": {
+    title: "Data grid",
+    description: "Sortable table with a frozen header and keyboard-resizable columns.",
+    schema: dataGridSchema,
+    ...dataGridDocs,
+    renderHtml: (config) => renderDataGridHtml(config as never),
+  },
+  "kanban": {
+    title: "Kanban board",
+    description: "A board whose cards move by keyboard, not only by dragging.",
+    schema: kanbanSchema,
+    ...kanbanDocs,
+    renderHtml: (config) => renderKanbanHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

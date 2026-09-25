@@ -1,0 +1,81 @@
+/* Data grid — plain CSS. Colours come from the inline custom properties. */
+.dg {
+  --dg-accent: #1d4ed8;
+  --dg-accent-text: #1a46c2;
+  --dg-surface: #ffffff;
+  --dg-sunk: #f4f3f8;
+  --dg-text: #16121f;
+  --dg-muted: #4d4a57;
+  --dg-line: #c9c4d6;
+  display: block;
+  background: var(--dg-surface);
+  color: var(--dg-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.dg,
+.dg *,
+.dg *::before,
+.dg *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .dg--theme-system {
+    --dg-surface: #141019;
+    --dg-sunk: #221d2e;
+    --dg-text: #f6f5fa;
+    --dg-muted: #b6b3c2;
+    --dg-line: #4a4459;
+  }
+}
+
+/* The header stays put because the scrolling happens in here, not on the page. */
+.dg-scroll { overflow: auto; border: 1px solid var(--dg-line); border-radius: 0.5rem; }
+.dg-scroll:focus-visible { outline: 2px solid var(--dg-accent-text); outline-offset: 2px; }
+.dg-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.875rem; }
+.dg-caption { padding: 0.75rem; font-weight: 500; text-align: left; }
+
+.dg-th { position: relative; padding: 0; border-bottom: 1px solid var(--dg-line); background: var(--dg-sunk); text-align: left; vertical-align: bottom; }
+.dg--sticky .dg-th { position: sticky; top: 0; z-index: 10; }
+
+.dg-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.dg-sort:focus-visible { outline: 2px solid var(--dg-accent-text); outline-offset: -2px; }
+.dg-arrow { color: var(--dg-muted); }
+.dg-plain { display: flex; align-items: center; min-height: 2.75rem; padding: 0 0.75rem; font-weight: 600; }
+
+.dg-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0.5rem;
+  height: 100%;
+  background: var(--dg-line);
+  opacity: 0;
+  cursor: col-resize;
+  touch-action: none;
+}
+.dg-handle:hover { opacity: 1; }
+.dg-handle:focus-visible { opacity: 1; outline: 2px solid var(--dg-accent-text); }
+
+.dg-row { border-bottom: 1px solid var(--dg-line); }
+.dg-row:last-child { border-bottom: 0; }
+.dg-cell { padding: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dg-cell--head { font-weight: 500; text-align: left; }
+
+.dg-status { margin: 0.5rem 0 0; color: var(--dg-muted); font-size: 0.875rem; }

@@ -101,6 +101,12 @@ import { ReadingProgress, type ReadingProgressConfig } from "@/registry/reading-
 
 import { LanguageSwitcher, type LanguageSwitcherConfig } from "@/registry/language-switcher/react/language-switcher";
 
+import { FilterBar, type FilterBarConfig } from "@/registry/filter-bar/react/filter-bar";
+
+import { DataGrid, type DataGridConfig } from "@/registry/data-grid/react/data-grid";
+
+import { Kanban, type KanbanConfig } from "@/registry/kanban/react/kanban";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -267,6 +273,9 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "back-to-top" && <BackToTop config={config as unknown as BackToTopConfig} />}
         {slug === "reading-progress" && <ReadingProgress config={config as unknown as ReadingProgressConfig} />}
         {slug === "language-switcher" && <LanguageSwitcher config={config as unknown as LanguageSwitcherConfig} />}
+        {slug === "filter-bar" && <FilterBar config={config as unknown as FilterBarConfig} />}
+        {slug === "data-grid" && <DataGrid config={config as unknown as DataGridConfig} />}
+        {slug === "kanban" && <Kanban config={config as unknown as KanbanConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

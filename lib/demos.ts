@@ -272,4 +272,25 @@ export const demos: Record<string, Demo> = {
       { find: "[role=separator]", action: "key", value: "ArrowRight", after: 1400 },
     ],
   },
+  "filter-bar": {
+    how: "Chips are buttons with aria-pressed; pills remove a filter and hand focus back to its chip, and the status line sums up what is on.",
+    steps: [
+      { find: "[data-chip]:nth-child(1), button[aria-pressed]:nth-of-type(1)", action: "click", after: 700 },
+      { find: "[aria-pressed=false]", action: "click", after: 1500 },
+    ],
+  },
+  "data-grid": {
+    how: "Headers sort and report aria-sort; column edges resize by drag or arrow key, and the header stays put while rows scroll.",
+    steps: [
+      { find: "[data-sort=owner], th:nth-child(2) button", action: "click", after: 900 },
+      { find: "[data-handle], [role=separator]", action: "key", value: "ArrowRight", after: 1300 },
+    ],
+  },
+  "kanban": {
+    how: "Each card carries buttons that move it a column at a time; focus follows the card and the move is announced with its new position.",
+    steps: [
+      { find: "[data-card] [data-move='1']:not([hidden]), li button", action: "click", after: 1000 },
+      { find: "[data-move='1']:not([hidden])", action: "click", after: 1400 },
+    ],
+  },
 };

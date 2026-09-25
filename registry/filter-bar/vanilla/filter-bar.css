@@ -1,0 +1,109 @@
+/* Filter bar — plain CSS. Colours come from the inline custom properties. */
+.fb {
+  --fb-accent: #0f766e;
+  --fb-accent-text: #0b5a54;
+  --fb-on-accent: #ffffff;
+  --fb-surface: #ffffff;
+  --fb-sunk: #f4f3f8;
+  --fb-text: #16121f;
+  --fb-muted: #4d4a57;
+  --fb-line: #c9c4d6;
+  display: block;
+  background: var(--fb-surface);
+  color: var(--fb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.fb,
+.fb *,
+.fb *::before,
+.fb *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .fb--theme-system {
+    --fb-surface: #141019;
+    --fb-sunk: #221d2e;
+    --fb-text: #f6f5fa;
+    --fb-muted: #b6b3c2;
+    --fb-line: #4a4459;
+  }
+}
+
+.fb-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.fb-title { margin: 0; font-weight: 500; }
+.fb-clear {
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: none;
+  color: var(--fb-accent-text);
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.fb-clear:focus-visible { outline: 2px solid var(--fb-accent-text); outline-offset: 2px; }
+.fb-clear[hidden] { display: none; }
+
+.fb-group { margin-top: 0.75rem; }
+.fb-group-name { margin: 0; color: var(--fb-muted); font-size: 0.875rem; }
+.fb-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
+.fb-chip {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--fb-line);
+  border-radius: 999px;
+  background: var(--fb-sunk);
+  color: var(--fb-text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.fb-chip:focus-visible { outline: 2px solid var(--fb-accent-text); outline-offset: 2px; }
+.fb-chip[aria-pressed="true"] { border-color: var(--fb-accent); background: var(--fb-accent); color: var(--fb-on-accent); }
+
+.fb-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.fb-pills[hidden] { display: none; }
+.fb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  border: 1px solid var(--fb-line);
+  border-radius: 999px;
+  background: var(--fb-sunk);
+  font-size: 0.875rem;
+}
+.fb-pill-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--fb-muted);
+  cursor: pointer;
+}
+.fb-pill-remove:hover { color: var(--fb-text); }
+.fb-pill-remove:focus-visible { outline: 2px solid var(--fb-accent-text); outline-offset: 2px; }
+.fb-pill-remove svg { width: 1rem; height: 1rem; }
+
+.fb-status { margin: 0.75rem 0 0; color: var(--fb-muted); font-size: 0.875rem; }
+
+.fb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

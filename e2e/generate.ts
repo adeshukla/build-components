@@ -148,6 +148,15 @@ import { renderReadingProgressHtml } from "../registry/reading-progress/vanilla/
 import { languageSwitcherSchema } from "../registry/language-switcher/schema";
 import type { LanguageSwitcherConfig } from "../registry/language-switcher/react/language-switcher";
 import { renderLanguageSwitcherHtml } from "../registry/language-switcher/vanilla/render";
+import { filterBarSchema } from "../registry/filter-bar/schema";
+import type { FilterBarConfig } from "../registry/filter-bar/react/filter-bar";
+import { renderFilterBarHtml } from "../registry/filter-bar/vanilla/render";
+import { dataGridSchema } from "../registry/data-grid/schema";
+import type { DataGridConfig } from "../registry/data-grid/react/data-grid";
+import { renderDataGridHtml } from "../registry/data-grid/vanilla/render";
+import { kanbanSchema } from "../registry/kanban/schema";
+import type { KanbanConfig } from "../registry/kanban/react/kanban";
+import { renderKanbanHtml } from "../registry/kanban/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -661,6 +670,33 @@ export const components: Record<
     variants: {
       default: "",
       compact: "showCode=false&currentCode=fr&theme=dark",
+    },
+  },
+  "filter-bar": {
+    exportName: "FilterBar",
+    schema: filterBarSchema,
+    renderHtml: (config) => renderFilterBarHtml(config as unknown as FilterBarConfig),
+    variants: {
+      default: "",
+      plain: "showPills=false&clearAll=false&theme=dark",
+    },
+  },
+  "data-grid": {
+    exportName: "DataGrid",
+    schema: dataGridSchema,
+    renderHtml: (config) => renderDataGridHtml(config as unknown as DataGridConfig),
+    variants: {
+      default: "",
+      plain: "sortable=false&resizable=false&stickyHeader=false&maxHeight=0&theme=dark",
+    },
+  },
+  "kanban": {
+    exportName: "Kanban",
+    schema: kanbanSchema,
+    renderHtml: (config) => renderKanbanHtml(config as unknown as KanbanConfig),
+    variants: {
+      default: "",
+      quiet: "showCounts=false&allowDrag=false&theme=dark",
     },
   },
 };

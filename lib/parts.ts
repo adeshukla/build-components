@@ -560,6 +560,36 @@ export const parts: Part[] = [
     accent: "#fca5a5",
     status: "in-stock",
   },
+  {
+    slug: "filter-bar",
+    category: "Inputs",
+    codename: "Sieve",
+    name: "Filter bar",
+    summary: "Chips that are real toggles, removable pills for what is on, and one status line that sums it up.",
+    pattern: "Toggle buttons + status",
+    accent: "#5eead4",
+    status: "in-stock",
+  },
+  {
+    slug: "data-grid",
+    category: "Content",
+    codename: "Ledger",
+    name: "Data grid",
+    summary: "A table with a header that stays put, sortable columns reporting aria-sort, and columns you can resize by arrow key.",
+    pattern: "Table + sort + resize",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "kanban",
+    category: "Content",
+    codename: "Bosun",
+    name: "Kanban board",
+    summary: "Cards that move by button as well as by drag, with focus and announcements following them.",
+    pattern: "Board + move buttons",
+    accent: "#c4b5fd",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */
