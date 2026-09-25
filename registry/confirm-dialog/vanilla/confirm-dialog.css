@@ -1,0 +1,95 @@
+/* Typed confirmation dialog — plain CSS. Colours come from the inline custom properties. */
+.cd {
+  --cd-accent: #b42318;
+  --cd-accent-text: #a11f15;
+  --cd-on-accent: #ffffff;
+  --cd-surface: #ffffff;
+  --cd-sunk: #f4f3f8;
+  --cd-text: #16121f;
+  --cd-muted: #4d4a57;
+  --cd-line: #c9c4d6;
+  display: block;
+  background: var(--cd-surface);
+  color: var(--cd-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.cd,
+.cd *,
+.cd *::before,
+.cd *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .cd--theme-system {
+    --cd-surface: #1c1826;
+    --cd-sunk: #221d2e;
+    --cd-text: #f6f5fa;
+    --cd-muted: #b6b3c2;
+    --cd-line: #4a4459;
+  }
+}
+
+.cd-trigger,
+.cd-confirm {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--cd-accent);
+  color: var(--cd-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cd-trigger:focus-visible,
+.cd-confirm:focus-visible,
+.cd-cancel:focus-visible,
+.cd-field:focus-visible { outline: 2px solid var(--cd-accent-text); outline-offset: 2px; }
+.cd-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cd-dialog {
+  /* Tailwind's reset sets margin: 0, which cancels the browser's dialog centring; restate it. */
+  margin: auto;
+  width: min(28rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--cd-line);
+  border-radius: 0.75rem;
+  background: var(--cd-surface);
+  color: var(--cd-text);
+}
+.cd-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.cd-title { margin: 0; font-size: 1.125rem; }
+.cd-message { margin: 0.5rem 0 0; color: var(--cd-muted); font-size: 0.875rem; }
+
+.cd-group { margin-top: 1rem; }
+.cd-label { display: block; font-size: 0.875rem; font-weight: 500; }
+.cd-field {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--cd-line);
+  border-radius: 0.375rem;
+  background: var(--cd-sunk);
+  color: var(--cd-text);
+  font: inherit;
+}
+.cd-hint { margin: 0.25rem 0 0; color: var(--cd-muted); font-size: 0.875rem; }
+
+.cd-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem; }
+.cd-cancel {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--cd-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cd-status { margin: 0.75rem 0 0; color: var(--cd-muted); font-size: 0.875rem; min-height: 1.5rem; }

@@ -1,0 +1,94 @@
+/* Unsaved changes guard — plain CSS. Colours come from the inline custom properties. */
+.uc {
+  --uc-accent: #1d4ed8;
+  --uc-accent-text: #1a46c2;
+  --uc-on-accent: #ffffff;
+  --uc-surface: #ffffff;
+  --uc-sunk: #f4f3f8;
+  --uc-text: #16121f;
+  --uc-muted: #4d4a57;
+  --uc-line: #c9c4d6;
+  display: block;
+  background: var(--uc-surface);
+  color: var(--uc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.uc,
+.uc *,
+.uc *::before,
+.uc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .uc--theme-system {
+    --uc-surface: #1c1826;
+    --uc-sunk: #221d2e;
+    --uc-text: #f6f5fa;
+    --uc-muted: #b6b3c2;
+    --uc-line: #4a4459;
+  }
+}
+
+.uc-label { display: block; font-size: 0.875rem; font-weight: 500; }
+.uc-field {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--uc-line);
+  border-radius: 0.375rem;
+  background: var(--uc-sunk);
+  color: var(--uc-text);
+  font: inherit;
+}
+.uc-field:focus-visible { outline: 2px solid var(--uc-accent-text); outline-offset: 2px; }
+.uc-dirty { margin: 0.25rem 0 0; color: var(--uc-muted); font-size: 0.875rem; }
+
+.uc-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.uc-save,
+.uc-stay {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--uc-accent);
+  color: var(--uc-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.uc-leave,
+.uc-discard {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--uc-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.uc-save:focus-visible,
+.uc-leave:focus-visible,
+.uc-stay:focus-visible,
+.uc-discard:focus-visible { outline: 2px solid var(--uc-accent-text); outline-offset: 2px; }
+
+.uc-dialog {
+  /* Tailwind's reset sets margin: 0, which cancels the browser's dialog centring; restate it. */
+  margin: auto;
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--uc-line);
+  border-radius: 0.75rem;
+  background: var(--uc-surface);
+  color: var(--uc-text);
+}
+.uc-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.uc-title { margin: 0; font-size: 1.125rem; }
+.uc-message { margin: 0.5rem 0 0; color: var(--uc-muted); font-size: 0.875rem; }
+.uc-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem; }
+
+.uc-status { margin: 0.75rem 0 0; color: var(--uc-muted); font-size: 0.875rem; min-height: 1.5rem; }

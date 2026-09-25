@@ -157,6 +157,21 @@ import { renderDataGridHtml } from "../registry/data-grid/vanilla/render";
 import { kanbanSchema } from "../registry/kanban/schema";
 import type { KanbanConfig } from "../registry/kanban/react/kanban";
 import { renderKanbanHtml } from "../registry/kanban/vanilla/render";
+import { confirmDialogSchema } from "../registry/confirm-dialog/schema";
+import type { ConfirmDialogConfig } from "../registry/confirm-dialog/react/confirm-dialog";
+import { renderConfirmDialogHtml } from "../registry/confirm-dialog/vanilla/render";
+import { sessionTimeoutSchema } from "../registry/session-timeout/schema";
+import type { SessionTimeoutConfig } from "../registry/session-timeout/react/session-timeout";
+import { renderSessionTimeoutHtml } from "../registry/session-timeout/vanilla/render";
+import { unsavedChangesSchema } from "../registry/unsaved-changes/schema";
+import type { UnsavedChangesConfig } from "../registry/unsaved-changes/react/unsaved-changes";
+import { renderUnsavedChangesHtml } from "../registry/unsaved-changes/vanilla/render";
+import { offlineBannerSchema } from "../registry/offline-banner/schema";
+import type { OfflineBannerConfig } from "../registry/offline-banner/react/offline-banner";
+import { renderOfflineBannerHtml } from "../registry/offline-banner/vanilla/render";
+import { shortcutHelpSchema } from "../registry/shortcut-help/schema";
+import type { ShortcutHelpConfig } from "../registry/shortcut-help/react/shortcut-help";
+import { renderShortcutHelpHtml } from "../registry/shortcut-help/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -697,6 +712,51 @@ export const components: Record<
     variants: {
       default: "",
       quiet: "showCounts=false&allowDrag=false&theme=dark",
+    },
+  },
+  "confirm-dialog": {
+    exportName: "ConfirmDialog",
+    schema: confirmDialogSchema,
+    renderHtml: (config) => renderConfirmDialogHtml(config as unknown as ConfirmDialogConfig),
+    variants: {
+      default: "",
+      plain: "requirePhrase=false&theme=dark&title=Sign+out+of+every+device%3F&confirmText=Sign+out+everywhere",
+    },
+  },
+  "session-timeout": {
+    exportName: "SessionTimeout",
+    schema: sessionTimeoutSchema,
+    renderHtml: (config) => renderSessionTimeoutHtml(config as unknown as SessionTimeoutConfig),
+    variants: {
+      default: "",
+      quick: "idleSeconds=5&countdownSeconds=10&showTrigger=false&theme=dark",
+    },
+  },
+  "unsaved-changes": {
+    exportName: "UnsavedChanges",
+    schema: unsavedChangesSchema,
+    renderHtml: (config) => renderUnsavedChangesHtml(config as unknown as UnsavedChangesConfig),
+    variants: {
+      default: "",
+      quiet: "warnOnReload=false&theme=dark&leaveText=Close+editor",
+    },
+  },
+  "offline-banner": {
+    exportName: "OfflineBanner",
+    schema: offlineBannerSchema,
+    renderHtml: (config) => renderOfflineBannerHtml(config as unknown as OfflineBannerConfig),
+    variants: {
+      default: "",
+      inline: "position=inline&showRetry=false&theme=dark",
+    },
+  },
+  "shortcut-help": {
+    exportName: "ShortcutHelp",
+    schema: shortcutHelpSchema,
+    renderHtml: (config) => renderShortcutHelpHtml(config as unknown as ShortcutHelpConfig),
+    variants: {
+      default: "",
+      slash: "openKey=%2F&showTrigger=false&theme=dark&hint=Press+%2F+to+bring+this+back.",
     },
   },
 };

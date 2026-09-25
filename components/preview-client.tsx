@@ -107,6 +107,16 @@ import { DataGrid, type DataGridConfig } from "@/registry/data-grid/react/data-g
 
 import { Kanban, type KanbanConfig } from "@/registry/kanban/react/kanban";
 
+import { ConfirmDialog, type ConfirmDialogConfig } from "@/registry/confirm-dialog/react/confirm-dialog";
+
+import { SessionTimeout, type SessionTimeoutConfig } from "@/registry/session-timeout/react/session-timeout";
+
+import { UnsavedChanges, type UnsavedChangesConfig } from "@/registry/unsaved-changes/react/unsaved-changes";
+
+import { OfflineBanner, type OfflineBannerConfig } from "@/registry/offline-banner/react/offline-banner";
+
+import { ShortcutHelp, type ShortcutHelpConfig } from "@/registry/shortcut-help/react/shortcut-help";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -276,6 +286,11 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "filter-bar" && <FilterBar config={config as unknown as FilterBarConfig} />}
         {slug === "data-grid" && <DataGrid config={config as unknown as DataGridConfig} />}
         {slug === "kanban" && <Kanban config={config as unknown as KanbanConfig} />}
+        {slug === "confirm-dialog" && <ConfirmDialog config={config as unknown as ConfirmDialogConfig} />}
+        {slug === "session-timeout" && <SessionTimeout config={config as unknown as SessionTimeoutConfig} />}
+        {slug === "unsaved-changes" && <UnsavedChanges config={config as unknown as UnsavedChangesConfig} />}
+        {slug === "offline-banner" && <OfflineBanner config={config as unknown as OfflineBannerConfig} />}
+        {slug === "shortcut-help" && <ShortcutHelp config={config as unknown as ShortcutHelpConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

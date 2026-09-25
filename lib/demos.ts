@@ -293,4 +293,36 @@ export const demos: Record<string, Demo> = {
       { find: "[data-move='1']:not([hidden])", action: "click", after: 1400 },
     ],
   },
+  "confirm-dialog": {
+    how: "The confirm button is really disabled until the phrase matches; Escape cancels and focus returns to the trigger.",
+    steps: [
+      { find: "[data-trigger], button[aria-haspopup=dialog]", action: "click", after: 700 },
+      { find: "[data-field], dialog input", action: "type", value: "DELETE", after: 1500 },
+    ],
+  },
+  "session-timeout": {
+    how: "After a quiet stretch it warns, counts down, announces 30/20/10/5 seconds and puts focus on Stay signed in.",
+    steps: [
+      { find: "[data-trigger], button", action: "click", after: 2200 },
+    ],
+  },
+  "unsaved-changes": {
+    how: "Typing marks the form unsaved; leaving then opens a dialog where Escape keeps editing rather than discarding.",
+    steps: [
+      { find: "[data-field], textarea", action: "type", value: "Half a thought", after: 900 },
+      { find: "[data-leave], button:nth-of-type(2)", action: "click", after: 1500 },
+    ],
+  },
+  "offline-banner": {
+    how: "It follows the browser's online and offline events into a polite status region, and only says \u201cback online\u201d after a drop.",
+    steps: [
+      { find: "[data-toggle], button", action: "click", after: 1600 },
+    ],
+  },
+  "shortcut-help": {
+    how: "? opens the sheet from anywhere but never from inside a field; keys are real kbd elements in a description list.",
+    steps: [
+      { find: "[data-trigger], button[aria-haspopup=dialog]", action: "click", after: 1600 },
+    ],
+  },
 };

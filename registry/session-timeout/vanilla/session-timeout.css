@@ -1,0 +1,77 @@
+/* Session timeout warning — plain CSS. Colours come from the inline custom properties. */
+.st {
+  --st-accent: #1d4ed8;
+  --st-accent-text: #1a46c2;
+  --st-on-accent: #ffffff;
+  --st-surface: #ffffff;
+  --st-sunk: #f4f3f8;
+  --st-text: #16121f;
+  --st-muted: #4d4a57;
+  --st-line: #c9c4d6;
+  display: block;
+  background: var(--st-surface);
+  color: var(--st-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.st,
+.st *,
+.st *::before,
+.st *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .st--theme-system {
+    --st-surface: #1c1826;
+    --st-sunk: #221d2e;
+    --st-text: #f6f5fa;
+    --st-muted: #b6b3c2;
+    --st-line: #4a4459;
+  }
+}
+
+.st-trigger,
+.st-out {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--st-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.st-stay {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--st-accent);
+  color: var(--st-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.st-trigger:focus-visible,
+.st-out:focus-visible,
+.st-stay:focus-visible { outline: 2px solid var(--st-accent-text); outline-offset: 2px; }
+
+.st-dialog {
+  /* Tailwind's reset sets margin: 0, which cancels the browser's dialog centring; restate it. */
+  margin: auto;
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--st-line);
+  border-radius: 0.75rem;
+  background: var(--st-surface);
+  color: var(--st-text);
+}
+.st-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.st-title { margin: 0; font-size: 1.125rem; }
+.st-message { margin: 0.5rem 0 0; color: var(--st-muted); font-size: 0.875rem; }
+.st-clock { margin: 0.75rem 0 0; font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.st-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem; }
+.st-status { margin: 0.75rem 0 0; color: var(--st-muted); font-size: 0.875rem; min-height: 1.5rem; }

@@ -171,6 +171,21 @@ import { renderDataGridHtml } from "@/registry/data-grid/vanilla/render";
 import { kanbanSchema } from "@/registry/kanban/schema";
 import * as kanbanDocs from "@/registry/kanban/docs";
 import { renderKanbanHtml } from "@/registry/kanban/vanilla/render";
+import { confirmDialogSchema } from "@/registry/confirm-dialog/schema";
+import * as confirmDialogDocs from "@/registry/confirm-dialog/docs";
+import { renderConfirmDialogHtml } from "@/registry/confirm-dialog/vanilla/render";
+import { sessionTimeoutSchema } from "@/registry/session-timeout/schema";
+import * as sessionTimeoutDocs from "@/registry/session-timeout/docs";
+import { renderSessionTimeoutHtml } from "@/registry/session-timeout/vanilla/render";
+import { unsavedChangesSchema } from "@/registry/unsaved-changes/schema";
+import * as unsavedChangesDocs from "@/registry/unsaved-changes/docs";
+import { renderUnsavedChangesHtml } from "@/registry/unsaved-changes/vanilla/render";
+import { offlineBannerSchema } from "@/registry/offline-banner/schema";
+import * as offlineBannerDocs from "@/registry/offline-banner/docs";
+import { renderOfflineBannerHtml } from "@/registry/offline-banner/vanilla/render";
+import { shortcutHelpSchema } from "@/registry/shortcut-help/schema";
+import * as shortcutHelpDocs from "@/registry/shortcut-help/docs";
+import { renderShortcutHelpHtml } from "@/registry/shortcut-help/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -578,6 +593,41 @@ export const registry = {
     schema: kanbanSchema,
     ...kanbanDocs,
     renderHtml: (config) => renderKanbanHtml(config as never),
+  },
+  "confirm-dialog": {
+    title: "Typed confirmation",
+    description: "A destructive confirm dialog that asks you to type the phrase.",
+    schema: confirmDialogSchema,
+    ...confirmDialogDocs,
+    renderHtml: (config) => renderConfirmDialogHtml(config as never),
+  },
+  "session-timeout": {
+    title: "Session timeout",
+    description: "An idle warning with a countdown and a way to stay signed in.",
+    schema: sessionTimeoutSchema,
+    ...sessionTimeoutDocs,
+    renderHtml: (config) => renderSessionTimeoutHtml(config as never),
+  },
+  "unsaved-changes": {
+    title: "Unsaved changes guard",
+    description: "A guard that asks before leaving a form with unsaved text.",
+    schema: unsavedChangesSchema,
+    ...unsavedChangesDocs,
+    renderHtml: (config) => renderUnsavedChangesHtml(config as never),
+  },
+  "offline-banner": {
+    title: "Offline banner",
+    description: "A polite offline notice with a retry and a back-online line.",
+    schema: offlineBannerSchema,
+    ...offlineBannerDocs,
+    renderHtml: (config) => renderOfflineBannerHtml(config as never),
+  },
+  "shortcut-help": {
+    title: "Shortcut help",
+    description: "A keyboard shortcut sheet that opens on ? and stays out of fields.",
+    schema: shortcutHelpSchema,
+    ...shortcutHelpDocs,
+    renderHtml: (config) => renderShortcutHelpHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

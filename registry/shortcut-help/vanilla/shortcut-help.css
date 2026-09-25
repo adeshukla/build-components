@@ -1,0 +1,114 @@
+/* Keyboard shortcut help — plain CSS. Colours come from the inline custom properties. */
+.sh {
+  --sh-accent: #0f766e;
+  --sh-accent-text: #0b5a54;
+  --sh-on-accent: #ffffff;
+  --sh-surface: #ffffff;
+  --sh-sunk: #f4f3f8;
+  --sh-text: #16121f;
+  --sh-muted: #4d4a57;
+  --sh-line: #c9c4d6;
+  display: block;
+  background: var(--sh-surface);
+  color: var(--sh-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sh,
+.sh *,
+.sh *::before,
+.sh *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sh--theme-system {
+    --sh-surface: #1c1826;
+    --sh-sunk: #221d2e;
+    --sh-text: #f6f5fa;
+    --sh-muted: #b6b3c2;
+    --sh-line: #4a4459;
+  }
+}
+
+.sh-trigger {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--sh-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sh-trigger:focus-visible,
+.sh-close:focus-visible { outline: 2px solid var(--sh-accent-text); outline-offset: 2px; }
+
+.sh-key {
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--sh-line);
+  border-radius: 0.25rem;
+  background: var(--sh-sunk);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.75rem;
+}
+.sh-trigger .sh-key { margin-left: 0.5rem; }
+.sh-then { margin: 0 0.25rem; color: var(--sh-muted); font-size: 0.875rem; }
+
+.sh-dialog {
+  /* Tailwind's reset sets margin: 0, which cancels the browser's dialog centring; restate it. */
+  margin: auto;
+  width: min(32rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--sh-line);
+  border-radius: 0.75rem;
+  background: var(--sh-surface);
+  color: var(--sh-text);
+}
+.sh-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+
+.sh-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.sh-title { margin: 0; font-size: 1.125rem; }
+.sh-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -0.25rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: none;
+  color: var(--sh-muted);
+  cursor: pointer;
+}
+.sh-close:hover { background: var(--sh-sunk); }
+.sh-close svg { width: 1.25rem; height: 1.25rem; }
+
+.sh-list { display: grid; gap: 0.5rem; margin: 1rem 0 0; }
+.sh-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--sh-line);
+}
+.sh-row:last-child { border-bottom: 0; }
+.sh-row dt { flex-shrink: 0; }
+.sh-row dd { margin: 0; color: var(--sh-muted); font-size: 0.875rem; text-align: right; }
+
+.sh-hint { margin: 1rem 0 0; color: var(--sh-muted); font-size: 0.875rem; }
+
+.sh-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
