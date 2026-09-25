@@ -80,3 +80,7 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Safari only Tabs to links when the user turns that setting on. Test link focus with `.focus()`, not with Tab.
 - Tests must wait for hydration before typing into React output: use `open()` from `e2e/helpers.ts`.
 - Any accent used as *text* has to be darkened/lightened first (`readableAccent`), or WCAG contrast fails. iOS blue on white is only 3.9:1.
+- Safari does not focus a button when it is clicked, so a dialog must be told which element opened it rather than reading `document.activeElement`; and focus cannot leave a modal dialog that is still open, so close it before moving focus.
+- A count spaced with a margin reads as "To do(2)". Put the space in the text.
+- Under a full test run the dev server occasionally answers one page with a truncated payload (`Uncaught SyntaxError: Unexpected end of JSON input`, empty frame). It is dev-only: the same suites pass against `next build && next start`. Rerun before believing it.
+- Data attributes a vanilla script reads must not collide with attributes on other elements: `root.querySelector("[data-title]")` will happily find a list item before the heading (this bit the wizard). Prefix them.

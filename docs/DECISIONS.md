@@ -292,3 +292,55 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 - **Skeleton:** one polite status saying what is loading; the shapes are hidden from screen readers rather than read as empty boxes.
 - **Avatar group:** the "+3" circle names the people it stands for. Tints are picked so the initials keep 4.5:1, and a name always gets the same tint on the server and in the browser.
 - **Badges:** the words carry the state; colour and dot only repeat it.
+
+## 2026-09-25 — D50. Batch B: the fields people actually need
+**Decision:** Tag input, quantity stepper, currency input, phone input, inline edit, colour picker.
+**Notable choices:**
+- **Tag input:** tags are a labelled list with a remove button each, not a row of divs; removing one hands focus to the next tag, or back to the field when the last one goes.
+- **Currency input:** the typed text stays exactly as typed; a hidden field carries the value the server should read, so nothing is reformatted under the cursor.
+- **Phone input:** the country is a real select next to the number, so it is reachable and readable, rather than a flag that only a pointer can change.
+- **Inline edit:** the button becomes a field and back; focus follows both ways, and Escape restores the old value.
+
+## 2026-09-25 — D51. Batch C: the awkward ones
+**Decision:** Back to top, reading progress, language switcher, filter bar, data grid, kanban board.
+**Notable choices:**
+- **Reading progress:** the bar is a progressbar with a percentage in words, the contents list marks the current heading with `aria-current`, and the last section becomes current once the page cannot scroll further — otherwise the final heading never is.
+- **Data grid:** `aria-sort` on the sorted column, a status line saying what was sorted (the rows move silently otherwise), columns that resize with the arrow keys as well as by dragging (WCAG 2.5.7), and a scrolling wrapper that takes focus so it can be scrolled without a pointer.
+- **Kanban:** cards move with buttons that name their destination; dragging is the extra, never the only way. Focus follows the card into its new column and the move is announced with its position.
+- **Filter bar:** chips are `aria-pressed` toggles; removing a pill returns focus to the chip it came from.
+
+## 2026-09-25 — D52. Batch D: the guards nobody ships in time
+**Decision:** Typed confirmation, session timeout, unsaved changes guard, offline banner, shortcut help.
+**Notable choices:**
+- **Typed confirmation:** the destructive button is really disabled until the phrase matches exactly, and the hint says what will turn it on.
+- **Session timeout:** Escape means stay, never sign out; the clock is `aria-hidden` and the time left is announced at 30, 20, 10 and 5 seconds, which is enough to act on without talking over anyone (WCAG 2.2.1).
+- **Unsaved changes:** the dialog only appears while there is something to lose, and Escape keeps editing. `beforeunload` covers closing the tab; the browser writes that wording.
+- **Offline banner:** a polite status region rather than an alert, sticky rather than fixed so it keeps its own space, and a retry button because `navigator.onLine` only knows about the network, not about your server.
+- **Shortcut help:** `?` opens it from anywhere except inside a field, modifier combinations are left alone, and there is a visible button as well (WCAG 2.1.4).
+
+## 2026-09-25 — D53. Batch E: the sections every product site needs
+**Decision:** Pricing table, stats tiles, activity timeline, comment thread, product card.
+**Notable choices:**
+- **No invented numbers anywhere:** prices, changes and stock are printed exactly as entered. The pricing table works out no discounts; the stats tiles have no made-up percentages.
+- **Pricing table:** the billing cycle is a radio group, not a switch, and changing it says which prices are showing, because every price on the page changes at once.
+- **Stats tiles:** a description list where the change is written in words, so red and green are never the only difference.
+- **Timeline:** an ordered list with real `time` elements; older entries arrive behind a button that says how many, and focus lands on the first of them.
+- **Product card:** variants are fieldsets of radios, out of stock is said in words as well as drawn, and Add waits for a pick in every group while a status line says which group is missing.
+
+## 2026-09-25 — D54. Batch F: the fiddly four
+**Decision:** Signature pad, countdown, code block, toolbar.
+**Notable choices:**
+- **Signature pad:** typing the name is a full alternative, not a fallback — a canvas cannot be drawn on with a keyboard, and without it the part fails WCAG 2.1.1 outright.
+- **Countdown:** the digits tick every second but are `aria-hidden`; what is announced changes only when the coarse reading does. The time left is worked out in the browser, never rendered on the server where it would already be wrong.
+- **Code block:** the clipboard can be refused (a sandboxed frame, no permission), so the fallback selects the code and says which keys to press instead of claiming it copied. Line numbers are decoration and never travel with the text.
+- **Toolbar:** the APG toolbar pattern — one tab stop for the whole bar, arrow keys inside it, Home and End to the ends, and the stop following whatever was used last.
+
+## 2026-09-25 — D55. Batch G: the two flows
+**Decision:** Booking slots and a multi-step wizard.
+**Notable choices:**
+- **Booking slots:** one radio group across every day, because picking a time is one choice however many days it spans. Taken slots are disabled and say so, how many are free is said up front, and every announcement carries the day as well as the time.
+- **Wizard:** each step moves focus to its own heading — a step is a new page as far as a screen reader is concerned — the position is in the heading text ("Step 2 of 4"), validation happens per step with the message in an alert and focus on the field, and going back keeps every answer.
+
+## 2026-09-25 — D56. Safari, dialogs and focus
+**Decision:** Every dialog closes itself before handing focus back, and remembers its opener from the click rather than from `document.activeElement`.
+**Why:** Safari does not focus a button when it is clicked, so `document.activeElement` is the body there; and focus cannot leave a modal dialog that is still open, which Safari enforces even when React has already re-rendered. Both bit three of the Batch D parts in WebKit and on the iPhone.

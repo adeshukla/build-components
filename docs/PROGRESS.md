@@ -1,8 +1,8 @@
 # Progress
 
-Last updated: 2026-09-22 (session 8)
+Last updated: 2026-09-25 (session 9)
 
-## Current status (session 8)
+## Current status (session 9)
 
 ### How Adesh can test
 ```
@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The forty-five parts, all in stock
+### The seventy-three parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -64,6 +64,58 @@ Open http://localhost:3000.
 | **Doldrums** | Empty state | Heading + actions |
 | **Crew** | Avatar group | Labelled list of images |
 | **Burgee** | Badges | List of labelled pills |
+
+| **Netting** | Tag input | Field + labelled chip list |
+| **Winch** | Quantity stepper | Number input + buttons |
+| **Doubloon** | Currency input | Text input + hidden value |
+| **Hailer** | Phone input | Select + tel input |
+| **Quill** | Inline edit | Button to field, with focus moves |
+| **Pigment** | Colour picker | Radio group + native colour input |
+| **Windlass** | Back to top | Button + focus move |
+| **Logline** | Reading progress | role=progressbar + aria-current |
+| **Parley** | Language switcher | Disclosure + links |
+| **Sieve** | Filter bar | Toggle buttons + status |
+| **Ledger** | Data grid | Table + sort + resize |
+| **Bosun** | Kanban board | Board + move buttons |
+| **Bulwark** | Typed confirmation | Modal dialog + guard |
+| **Hourglass** | Session timeout | Timed modal dialog |
+| **Ledgerlock** | Unsaved changes guard | Dirty state + dialog |
+| **Foghorn** | Offline banner | Network status region |
+| **Keyring** | Shortcut help | Modal dialog + hotkey |
+| **Tariff** | Pricing table | Radio group + cards |
+| **Cross-staff** | Stats tiles | Description list |
+| **Watchlog** | Activity timeline | Ordered list + reveal |
+| **Wardroom** | Comment thread | List + form |
+| **Chandler** | Product card | Fieldsets + guarded action |
+| **Inkwell** | Signature pad | Canvas + typed alternative |
+| **Cipherstone** | Code block | Clipboard + status |
+| **Binnacle** | Toolbar | APG toolbar |
+| **Glass** | Countdown | Timer + polite status |
+| **Berth** | Booking slots | Grouped radio group |
+| **Coxswain** | Multi-step wizard | Steps + per-step validation |
+
+### Session 9, part 2 (2026-09-25): twenty-eight more parts, batches B to G (D50-D55)
+Adesh asked for at least thirty more parts, the everyday ones and the ones that are hard to find done properly. Twenty-eight arrived in this half of the session (thirty-six counting Batch A), each with both outputs, a schema, a keyboard map, a manual checklist, a hover demo and its own cross-browser spec.
+
+- **Batch B — fields people actually need (D50):** tag input, quantity stepper, currency input, phone input, inline edit, colour picker.
+- **Batch C — the awkward ones (D51):** back to top, reading progress, language switcher, filter bar, data grid (frozen header, sortable columns, columns that resize by arrow key), kanban board (cards that move by button, not only by drag).
+- **Batch D — the guards nobody ships in time (D52):** typed confirmation, session timeout, unsaved changes guard, offline banner, shortcut help.
+- **Batch E — the sections every product site needs (D53):** pricing table, stats tiles, activity timeline, comment thread, product card with variants.
+- **Batch F — the fiddly four (D54):** signature pad, countdown, code block, toolbar.
+- **Batch G — the two flows (D55):** booking slots, multi-step wizard.
+
+Bugs found and fixed along the way, each of which would have shipped:
+- **Reading progress never marked the last section.** At the bottom of a page the final heading can still sit below the line, so nothing was ever current. It now marks the last one once there is no more to scroll.
+- **The data grid's scrolling wrapper could not be scrolled without a pointer** (axe `scrollable-region-focusable` on the phone). It takes focus now and is named by the caption.
+- **Safari would not hand focus back from three dialogs.** Safari does not focus a button when it is clicked, so "where focus came from" has to be passed in rather than read from `document.activeElement`; and focus cannot leave a modal dialog that is still open, so the dialog is closed before focus is moved.
+- **The offline banner was fixed to the top** and covered the page on a phone. It is sticky now, so it keeps its own space.
+- **Two headings read as "To do(2)" and "Comments(3)"** because the count was spaced with a margin. The space is part of the text now.
+- **The wizard's plain script rewrote the wrong element:** `data-title` and `data-label` matched the step list before the heading. Its step data attributes are prefixed now.
+- **Seven new parts had borrowed a codename** already in use, which collided two test titles.
+
+Verified: the full suite across chromium, WebKit and an emulated iPhone, plus `e2e/editor.spec.ts` (every part in the real editor, both outputs, no console errors) and `e2e/home.spec.ts` (every part has its hover explanation). A production build was made and the editor and home suites were run against it as well: 77 passing, and none of the dev-server noise (see the gotcha below).
+
+**New gotcha:** under a full test run the dev server occasionally answers one page with a truncated payload — the browser reports `Uncaught SyntaxError: Unexpected end of JSON input` and that page renders empty. It is a dev-only artefact: the same suites pass cleanly against `next build && next start`. If a single editor test fails with an empty frame, rerun it before believing it.
 
 ### Session 9 (2026-09-25): live card previews and Batch A (D48, D49)
 - **Hover previews (D48):** every catalogue card now opens a panel running the real exported React output in a frame, plays a short script of the part being used, and says in one line how it works. `lib/demos.ts` holds both. The panel is inert, so the frame can never trap focus, and the script does not run for anyone asking for less motion. `e2e/home.spec.ts` keeps every part supplied with an explanation.
@@ -161,10 +213,9 @@ Adesh was right that the tests proved behaviour and never looked at the result. 
 - **The form's two columns did not line up** and every problem was said twice.
 All fixed. `e2e/layout.spec.ts` now runs those checks on every component, in both outputs, at three widths (D37), so none of it can come back quietly. 928 tests passing.
 
-### Still to build (D45 order)
-- **Tier 3 (quick wins):** switch · rating · alert banner · skeleton · empty state · avatar group · segmented toggle.
-- **Later:** a kanban board on top of Muster.
-- **Moved down:** pricing table, stats, timeline (page sections with little accessibility work in them).
+### Still to build
+- Nothing queued. Seventy-three parts are in stock; the batches Adesh asked for (A to G) are all done.
+- Ideas not started: audio or video player (needs a hosted media file, which the CSP would have to allow), before/after image compare, charts (would need real data, not invented numbers).
 
 ### In progress
 Nothing half-finished.
