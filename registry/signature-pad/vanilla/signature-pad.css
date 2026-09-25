@@ -1,0 +1,91 @@
+/* Signature pad — plain CSS. Colours come from the inline custom properties. */
+.sp {
+  --sp-accent: #1d4ed8;
+  --sp-accent-text: #1a46c2;
+  --sp-on-accent: #ffffff;
+  --sp-surface: #ffffff;
+  --sp-sunk: #f4f3f8;
+  --sp-text: #16121f;
+  --sp-muted: #4d4a57;
+  --sp-line: #c9c4d6;
+  display: block;
+  background: var(--sp-surface);
+  color: var(--sp-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sp,
+.sp *,
+.sp *::before,
+.sp *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sp--theme-system {
+    --sp-surface: #141019;
+    --sp-sunk: #221d2e;
+    --sp-text: #f6f5fa;
+    --sp-muted: #b6b3c2;
+    --sp-line: #4a4459;
+  }
+}
+
+.sp-label { margin: 0; font-size: 0.875rem; font-weight: 500; }
+.sp-hint { margin: 0; color: var(--sp-muted); font-size: 0.875rem; }
+
+.sp-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 600 / 180;
+  margin-top: 0.5rem;
+  border: 1px solid var(--sp-line);
+  border-radius: 0.5rem;
+  background: var(--sp-sunk);
+  touch-action: none;
+}
+
+.sp-typed-group { margin-top: 0.75rem; }
+.sp-typed-label { display: block; font-size: 0.875rem; font-weight: 500; }
+.sp-typed {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--sp-line);
+  border-radius: 0.375rem;
+  background: var(--sp-sunk);
+  color: var(--sp-text);
+  font: inherit;
+}
+.sp-typed:focus-visible { outline: 2px solid var(--sp-accent-text); outline-offset: 2px; }
+
+.sp-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.sp-clear {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--sp-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sp-confirm {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--sp-accent);
+  color: var(--sp-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sp-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+.sp-clear:focus-visible,
+.sp-confirm:focus-visible { outline: 2px solid var(--sp-accent-text); outline-offset: 2px; }
+
+.sp-status { margin: 0.5rem 0 0; color: var(--sp-muted); font-size: 0.875rem; min-height: 1.5rem; }

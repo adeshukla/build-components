@@ -1,0 +1,61 @@
+/* Toolbar — plain CSS. Colours come from the inline custom properties. */
+.tb {
+  --tb-accent: #1d4ed8;
+  --tb-accent-text: #1a46c2;
+  --tb-on-accent: #ffffff;
+  --tb-surface: #ffffff;
+  --tb-sunk: #f4f3f8;
+  --tb-text: #16121f;
+  --tb-muted: #4d4a57;
+  --tb-line: #c9c4d6;
+  display: block;
+  background: var(--tb-surface);
+  color: var(--tb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.tb,
+.tb *,
+.tb *::before,
+.tb *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tb--theme-system {
+    --tb-surface: #141019;
+    --tb-sunk: #221d2e;
+    --tb-text: #f6f5fa;
+    --tb-muted: #b6b3c2;
+    --tb-line: #4a4459;
+  }
+}
+
+.tb-bar {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--tb-line);
+  border-radius: 0.5rem;
+  background: var(--tb-sunk);
+}
+.tb-bar[aria-orientation="vertical"] { flex-direction: column; flex-wrap: nowrap; }
+
+.tb-item {
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.tb-item:focus-visible { outline: 2px solid var(--tb-accent-text); outline-offset: 2px; }
+.tb-item[aria-pressed="true"] { border-color: var(--tb-accent); background: var(--tb-accent); color: var(--tb-on-accent); }
+
+.tb-status { margin: 0.5rem 0 0; color: var(--tb-muted); font-size: 0.875rem; min-height: 1.5rem; }

@@ -201,6 +201,18 @@ import { renderCommentThreadHtml } from "@/registry/comment-thread/vanilla/rende
 import { productCardSchema } from "@/registry/product-card/schema";
 import * as productCardDocs from "@/registry/product-card/docs";
 import { renderProductCardHtml } from "@/registry/product-card/vanilla/render";
+import { signaturePadSchema } from "@/registry/signature-pad/schema";
+import * as signaturePadDocs from "@/registry/signature-pad/docs";
+import { renderSignaturePadHtml } from "@/registry/signature-pad/vanilla/render";
+import { codeBlockSchema } from "@/registry/code-block/schema";
+import * as codeBlockDocs from "@/registry/code-block/docs";
+import { renderCodeBlockHtml } from "@/registry/code-block/vanilla/render";
+import { toolbarSchema } from "@/registry/toolbar/schema";
+import * as toolbarDocs from "@/registry/toolbar/docs";
+import { renderToolbarHtml } from "@/registry/toolbar/vanilla/render";
+import { countdownSchema } from "@/registry/countdown/schema";
+import * as countdownDocs from "@/registry/countdown/docs";
+import { renderCountdownHtml } from "@/registry/countdown/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -678,6 +690,34 @@ export const registry = {
     schema: productCardSchema,
     ...productCardDocs,
     renderHtml: (config) => renderProductCardHtml(config as never),
+  },
+  "signature-pad": {
+    title: "Signature pad",
+    description: "A signature canvas with a typed name as a real alternative.",
+    schema: signaturePadSchema,
+    ...signaturePadDocs,
+    renderHtml: (config) => renderSignaturePadHtml(config as never),
+  },
+  "code-block": {
+    title: "Code block",
+    description: "A copyable code block with a fallback when the clipboard is refused.",
+    schema: codeBlockSchema,
+    ...codeBlockDocs,
+    renderHtml: (config) => renderCodeBlockHtml(config as never),
+  },
+  "toolbar": {
+    title: "Toolbar",
+    description: "A toolbar with one tab stop and arrow-key navigation.",
+    schema: toolbarSchema,
+    ...toolbarDocs,
+    renderHtml: (config) => renderToolbarHtml(config as never),
+  },
+  "countdown": {
+    title: "Countdown",
+    description: "A countdown whose announcements do not talk over the reader.",
+    schema: countdownSchema,
+    ...countdownDocs,
+    renderHtml: (config) => renderCountdownHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

@@ -187,6 +187,18 @@ import { renderCommentThreadHtml } from "../registry/comment-thread/vanilla/rend
 import { productCardSchema } from "../registry/product-card/schema";
 import type { ProductCardConfig } from "../registry/product-card/react/product-card";
 import { renderProductCardHtml } from "../registry/product-card/vanilla/render";
+import { signaturePadSchema } from "../registry/signature-pad/schema";
+import type { SignaturePadConfig } from "../registry/signature-pad/react/signature-pad";
+import { renderSignaturePadHtml } from "../registry/signature-pad/vanilla/render";
+import { codeBlockSchema } from "../registry/code-block/schema";
+import type { CodeBlockConfig } from "../registry/code-block/react/code-block";
+import { renderCodeBlockHtml } from "../registry/code-block/vanilla/render";
+import { toolbarSchema } from "../registry/toolbar/schema";
+import type { ToolbarConfig } from "../registry/toolbar/react/toolbar";
+import { renderToolbarHtml } from "../registry/toolbar/vanilla/render";
+import { countdownSchema } from "../registry/countdown/schema";
+import type { CountdownConfig } from "../registry/countdown/react/countdown";
+import { renderCountdownHtml } from "../registry/countdown/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -817,6 +829,43 @@ export const components: Record<
     variants: {
       default: "",
       plain: "showPrice=false&theme=dark&addText=Add+to+basket",
+    },
+  },
+  "signature-pad": {
+    exportName: "SignaturePad",
+    schema: signaturePadSchema,
+    renderHtml: (config) => renderSignaturePadHtml(config as unknown as SignaturePadConfig),
+    variants: {
+      default: "",
+      drawonly: "typedAlternative=false&theme=dark&label=Sign+the+delivery+note",
+    },
+  },
+  "code-block": {
+    exportName: "CodeBlock",
+    schema: codeBlockSchema,
+    renderHtml: (config) => renderCodeBlockHtml(config as unknown as CodeBlockConfig),
+    variants: {
+      default: "",
+      plain: "showLineNumbers=false&wrapToggle=false&theme=light&title=curl.txt",
+    },
+  },
+  "toolbar": {
+    exportName: "Toolbar",
+    schema: toolbarSchema,
+    renderHtml: (config) => renderToolbarHtml(config as unknown as ToolbarConfig),
+    variants: {
+      default: "",
+      vertical: "orientation=vertical&theme=dark&label=Drawing+tools",
+    },
+  },
+  "countdown": {
+    exportName: "Countdown",
+    schema: countdownSchema,
+    renderHtml: (config) => renderCountdownHtml(config as unknown as CountdownConfig),
+    variants: {
+      default: "",
+      minutes: "showSeconds=false&theme=dark&label=Sale+ends+in",
+      finished: "target=2020-01-01T00%3A00",
     },
   },
 };

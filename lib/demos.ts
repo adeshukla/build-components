@@ -355,4 +355,28 @@ export const demos: Record<string, Demo> = {
       { find: "[data-add], .pc-add", action: "click", after: 1400 },
     ],
   },
+  "signature-pad": {
+    how: "Drawing needs a pointer, so typing the name counts as signing; whether anything is signed is said in words.",
+    steps: [
+      { find: "[data-typed], input[type=text]", action: "type", value: "Adesh Shukla", after: 900 },
+      { find: "[data-confirm], button:nth-of-type(2)", action: "click", after: 1400 },
+    ],
+  },
+  "code-block": {
+    how: "Copy writes to the clipboard and says so; if the clipboard is refused it selects the code and says which keys to press.",
+    steps: [
+      { find: "[data-copy], button:last-of-type", action: "click", after: 1600 },
+    ],
+  },
+  "toolbar": {
+    how: "Tab reaches the bar once; the arrow keys move between items, Home and End jump to the ends, and toggles say on or off.",
+    steps: [
+      { find: "[data-item], [role=toolbar] button", action: "click", after: 800 },
+      { find: "[role=toolbar] button[tabindex='0']", action: "key", value: "ArrowRight", after: 700 },
+      { find: "[role=toolbar] button[tabindex='0']", action: "key", value: "Enter", after: 1300 },
+    ],
+  },
+  "countdown": {
+    how: "The digits are aria-hidden and the status line changes only when the minutes do, so a screen reader is not read to every second.",
+  },
 };

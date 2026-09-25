@@ -127,6 +127,14 @@ import { CommentThread, type CommentThreadConfig } from "@/registry/comment-thre
 
 import { ProductCard, type ProductCardConfig } from "@/registry/product-card/react/product-card";
 
+import { SignaturePad, type SignaturePadConfig } from "@/registry/signature-pad/react/signature-pad";
+
+import { CodeBlock, type CodeBlockConfig } from "@/registry/code-block/react/code-block";
+
+import { Toolbar, type ToolbarConfig } from "@/registry/toolbar/react/toolbar";
+
+import { Countdown, type CountdownConfig } from "@/registry/countdown/react/countdown";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -306,6 +314,10 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "timeline" && <Timeline config={config as unknown as TimelineConfig} />}
         {slug === "comment-thread" && <CommentThread config={config as unknown as CommentThreadConfig} />}
         {slug === "product-card" && <ProductCard config={config as unknown as ProductCardConfig} />}
+        {slug === "signature-pad" && <SignaturePad config={config as unknown as SignaturePadConfig} />}
+        {slug === "code-block" && <CodeBlock config={config as unknown as CodeBlockConfig} />}
+        {slug === "toolbar" && <Toolbar config={config as unknown as ToolbarConfig} />}
+        {slug === "countdown" && <Countdown config={config as unknown as CountdownConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}
