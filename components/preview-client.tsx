@@ -1,5 +1,6 @@
 "use client";
 
+import { demos, type DemoStep } from "@/lib/demos";
 import { fullBleed } from "@/lib/parts";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
@@ -79,7 +80,38 @@ const darkMedia = {
   get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
 };
 
-export function PreviewClient({ slug, initialConfig }: { slug: string; initialConfig: Config }) {
+/** Types into a React-controlled field the way a person would: one character at a time. */
+function typeInto(field: HTMLInputElement | HTMLTextAreaElement, text: string, index: number) {
+  const setter = Object.getOwnPropertyDescriptor(
+    field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+    "value",
+  )?.set;
+  setter?.call(field, text.slice(0, index));
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+function runStep(step: DemoStep, wait: (ms: number) => Promise<void>) {
+  const target = document.querySelector<HTMLElement>(step.find);
+  if (!target) return Promise.resolve();
+  if (step.action === "click") {
+    target.click();
+    return Promise.resolve();
+  }
+  if (step.action === "key") {
+    target.focus();
+    target.dispatchEvent(new KeyboardEvent("keydown", { key: step.value, bubbles: true }));
+    return Promise.resolve();
+  }
+  const field = target as HTMLInputElement;
+  field.focus();
+  const text = step.value ?? "";
+  return text.split("").reduce(
+    (before, _, index) => before.then(() => wait(110)).then(() => typeInto(field, text, index + 1)),
+    Promise.resolve(),
+  );
+}
+
+export function PreviewClient({ slug, initialConfig, demo = false }: { slug: string; initialConfig: Config; demo?: boolean }) {
   const [config, setConfig] = useState(initialConfig);
   const [lastAction, setLastAction] = useState<ModalAction | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -110,6 +142,30 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
       // Storage blocked: the component falls back to memory, which starts empty anyway.
     }
   }, [storageKey]);
+
+  // The catalogue cards open this page with ?demo=1: play the part's own script against the real
+  // component, then start again. Nothing moves for anyone who asked for less motion.
+  useEffect(() => {
+    const steps = demos[slug]?.steps ?? [];
+    if (!demo || steps.length === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let cancelled = false;
+    const timers: number[] = [];
+    const wait = (ms: number) => new Promise<void>((resolve) => timers.push(window.setTimeout(resolve, ms)));
+    void (async () => {
+      await wait(900);
+      for (const step of steps) {
+        if (cancelled) return;
+        await runStep(step, wait);
+        await wait(step.after ?? 700);
+      }
+      await wait(2200);
+      if (!cancelled) window.location.reload();
+    })();
+    return () => {
+      cancelled = true;
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [demo, slug]);
 
   // Tell the editor how tall the frame needs to be.
   useEffect(() => {

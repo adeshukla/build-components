@@ -16,5 +16,5 @@ export default async function PreviewPage({ params, searchParams }: PageProps<"/
     if (typeof value === "string") query.set(key, value);
   }
 
-  return <PreviewClient slug={slug} initialConfig={parseConfig(registry[slug].schema, query)} />;
+  return <PreviewClient slug={slug} initialConfig={parseConfig(registry[slug].schema, query)} demo={query.get("demo") === "1"} />;
 }
