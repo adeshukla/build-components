@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type OfflineBannerConfig = {
   offlineText: string;
@@ -79,11 +79,16 @@ function readableAccent(hex: string, onDark: boolean) {
 export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBannerConfig }) {
   const [pretend, setPretend] = useState(false);
   const [note, setNote] = useState("");
+  // Nothing is said before the first drop: a page that loads online has no news to report.
+  const [dropped, setDropped] = useState(false);
   const reallyOffline = useSyncExternalStore(network.subscribe, network.get, () => false);
   const offline = reallyOffline || pretend;
-  // Nothing is said before the first drop: a page that loads online has no news to report.
-  const dropped = useRef(false);
-  if (offline) dropped.current = true;
+
+  useEffect(() => {
+    const mark = () => setDropped(true);
+    window.addEventListener("offline", mark);
+    return () => window.removeEventListener("offline", mark);
+  }, []);
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -121,7 +126,7 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
             )}
           </div>
         ) : (
-          dropped.current && <div className="bg-(--ob-sunk) px-4 py-2 text-sm">{config.onlineText}</div>
+          dropped && <div className="bg-(--ob-sunk) px-4 py-2 text-sm">{config.onlineText}</div>
         )}
       </div>
 
@@ -131,7 +136,9 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
           <button
             type="button"
             onClick={() => {
-              setPretend((current) => !current);
+              const next = !offline;
+              setPretend(next);
+              if (next) setDropped(true);
               setNote("");
             }}
             className="min-h-11 cursor-pointer rounded-md border border-(--ob-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent-text)"

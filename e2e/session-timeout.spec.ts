@@ -8,9 +8,12 @@ const dialog = (page: Page) => page.getByRole("dialog");
 
 for (const target of targets("session-timeout")) {
   test.describe(`session timeout — ${target.name} export`, () => {
-    test("no axe violations, closed and while warning", async ({ page }) => {
+    test("no axe violations for every variant, closed and while warning", async ({ page }) => {
+      for (const variant of variants) {
+        await open(page, target.url(variant));
+        await expectNoAxeViolations(page);
+      }
       await open(page, target.url("default"));
-      await expectNoAxeViolations(page);
       await trigger(page).click();
       await expect(dialog(page)).toBeVisible();
       await expectNoAxeViolations(page);
@@ -20,9 +23,13 @@ for (const target of targets("session-timeout")) {
       await open(page, target.url("default"));
       await trigger(page).click();
       await expect(page.getByRole("button", { name: "Stay signed in" })).toBeFocused();
-      // The clock is aria-hidden, so it is read from the page rather than through a role.
-      await expect(page.locator("dialog p").last()).toHaveText("0:30");
-      await expect(page.locator("dialog p").last()).toHaveText("0:28", { timeout: 4000 });
+      // The clock is aria-hidden, so it is read from the page rather than through a role. A second
+      // may already have gone by, so what matters is that it starts near the top and goes down.
+      const face = page.locator("dialog p").last();
+      await expect(face).toHaveText(/^0:(30|29|28)$/);
+      const seconds = async () => Number((await face.textContent())?.split(":")[1]);
+      const started = await seconds();
+      await expect.poll(seconds, { timeout: 5000 }).toBeLessThan(started ?? 30);
     });
 
     test("staying signed in closes it and says so", async ({ page }) => {
