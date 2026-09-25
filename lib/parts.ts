@@ -623,7 +623,7 @@ export const parts: Part[] = [
   {
     slug: "offline-banner",
     category: "Feedback",
-    codename: "Beacon",
+    codename: "Foghorn",
     name: "Offline banner",
     summary: "Says the connection went and what is being kept, politely, with a retry that actually re-checks.",
     pattern: "Network status region",
@@ -633,7 +633,7 @@ export const parts: Part[] = [
   {
     slug: "shortcut-help",
     category: "Overlays",
-    codename: "Cipher",
+    codename: "Keyring",
     name: "Shortcut help",
     summary: "One key brings up the shortcut sheet — unless you are typing, where ? is just a question mark.",
     pattern: "Modal dialog + hotkey",
@@ -643,7 +643,7 @@ export const parts: Part[] = [
   {
     slug: "pricing-table",
     category: "Page sections",
-    codename: "Purser",
+    codename: "Tariff",
     name: "Pricing table",
     summary: "Plans with a monthly/yearly radio group, a badge in words on the highlighted plan, and prices exactly as you write them.",
     pattern: "Radio group + cards",
@@ -653,7 +653,7 @@ export const parts: Part[] = [
   {
     slug: "stats-tiles",
     category: "Content",
-    codename: "Sextant",
+    codename: "Cross-staff",
     name: "Stats tiles",
     summary: "KPI tiles as a description list, with the change written in words so colour is never the only clue.",
     pattern: "Description list",
@@ -663,7 +663,7 @@ export const parts: Part[] = [
   {
     slug: "timeline",
     category: "Content",
-    codename: "Logbook",
+    codename: "Watchlog",
     name: "Activity timeline",
     summary: "An ordered list of what happened, with real time elements and the older entries behind one button.",
     pattern: "Ordered list + reveal",
@@ -693,7 +693,7 @@ export const parts: Part[] = [
   {
     slug: "signature-pad",
     category: "Inputs",
-    codename: "Quill",
+    codename: "Inkwell",
     name: "Signature pad",
     summary: "Draw a signature with a pointer, or type the name instead — the alternative is the whole point.",
     pattern: "Canvas + typed alternative",
@@ -743,7 +743,7 @@ export const parts: Part[] = [
   {
     slug: "wizard",
     category: "Navigation",
-    codename: "Pilot",
+    codename: "Coxswain",
     name: "Multi-step wizard",
     summary: "One step at a time, focus moved to each step's heading, and a needed field you cannot walk past.",
     pattern: "Steps + per-step validation",

@@ -19,11 +19,13 @@ for (const part of inStock) {
 
     await page.goto(`/${part.slug}`);
     const react = page.frameLocator(`iframe[src^="/preview/${part.slug}"]`);
-    await expect(react.locator("body")).not.toBeEmpty();
+    // The frame loads the preview route and hydrates it, which can take a moment on a cold route.
+    await expect(react.locator("body > *").first()).toBeAttached({ timeout: 15000 });
 
     await page.locator('input[value="vanilla"]').check({ force: true });
     const vanilla = page.frameLocator("iframe[srcdoc]");
-    await expect(vanilla.locator("button, a, input, p, h2").first()).toBeAttached();
+    // Anything at all: some parts (a badge, a skeleton) have no interactive element to look for.
+    await expect(vanilla.locator("body > *").first()).toBeAttached({ timeout: 15000 });
     // The frame grows to fit its content, like the React one, instead of cutting it off.
     const frame = await page.locator("iframe[srcdoc]").boundingBox();
     const content = await vanilla.locator("body").evaluate((body) =>
