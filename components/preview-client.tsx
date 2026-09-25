@@ -67,6 +67,22 @@ import { Lightbox, type LightboxConfig } from "@/registry/lightbox/react/lightbo
 
 import { ResizablePanels, type ResizablePanelsConfig } from "@/registry/resizable-panels/react/resizable-panels";
 
+import { Switch, type SwitchConfig } from "@/registry/switch/react/switch";
+
+import { Rating, type RatingConfig } from "@/registry/rating/react/rating";
+
+import { Segmented, type SegmentedConfig } from "@/registry/segmented/react/segmented";
+
+import { AlertBanner, type AlertBannerConfig } from "@/registry/alert-banner/react/alert-banner";
+
+import { Skeleton, type SkeletonConfig } from "@/registry/skeleton/react/skeleton";
+
+import { EmptyState, type EmptyStateConfig } from "@/registry/empty-state/react/empty-state";
+
+import { AvatarGroup, type AvatarGroupConfig } from "@/registry/avatar-group/react/avatar-group";
+
+import { Badge, type BadgeConfig } from "@/registry/badge/react/badge";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -216,6 +232,14 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "feed" && <Feed config={config as unknown as FeedConfig} />}
         {slug === "lightbox" && <Lightbox config={config as unknown as LightboxConfig} />}
         {slug === "resizable-panels" && <ResizablePanels config={config as unknown as ResizablePanelsConfig} />}
+        {slug === "switch" && <Switch config={config as unknown as SwitchConfig} />}
+        {slug === "rating" && <Rating config={config as unknown as RatingConfig} />}
+        {slug === "segmented" && <Segmented config={config as unknown as SegmentedConfig} />}
+        {slug === "alert-banner" && <AlertBanner config={config as unknown as AlertBannerConfig} />}
+        {slug === "skeleton" && <Skeleton config={config as unknown as SkeletonConfig} />}
+        {slug === "empty-state" && <EmptyState config={config as unknown as EmptyStateConfig} />}
+        {slug === "avatar-group" && <AvatarGroup config={config as unknown as AvatarGroupConfig} />}
+        {slug === "badge" && <Badge config={config as unknown as BadgeConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

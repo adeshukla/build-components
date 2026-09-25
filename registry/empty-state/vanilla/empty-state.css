@@ -1,0 +1,70 @@
+/* Empty state — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.es {
+  --es-accent: #2563eb;
+  --es-accent-text: #1b4ab0;
+  --es-on-accent: #ffffff;
+  --es-surface: #ffffff;
+  --es-sunk: #f4f3f8;
+  --es-text: #16121f;
+  --es-muted: #4d4a57;
+  --es-border: #737373;
+  display: block;
+  padding: 2.5rem 1.5rem;
+  border: 1px dashed var(--es-border);
+  border-radius: 0.75rem;
+  background: var(--es-surface);
+  color: var(--es-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.es,
+.es *,
+.es *::before,
+.es *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .es--theme-system {
+    --es-surface: #141019;
+    --es-sunk: #1f1a29;
+    --es-text: #f6f5fa;
+    --es-muted: #b6b3c2;
+    --es-border: #8e8a99;
+  }
+}
+
+.es-inner { display: flex; max-width: 28rem; flex-direction: column; gap: 0.75rem; margin: 0 auto; }
+.es--center { text-align: center; }
+.es--center .es-inner { align-items: center; }
+.es--left .es-inner { align-items: flex-start; }
+
+.es-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border-radius: 9999px;
+  background: var(--es-sunk);
+  color: var(--es-muted);
+}
+.es-icon svg { width: 1.5rem; height: 1.5rem; }
+.es-title { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.es-body { margin: 0; color: var(--es-muted); text-wrap: pretty; }
+.es-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+.es--center .es-actions { justify-content: center; }
+
+.es-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.es-button:focus-visible { outline: 2px solid var(--es-accent-text); outline-offset: 2px; }
+.es-button--main { background: var(--es-accent); color: var(--es-on-accent); }
+.es-button--quiet { border-color: var(--es-border); color: var(--es-text); }

@@ -111,6 +111,30 @@ import { renderLightboxHtml } from "@/registry/lightbox/vanilla/render";
 import { resizablePanelsSchema } from "@/registry/resizable-panels/schema";
 import * as resizablePanelsDocs from "@/registry/resizable-panels/docs";
 import { renderResizablePanelsHtml } from "@/registry/resizable-panels/vanilla/render";
+import { switchSchema } from "@/registry/switch/schema";
+import * as switchDocs from "@/registry/switch/docs";
+import { renderSwitchHtml } from "@/registry/switch/vanilla/render";
+import { ratingSchema } from "@/registry/rating/schema";
+import * as ratingDocs from "@/registry/rating/docs";
+import { renderRatingHtml } from "@/registry/rating/vanilla/render";
+import { segmentedSchema } from "@/registry/segmented/schema";
+import * as segmentedDocs from "@/registry/segmented/docs";
+import { renderSegmentedHtml } from "@/registry/segmented/vanilla/render";
+import { alertBannerSchema } from "@/registry/alert-banner/schema";
+import * as alertBannerDocs from "@/registry/alert-banner/docs";
+import { renderAlertBannerHtml } from "@/registry/alert-banner/vanilla/render";
+import { skeletonSchema } from "@/registry/skeleton/schema";
+import * as skeletonDocs from "@/registry/skeleton/docs";
+import { renderSkeletonHtml } from "@/registry/skeleton/vanilla/render";
+import { emptyStateSchema } from "@/registry/empty-state/schema";
+import * as emptyStateDocs from "@/registry/empty-state/docs";
+import { renderEmptyStateHtml } from "@/registry/empty-state/vanilla/render";
+import { avatarGroupSchema } from "@/registry/avatar-group/schema";
+import * as avatarGroupDocs from "@/registry/avatar-group/docs";
+import { renderAvatarGroupHtml } from "@/registry/avatar-group/vanilla/render";
+import { badgeSchema } from "@/registry/badge/schema";
+import * as badgeDocs from "@/registry/badge/docs";
+import { renderBadgeHtml } from "@/registry/badge/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -378,6 +402,62 @@ export const registry = {
     schema: resizablePanelsSchema,
     ...resizablePanelsDocs,
     renderHtml: (config) => renderResizablePanelsHtml(config as never),
+  },
+  "switch": {
+    title: "Switch",
+    description: "An accessible on/off switch built on a native checkbox.",
+    schema: switchSchema,
+    ...switchDocs,
+    renderHtml: (config) => renderSwitchHtml(config as never),
+  },
+  "rating": {
+    title: "Rating",
+    description: "An accessible star rating for picking or for showing an average.",
+    schema: ratingSchema,
+    ...ratingDocs,
+    renderHtml: (config) => renderRatingHtml(config as never),
+  },
+  "segmented": {
+    title: "Segmented control",
+    description: "An accessible segmented control on native radio buttons.",
+    schema: segmentedSchema,
+    ...segmentedDocs,
+    renderHtml: (config) => renderSegmentedHtml(config as never),
+  },
+  "alert-banner": {
+    title: "Alert banner",
+    description: "An accessible inline alert with tones, an action and a safe dismiss.",
+    schema: alertBannerSchema,
+    ...alertBannerDocs,
+    renderHtml: (config) => renderAlertBannerHtml(config as never),
+  },
+  "skeleton": {
+    title: "Skeleton",
+    description: "Loading placeholders that say what is loading, once.",
+    schema: skeletonSchema,
+    ...skeletonDocs,
+    renderHtml: (config) => renderSkeletonHtml(config as never),
+  },
+  "empty-state": {
+    title: "Empty state",
+    description: "An empty state that explains what is missing and what to do next.",
+    schema: emptyStateSchema,
+    ...emptyStateDocs,
+    renderHtml: (config) => renderEmptyStateHtml(config as never),
+  },
+  "avatar-group": {
+    title: "Avatar group",
+    description: "Stacked avatars that read out as names, including the hidden ones.",
+    schema: avatarGroupSchema,
+    ...avatarGroupDocs,
+    renderHtml: (config) => renderAvatarGroupHtml(config as never),
+  },
+  "badge": {
+    title: "Badges",
+    description: "Status badges in tones that never rely on colour alone.",
+    schema: badgeSchema,
+    ...badgeDocs,
+    renderHtml: (config) => renderBadgeHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

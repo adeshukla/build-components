@@ -1,0 +1,55 @@
+/* Skeleton — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.sk {
+  --sk-surface: #ffffff;
+  --sk-block: #e6e3ee;
+  --sk-line: #d9d5e4;
+  display: block;
+  max-width: 32rem;
+  background: var(--sk-surface);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sk,
+.sk *,
+.sk *::before,
+.sk *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sk--theme-system { --sk-surface: #141019; --sk-block: #2a2438; --sk-line: #3a3448; }
+}
+
+.sk-body { display: flex; flex-direction: column; gap: 1rem; }
+.sk--card .sk-row { padding: 1rem; border: 1px solid var(--sk-line); border-radius: 0.5rem; }
+.sk-text-row { display: flex; align-items: flex-start; gap: 0.75rem; }
+.sk-lines { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 0.5rem; }
+
+.sk-block { display: block; border-radius: 0.25rem; background: var(--sk-block); }
+.sk-media { width: 100%; height: 7rem; margin-bottom: 1rem; }
+.sk-avatar { width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: 9999px; }
+.sk-line { height: 0.875rem; }
+
+/* The pulse only runs if it was asked for, and never when less motion is wanted. */
+.sk--animate .sk-block { animation: sk-pulse 1.6s ease-in-out infinite; }
+
+@keyframes sk-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk--animate .sk-block { animation: none; }
+}
+
+.sk-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

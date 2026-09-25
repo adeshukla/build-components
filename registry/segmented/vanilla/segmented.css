@@ -1,0 +1,92 @@
+/* Segmented control — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.sg {
+  --sg-accent: #25154d;
+  --sg-accent-text: #25154d;
+  --sg-on-accent: #ffffff;
+  --sg-surface: #ffffff;
+  --sg-sunk: #f4f3f8;
+  --sg-text: #16121f;
+  --sg-muted: #4d4a57;
+  --sg-line: #d9d5e4;
+  --sg-height: 2.5rem;
+  display: block;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--sg-surface);
+  color: var(--sg-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sg,
+.sg *,
+.sg *::before,
+.sg *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sg--theme-system {
+    --sg-surface: #141019;
+    --sg-sunk: #221d2e;
+    --sg-text: #f6f5fa;
+    --sg-muted: #b6b3c2;
+    --sg-line: #3a3448;
+  }
+}
+
+.sg--sm { --sg-height: 2rem; }
+.sg-legend { padding: 0; font-weight: 500; }
+.sg-group {
+  display: inline-flex;
+  gap: 0.125rem;
+  margin-top: 0.5rem;
+  padding: 0.125rem;
+  border: 1px solid var(--sg-line);
+  border-radius: 0.5rem;
+  background: var(--sg-sunk);
+}
+.sg--full .sg-group { display: flex; width: 100%; }
+.sg--full .sg-option { flex: 1; }
+
+.sg-option { position: relative; min-width: 0; cursor: pointer; }
+.sg-input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+.sg-label {
+  display: flex;
+  min-height: var(--sg-height);
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  color: var(--sg-muted);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 150ms, color 150ms;
+}
+.sg--sm .sg-label { padding: 0 0.75rem; font-size: 0.875rem; }
+.sg-label:hover { color: var(--sg-text); }
+.sg-input:checked + .sg-label { background: var(--sg-accent); color: var(--sg-on-accent); }
+.sg-input:focus-visible + .sg-label { outline: 2px solid var(--sg-accent-text); outline-offset: 2px; }
+
+.sg-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  .sg-input:checked + .sg-label { background: Highlight; color: HighlightText; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-label { transition: none; }
+}

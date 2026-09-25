@@ -1,0 +1,69 @@
+/* Rating — plain CSS. Colours come from the inline custom properties. */
+.ra {
+  --ra-accent: #e6a700;
+  --ra-accent-text: #8a6400;
+  --ra-surface: #ffffff;
+  --ra-text: #16121f;
+  --ra-muted: #4d4a57;
+  --ra-empty: #c9c5d4;
+  display: block;
+  background: var(--ra-surface);
+  color: var(--ra-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ra,
+.ra *,
+.ra *::before,
+.ra *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ra--theme-system {
+    --ra-surface: #141019;
+    --ra-text: #f6f5fa;
+    --ra-muted: #b6b3c2;
+    --ra-empty: #4a4458;
+  }
+}
+
+.ra-fieldset { margin: 0; padding: 0; border: 0; }
+.ra-legend { padding: 0; font-weight: 500; }
+.ra-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.ra-star { width: 1.75rem; height: 1.75rem; display: block; }
+
+.ra-stars { position: relative; display: inline-flex; }
+.ra-empty { display: flex; color: var(--ra-empty); }
+.ra-filled { position: absolute; inset: 0 auto 0 0; display: flex; overflow: hidden; color: var(--ra-accent); }
+.ra-filled .ra-star { flex-shrink: 0; }
+
+.ra-picks { display: flex; }
+.ra-pick { padding: 0.125rem; color: var(--ra-empty); cursor: pointer; }
+.ra-input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+/* Every star up to and including the checked one is filled: later siblings are cleared again. */
+.ra-picks:has(.ra-input:checked) .ra-pick { color: var(--ra-accent); }
+.ra-pick:has(.ra-input:checked) ~ .ra-pick { color: var(--ra-empty); }
+.ra-pick:has(.ra-input:focus-visible) { outline: 2px solid var(--ra-accent-text); outline-offset: 2px; border-radius: 0.25rem; }
+
+.ra-value { font-size: 0.875rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.ra-of { color: var(--ra-muted); font-weight: 400; }
+.ra-count { color: var(--ra-muted); font-size: 0.875rem; }
+
+.ra-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  .ra-pick { color: CanvasText; }
+  .ra-picks:has(.ra-input:checked) .ra-pick { color: Highlight; }
+  .ra-pick:has(.ra-input:checked) ~ .ra-pick { color: CanvasText; }
+}

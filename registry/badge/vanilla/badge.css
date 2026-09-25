@@ -1,0 +1,42 @@
+/* Badges — plain CSS, no JavaScript. Each badge carries its own tone colours inline. */
+.bd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.bd,
+.bd *,
+.bd *::before,
+.bd *::after { box-sizing: border-box; }
+
+.bd-badge {
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.bd--sm .bd-badge { min-height: 1.25rem; gap: 0.25rem; padding: 0 0.5rem; font-size: 0.75rem; }
+
+.bd--soft .bd-badge { background: var(--bd-soft); color: var(--bd-ink); }
+.bd--outline .bd-badge { border-color: var(--bd-ink); color: var(--bd-ink); }
+.bd--solid .bd-badge { background: var(--bd-strong); color: var(--bd-on-strong); }
+
+.bd-dot { width: 0.375rem; height: 0.375rem; flex-shrink: 0; border-radius: 9999px; background: var(--bd-strong); }
+.bd--solid .bd-dot { background: var(--bd-on-strong); }
+
+@media (forced-colors: active) {
+  .bd-badge { border-color: CanvasText; }
+}

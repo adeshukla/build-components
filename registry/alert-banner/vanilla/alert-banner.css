@@ -1,0 +1,66 @@
+/* Alert banner — plain CSS. Colours come from the inline custom properties. */
+.ab {
+  --ab-surface: #fdf4e3;
+  --ab-tone: #7a4a00;
+  --ab-text: #16121f;
+  --ab-muted: #4d4a57;
+  display: flex;
+  max-width: 42rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-left: 4px solid var(--ab-tone);
+  border-radius: 0.5rem;
+  background: var(--ab-surface);
+  color: var(--ab-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ab,
+.ab *,
+.ab *::before,
+.ab *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. Tones keep their meaning. */
+@media (prefers-color-scheme: dark) {
+  .ab--theme-system { --ab-text: #f6f5fa; --ab-muted: #b6b3c2; }
+}
+
+.ab-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: 0.125rem; color: var(--ab-tone); }
+.ab-body { flex: 1; min-width: 0; }
+.ab-title { margin: 0; font-weight: 600; }
+.ab-text { margin: 0.125rem 0 0; color: var(--ab-muted); font-size: 0.875rem; }
+.ab-actions { margin: 0.5rem 0 0; }
+.ab-action { display: inline-block; padding: 0.25rem 0; color: var(--ab-tone); font-size: 0.875rem; font-weight: 600; text-underline-offset: 2px; }
+.ab-action:focus-visible,
+.ab-dismiss:focus-visible { outline: 2px solid var(--ab-tone); outline-offset: 2px; }
+
+.ab-dismiss {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  place-items: center;
+  margin: -0.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--ab-muted);
+  cursor: pointer;
+}
+.ab-dismiss:hover { background: rgb(0 0 0 / 0.05); }
+.ab-dismiss svg { width: 1rem; height: 1rem; }
+
+.ab-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

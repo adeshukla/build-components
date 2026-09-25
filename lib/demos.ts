@@ -27,6 +27,34 @@ const OPENER = '[aria-haspopup]:not([hidden]), [aria-expanded="false"]';
 const open = (after = 1600): DemoStep[] => [{ find: OPENER, action: "click", after }];
 
 export const demos: Record<string, Demo> = {
+  switch: {
+    how: "An on/off control on a real checkbox: Space flips it, and the state is said in words as well as shown.",
+    steps: [{ find: "input[role=switch]", action: "click", after: 1400 }],
+  },
+  rating: {
+    how: "Stars as radio buttons: arrow keys move and pick, and each one reads as “3 stars, 3 of 5”.",
+    steps: [{ find: ".ra-pick:nth-child(5) input, label:nth-child(5) input[type=radio]", action: "click", after: 1400 }],
+  },
+  segmented: {
+    how: "A few choices side by side on radios, so one Tab stop enters the group and arrow keys pick.",
+    steps: [{ find: "input[type=radio]:not(:checked)", action: "click", after: 1400 }],
+  },
+  "alert-banner": {
+    how: "An inline message that says its tone first (“Warning:”), with an action and a dismiss that never strands focus.",
+    steps: [{ find: "button[aria-label^=Dismiss]", action: "click", after: 1600 }],
+  },
+  skeleton: {
+    how: "Placeholder shapes while content loads, announced once as “Loading comments” instead of a wall of empty boxes.",
+  },
+  "empty-state": {
+    how: "Nothing to show, said calmly: what happened, and the one thing to do next.",
+  },
+  "avatar-group": {
+    how: "Faces or initials with the extra people named in the “+3” circle, so nobody is hidden behind a number.",
+  },
+  badge: {
+    how: "Status pills where the words carry the meaning; the colour and dot only repeat it.",
+  },
   "date-picker": {
     how: "Type a date or pick one in the calendar. Arrow keys move day by day, and the month is announced as it changes.",
     steps: [

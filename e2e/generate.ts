@@ -97,6 +97,30 @@ import { renderLightboxHtml } from "../registry/lightbox/vanilla/render";
 import { resizablePanelsSchema } from "../registry/resizable-panels/schema";
 import type { ResizablePanelsConfig } from "../registry/resizable-panels/react/resizable-panels";
 import { renderResizablePanelsHtml } from "../registry/resizable-panels/vanilla/render";
+import { switchSchema } from "../registry/switch/schema";
+import type { SwitchConfig } from "../registry/switch/react/switch";
+import { renderSwitchHtml } from "../registry/switch/vanilla/render";
+import { ratingSchema } from "../registry/rating/schema";
+import type { RatingConfig } from "../registry/rating/react/rating";
+import { renderRatingHtml } from "../registry/rating/vanilla/render";
+import { segmentedSchema } from "../registry/segmented/schema";
+import type { SegmentedConfig } from "../registry/segmented/react/segmented";
+import { renderSegmentedHtml } from "../registry/segmented/vanilla/render";
+import { alertBannerSchema } from "../registry/alert-banner/schema";
+import type { AlertBannerConfig } from "../registry/alert-banner/react/alert-banner";
+import { renderAlertBannerHtml } from "../registry/alert-banner/vanilla/render";
+import { skeletonSchema } from "../registry/skeleton/schema";
+import type { SkeletonConfig } from "../registry/skeleton/react/skeleton";
+import { renderSkeletonHtml } from "../registry/skeleton/vanilla/render";
+import { emptyStateSchema } from "../registry/empty-state/schema";
+import type { EmptyStateConfig } from "../registry/empty-state/react/empty-state";
+import { renderEmptyStateHtml } from "../registry/empty-state/vanilla/render";
+import { avatarGroupSchema } from "../registry/avatar-group/schema";
+import type { AvatarGroupConfig } from "../registry/avatar-group/react/avatar-group";
+import { renderAvatarGroupHtml } from "../registry/avatar-group/vanilla/render";
+import { badgeSchema } from "../registry/badge/schema";
+import type { BadgeConfig } from "../registry/badge/react/badge";
+import { renderBadgeHtml } from "../registry/badge/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -457,6 +481,78 @@ export const components: Record<
     variants: {
       default: "",
       vertical: "orientation=vertical&startSize=50&collapsible=false&theme=dark",
+    },
+  },
+  "switch": {
+    exportName: "Switch",
+    schema: switchSchema,
+    renderHtml: (config) => renderSwitchHtml(config as unknown as SwitchConfig),
+    variants: {
+      default: "",
+      small: "size=sm&labelFirst=false&showState=false&theme=dark",
+    },
+  },
+  "rating": {
+    exportName: "Rating",
+    schema: ratingSchema,
+    renderHtml: (config) => renderRatingHtml(config as unknown as RatingConfig),
+    variants: {
+      default: "",
+      average: "mode=show&value=4.2&countText=128%20ratings&theme=dark",
+    },
+  },
+  "segmented": {
+    exportName: "Segmented",
+    schema: segmentedSchema,
+    renderHtml: (config) => renderSegmentedHtml(config as unknown as SegmentedConfig),
+    variants: {
+      default: "",
+      wide: "fullWidth=true&size=sm&hideLegend=true&theme=dark",
+    },
+  },
+  "alert-banner": {
+    exportName: "AlertBanner",
+    schema: alertBannerSchema,
+    renderHtml: (config) => renderAlertBannerHtml(config as unknown as AlertBannerConfig),
+    variants: {
+      default: "",
+      error: "tone=error&title=We%20couldn%27t%20save%20your%20changes&body=Check%20your%20connection%20and%20try%20again.&actionText=Try%20again&dismissible=false&theme=dark",
+    },
+  },
+  "skeleton": {
+    exportName: "Skeleton",
+    schema: skeletonSchema,
+    renderHtml: (config) => renderSkeletonHtml(config as unknown as SkeletonConfig),
+    variants: {
+      default: "",
+      cards: "variant=card&rows=2&lines=3&showAvatar=false&animate=false&theme=dark",
+    },
+  },
+  "empty-state": {
+    exportName: "EmptyState",
+    schema: emptyStateSchema,
+    renderHtml: (config) => renderEmptyStateHtml(config as unknown as EmptyStateConfig),
+    variants: {
+      default: "",
+      inbox: "icon=inbox&align=left&title=No%20messages%20yet&body=When%20someone%20writes%20to%20you%2C%20it%20lands%20here.&actionText=&secondaryText=&theme=dark",
+    },
+  },
+  "avatar-group": {
+    exportName: "AvatarGroup",
+    schema: avatarGroupSchema,
+    renderHtml: (config) => renderAvatarGroupHtml(config as unknown as AvatarGroupConfig),
+    variants: {
+      default: "",
+      large: "size=lg&max=3&overlap=false&theme=dark",
+    },
+  },
+  "badge": {
+    exportName: "Badge",
+    schema: badgeSchema,
+    renderHtml: (config) => renderBadgeHtml(config as unknown as BadgeConfig),
+    variants: {
+      default: "",
+      solid: "variant=solid&size=sm&showDot=false&theme=dark",
     },
   },
 };

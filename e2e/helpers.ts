@@ -19,8 +19,16 @@ export async function open(page: Page, url: string) {
 }
 
 export async function expectNoAxeViolations(page: Page) {
-  // Let open animations finish: mid-fade colours would give false contrast failures.
-  await page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished)));
+  // Let open animations finish: mid-fade colours would give false contrast failures. Endless ones
+  // (a skeleton's pulse, a spinner) never finish, so they are left running instead of waited for.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+        .map((animation) => animation.finished),
+    ),
+  );
   const { violations } = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();

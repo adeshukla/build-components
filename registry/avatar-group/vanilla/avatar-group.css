@@ -1,0 +1,48 @@
+/* Avatar group — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.ag {
+  --ag-surface: #ffffff;
+  --ag-text: #16121f;
+  --ag-muted: #4d4a57;
+  --ag-ring: #ffffff;
+  --ag-size: 2.25rem;
+  --ag-font: 0.875rem;
+  display: block;
+  background: var(--ag-surface);
+  color: var(--ag-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ag,
+.ag *,
+.ag *::before,
+.ag *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ag--theme-system { --ag-surface: #141019; --ag-text: #f6f5fa; --ag-muted: #b6b3c2; --ag-ring: #141019; }
+}
+
+.ag--sm { --ag-size: 1.75rem; --ag-font: 0.75rem; }
+.ag--lg { --ag-size: 3rem; --ag-font: 1rem; }
+
+.ag-list { display: flex; align-items: center; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.ag--overlap .ag-list { gap: 0; }
+.ag--overlap .ag-list li + li { margin-left: -0.5rem; }
+
+.ag-avatar {
+  display: grid;
+  width: var(--ag-size);
+  height: var(--ag-size);
+  place-items: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px var(--ag-ring);
+  font-size: var(--ag-font);
+  font-weight: 600;
+}
+.ag-photo { object-fit: cover; }
+/* The initials are decoration; the name itself is what gets read out. */
+.ag-initials { color: #16121f; }
+.ag-more { background: var(--ag-surface); color: var(--ag-muted); box-shadow: 0 0 0 1px var(--ag-muted); }

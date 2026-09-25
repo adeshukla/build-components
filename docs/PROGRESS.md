@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The thirty-seven parts, all in stock
+### The forty-five parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -56,6 +56,20 @@ Open http://localhost:3000.
 | **Current** | Load-more feed | APG Feed |
 | **Lantern** | Lightbox | APG Dialog (Modal) gallery |
 | **Bulkhead** | Resizable panels | APG Window Splitter |
+| **Seacock** | Switch | Checkbox with role=switch |
+| **Sounding** | Rating | Radio group / image |
+| **Tiller** | Segmented control | Radio group |
+| **Ensign** | Alert banner | role=alert / role=status |
+| **Shroud** | Skeleton | role=status + hidden shapes |
+| **Doldrums** | Empty state | Heading + actions |
+| **Crew** | Avatar group | Labelled list of images |
+| **Burgee** | Badges | List of labelled pills |
+
+### Session 9 (2026-09-25): live card previews and Batch A (D48, D49)
+- **Hover previews (D48):** every catalogue card now opens a panel running the real exported React output in a frame, plays a short script of the part being used, and says in one line how it works. `lib/demos.ts` holds both. The panel is inert, so the frame can never trap focus, and the script does not run for anyone asking for less motion. `e2e/home.spec.ts` keeps every part supplied with an explanation.
+- **Batch A, eight everyday primitives (D49):** Seacock (switch), Sounding (rating), Tiller (segmented control), Ensign (alert banner), Shroud (skeleton), Doldrums (empty state), Crew (avatar group), Burgee (badges). New **Feedback** category in the catalogue filters.
+- **Harness bug found:** the axe helper waited for *every* animation to finish, so it hung forever on an endless one (the skeleton's pulse). It now skips endless animations.
+- Batch A: 357 tests passing across the three browsers.
 
 ### Session 8, part 3 (2026-09-22): parity audit and Tier 2 (D46, D47)
 - **What Adesh reported:** the cookie banner's HTML/JS preview could not save from Choose cookies ("Blocked form submission ... 'allow-forms' permission is not set"), and the two outputs looked different in places.

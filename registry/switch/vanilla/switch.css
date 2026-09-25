@@ -1,0 +1,76 @@
+/* Switch — plain CSS. Colours come from the inline custom properties. */
+.sw {
+  --sw-accent: #2563eb;
+  --sw-accent-text: #1b4ab0;
+  --sw-surface: #ffffff;
+  --sw-text: #16121f;
+  --sw-muted: #4d4a57;
+  --sw-track: #8e8a99;
+  display: block;
+  max-width: 28rem;
+  background: var(--sw-surface);
+  color: var(--sw-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sw,
+.sw *,
+.sw *::before,
+.sw *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sw--theme-system {
+    --sw-surface: #141019;
+    --sw-text: #f6f5fa;
+    --sw-muted: #b6b3c2;
+    --sw-track: #6f6a7d;
+  }
+}
+
+.sw-row { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; }
+.sw--switch-first .sw-row { flex-direction: row-reverse; justify-content: flex-end; }
+.sw-text { flex: 1; }
+.sw-label { display: block; font-weight: 500; }
+.sw-hint { display: block; color: var(--sw-muted); font-size: 0.875rem; }
+.sw-controls { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; }
+.sw-state { color: var(--sw-muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+
+.sw-switch { position: relative; display: inline-flex; }
+.sw-input { position: absolute; inset: 0; z-index: 1; margin: 0; opacity: 0; cursor: pointer; }
+.sw-track {
+  display: flex;
+  width: 2.75rem;
+  height: 1.5rem;
+  align-items: center;
+  padding: 0.125rem;
+  border-radius: 9999px;
+  background: var(--sw-track);
+  transition: background-color 200ms;
+}
+.sw--sm .sw-track { width: 2.25rem; height: 1.25rem; }
+.sw-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  transition: translate 200ms;
+}
+.sw--sm .sw-thumb { width: 1rem; height: 1rem; }
+.sw-input:checked + .sw-track { background: var(--sw-accent); }
+.sw-input:checked + .sw-track .sw-thumb { translate: 1.25rem 0; }
+.sw--sm .sw-input:checked + .sw-track .sw-thumb { translate: 1rem 0; }
+.sw-input:focus-visible + .sw-track { outline: 2px solid var(--sw-accent-text); outline-offset: 2px; }
+
+@media (forced-colors: active) {
+  .sw-track { border: 1px solid CanvasText; }
+  .sw-input:checked + .sw-track { background: Highlight; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sw-track,
+  .sw-thumb { transition: none; }
+}

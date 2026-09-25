@@ -276,3 +276,19 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 - **Feed:** the WAI-ARIA feed pattern with a Load more button that stays even in scroll mode, so nobody depends on scrolling. Pressing it moves focus to the first new item; scroll loading never moves focus.
 - **Lightbox:** demo pictures are drawn gradients, so nothing is loaded from a third party. Focus returns to the thumbnail of the picture you were on, not the one you opened.
 - **Resizable panels:** the APG window splitter: a focusable separator with a value, arrow keys, Home/End and Enter to collapse. The visible line is thin; the grab area is 30px.
+
+## 2026-09-25 — D48. The catalogue shows the real thing, moving
+**Decision:** Hovering (or focusing) a catalogue card opens a panel that runs the real exported React output in a frame at `/preview/<slug>?demo=1`, plays a short script of the part being used, and shows one line saying how it works. Both live in `lib/demos.ts`.
+**Why:** Adesh asked for an animated preview on every card that shows real usage and explains it. A recording or a screenshot would drift from the code; this cannot, because it is the code.
+**How it stays honest:** the script is a list of steps (find, click/type/key) run against the component itself. If a selector stops matching, the step simply does nothing — it can never fake a result.
+**Accessibility:** one frame at a time (only the hovered card), the panel is `inert` so the frame is never a focus trap, the same sentence is available to screen readers on the card, and nothing moves when reduced motion is set.
+
+## 2026-09-25 — D49. Batch A: the everyday primitives
+**Decision:** Switch, rating, segmented control, alert banner, skeleton, empty state, avatar group, badges. A new **Feedback** category groups the three that report what is happening.
+**Notable choices:**
+- **Switch:** a real checkbox with `role="switch"`, not a button, so the keyboard and form submission come free. The state is also written in words.
+- **Rating:** radio buttons for picking (arrow keys, one Tab stop); a single image with the whole value in its name for showing an average, so it is read once as "4.2 out of 5".
+- **Alert banner:** the tone is spoken first ("Warning:"), errors interrupt and others wait their turn, and dismissing moves focus somewhere real.
+- **Skeleton:** one polite status saying what is loading; the shapes are hidden from screen readers rather than read as empty boxes.
+- **Avatar group:** the "+3" circle names the people it stands for. Tints are picked so the initials keep 4.5:1, and a name always gets the same tint on the server and in the browser.
+- **Badges:** the words carry the state; colour and dot only repeat it.

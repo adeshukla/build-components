@@ -16,7 +16,7 @@ export type Part = {
   category: Category;
 };
 
-export const categories = ["Inputs", "Navigation", "Overlays", "Content", "Page sections"] as const;
+export const categories = ["Inputs", "Navigation", "Overlays", "Feedback", "Content", "Page sections"] as const;
 export type Category = (typeof categories)[number];
 
 export const parts: Part[] = [
@@ -388,6 +388,86 @@ export const parts: Part[] = [
     summary: "Two panels and a divider you can drag, move with the arrow keys or collapse with Enter.",
     pattern: "APG Window Splitter",
     accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "switch",
+    category: "Inputs",
+    codename: "Seacock",
+    name: "Switch",
+    summary: "An on/off control that says which it is in words, on a real checkbox so the keyboard comes free.",
+    pattern: "Checkbox with role=switch",
+    accent: "#7dd3fc",
+    status: "in-stock",
+  },
+  {
+    slug: "rating",
+    category: "Inputs",
+    codename: "Sounding",
+    name: "Rating",
+    summary: "Stars to pick a rating, or an average shown as one figure a screen reader reads in full.",
+    pattern: "Radio group / image",
+    accent: "#fbbf24",
+    status: "in-stock",
+  },
+  {
+    slug: "segmented",
+    category: "Inputs",
+    codename: "Tiller",
+    name: "Segmented control",
+    summary: "A handful of choices side by side, on radios, so arrow keys and forms work without script.",
+    pattern: "Radio group",
+    accent: "#a5b4fc",
+    status: "in-stock",
+  },
+  {
+    slug: "alert-banner",
+    category: "Feedback",
+    codename: "Ensign",
+    name: "Alert banner",
+    summary: "Inline messages that say their tone in words first, and only interrupt when it is an error.",
+    pattern: "role=alert / role=status",
+    accent: "#fbbf24",
+    status: "in-stock",
+  },
+  {
+    slug: "skeleton",
+    category: "Feedback",
+    codename: "Shroud",
+    name: "Skeleton",
+    summary: "Placeholder shapes while content loads, announced once in words instead of as empty boxes.",
+    pattern: "role=status + hidden shapes",
+    accent: "#cbd5e1",
+    status: "in-stock",
+  },
+  {
+    slug: "empty-state",
+    category: "Feedback",
+    codename: "Doldrums",
+    name: "Empty state",
+    summary: "A calm screen for nothing-to-show, saying what happened and exactly what to do next.",
+    pattern: "Heading + actions",
+    accent: "#94a3b8",
+    status: "in-stock",
+  },
+  {
+    slug: "avatar-group",
+    category: "Content",
+    codename: "Crew",
+    name: "Avatar group",
+    summary: "Overlapping faces or initials, with the extra people named rather than hidden behind a number.",
+    pattern: "Labelled list of images",
+    accent: "#f0abfc",
+    status: "in-stock",
+  },
+  {
+    slug: "badge",
+    category: "Content",
+    codename: "Burgee",
+    name: "Badges",
+    summary: "Status pills whose words carry the meaning, so colour is never doing the work alone.",
+    pattern: "List of labelled pills",
+    accent: "#5eead4",
     status: "in-stock",
   },
 ];
