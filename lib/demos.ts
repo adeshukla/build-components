@@ -325,4 +325,34 @@ export const demos: Record<string, Demo> = {
       { find: "[data-trigger], button[aria-haspopup=dialog]", action: "click", after: 1600 },
     ],
   },
+  "pricing-table": {
+    how: "The billing cycle is a real radio group; switching it changes every price and says which prices are showing.",
+    steps: [
+      { find: "input[value=yearly], .pt-option:nth-child(2) input", action: "click", after: 1500 },
+    ],
+  },
+  "stats-tiles": {
+    how: "Each tile is a term and a value in a description list; the change reads \u201c12 more than last week\u201d, and the arrow is decoration.",
+  },
+  "timeline": {
+    how: "The newest few are shown; the reveal button says how many are left and focus lands on the first entry that arrives.",
+    steps: [
+      { find: "[data-more], button", action: "click", after: 1600 },
+    ],
+  },
+  "comment-thread": {
+    how: "Posting adds the comment, keeps focus in the box and says the count out loud, since the new comment lands out of sight.",
+    steps: [
+      { find: "[data-field], textarea", action: "type", value: "Asked the yard this morning.", after: 800 },
+      { find: "[data-post], .ct-post, button[disabled]:not([disabled])", action: "click", after: 1500 },
+    ],
+  },
+  "product-card": {
+    how: "Colour and size are fieldsets of radios; out-of-stock options are disabled and say so, and Add waits for both choices.",
+    steps: [
+      { find: "input[value=Navy]", action: "click", after: 700 },
+      { find: "input[value=M]", action: "click", after: 700 },
+      { find: "[data-add], .pc-add", action: "click", after: 1400 },
+    ],
+  },
 };

@@ -186,6 +186,21 @@ import { renderOfflineBannerHtml } from "@/registry/offline-banner/vanilla/rende
 import { shortcutHelpSchema } from "@/registry/shortcut-help/schema";
 import * as shortcutHelpDocs from "@/registry/shortcut-help/docs";
 import { renderShortcutHelpHtml } from "@/registry/shortcut-help/vanilla/render";
+import { pricingTableSchema } from "@/registry/pricing-table/schema";
+import * as pricingTableDocs from "@/registry/pricing-table/docs";
+import { renderPricingTableHtml } from "@/registry/pricing-table/vanilla/render";
+import { statsTilesSchema } from "@/registry/stats-tiles/schema";
+import * as statsTilesDocs from "@/registry/stats-tiles/docs";
+import { renderStatsTilesHtml } from "@/registry/stats-tiles/vanilla/render";
+import { timelineSchema } from "@/registry/timeline/schema";
+import * as timelineDocs from "@/registry/timeline/docs";
+import { renderTimelineHtml } from "@/registry/timeline/vanilla/render";
+import { commentThreadSchema } from "@/registry/comment-thread/schema";
+import * as commentThreadDocs from "@/registry/comment-thread/docs";
+import { renderCommentThreadHtml } from "@/registry/comment-thread/vanilla/render";
+import { productCardSchema } from "@/registry/product-card/schema";
+import * as productCardDocs from "@/registry/product-card/docs";
+import { renderProductCardHtml } from "@/registry/product-card/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -628,6 +643,41 @@ export const registry = {
     schema: shortcutHelpSchema,
     ...shortcutHelpDocs,
     renderHtml: (config) => renderShortcutHelpHtml(config as never),
+  },
+  "pricing-table": {
+    title: "Pricing table",
+    description: "Plans with a billing cycle switch and no invented discounts.",
+    schema: pricingTableSchema,
+    ...pricingTableDocs,
+    renderHtml: (config) => renderPricingTableHtml(config as never),
+  },
+  "stats-tiles": {
+    title: "Stats tiles",
+    description: "Dashboard tiles with changes written in words.",
+    schema: statsTilesSchema,
+    ...statsTilesDocs,
+    renderHtml: (config) => renderStatsTilesHtml(config as never),
+  },
+  "timeline": {
+    title: "Activity timeline",
+    description: "An activity log with real time elements and a reveal button.",
+    schema: timelineSchema,
+    ...timelineDocs,
+    renderHtml: (config) => renderTimelineHtml(config as never),
+  },
+  "comment-thread": {
+    title: "Comment thread",
+    description: "A comment thread with replies, a post box and announcements.",
+    schema: commentThreadSchema,
+    ...commentThreadDocs,
+    renderHtml: (config) => renderCommentThreadHtml(config as never),
+  },
+  "product-card": {
+    title: "Product card",
+    description: "A product card with variant radio groups and stock in words.",
+    schema: productCardSchema,
+    ...productCardDocs,
+    renderHtml: (config) => renderProductCardHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

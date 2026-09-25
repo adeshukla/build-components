@@ -117,6 +117,16 @@ import { OfflineBanner, type OfflineBannerConfig } from "@/registry/offline-bann
 
 import { ShortcutHelp, type ShortcutHelpConfig } from "@/registry/shortcut-help/react/shortcut-help";
 
+import { PricingTable, type PricingTableConfig } from "@/registry/pricing-table/react/pricing-table";
+
+import { StatsTiles, type StatsTilesConfig } from "@/registry/stats-tiles/react/stats-tiles";
+
+import { Timeline, type TimelineConfig } from "@/registry/timeline/react/timeline";
+
+import { CommentThread, type CommentThreadConfig } from "@/registry/comment-thread/react/comment-thread";
+
+import { ProductCard, type ProductCardConfig } from "@/registry/product-card/react/product-card";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -291,6 +301,11 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "unsaved-changes" && <UnsavedChanges config={config as unknown as UnsavedChangesConfig} />}
         {slug === "offline-banner" && <OfflineBanner config={config as unknown as OfflineBannerConfig} />}
         {slug === "shortcut-help" && <ShortcutHelp config={config as unknown as ShortcutHelpConfig} />}
+        {slug === "pricing-table" && <PricingTable config={config as unknown as PricingTableConfig} />}
+        {slug === "stats-tiles" && <StatsTiles config={config as unknown as StatsTilesConfig} />}
+        {slug === "timeline" && <Timeline config={config as unknown as TimelineConfig} />}
+        {slug === "comment-thread" && <CommentThread config={config as unknown as CommentThreadConfig} />}
+        {slug === "product-card" && <ProductCard config={config as unknown as ProductCardConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

@@ -1,0 +1,91 @@
+/* Product card — plain CSS. Colours come from the inline custom properties. */
+.pc {
+  --pc-accent: #16303f;
+  --pc-accent-text: #142936;
+  --pc-on-accent: #ffffff;
+  --pc-surface: #ffffff;
+  --pc-sunk: #f4f3f8;
+  --pc-text: #16121f;
+  --pc-muted: #4d4a57;
+  --pc-line: #c9c4d6;
+  display: block;
+  max-width: 28rem;
+  padding: 1rem;
+  border: 1px solid var(--pc-line);
+  border-radius: 0.75rem;
+  background: var(--pc-surface);
+  color: var(--pc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.pc,
+.pc *,
+.pc *::before,
+.pc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .pc--theme-system {
+    --pc-surface: #141019;
+    --pc-sunk: #221d2e;
+    --pc-text: #f6f5fa;
+    --pc-muted: #b6b3c2;
+    --pc-line: #4a4459;
+  }
+}
+
+.pc-name { margin: 0; font-size: 1.125rem; }
+.pc-price { margin: 0.25rem 0 0; font-size: 1.25rem; font-weight: 600; }
+.pc-blurb { margin: 0.25rem 0 0; color: var(--pc-muted); font-size: 0.875rem; }
+
+/* A fieldset per group: the legend names what the choice is, which a div cannot do. */
+.pc-group { margin: 1rem 0 0; padding: 0; border: 0; }
+.pc-legend { font-size: 0.875rem; font-weight: 500; }
+.pc-options { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
+.pc-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--pc-line);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.pc-option:has(input:checked) { border-color: var(--pc-accent); background: var(--pc-accent); color: var(--pc-on-accent); }
+.pc-option:has(input:focus-visible) { outline: 2px solid var(--pc-accent-text); outline-offset: 2px; }
+/* Out of stock is said, not only drawn as a dashed outline. */
+.pc-option:has(input:disabled) { border-style: dashed; color: var(--pc-muted); cursor: not-allowed; }
+.pc-out { font-size: 0.75rem; }
+
+.pc-add {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 1rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--pc-accent);
+  color: var(--pc-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.pc-add:disabled { opacity: 0.5; cursor: not-allowed; }
+.pc-add:focus-visible { outline: 2px solid var(--pc-accent-text); outline-offset: 2px; }
+
+.pc-status { margin: 0.5rem 0 0; color: var(--pc-muted); font-size: 0.875rem; min-height: 1.5rem; }
+
+.pc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,63 @@
+/* Activity timeline — plain CSS. Colours come from the inline custom properties. */
+.tl {
+  --tl-accent: #7c3aed;
+  --tl-accent-text: #6127c4;
+  --tl-surface: #ffffff;
+  --tl-sunk: #f4f3f8;
+  --tl-text: #16121f;
+  --tl-muted: #4d4a57;
+  --tl-line: #c9c4d6;
+  display: block;
+  background: var(--tl-surface);
+  color: var(--tl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.tl,
+.tl *,
+.tl *::before,
+.tl *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tl--theme-system {
+    --tl-surface: #141019;
+    --tl-sunk: #221d2e;
+    --tl-text: #f6f5fa;
+    --tl-muted: #b6b3c2;
+    --tl-line: #4a4459;
+  }
+}
+
+.tl-heading { margin: 0; font-size: 1.25rem; }
+
+/* An ordered list: the order is the point, and it survives without the line down the side. */
+.tl-list { display: grid; margin: 0.75rem 0 0; padding: 0; list-style: none; }
+.tl-entry { display: grid; grid-template-columns: auto 1fr; column-gap: 0.75rem; }
+.tl-entry[hidden] { display: none; }
+.tl-rail { display: flex; flex-direction: column; align-items: center; }
+.tl-dot { flex-shrink: 0; width: 0.5rem; height: 0.5rem; margin-top: 0.375rem; border-radius: 999px; background: var(--tl-accent); }
+.tl-thread { flex: 1; width: 1px; background: var(--tl-line); }
+.tl-body { padding-bottom: 1rem; }
+.tl-what { margin: 0; font-size: 0.875rem; }
+.tl-who { font-weight: 500; }
+.tl-when { color: var(--tl-muted); font-size: 0.875rem; }
+
+.tl-more {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--tl-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.tl-more:focus-visible { outline: 2px solid var(--tl-accent-text); outline-offset: 2px; }
+.tl-more[hidden] { display: none; }
+
+.tl-status { margin: 0.5rem 0 0; color: var(--tl-muted); font-size: 0.875rem; min-height: 1.5rem; }

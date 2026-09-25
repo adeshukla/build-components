@@ -1,0 +1,50 @@
+/* Stats tiles — plain CSS. Colours come from the inline custom properties. */
+.sx {
+  --sx-accent: #0f766e;
+  --sx-accent-text: #0b5a54;
+  --sx-surface: #ffffff;
+  --sx-sunk: #f4f3f8;
+  --sx-text: #16121f;
+  --sx-muted: #4d4a57;
+  --sx-line: #c9c4d6;
+  display: block;
+  background: var(--sx-surface);
+  color: var(--sx-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sx,
+.sx *,
+.sx *::before,
+.sx *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sx--theme-system {
+    --sx-surface: #141019;
+    --sx-sunk: #221d2e;
+    --sx-text: #f6f5fa;
+    --sx-muted: #b6b3c2;
+    --sx-line: #4a4459;
+  }
+}
+
+.sx-heading { margin: 0; font-size: 1.25rem; }
+
+.sx-list { display: grid; gap: 0.75rem; margin: 0.75rem 0 0; }
+@media (min-width: 640px) {
+  .sx--two .sx-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sx--three .sx-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sx--four .sx-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.sx-tile { padding: 1rem; border: 1px solid var(--sx-line); border-radius: 0.75rem; background: var(--sx-sunk); }
+.sx-label { color: var(--sx-muted); font-size: 0.875rem; }
+.sx-body { margin: 0; }
+.sx-value { display: block; font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sx-change { display: flex; align-items: baseline; gap: 0.25rem; margin-top: 0.25rem; color: var(--sx-muted); font-size: 0.875rem; }
+/* The arrow is decoration: the change is already in words, so colour is never the only clue. */
+.sx-arrow--up,
+.sx-arrow--down { color: var(--sx-accent-text); }

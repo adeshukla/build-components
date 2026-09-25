@@ -172,6 +172,21 @@ import { renderOfflineBannerHtml } from "../registry/offline-banner/vanilla/rend
 import { shortcutHelpSchema } from "../registry/shortcut-help/schema";
 import type { ShortcutHelpConfig } from "../registry/shortcut-help/react/shortcut-help";
 import { renderShortcutHelpHtml } from "../registry/shortcut-help/vanilla/render";
+import { pricingTableSchema } from "../registry/pricing-table/schema";
+import type { PricingTableConfig } from "../registry/pricing-table/react/pricing-table";
+import { renderPricingTableHtml } from "../registry/pricing-table/vanilla/render";
+import { statsTilesSchema } from "../registry/stats-tiles/schema";
+import type { StatsTilesConfig } from "../registry/stats-tiles/react/stats-tiles";
+import { renderStatsTilesHtml } from "../registry/stats-tiles/vanilla/render";
+import { timelineSchema } from "../registry/timeline/schema";
+import type { TimelineConfig } from "../registry/timeline/react/timeline";
+import { renderTimelineHtml } from "../registry/timeline/vanilla/render";
+import { commentThreadSchema } from "../registry/comment-thread/schema";
+import type { CommentThreadConfig } from "../registry/comment-thread/react/comment-thread";
+import { renderCommentThreadHtml } from "../registry/comment-thread/vanilla/render";
+import { productCardSchema } from "../registry/product-card/schema";
+import type { ProductCardConfig } from "../registry/product-card/react/product-card";
+import { renderProductCardHtml } from "../registry/product-card/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -757,6 +772,51 @@ export const components: Record<
     variants: {
       default: "",
       slash: "openKey=%2F&showTrigger=false&theme=dark&hint=Press+%2F+to+bring+this+back.",
+    },
+  },
+  "pricing-table": {
+    exportName: "PricingTable",
+    schema: pricingTableSchema,
+    renderHtml: (config) => renderPricingTableHtml(config as unknown as PricingTableConfig),
+    variants: {
+      default: "",
+      quiet: "showCycle=false&featured=&theme=dark",
+    },
+  },
+  "stats-tiles": {
+    exportName: "StatsTiles",
+    schema: statsTilesSchema,
+    renderHtml: (config) => renderStatsTilesHtml(config as unknown as StatsTilesConfig),
+    variants: {
+      default: "",
+      pair: "columns=two&showChange=false&theme=dark&heading=Today",
+    },
+  },
+  "timeline": {
+    exportName: "Timeline",
+    schema: timelineSchema,
+    renderHtml: (config) => renderTimelineHtml(config as unknown as TimelineConfig),
+    variants: {
+      default: "",
+      full: "initialCount=6&newestFirst=false&theme=dark",
+    },
+  },
+  "comment-thread": {
+    exportName: "CommentThread",
+    schema: commentThreadSchema,
+    renderHtml: (config) => renderCommentThreadHtml(config as unknown as CommentThreadConfig),
+    variants: {
+      default: "",
+      readonly: "allowReply=false&collapsible=false&theme=dark",
+    },
+  },
+  "product-card": {
+    exportName: "ProductCard",
+    schema: productCardSchema,
+    renderHtml: (config) => renderProductCardHtml(config as unknown as ProductCardConfig),
+    variants: {
+      default: "",
+      plain: "showPrice=false&theme=dark&addText=Add+to+basket",
     },
   },
 };
