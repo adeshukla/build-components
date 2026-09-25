@@ -27,6 +27,53 @@ const OPENER = '[aria-haspopup]:not([hidden]), [aria-expanded="false"]';
 const open = (after = 1600): DemoStep[] => [{ find: OPENER, action: "click", after }];
 
 export const demos: Record<string, Demo> = {
+  "tag-input": {
+    how: "Type and press Enter to add a tag; each chip has its own “Remove CSS” button, and every change is announced.",
+    steps: [
+      { find: "input[type=text]", action: "type", value: "Testing", after: 400 },
+      { find: "input[type=text]", action: "key", value: "Enter", after: 1400 },
+    ],
+  },
+  quantity: {
+    how: "Minus and plus around a real number field: the new amount is announced, and the limits are said in words.",
+    steps: [
+      { find: "button[aria-label^=More]", action: "click", after: 700 },
+      { find: "button[aria-label^=More]", action: "click", after: 1400 },
+    ],
+  },
+  "currency-input": {
+    how: "Type the amount however you like; it is tidied when you leave the field, and your server gets a plain number.",
+    steps: [
+      { find: "input[inputmode=decimal]", action: "type", value: "4999.5", after: 400 },
+      { find: "input[inputmode=decimal]", action: "key", value: "Tab", after: 1400 },
+    ],
+  },
+  "phone-input": {
+    how: "Pick a country, then type: digits are grouped the way that country writes them, and one full number is submitted.",
+    steps: [{ find: "input[type=tel]", action: "type", value: "7700900123", after: 1600 }],
+  },
+  "inline-edit": {
+    how: "Click the value to edit it in place: Enter saves, Escape cancels, and focus returns to where it started.",
+    steps: [
+      { find: "button", action: "click", after: 800 },
+      { find: "input[type=text], textarea", action: "type", value: " v2", after: 800 },
+      { find: "button", action: "click", after: 1400 },
+    ],
+  },
+  "color-picker": {
+    how: "Named swatches in one radio group — arrow keys pick, and the choice is announced by name, not just by hex.",
+    steps: [{ find: "input[type=radio]:not(:checked)", action: "click", after: 1400 }],
+  },
+  "back-to-top": {
+    how: "Appears once you have scrolled far enough, and moves focus to the top as well as the page — scrolling alone would strand a keyboard user.",
+  },
+  "reading-progress": {
+    how: "A bar for how far you have read, plus a contents list that marks the section you are in with aria-current.",
+  },
+  "language-switcher": {
+    how: "Each language written in its own language, as a real link with lang and hreflang; Escape closes and returns focus.",
+    steps: [{ find: "button[aria-expanded=false]", action: "click", after: 1600 }],
+  },
   switch: {
     how: "An on/off control on a real checkbox: Space flips it, and the state is said in words as well as shown.",
     steps: [{ find: "input[role=switch]", action: "click", after: 1400 }],

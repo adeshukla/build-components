@@ -83,6 +83,24 @@ import { AvatarGroup, type AvatarGroupConfig } from "@/registry/avatar-group/rea
 
 import { Badge, type BadgeConfig } from "@/registry/badge/react/badge";
 
+import { TagInput, type TagInputConfig } from "@/registry/tag-input/react/tag-input";
+
+import { Quantity, type QuantityConfig } from "@/registry/quantity/react/quantity";
+
+import { CurrencyInput, type CurrencyInputConfig } from "@/registry/currency-input/react/currency-input";
+
+import { PhoneInput, type PhoneInputConfig } from "@/registry/phone-input/react/phone-input";
+
+import { InlineEdit, type InlineEditConfig } from "@/registry/inline-edit/react/inline-edit";
+
+import { ColorPicker, type ColorPickerConfig } from "@/registry/color-picker/react/color-picker";
+
+import { BackToTop, type BackToTopConfig } from "@/registry/back-to-top/react/back-to-top";
+
+import { ReadingProgress, type ReadingProgressConfig } from "@/registry/reading-progress/react/reading-progress";
+
+import { LanguageSwitcher, type LanguageSwitcherConfig } from "@/registry/language-switcher/react/language-switcher";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -240,6 +258,15 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "empty-state" && <EmptyState config={config as unknown as EmptyStateConfig} />}
         {slug === "avatar-group" && <AvatarGroup config={config as unknown as AvatarGroupConfig} />}
         {slug === "badge" && <Badge config={config as unknown as BadgeConfig} />}
+        {slug === "tag-input" && <TagInput config={config as unknown as TagInputConfig} />}
+        {slug === "quantity" && <Quantity config={config as unknown as QuantityConfig} />}
+        {slug === "currency-input" && <CurrencyInput config={config as unknown as CurrencyInputConfig} />}
+        {slug === "phone-input" && <PhoneInput config={config as unknown as PhoneInputConfig} />}
+        {slug === "inline-edit" && <InlineEdit config={config as unknown as InlineEditConfig} />}
+        {slug === "color-picker" && <ColorPicker config={config as unknown as ColorPickerConfig} />}
+        {slug === "back-to-top" && <BackToTop config={config as unknown as BackToTopConfig} />}
+        {slug === "reading-progress" && <ReadingProgress config={config as unknown as ReadingProgressConfig} />}
+        {slug === "language-switcher" && <LanguageSwitcher config={config as unknown as LanguageSwitcherConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

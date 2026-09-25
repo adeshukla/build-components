@@ -1,0 +1,77 @@
+/* Phone input — plain CSS. Colours come from the inline custom properties. */
+.ph {
+  --ph-accent: #2563eb;
+  --ph-accent-text: #1b4ab0;
+  --ph-surface: #ffffff;
+  --ph-sunk: #f4f3f8;
+  --ph-text: #16121f;
+  --ph-muted: #4d4a57;
+  --ph-border: #737373;
+  --ph-error: #b3261e;
+  display: block;
+  max-width: 24rem;
+  background: var(--ph-surface);
+  color: var(--ph-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ph,
+.ph *,
+.ph *::before,
+.ph *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ph--theme-system {
+    --ph-surface: #141019;
+    --ph-sunk: #221d2e;
+    --ph-text: #f6f5fa;
+    --ph-muted: #b6b3c2;
+    --ph-border: #8e8a99;
+    --ph-error: #ff6b6b;
+  }
+}
+
+.ph-label { display: block; font-weight: 500; }
+.ph-hint { margin: 0; color: var(--ph-muted); font-size: 0.875rem; }
+
+.ph-field {
+  display: flex;
+  height: 2.75rem;
+  align-items: stretch;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--ph-border);
+  border-radius: 0.5rem;
+  background: var(--ph-surface);
+}
+.ph-field:has(:focus-visible) { outline: 2px solid var(--ph-accent-text); outline-offset: 2px; }
+.ph-field:has([aria-invalid="true"]) { border: 2px solid var(--ph-error); }
+
+/* A real select: the country is a choice, and the dial code is part of its name. */
+.ph-country {
+  min-width: 0;
+  padding: 0 0.5rem;
+  border: 0;
+  border-right: 1px solid var(--ph-border);
+  background: var(--ph-sunk);
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  outline: none;
+}
+.ph-number {
+  min-width: 0;
+  flex: 1;
+  padding: 0 0.75rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.ph-error { margin: 0.25rem 0 0; color: var(--ph-error); font-size: 0.875rem; font-weight: 500; }
+.ph-error:empty { display: none; }

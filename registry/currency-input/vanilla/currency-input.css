@@ -1,0 +1,76 @@
+/* Currency input — plain CSS. Colours come from the inline custom properties. */
+.ci {
+  --ci-accent: #2563eb;
+  --ci-accent-text: #1b4ab0;
+  --ci-surface: #ffffff;
+  --ci-text: #16121f;
+  --ci-muted: #4d4a57;
+  --ci-border: #737373;
+  --ci-error: #b3261e;
+  display: block;
+  max-width: 20rem;
+  background: var(--ci-surface);
+  color: var(--ci-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ci,
+.ci *,
+.ci *::before,
+.ci *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ci--theme-system {
+    --ci-surface: #141019;
+    --ci-text: #f6f5fa;
+    --ci-muted: #b6b3c2;
+    --ci-border: #8e8a99;
+    --ci-error: #ff6b6b;
+  }
+}
+
+.ci-label { display: block; font-weight: 500; }
+.ci-hint { margin: 0; color: var(--ci-muted); font-size: 0.875rem; }
+
+.ci-field {
+  display: flex;
+  height: 2.75rem;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--ci-border);
+  border-radius: 0.5rem;
+  background: var(--ci-surface);
+}
+.ci-field:has(.ci-input:focus-visible) { outline: 2px solid var(--ci-accent-text); outline-offset: 2px; }
+.ci-field:has([aria-invalid="true"]) { border: 2px solid var(--ci-error); }
+/* The symbol is drawn beside the field, so it is said once, with the field. */
+.ci-symbol { color: var(--ci-muted); }
+.ci-input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  outline: none;
+}
+.ci-error { margin: 0.25rem 0 0; color: var(--ci-error); font-size: 0.875rem; font-weight: 500; }
+.ci-error:empty { display: none; }
+
+.ci-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,94 @@
+/* Language switcher — plain CSS. Colours come from the inline custom properties. */
+.ls {
+  --ls-accent: #2563eb;
+  --ls-accent-text: #1b4ab0;
+  --ls-surface: #ffffff;
+  --ls-hover: #eeecf5;
+  --ls-text: #16121f;
+  --ls-muted: #4d4a57;
+  --ls-border: #737373;
+  --ls-line: #d9d5e4;
+  position: relative;
+  display: inline-block;
+  background: var(--ls-surface);
+  color: var(--ls-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ls,
+.ls *,
+.ls *::before,
+.ls *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ls--theme-system {
+    --ls-surface: #1c1826;
+    --ls-hover: #2a2438;
+    --ls-text: #f6f5fa;
+    --ls-muted: #b6b3c2;
+    --ls-border: #8e8a99;
+    --ls-line: #3a3448;
+  }
+}
+
+.ls-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--ls-border);
+  border-radius: 0.5rem;
+  background: var(--ls-surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.ls-button:focus-visible,
+.ls-link:focus-visible { outline: 2px solid var(--ls-accent-text); outline-offset: 2px; }
+.ls-button svg { width: 1.25rem; height: 1.25rem; }
+.ls-code { color: var(--ls-muted); text-transform: uppercase; }
+
+.ls-list {
+  position: absolute;
+  z-index: 20;
+  min-width: 12rem;
+  margin: 0.25rem 0 0;
+  padding: 0.25rem;
+  border: 1px solid var(--ls-line);
+  border-radius: 0.5rem;
+  background: var(--ls-surface);
+  box-shadow: 0 10px 25px -10px rgb(0 0 0 / 0.3);
+  list-style: none;
+}
+.ls-list[hidden] { display: none; }
+.ls-link {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+}
+.ls-link:hover { background: var(--ls-hover); }
+.ls-link:focus-visible { outline-offset: -2px; }
+.ls-link[aria-current="true"] { font-weight: 600; }
+.ls-link svg { width: 1rem; height: 1rem; }
+.ls-link .ls-code { font-size: 0.875rem; }
+
+.ls-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

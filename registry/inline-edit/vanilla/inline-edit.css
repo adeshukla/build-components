@@ -1,0 +1,105 @@
+/* Inline edit — plain CSS. Colours come from the inline custom properties. */
+.ie {
+  --ie-accent: #2563eb;
+  --ie-accent-text: #1b4ab0;
+  --ie-on-accent: #ffffff;
+  --ie-surface: #ffffff;
+  --ie-hover: #eeecf5;
+  --ie-text: #16121f;
+  --ie-muted: #4d4a57;
+  --ie-border: #737373;
+  --ie-error: #b3261e;
+  display: block;
+  max-width: 28rem;
+  background: var(--ie-surface);
+  color: var(--ie-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ie,
+.ie *,
+.ie *::before,
+.ie *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ie--theme-system {
+    --ie-surface: #141019;
+    --ie-hover: #2a2438;
+    --ie-text: #f6f5fa;
+    --ie-muted: #b6b3c2;
+    --ie-border: #8e8a99;
+    --ie-error: #ff6b6b;
+  }
+}
+
+.ie [hidden] { display: none; }
+.ie-label { margin: 0; color: var(--ie-muted); font-size: 0.875rem; font-weight: 500; }
+
+/* One button, named with both the label and the current value, so it is never just "Edit". */
+.ie-show {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ie-show:hover { background: var(--ie-hover); }
+.ie-show:focus-visible,
+.ie-field:focus-visible,
+.ie-button:focus-visible { outline: 2px solid var(--ie-accent-text); outline-offset: 2px; }
+.ie-value { min-width: 0; overflow-wrap: anywhere; }
+.ie-edit { display: flex; flex-shrink: 0; align-items: center; gap: 0.25rem; color: var(--ie-muted); font-size: 0.875rem; }
+.ie-edit svg { width: 1rem; height: 1rem; }
+
+.ie-form { margin-top: 0.25rem; }
+.ie-field {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ie-border);
+  border-radius: 0.5rem;
+  background: var(--ie-surface);
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+.ie-field[aria-invalid="true"] { border: 2px solid var(--ie-error); }
+.ie-error { margin: 0.25rem 0 0; color: var(--ie-error); font-size: 0.875rem; font-weight: 500; }
+.ie-error:empty { display: none; }
+.ie-hint { margin: 0.25rem 0 0; color: var(--ie-muted); font-size: 0.875rem; }
+.ie-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+
+.ie-button {
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ie-button--main { background: var(--ie-accent); color: var(--ie-on-accent); }
+.ie-button--quiet { border-color: var(--ie-border); background: transparent; color: var(--ie-text); }
+
+.ie-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

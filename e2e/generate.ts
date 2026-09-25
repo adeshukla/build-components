@@ -121,6 +121,33 @@ import { renderAvatarGroupHtml } from "../registry/avatar-group/vanilla/render";
 import { badgeSchema } from "../registry/badge/schema";
 import type { BadgeConfig } from "../registry/badge/react/badge";
 import { renderBadgeHtml } from "../registry/badge/vanilla/render";
+import { tagInputSchema } from "../registry/tag-input/schema";
+import type { TagInputConfig } from "../registry/tag-input/react/tag-input";
+import { renderTagInputHtml } from "../registry/tag-input/vanilla/render";
+import { quantitySchema } from "../registry/quantity/schema";
+import type { QuantityConfig } from "../registry/quantity/react/quantity";
+import { renderQuantityHtml } from "../registry/quantity/vanilla/render";
+import { currencyInputSchema } from "../registry/currency-input/schema";
+import type { CurrencyInputConfig } from "../registry/currency-input/react/currency-input";
+import { renderCurrencyInputHtml } from "../registry/currency-input/vanilla/render";
+import { phoneInputSchema } from "../registry/phone-input/schema";
+import type { PhoneInputConfig } from "../registry/phone-input/react/phone-input";
+import { renderPhoneInputHtml } from "../registry/phone-input/vanilla/render";
+import { inlineEditSchema } from "../registry/inline-edit/schema";
+import type { InlineEditConfig } from "../registry/inline-edit/react/inline-edit";
+import { renderInlineEditHtml } from "../registry/inline-edit/vanilla/render";
+import { colorPickerSchema } from "../registry/color-picker/schema";
+import type { ColorPickerConfig } from "../registry/color-picker/react/color-picker";
+import { renderColorPickerHtml } from "../registry/color-picker/vanilla/render";
+import { backToTopSchema } from "../registry/back-to-top/schema";
+import type { BackToTopConfig } from "../registry/back-to-top/react/back-to-top";
+import { renderBackToTopHtml } from "../registry/back-to-top/vanilla/render";
+import { readingProgressSchema } from "../registry/reading-progress/schema";
+import type { ReadingProgressConfig } from "../registry/reading-progress/react/reading-progress";
+import { renderReadingProgressHtml } from "../registry/reading-progress/vanilla/render";
+import { languageSwitcherSchema } from "../registry/language-switcher/schema";
+import type { LanguageSwitcherConfig } from "../registry/language-switcher/react/language-switcher";
+import { renderLanguageSwitcherHtml } from "../registry/language-switcher/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -553,6 +580,87 @@ export const components: Record<
     variants: {
       default: "",
       solid: "variant=solid&size=sm&showDot=false&theme=dark",
+    },
+  },
+  "tag-input": {
+    exportName: "TagInput",
+    schema: tagInputSchema,
+    renderHtml: (config) => renderTagInputHtml(config as unknown as TagInputConfig),
+    variants: {
+      default: "",
+      loose: "maxTags=3&allowDuplicates=true&hint=&theme=dark",
+    },
+  },
+  "quantity": {
+    exportName: "Quantity",
+    schema: quantitySchema,
+    renderHtml: (config) => renderQuantityHtml(config as unknown as QuantityConfig),
+    variants: {
+      default: "",
+      units: "label=Weight&unit=kg&start=2&min=1&max=20&step=1&theme=dark",
+    },
+  },
+  "currency-input": {
+    exportName: "CurrencyInput",
+    schema: currencyInputSchema,
+    renderHtml: (config) => renderCurrencyInputHtml(config as unknown as CurrencyInputConfig),
+    variants: {
+      default: "",
+      dollars: "symbol=%24&decimals=0&allowNegative=true&start=-45&theme=dark",
+    },
+  },
+  "phone-input": {
+    exportName: "PhoneInput",
+    schema: phoneInputSchema,
+    renderHtml: (config) => renderPhoneInputHtml(config as unknown as PhoneInputConfig),
+    variants: {
+      default: "",
+      us: "startCountry=United%20States&hint=&theme=dark",
+    },
+  },
+  "inline-edit": {
+    exportName: "InlineEdit",
+    schema: inlineEditSchema,
+    renderHtml: (config) => renderInlineEditHtml(config as unknown as InlineEditConfig),
+    variants: {
+      default: "",
+      notes: "label=Notes&multiline=true&required=false&value=Ring%20the%20harbour%20office%20first.&theme=dark",
+    },
+  },
+  "color-picker": {
+    exportName: "ColorPicker",
+    schema: colorPickerSchema,
+    renderHtml: (config) => renderColorPickerHtml(config as unknown as ColorPickerConfig),
+    variants: {
+      default: "",
+      plain: "allowCustom=false&showHex=false&startHex=%2315803d&theme=dark",
+    },
+  },
+  "back-to-top": {
+    exportName: "BackToTop",
+    schema: backToTopSchema,
+    renderHtml: (config) => renderBackToTopHtml(config as unknown as BackToTopConfig),
+    variants: {
+      default: "",
+      corner: "position=left&showLabel=false&showAfter=100&theme=dark",
+    },
+  },
+  "reading-progress": {
+    exportName: "ReadingProgress",
+    schema: readingProgressSchema,
+    renderHtml: (config) => renderReadingProgressHtml(config as unknown as ReadingProgressConfig),
+    variants: {
+      default: "",
+      bar: "showContents=false&theme=dark",
+    },
+  },
+  "language-switcher": {
+    exportName: "LanguageSwitcher",
+    schema: languageSwitcherSchema,
+    renderHtml: (config) => renderLanguageSwitcherHtml(config as unknown as LanguageSwitcherConfig),
+    variants: {
+      default: "",
+      compact: "showCode=false&currentCode=fr&theme=dark",
     },
   },
 };

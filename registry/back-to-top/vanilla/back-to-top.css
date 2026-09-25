@@ -1,0 +1,62 @@
+/* Back to top — plain CSS. Colours come from the inline custom properties. */
+.bt {
+  --bt-accent: #25154d;
+  --bt-on-accent: #ffffff;
+  --bt-surface: #ffffff;
+  --bt-text: #16121f;
+  --bt-border: #737373;
+  display: block;
+  background: var(--bt-surface);
+  color: var(--bt-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.bt,
+.bt *,
+.bt *::before,
+.bt *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .bt--theme-system { --bt-surface: #1c1826; --bt-text: #f6f5fa; --bt-border: #8e8a99; }
+}
+
+/* Example page content, so there is something to scroll. Delete it in your own page. */
+.bt-heading { margin: 0 0 1rem; font-size: 1.5rem; outline: none; }
+.bt-filler { margin: 0 0 1.5rem; max-width: 65ch; }
+
+.bt-button {
+  position: fixed;
+  bottom: 1.5rem;
+  z-index: 40;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--bt-accent);
+  color: var(--bt-on-accent);
+  font: inherit;
+  box-shadow: 0 10px 25px -10px rgb(0 0 0 / 0.5);
+  cursor: pointer;
+}
+.bt--right .bt-button { right: 1.5rem; }
+.bt--left .bt-button { left: 1.5rem; }
+.bt-button[hidden] { display: none; }
+.bt-button:focus-visible { outline: 2px solid var(--bt-accent); outline-offset: 2px; }
+.bt-button svg { width: 1.25rem; height: 1.25rem; }
+
+.bt-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

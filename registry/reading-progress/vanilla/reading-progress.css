@@ -1,0 +1,61 @@
+/* Reading progress — plain CSS. Colours come from the inline custom properties. */
+.rp {
+  --rp-accent: #2563eb;
+  --rp-accent-text: #1b4ab0;
+  --rp-surface: #ffffff;
+  --rp-sunk: #f4f3f8;
+  --rp-text: #16121f;
+  --rp-muted: #4d4a57;
+  --rp-line: #d9d5e4;
+  display: block;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.rp,
+.rp *,
+.rp *::before,
+.rp *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .rp--theme-system {
+    --rp-surface: #141019;
+    --rp-sunk: #221d2e;
+    --rp-text: #f6f5fa;
+    --rp-muted: #b6b3c2;
+    --rp-line: #3a3448;
+  }
+}
+
+.rp-track { position: fixed; inset: 0 0 auto; z-index: 40; height: 0.25rem; background: var(--rp-sunk); }
+.rp-bar { width: 0; height: 100%; background: var(--rp-accent); transition: width 150ms; }
+
+.rp-contents { padding: 1rem; border: 1px solid var(--rp-line); border-radius: 0.5rem; }
+.rp-contents-title { margin: 0; font-weight: 500; }
+.rp-list { display: grid; gap: 0.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.rp-link {
+  display: block;
+  padding: 0.25rem 0;
+  border-radius: 0.25rem;
+  color: var(--rp-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+.rp-link:hover { text-decoration: underline; }
+.rp-link:focus-visible { outline: 2px solid var(--rp-accent-text); outline-offset: 2px; }
+/* The heading you are in is marked for everyone, not just by colour. */
+.rp-link[aria-current="location"] { color: var(--rp-accent-text); font-weight: 600; }
+
+/* Example page content, so there is something to read past. Delete it in your own page. */
+.rp-page { margin-top: 1.5rem; }
+.rp-heading { margin: 1.5rem 0 0.5rem; font-size: 1.125rem; }
+.rp-filler { margin: 0 0 1rem; max-width: 65ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-bar { transition: none; }
+}

@@ -135,6 +135,33 @@ import { renderAvatarGroupHtml } from "@/registry/avatar-group/vanilla/render";
 import { badgeSchema } from "@/registry/badge/schema";
 import * as badgeDocs from "@/registry/badge/docs";
 import { renderBadgeHtml } from "@/registry/badge/vanilla/render";
+import { tagInputSchema } from "@/registry/tag-input/schema";
+import * as tagInputDocs from "@/registry/tag-input/docs";
+import { renderTagInputHtml } from "@/registry/tag-input/vanilla/render";
+import { quantitySchema } from "@/registry/quantity/schema";
+import * as quantityDocs from "@/registry/quantity/docs";
+import { renderQuantityHtml } from "@/registry/quantity/vanilla/render";
+import { currencyInputSchema } from "@/registry/currency-input/schema";
+import * as currencyInputDocs from "@/registry/currency-input/docs";
+import { renderCurrencyInputHtml } from "@/registry/currency-input/vanilla/render";
+import { phoneInputSchema } from "@/registry/phone-input/schema";
+import * as phoneInputDocs from "@/registry/phone-input/docs";
+import { renderPhoneInputHtml } from "@/registry/phone-input/vanilla/render";
+import { inlineEditSchema } from "@/registry/inline-edit/schema";
+import * as inlineEditDocs from "@/registry/inline-edit/docs";
+import { renderInlineEditHtml } from "@/registry/inline-edit/vanilla/render";
+import { colorPickerSchema } from "@/registry/color-picker/schema";
+import * as colorPickerDocs from "@/registry/color-picker/docs";
+import { renderColorPickerHtml } from "@/registry/color-picker/vanilla/render";
+import { backToTopSchema } from "@/registry/back-to-top/schema";
+import * as backToTopDocs from "@/registry/back-to-top/docs";
+import { renderBackToTopHtml } from "@/registry/back-to-top/vanilla/render";
+import { readingProgressSchema } from "@/registry/reading-progress/schema";
+import * as readingProgressDocs from "@/registry/reading-progress/docs";
+import { renderReadingProgressHtml } from "@/registry/reading-progress/vanilla/render";
+import { languageSwitcherSchema } from "@/registry/language-switcher/schema";
+import * as languageSwitcherDocs from "@/registry/language-switcher/docs";
+import { renderLanguageSwitcherHtml } from "@/registry/language-switcher/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -458,6 +485,69 @@ export const registry = {
     schema: badgeSchema,
     ...badgeDocs,
     renderHtml: (config) => renderBadgeHtml(config as never),
+  },
+  "tag-input": {
+    title: "Tag input",
+    description: "An accessible tag field with removable chips and announced changes.",
+    schema: tagInputSchema,
+    ...tagInputDocs,
+    renderHtml: (config) => renderTagInputHtml(config as never),
+  },
+  "quantity": {
+    title: "Quantity stepper",
+    description: "A quantity stepper with a typeable field and announced limits.",
+    schema: quantitySchema,
+    ...quantityDocs,
+    renderHtml: (config) => renderQuantityHtml(config as never),
+  },
+  "currency-input": {
+    title: "Currency input",
+    description: "A money field that tidies on blur and submits a plain number.",
+    schema: currencyInputSchema,
+    ...currencyInputDocs,
+    renderHtml: (config) => renderCurrencyInputHtml(config as never),
+  },
+  "phone-input": {
+    title: "Phone input",
+    description: "A phone field with country codes and local grouping.",
+    schema: phoneInputSchema,
+    ...phoneInputDocs,
+    renderHtml: (config) => renderPhoneInputHtml(config as never),
+  },
+  "inline-edit": {
+    title: "Inline edit",
+    description: "Edit a value in place without losing focus or context.",
+    schema: inlineEditSchema,
+    ...inlineEditDocs,
+    renderHtml: (config) => renderInlineEditHtml(config as never),
+  },
+  "color-picker": {
+    title: "Colour picker",
+    description: "Named colour swatches with an optional custom colour.",
+    schema: colorPickerSchema,
+    ...colorPickerDocs,
+    renderHtml: (config) => renderColorPickerHtml(config as never),
+  },
+  "back-to-top": {
+    title: "Back to top",
+    description: "A back-to-top button that moves focus, not just the scroll position.",
+    schema: backToTopSchema,
+    ...backToTopDocs,
+    renderHtml: (config) => renderBackToTopHtml(config as never),
+  },
+  "reading-progress": {
+    title: "Reading progress",
+    description: "Reading progress with a contents list that follows the page.",
+    schema: readingProgressSchema,
+    ...readingProgressDocs,
+    renderHtml: (config) => renderReadingProgressHtml(config as never),
+  },
+  "language-switcher": {
+    title: "Language switcher",
+    description: "A language menu of real links, each named in its own language.",
+    schema: languageSwitcherSchema,
+    ...languageSwitcherDocs,
+    renderHtml: (config) => renderLanguageSwitcherHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

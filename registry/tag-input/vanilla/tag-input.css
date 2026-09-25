@@ -1,0 +1,92 @@
+/* Tag input — plain CSS. Colours come from the inline custom properties. */
+.ti {
+  --ti-accent: #2563eb;
+  --ti-accent-text: #1b4ab0;
+  --ti-surface: #ffffff;
+  --ti-sunk: #eeecf5;
+  --ti-text: #16121f;
+  --ti-muted: #4d4a57;
+  --ti-border: #737373;
+  --ti-line: #d9d5e4;
+  display: block;
+  max-width: 28rem;
+  background: var(--ti-surface);
+  color: var(--ti-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ti,
+.ti *,
+.ti *::before,
+.ti *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ti--theme-system {
+    --ti-surface: #141019;
+    --ti-sunk: #2a2438;
+    --ti-text: #f6f5fa;
+    --ti-muted: #b6b3c2;
+    --ti-border: #8e8a99;
+    --ti-line: #3a3448;
+  }
+}
+
+.ti-label { display: block; font-weight: 500; }
+.ti-hint { margin: 0; color: var(--ti-muted); font-size: 0.875rem; }
+
+/* The chips sit outside the field, so the field's own value is only what is being typed. */
+.ti-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
+.ti-chips:empty { display: none; }
+.ti-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--ti-sunk);
+  font-size: 0.875rem;
+}
+.ti-remove {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--ti-muted);
+  cursor: pointer;
+}
+.ti-remove:hover { background: rgb(0 0 0 / 0.1); color: var(--ti-text); }
+.ti-remove:focus-visible { outline: 2px solid var(--ti-accent-text); outline-offset: 1px; }
+.ti-remove svg { width: 0.875rem; height: 0.875rem; }
+
+.ti-field {
+  width: 100%;
+  height: 2.75rem;
+  margin-top: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--ti-border);
+  border-radius: 0.5rem;
+  background: var(--ti-surface);
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+.ti-field:focus-visible { outline: 2px solid var(--ti-accent-text); outline-offset: 2px; }
+.ti-count { margin: 0.25rem 0 0; color: var(--ti-muted); font-size: 0.875rem; }
+
+.ti-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

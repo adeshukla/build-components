@@ -1,0 +1,83 @@
+/* Quantity stepper — plain CSS. Colours come from the inline custom properties. */
+.qt {
+  --qt-accent: #2563eb;
+  --qt-accent-text: #1b4ab0;
+  --qt-surface: #ffffff;
+  --qt-text: #16121f;
+  --qt-muted: #4d4a57;
+  --qt-border: #737373;
+  --qt-hover: #eeecf5;
+  display: block;
+  background: var(--qt-surface);
+  color: var(--qt-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.qt,
+.qt *,
+.qt *::before,
+.qt *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .qt--theme-system {
+    --qt-surface: #141019;
+    --qt-text: #f6f5fa;
+    --qt-muted: #b6b3c2;
+    --qt-border: #8e8a99;
+    --qt-hover: #2a2438;
+  }
+}
+
+.qt-label { display: block; font-weight: 500; }
+.qt-unit { color: var(--qt-muted); font-weight: 400; }
+.qt-hint { margin: 0; color: var(--qt-muted); font-size: 0.875rem; }
+
+.qt-group { display: inline-flex; align-items: stretch; margin-top: 0.5rem; overflow: hidden; border: 1px solid var(--qt-border); border-radius: 0.5rem; }
+.qt-step {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--qt-text);
+  cursor: pointer;
+}
+.qt-step:hover { background: var(--qt-hover); }
+.qt-step:focus-visible { outline: 2px solid var(--qt-accent-text); outline-offset: -2px; }
+.qt-step[aria-disabled="true"] { color: var(--qt-muted); cursor: default; }
+.qt-step[aria-disabled="true"]:hover { background: transparent; }
+.qt-step svg { width: 1rem; height: 1rem; }
+
+/* A real number input: people can type a quantity instead of pressing minus eleven times. */
+.qt-input {
+  width: 4rem;
+  border: 0;
+  border-inline: 1px solid var(--qt-border);
+  background: var(--qt-surface);
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  outline: none;
+  appearance: textfield;
+}
+.qt-input::-webkit-inner-spin-button,
+.qt-input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.qt-input:focus-visible { outline: 2px solid var(--qt-accent-text); outline-offset: -2px; }
+
+.qt-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
