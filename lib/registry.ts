@@ -262,6 +262,28 @@ import { maskedInputSchema } from "@/registry/masked-input/schema";
 import * as maskedInputDocs from "@/registry/masked-input/docs";
 import { renderMaskedInputHtml } from "@/registry/masked-input/vanilla/render";
 
+import { dateRangeSchema } from "@/registry/date-range/schema";
+import * as dateRangeDocs from "@/registry/date-range/docs";
+import { renderDateRangeHtml } from "@/registry/date-range/vanilla/render";
+import { timeRangeSchema } from "@/registry/time-range/schema";
+import * as timeRangeDocs from "@/registry/time-range/docs";
+import { renderTimeRangeHtml } from "@/registry/time-range/vanilla/render";
+import { dualSliderSchema } from "@/registry/dual-slider/schema";
+import * as dualSliderDocs from "@/registry/dual-slider/docs";
+import { renderDualSliderHtml } from "@/registry/dual-slider/vanilla/render";
+import { pinPadSchema } from "@/registry/pin-pad/schema";
+import * as pinPadDocs from "@/registry/pin-pad/docs";
+import { renderPinPadHtml } from "@/registry/pin-pad/vanilla/render";
+import { autosaveFieldSchema } from "@/registry/autosave-field/schema";
+import * as autosaveFieldDocs from "@/registry/autosave-field/docs";
+import { renderAutosaveFieldHtml } from "@/registry/autosave-field/vanilla/render";
+import { errorSummarySchema } from "@/registry/error-summary/schema";
+import * as errorSummaryDocs from "@/registry/error-summary/docs";
+import { renderErrorSummaryHtml } from "@/registry/error-summary/vanilla/render";
+import { addressFieldsSchema } from "@/registry/address-fields/schema";
+import * as addressFieldsDocs from "@/registry/address-fields/docs";
+import { renderAddressFieldsHtml } from "@/registry/address-fields/vanilla/render";
+
 export type RegistryEntry = {
   title: string;
   description: string;
@@ -878,6 +900,55 @@ export const registry = {
     schema: maskedInputSchema,
     ...maskedInputDocs,
     renderHtml: (config) => renderMaskedInputHtml(config as never),
+  },
+  "date-range": {
+    title: "Date range",
+    description: "A from-and-to pair that cannot be set backwards.",
+    schema: dateRangeSchema,
+    ...dateRangeDocs,
+    renderHtml: (config) => renderDateRangeHtml(config as never),
+  },
+  "time-range": {
+    title: "Time range",
+    description: "A start and an end, with the length spelled out.",
+    schema: timeRangeSchema,
+    ...timeRangeDocs,
+    renderHtml: (config) => renderTimeRangeHtml(config as never),
+  },
+  "dual-slider": {
+    title: "Dual range slider",
+    description: "Two ends of a range, both reachable from a keyboard.",
+    schema: dualSliderSchema,
+    ...dualSliderDocs,
+    renderHtml: (config) => renderDualSliderHtml(config as never),
+  },
+  "pin-pad": {
+    title: "PIN pad",
+    description: "A numeric pad whose value is one hidden field.",
+    schema: pinPadSchema,
+    ...pinPadDocs,
+    renderHtml: (config) => renderPinPadHtml(config as never),
+  },
+  "autosave-field": {
+    title: "Autosaving field",
+    description: "A field that saves itself and says so in words.",
+    schema: autosaveFieldSchema,
+    ...autosaveFieldDocs,
+    renderHtml: (config) => renderAutosaveFieldHtml(config as never),
+  },
+  "error-summary": {
+    title: "Form error summary",
+    description: "The list of problems a form has, done properly.",
+    schema: errorSummarySchema,
+    ...errorSummaryDocs,
+    renderHtml: (config) => renderErrorSummaryHtml(config as never),
+  },
+  "address-fields": {
+    title: "Address fields",
+    description: "An address block that knows one label does not fit the world.",
+    schema: addressFieldsSchema,
+    ...addressFieldsDocs,
+    renderHtml: (config) => renderAddressFieldsHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

@@ -3,6 +3,13 @@
 import { demos, type DemoStep } from "@/lib/demos";
 import { fullBleed } from "@/lib/parts";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { DateRange, type DateRangeConfig } from "@/registry/date-range/react/date-range";
+import { TimeRange, type TimeRangeConfig } from "@/registry/time-range/react/time-range";
+import { DualSlider, type DualSliderConfig } from "@/registry/dual-slider/react/dual-slider";
+import { PinPad, type PinPadConfig } from "@/registry/pin-pad/react/pin-pad";
+import { AutosaveField, type AutosaveFieldConfig } from "@/registry/autosave-field/react/autosave-field";
+import { ErrorSummary, type ErrorSummaryConfig } from "@/registry/error-summary/react/error-summary";
+import { AddressFields, type AddressFieldsConfig } from "@/registry/address-fields/react/address-fields";
 import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
 import { Cart, type CartConfig } from "@/registry/cart/react/cart";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
@@ -366,6 +373,13 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "toggle-group" && <ToggleGroup config={config as unknown as ToggleGroupConfig} />}
         {slug === "unit-input" && <UnitInput config={config as unknown as UnitInputConfig} />}
         {slug === "masked-input" && <MaskedInput config={config as unknown as MaskedInputConfig} />}
+        {slug === "date-range" && <DateRange config={config as unknown as DateRangeConfig} />}
+        {slug === "time-range" && <TimeRange config={config as unknown as TimeRangeConfig} />}
+        {slug === "dual-slider" && <DualSlider config={config as unknown as DualSliderConfig} />}
+        {slug === "pin-pad" && <PinPad config={config as unknown as PinPadConfig} />}
+        {slug === "autosave-field" && <AutosaveField config={config as unknown as AutosaveFieldConfig} />}
+        {slug === "error-summary" && <ErrorSummary config={config as unknown as ErrorSummaryConfig} />}
+        {slug === "address-fields" && <AddressFields config={config as unknown as AddressFieldsConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

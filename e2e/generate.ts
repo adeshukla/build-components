@@ -247,6 +247,27 @@ import { renderUnitInputHtml } from "../registry/unit-input/vanilla/render";
 import { maskedInputSchema } from "../registry/masked-input/schema";
 import type { MaskedInputConfig } from "../registry/masked-input/react/masked-input";
 import { renderMaskedInputHtml } from "../registry/masked-input/vanilla/render";
+import { dateRangeSchema } from "../registry/date-range/schema";
+import type { DateRangeConfig } from "../registry/date-range/react/date-range";
+import { renderDateRangeHtml } from "../registry/date-range/vanilla/render";
+import { timeRangeSchema } from "../registry/time-range/schema";
+import type { TimeRangeConfig } from "../registry/time-range/react/time-range";
+import { renderTimeRangeHtml } from "../registry/time-range/vanilla/render";
+import { dualSliderSchema } from "../registry/dual-slider/schema";
+import type { DualSliderConfig } from "../registry/dual-slider/react/dual-slider";
+import { renderDualSliderHtml } from "../registry/dual-slider/vanilla/render";
+import { pinPadSchema } from "../registry/pin-pad/schema";
+import type { PinPadConfig } from "../registry/pin-pad/react/pin-pad";
+import { renderPinPadHtml } from "../registry/pin-pad/vanilla/render";
+import { autosaveFieldSchema } from "../registry/autosave-field/schema";
+import type { AutosaveFieldConfig } from "../registry/autosave-field/react/autosave-field";
+import { renderAutosaveFieldHtml } from "../registry/autosave-field/vanilla/render";
+import { errorSummarySchema } from "../registry/error-summary/schema";
+import type { ErrorSummaryConfig } from "../registry/error-summary/react/error-summary";
+import { renderErrorSummaryHtml } from "../registry/error-summary/vanilla/render";
+import { addressFieldsSchema } from "../registry/address-fields/schema";
+import type { AddressFieldsConfig } from "../registry/address-fields/react/address-fields";
+import { renderAddressFieldsHtml } from "../registry/address-fields/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -1058,6 +1079,69 @@ export const components: Record<
     variants: {
       default: "",
       date: "mask=%23%23%2F%23%23%2F%23%23%23%23&label=Date+of+birth&name=dob&errorText=Use+the+day%2C+month+and+year.&theme=dark",
+    },
+  },
+  "date-range": {
+    exportName: "DateRange",
+    schema: dateRangeSchema,
+    renderHtml: (config) => renderDateRangeHtml(config as unknown as DateRangeConfig),
+    variants: {
+      default: "",
+      days: "spanUnit=days&min=2026-01-01&theme=dark",
+    },
+  },
+  "time-range": {
+    exportName: "TimeRange",
+    schema: timeRangeSchema,
+    renderHtml: (config) => renderTimeRangeHtml(config as unknown as TimeRangeConfig),
+    variants: {
+      default: "",
+      overnight: "allowOvernight=true&earliest=&latest=&theme=dark",
+    },
+  },
+  "dual-slider": {
+    exportName: "DualSlider",
+    schema: dualSliderSchema,
+    renderHtml: (config) => renderDualSliderHtml(config as unknown as DualSliderConfig),
+    variants: {
+      default: "",
+      percent: "min=0&max=100&step=5&minGap=5&startLow=20&startHigh=80&valuePrefix=&valueSuffix=%25&showBar=false&theme=dark",
+    },
+  },
+  "pin-pad": {
+    exportName: "PinPad",
+    schema: pinPadSchema,
+    renderHtml: (config) => renderPinPadHtml(config as unknown as PinPadConfig),
+    variants: {
+      default: "",
+      calculator: "length=6&layout=calculator&showClear=false&theme=dark",
+    },
+  },
+  "autosave-field": {
+    exportName: "AutosaveField",
+    schema: autosaveFieldSchema,
+    renderHtml: (config) => renderAutosaveFieldHtml(config as unknown as AutosaveFieldConfig),
+    variants: {
+      default: "",
+      fails: "demoOutcome=fails&theme=dark",
+    },
+  },
+  "error-summary": {
+    exportName: "ErrorSummary",
+    schema: errorSummarySchema,
+    renderHtml: (config) => renderErrorSummaryHtml(config as unknown as ErrorSummaryConfig),
+    variants: {
+      default: "",
+      counted: "countInHeading=true&theme=dark",
+    },
+  },
+  "address-fields": {
+    exportName: "AddressFields",
+    schema: addressFieldsSchema,
+    renderHtml: (config) => renderAddressFieldsHtml(config as unknown as AddressFieldsConfig),
+    variants: {
+      default: "",
+      compact: "showLine2=false&countryFirst=false&theme=dark",
     },
   },
 };

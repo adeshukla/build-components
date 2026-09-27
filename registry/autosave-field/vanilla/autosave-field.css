@@ -1,0 +1,70 @@
+/* Autosaving field — plain CSS. Colours come from the inline custom properties. */
+.asf {
+  --asf-accent: #0f766e;
+  --asf-accent-text: #0b5a54;
+  --asf-surface: #ffffff;
+  --asf-sunk: #f4f3f8;
+  --asf-text: #16121f;
+  --asf-muted: #4d4a57;
+  --asf-line: #c9c4d6;
+  --asf-error: #b42318;
+  display: block;
+  background: var(--asf-surface);
+  color: var(--asf-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.asf,
+.asf *,
+.asf *::before,
+.asf *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .asf--theme-system {
+    --asf-surface: #141019;
+    --asf-sunk: #221d2e;
+    --asf-text: #f6f5fa;
+    --asf-muted: #b6b3c2;
+    --asf-line: #4a4459;
+    --asf-error: #ff9d95;
+  }
+}
+
+.asf-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.asf-label { font-weight: 500; }
+.asf-hint { margin: 0.25rem 0 0; color: var(--asf-muted); font-size: 0.875rem; }
+
+/* Polite, never assertive: an alert on every pause would interrupt the typing it reports on. */
+.asf-status { margin: 0; color: var(--asf-muted); font-size: 0.875rem; }
+.asf-status[data-state="error"] { color: var(--asf-error); }
+
+.asf-field {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--asf-line);
+  border-radius: 0.375rem;
+  background: var(--asf-sunk);
+  color: var(--asf-text);
+  font: inherit;
+  resize: vertical;
+}
+.asf-field:focus-visible { outline: 2px solid var(--asf-accent-text); outline-offset: 2px; }
+
+.asf-retry {
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--asf-line);
+  border-radius: 0.375rem;
+  background: var(--asf-sunk);
+  color: var(--asf-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.asf-retry:focus-visible { outline: 2px solid var(--asf-accent-text); outline-offset: 2px; }

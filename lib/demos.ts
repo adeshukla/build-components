@@ -471,4 +471,45 @@ export const demos: Record<string, Demo> = {
       { find: "input[type=text]", action: "type", value: "tr112ab", after: 1600 },
     ],
   },
+  "date-range": {
+    how: "Each field narrows the other's limits, so the browser's own picker greys out the impossible days rather than refusing them afterwards.",
+    steps: [
+      { find: "input[type=date]", action: "type", value: "2026-03-04", after: 700 },
+      { find: "input[type=date] ~ *, input[type=date]:nth-of-type(2)", action: "click", after: 400 },
+    ],
+  },
+  "time-range": {
+    how: "The length is said as three hours thirty minutes rather than 3:30, which reads as a time of day; an overnight span is an option, not an error.",
+  },
+  "dual-slider": {
+    how: "Two separate sliders rather than two thumbs on one track, because overlapping thumbs are very hard to reach with a keyboard; aria-valuetext says £320, not 320.",
+    steps: [
+      { find: "input[type=range]", action: "key", value: "ArrowRight", after: 500 },
+    ],
+  },
+  "pin-pad": {
+    how: "The status line says three of four digits entered and never the digits themselves, because a live region is read out loud in the room.",
+    steps: [
+      { find: "[data-digit='4'], button:nth-of-type(4)", action: "click", after: 400 },
+      { find: "[data-digit='2'], button:nth-of-type(2)", action: "click", after: 1200 },
+    ],
+  },
+  "autosave-field": {
+    how: "The state is a polite status beside the label — an alert would interrupt the very typing it is reporting on — and a failure leaves the text in place with one button.",
+    steps: [
+      { find: "textarea", action: "type", value: "Saved on its own.", after: 2200 },
+    ],
+  },
+  "error-summary": {
+    how: "Focus moves to the summary rather than to the first bad field, so the whole list is read before anything is corrected; each line is a link to its answer.",
+    steps: [
+      { find: "button[type=submit], .esm-submit", action: "click", after: 1600 },
+    ],
+  },
+  "address-fields": {
+    how: "Every field carries its autocomplete token so a browser fills the block in one go, and the country decides what the postcode is called and whether there is a region field at all.",
+    steps: [
+      { find: "select", action: "click", after: 1200 },
+    ],
+  },
 };

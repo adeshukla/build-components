@@ -1,0 +1,60 @@
+/* Date range — plain CSS. Colours come from the inline custom properties. */
+.dr {
+  --dr-accent: #1d4ed8;
+  --dr-accent-text: #1a41b8;
+  --dr-surface: #ffffff;
+  --dr-sunk: #f4f3f8;
+  --dr-text: #16121f;
+  --dr-muted: #4d4a57;
+  --dr-line: #c9c4d6;
+  --dr-error: #b42318;
+  display: block;
+  background: var(--dr-surface);
+  color: var(--dr-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.dr,
+.dr *,
+.dr *::before,
+.dr *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .dr--theme-system {
+    --dr-surface: #141019;
+    --dr-sunk: #221d2e;
+    --dr-text: #f6f5fa;
+    --dr-muted: #b6b3c2;
+    --dr-line: #4a4459;
+    --dr-error: #ff9d95;
+  }
+}
+
+.dr-set { margin: 0; padding: 0; border: 0; }
+.dr-legend { padding: 0; font-weight: 500; }
+.dr-hint { margin: 0.25rem 0 0; color: var(--dr-muted); font-size: 0.875rem; }
+
+.dr-pair { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.75rem; }
+.dr-field { flex: 1 1 10rem; min-width: 10rem; }
+.dr-label { display: block; font-size: 0.875rem; font-weight: 500; }
+
+.dr-input {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--dr-line);
+  border-radius: 0.375rem;
+  background: var(--dr-sunk);
+  color: var(--dr-text);
+  font: inherit;
+}
+.dr-input:focus-visible { outline: 2px solid var(--dr-accent-text); outline-offset: 2px; }
+.dr-input[aria-invalid="true"] { border-color: var(--dr-error); }
+
+.dr-error { margin: 0.5rem 0 0; color: var(--dr-error); font-size: 0.875rem; }
+.dr-status { margin: 0.75rem 0 0; color: var(--dr-muted); font-size: 0.875rem; }
