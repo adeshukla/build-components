@@ -16,7 +16,7 @@ test("hovering a card previews the real component and explains it", async ({ pag
     if (message.type() === "error") errors.push(message.text());
   });
   await page.goto("/");
-  const card = page.locator("#catalogue-list li").filter({ hasText: "Almanac" }).first();
+  const card = page.locator("#catalogue-list li").filter({ hasText: "Date picker" }).first();
   await card.hover();
 
   const panel = card.locator("[inert]");
@@ -34,10 +34,47 @@ test("hovering a card previews the real component and explains it", async ({ pag
 
 test("the preview opens on keyboard focus as well as hover", async ({ page }) => {
   await page.goto("/");
-  const card = page.locator("#catalogue-list li").filter({ hasText: "Porthole" }).first();
-  await card.getByRole("link", { name: "Porthole" }).focus();
+  const card = page.locator("#catalogue-list li").filter({ hasText: "Modal dialog" }).first();
+  await card.getByRole("link", { name: "Modal dialog" }).focus();
   await expect(card.locator("[inert]")).toBeVisible();
   // Inert: the frame inside can never swallow the Tab key.
   await page.keyboard.press("Tab");
   await expect(page.locator("#catalogue-list li [inert]")).toHaveCount(0);
+});
+
+test("searching the catalogue narrows it, and says how many are left", async ({ page }) => {
+  await page.goto("/");
+  const search = page.getByRole("searchbox", { name: "Search the catalogue" });
+  await search.fill("dialog");
+  await expect(page.getByRole("status")).toHaveText(/parts? matching “dialog”/);
+  const names = await page.locator("#catalogue-list li h3").allTextContents();
+  expect(names).toContain("Modal dialog");
+  // The date picker is in there too, and should be: its pattern is a date picker dialog.
+  expect(names).not.toContain("Badge");
+
+  // It matches what a part does and its URL too, not only its name.
+  await search.fill("color");
+  await expect(page.locator("#catalogue-list li h3")).toHaveText(["Colour picker"]);
+});
+
+test("a search with no hits offers a way out instead of an empty page", async ({ page }) => {
+  await page.goto("/");
+  const search = page.getByRole("searchbox", { name: "Search the catalogue" });
+  await search.fill("kombucha");
+  await expect(page.getByRole("status")).toHaveText("Nothing matches. Try a shorter word, or clear the search.");
+  await page.getByRole("button", { name: "Clear the search" }).click();
+  await expect(search).toHaveValue("");
+  await expect(search).toBeFocused();
+  await expect(page.locator("#catalogue-list li").first()).toBeVisible();
+});
+
+test("slash jumps to the search box, but not while typing in it", async ({ page }) => {
+  await page.goto("/");
+  const search = page.getByRole("searchbox", { name: "Search the catalogue" });
+  // The shortcut is wired up on hydration, so wait for the box before pressing anything.
+  await expect(search).toBeVisible();
+  await page.keyboard.press("/");
+  await expect(search).toBeFocused();
+  await page.keyboard.type("table");
+  await expect(search).toHaveValue("table");
 });
