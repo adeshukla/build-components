@@ -1,0 +1,81 @@
+/* Anchor navigation — plain CSS. Colours come from the inline custom properties. */
+.an {
+  --an-accent: #7c3aed;
+  --an-accent-text: #6021d6;
+  --an-surface: #ffffff;
+  --an-sunk: #f4f3f8;
+  --an-text: #16121f;
+  --an-muted: #4d4a57;
+  --an-line: #c9c4d6;
+  display: block;
+  background: var(--an-surface);
+  color: var(--an-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.an,
+.an *,
+.an *::before,
+.an *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .an--theme-system {
+    --an-surface: #141019;
+    --an-sunk: #221d2e;
+    --an-text: #f6f5fa;
+    --an-muted: #b6b3c2;
+    --an-line: #4a4459;
+  }
+}
+
+.an-layout { display: grid; gap: 2rem; }
+@media (min-width: 48rem) {
+  .an-layout { grid-template-columns: 14rem 1fr; }
+  .an--sticky .an-nav { position: sticky; top: 1rem; }
+}
+
+.an-nav { align-self: start; }
+.an-heading {
+  margin: 0;
+  color: var(--an-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.an-list { margin: 0.5rem 0 0; padding: 0; border-left: 1px solid var(--an-line); list-style: none; }
+
+.an-link {
+  display: block;
+  min-height: 2.75rem;
+  margin-left: -1px;
+  padding: 0.625rem 0 0.625rem 0.75rem;
+  border-left: 2px solid transparent;
+  color: var(--an-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.an-link:hover { color: var(--an-text); }
+.an-link:focus-visible { outline: 2px solid var(--an-accent-text); outline-offset: 2px; }
+
+/* The current section is marked by weight and a bar as well as colour, never by colour alone. */
+.an-link[aria-current="true"] {
+  border-left-color: var(--an-accent);
+  color: var(--an-accent-text);
+  font-weight: 600;
+}
+.an-number { margin-right: 0.5rem; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 0.75rem; }
+
+.an-body { display: grid; gap: 2.5rem; }
+.an-title { margin: 0; font-size: 1.25rem; font-weight: 600; }
+.an-title:focus-visible { outline: 2px solid var(--an-accent-text); outline-offset: 2px; }
+.an-text { margin: 0.5rem 0 0; color: var(--an-muted); }
+.an-block { height: 6rem; margin-top: 1rem; border-radius: 0.375rem; background: var(--an-sunk); }
+
+/* Smooth scrolling is a request, not a default: it makes some people ill. */
+@media (prefers-reduced-motion: reduce) {
+  .an { scroll-behavior: auto; }
+}
