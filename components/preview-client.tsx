@@ -10,6 +10,14 @@ import { PinPad, type PinPadConfig } from "@/registry/pin-pad/react/pin-pad";
 import { AutosaveField, type AutosaveFieldConfig } from "@/registry/autosave-field/react/autosave-field";
 import { ErrorSummary, type ErrorSummaryConfig } from "@/registry/error-summary/react/error-summary";
 import { AddressFields, type AddressFieldsConfig } from "@/registry/address-fields/react/address-fields";
+import { SkipLinks, type SkipLinksConfig } from "@/registry/skip-links/react/skip-links";
+import { AnchorNav, type AnchorNavConfig } from "@/registry/anchor-nav/react/anchor-nav";
+import { CommandMenu, type CommandMenuConfig } from "@/registry/command-menu/react/command-menu";
+import { MenuBar, type MenuBarConfig } from "@/registry/menu-bar/react/menu-bar";
+import { CursorPagination, type CursorPaginationConfig } from "@/registry/cursor-pagination/react/cursor-pagination";
+import { NavProgress, type NavProgressConfig } from "@/registry/nav-progress/react/nav-progress";
+import { StickyHeader, type StickyHeaderConfig } from "@/registry/sticky-header/react/sticky-header";
+import { HoverCard, type HoverCardConfig } from "@/registry/hover-card/react/hover-card";
 import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
 import { Cart, type CartConfig } from "@/registry/cart/react/cart";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
@@ -380,6 +388,14 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "autosave-field" && <AutosaveField config={config as unknown as AutosaveFieldConfig} />}
         {slug === "error-summary" && <ErrorSummary config={config as unknown as ErrorSummaryConfig} />}
         {slug === "address-fields" && <AddressFields config={config as unknown as AddressFieldsConfig} />}
+        {slug === "skip-links" && <SkipLinks config={config as unknown as SkipLinksConfig} />}
+        {slug === "anchor-nav" && <AnchorNav config={config as unknown as AnchorNavConfig} />}
+        {slug === "command-menu" && <CommandMenu config={config as unknown as CommandMenuConfig} />}
+        {slug === "menu-bar" && <MenuBar config={config as unknown as MenuBarConfig} />}
+        {slug === "cursor-pagination" && <CursorPagination config={config as unknown as CursorPaginationConfig} />}
+        {slug === "nav-progress" && <NavProgress config={config as unknown as NavProgressConfig} />}
+        {slug === "sticky-header" && <StickyHeader config={config as unknown as StickyHeaderConfig} />}
+        {slug === "hover-card" && <HoverCard config={config as unknown as HoverCardConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

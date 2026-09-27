@@ -1,0 +1,112 @@
+/* Shrinking sticky header — plain CSS. Colours come from the inline custom properties. */
+.sth {
+  --sth-accent: #1d4ed8;
+  --sth-accent-text: #1a41b8;
+  --sth-on-accent: #ffffff;
+  --sth-surface: #ffffff;
+  --sth-sunk: #f4f3f8;
+  --sth-text: #16121f;
+  --sth-muted: #4d4a57;
+  --sth-line: #c9c4d6;
+  display: block;
+  background: var(--sth-surface);
+  color: var(--sth-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.sth,
+.sth *,
+.sth *::before,
+.sth *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .sth--theme-system {
+    --sth-surface: #141019;
+    --sth-sunk: #221d2e;
+    --sth-text: #f6f5fa;
+    --sth-muted: #b6b3c2;
+    --sth-line: #4a4459;
+  }
+}
+
+.sth-scroller {
+  position: relative;
+  height: 24rem;
+  overflow-y: auto;
+  border: 1px solid var(--sth-line);
+  border-radius: 0.375rem;
+  /* Keeps a heading jumped to from landing underneath the header. */
+  scroll-padding-top: 7rem;
+}
+
+.sth-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--sth-line);
+  background: var(--sth-surface);
+  transition: padding 0.2s, transform 0.2s;
+}
+.sth-header[data-shrunk="true"] { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.sth-header[data-away="true"] { transform: translateY(-100%); }
+
+.sth-title { margin: 0; font-size: 1.25rem; font-weight: 600; }
+.sth-header[data-shrunk="true"] .sth-title { font-size: 1rem; }
+
+.sth-nav { order: 3; width: 100%; }
+@media (min-width: 40rem) {
+  .sth-nav { order: 0; width: auto; }
+}
+.sth-list { display: flex; flex-wrap: wrap; gap: 0 1rem; margin: 0; padding: 0; font-size: 0.875rem; list-style: none; }
+.sth-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--sth-muted);
+  text-decoration: none;
+}
+.sth-link:hover { color: var(--sth-text); }
+.sth-link:focus-visible { outline: 2px solid var(--sth-accent-text); outline-offset: 2px; }
+
+.sth-action {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--sth-accent);
+  color: var(--sth-on-accent);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sth-action:focus-visible { outline: 2px solid var(--sth-accent-text); outline-offset: 2px; }
+
+.sth-body { display: grid; gap: 2rem; padding: 1rem; }
+.sth-section-title { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.sth-text { margin: 0.25rem 0 0; color: var(--sth-muted); }
+.sth-block { height: 7rem; margin-top: 0.75rem; border-radius: 0.375rem; background: var(--sth-sunk); }
+
+/*
+ * Hiding a header is motion in the way that matters, so it stays put for anyone who asks for less of
+ * it — and on a short viewport, where a sticky bar would eat the screen (WCAG 1.4.10 Reflow).
+ */
+@media (prefers-reduced-motion: reduce) {
+  .sth-header { transition: none; }
+  .sth-header[data-away="true"] { transform: none; }
+}
+@media (max-height: 25rem) {
+  .sth-header { position: static; }
+  .sth-header[data-away="true"] { transform: none; }
+}

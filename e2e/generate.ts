@@ -268,6 +268,30 @@ import { renderErrorSummaryHtml } from "../registry/error-summary/vanilla/render
 import { addressFieldsSchema } from "../registry/address-fields/schema";
 import type { AddressFieldsConfig } from "../registry/address-fields/react/address-fields";
 import { renderAddressFieldsHtml } from "../registry/address-fields/vanilla/render";
+import { skipLinksSchema } from "../registry/skip-links/schema";
+import type { SkipLinksConfig } from "../registry/skip-links/react/skip-links";
+import { renderSkipLinksHtml } from "../registry/skip-links/vanilla/render";
+import { anchorNavSchema } from "../registry/anchor-nav/schema";
+import type { AnchorNavConfig } from "../registry/anchor-nav/react/anchor-nav";
+import { renderAnchorNavHtml } from "../registry/anchor-nav/vanilla/render";
+import { commandMenuSchema } from "../registry/command-menu/schema";
+import type { CommandMenuConfig } from "../registry/command-menu/react/command-menu";
+import { renderCommandMenuHtml } from "../registry/command-menu/vanilla/render";
+import { menuBarSchema } from "../registry/menu-bar/schema";
+import type { MenuBarConfig } from "../registry/menu-bar/react/menu-bar";
+import { renderMenuBarHtml } from "../registry/menu-bar/vanilla/render";
+import { cursorPaginationSchema } from "../registry/cursor-pagination/schema";
+import type { CursorPaginationConfig } from "../registry/cursor-pagination/react/cursor-pagination";
+import { renderCursorPaginationHtml } from "../registry/cursor-pagination/vanilla/render";
+import { navProgressSchema } from "../registry/nav-progress/schema";
+import type { NavProgressConfig } from "../registry/nav-progress/react/nav-progress";
+import { renderNavProgressHtml } from "../registry/nav-progress/vanilla/render";
+import { stickyHeaderSchema } from "../registry/sticky-header/schema";
+import type { StickyHeaderConfig } from "../registry/sticky-header/react/sticky-header";
+import { renderStickyHeaderHtml } from "../registry/sticky-header/vanilla/render";
+import { hoverCardSchema } from "../registry/hover-card/schema";
+import type { HoverCardConfig } from "../registry/hover-card/react/hover-card";
+import { renderHoverCardHtml } from "../registry/hover-card/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -1142,6 +1166,80 @@ export const components: Record<
     variants: {
       default: "",
       compact: "showLine2=false&countryFirst=false&theme=dark",
+    },
+  },
+  "skip-links": {
+    exportName: "SkipLinks",
+    schema: skipLinksSchema,
+    renderHtml: (config) => renderSkipLinksHtml(config as unknown as SkipLinksConfig),
+    variants: {
+      default: "",
+      always: "alwaysVisible=true&position=top-centre&theme=dark",
+    },
+  },
+  "anchor-nav": {
+    exportName: "AnchorNav",
+    schema: anchorNavSchema,
+    renderHtml: (config) => renderAnchorNavHtml(config as unknown as AnchorNavConfig),
+    variants: {
+      default: "",
+      plain: "markCurrent=false&numbered=true&sticky=false&theme=dark",
+    },
+  },
+  "command-menu": {
+    exportName: "CommandMenu",
+    schema: commandMenuSchema,
+    renderHtml: (config) => renderCommandMenuHtml(config as unknown as CommandMenuConfig),
+    variants: {
+      default: "",
+      bare: "triggerLabel=Actions&showShortcuts=false&showHint=false&theme=dark",
+    },
+  },
+  "menu-bar": {
+    exportName: "MenuBar",
+    schema: menuBarSchema,
+    renderHtml: (config) => renderMenuBarHtml(config as unknown as MenuBarConfig),
+    variants: {
+      default: "",
+      bare: "label=Editor&showShortcuts=false&theme=dark",
+    },
+  },
+  "cursor-pagination": {
+    exportName: "CursorPagination",
+    schema: cursorPaginationSchema,
+    renderHtml: (config) => renderCursorPaginationHtml(config as unknown as CursorPaginationConfig),
+    variants: {
+      default: "",
+      counted: "knowsTotal=true&pageSize=4&totalItems=12&itemNoun=row&theme=dark",
+    },
+  },
+  "nav-progress": {
+    exportName: "NavProgress",
+    schema: navProgressSchema,
+    renderHtml: (config) => renderNavProgressHtml(config as unknown as NavProgressConfig),
+    variants: {
+      default: "",
+      slow: "delayMs=800&demoMs=4000&theme=dark",
+      barless: "showBar=false",
+    },
+  },
+  "sticky-header": {
+    exportName: "StickyHeader",
+    schema: stickyHeaderSchema,
+    renderHtml: (config) => renderStickyHeaderHtml(config as unknown as StickyHeaderConfig),
+    variants: {
+      default: "",
+      plain: "shrink=false&hideOnScrollDown=false&theme=dark",
+    },
+  },
+  "hover-card": {
+    exportName: "HoverCard",
+    schema: hoverCardSchema,
+    renderHtml: (config) => renderHoverCardHtml(config as unknown as HoverCardConfig),
+    variants: {
+      default: "",
+      instant: "openDelayMs=0&closeDelayMs=600",
+      above: "placement=above&openDelayMs=0&theme=dark",
     },
   },
 };

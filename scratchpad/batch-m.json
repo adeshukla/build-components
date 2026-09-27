@@ -1,0 +1,131 @@
+[
+  {
+    "slug": "skip-links",
+    "camel": "skipLinks",
+    "export": "SkipLinks",
+    "name": "Skip links",
+    "title": "Skip links",
+    "category": "Navigation",
+    "summary": "Hidden by size rather than removed, so they stay in the tab order, and each one moves focus as well as the scroll.",
+    "pattern": "Bypass blocks",
+    "accent": "#86efac",
+    "description": "The first thing on the page, and the one most sites get wrong.",
+    "how": "Hidden by size — never display:none or visibility:hidden, both of which take the link out of the tab order, which is the one place a skip link has to be.",
+    "variants": { "default": "", "always": "alwaysVisible=true&position=top-centre&theme=dark" }
+  },
+  {
+    "slug": "anchor-nav",
+    "camel": "anchorNav",
+    "export": "AnchorNav",
+    "name": "Anchor navigation",
+    "title": "Anchor navigation",
+    "category": "Navigation",
+    "summary": "An on-this-page list that marks the section being read with aria-current, and moves focus when you follow it.",
+    "pattern": "Table of contents + aria-current",
+    "accent": "#c4b5fd",
+    "description": "A table of contents for one page, that keeps up with the reading.",
+    "how": "The current section is marked with aria-current=\"true\", not \"page\" — the page has not changed, only the part of it in view — and by weight and a bar, never by colour alone.",
+    "steps": [{ "find": "a[href*='notes'], .an-link:last-child", "action": "click", "after": 1400 }],
+    "variants": { "default": "", "plain": "markCurrent=false&numbered=true&sticky=false&theme=dark" }
+  },
+  {
+    "slug": "command-menu",
+    "camel": "commandMenu",
+    "export": "CommandMenu",
+    "name": "Command menu",
+    "title": "Command menu",
+    "category": "Navigation",
+    "summary": "Ctrl K over a grouped list of actions, with the field keeping focus and aria-activedescendant doing the moving.",
+    "pattern": "APG Combobox in a dialog",
+    "accent": "#a78bfa",
+    "description": "A palette of actions, not a second search box.",
+    "how": "A combobox over a listbox: the field keeps focus and aria-activedescendant marks the highlighted row, so the typing is never stolen and the groups are announced without becoming extra stops.",
+    "steps": [
+      { "find": "[data-trigger], .cmd-trigger", "action": "click", "after": 900 },
+      { "find": "input[role=combobox]", "action": "type", "value": "go", "after": 1400 }
+    ],
+    "variants": { "default": "", "bare": "triggerLabel=Actions&showShortcuts=false&showHint=false&theme=dark" }
+  },
+  {
+    "slug": "menu-bar",
+    "camel": "menuBar",
+    "export": "MenuBar",
+    "name": "Menu bar",
+    "title": "Menu bar",
+    "category": "Navigation",
+    "summary": "One tab stop for the whole bar, arrows inside it, sideways from a menu opening the next one, and type-ahead.",
+    "pattern": "APG Menubar",
+    "accent": "#93c5fd",
+    "description": "The desktop menu bar, with the keyboard model it has always had.",
+    "how": "One tab stop for the whole bar with a roving tabindex inside it: nine items should not be nine stops on the way to the page's content.",
+    "steps": [{ "find": "[data-top], .mb-top", "action": "click", "after": 1600 }],
+    "variants": { "default": "", "bare": "label=Editor&showShortcuts=false&theme=dark" }
+  },
+  {
+    "slug": "cursor-pagination",
+    "camel": "cursorPagination",
+    "export": "CursorPagination",
+    "name": "Cursor pagination",
+    "title": "Cursor pagination",
+    "category": "Navigation",
+    "summary": "Newer and older with no page numbers, ends that say why they are stuck, and focus that follows the new rows.",
+    "pattern": "Cursor + aria-disabled ends",
+    "accent": "#5eead4",
+    "description": "Paging a list whose length nobody knows.",
+    "how": "The ends carry aria-disabled rather than disabled, so they can still be focused and the reason read; a disabled button tells a keyboard nothing at all.",
+    "steps": [{ "find": "[data-next], .cp-button:last-of-type", "action": "click", "after": 1500 }],
+    "variants": { "default": "", "counted": "knowsTotal=true&pageSize=4&totalItems=12&itemNoun=row&theme=dark" }
+  },
+  {
+    "slug": "nav-progress",
+    "camel": "navProgress",
+    "export": "NavProgress",
+    "name": "Navigation progress",
+    "title": "Navigation progress",
+    "category": "Navigation",
+    "summary": "A load indicator whose real work is the words: a route change tells a screen reader nothing by itself.",
+    "pattern": "Delayed bar + polite status",
+    "accent": "#fcd34d",
+    "description": "Saying the page is loading, and then which page arrived.",
+    "how": "Nothing is drawn until the load outlasts the delay, because a bar that flashes for 80ms reads as a glitch; and there is no progressbar role, because the component has no idea what fraction is done.",
+    "steps": [{ "find": "[data-trigger], .np-trigger, button", "action": "click", "after": 2200 }],
+    "variants": {
+      "default": "",
+      "slow": "delayMs=800&demoMs=4000&theme=dark",
+      "barless": "showBar=false"
+    }
+  },
+  {
+    "slug": "sticky-header",
+    "camel": "stickyHeader",
+    "export": "StickyHeader",
+    "name": "Shrinking sticky header",
+    "title": "Shrinking sticky header",
+    "category": "Navigation",
+    "summary": "Shrinks past a threshold, steps aside going down, and comes back the moment anything inside takes focus.",
+    "pattern": "Sticky + scroll direction",
+    "accent": "#fdba74",
+    "description": "A header that gets out of the way without getting lost.",
+    "how": "Focus anywhere inside brings it back, so a keyboard moving up the page never chases a header that has hidden itself; below 400px of height it stops being sticky at all.",
+    "variants": { "default": "", "plain": "shrink=false&hideOnScrollDown=false&theme=dark" }
+  },
+  {
+    "slug": "hover-card",
+    "camel": "hoverCard",
+    "export": "HoverCard",
+    "name": "Hover card",
+    "title": "Hover card",
+    "category": "Overlays",
+    "summary": "A preview that opens on focus as well as hover, can be dismissed with Escape, and holds nothing you have to click.",
+    "pattern": "APG Tooltip, WCAG 1.4.13",
+    "accent": "#f9a8d4",
+    "description": "A preview on hover, done the way 1.4.13 asks for.",
+    "how": "All three of what WCAG 1.4.13 asks: Escape dismisses it, the pointer can travel onto it, and it stays until dismissed — and nothing inside it is interactive, because a tooltip must not hold controls.",
+    "steps": [{ "find": "[data-trigger], .hc-trigger", "action": "click", "after": 1600 }],
+    "variants": {
+      "default": "",
+      "instant": "openDelayMs=0&closeDelayMs=600",
+      "above": "placement=above&openDelayMs=0&theme=dark"
+    }
+  }
+]

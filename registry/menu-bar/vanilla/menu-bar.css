@@ -1,0 +1,99 @@
+/* Menu bar — plain CSS. Colours come from the inline custom properties. */
+.mb {
+  --mb-accent: #1d4ed8;
+  --mb-accent-text: #1a41b8;
+  --mb-on-accent: #ffffff;
+  --mb-surface: #ffffff;
+  --mb-sunk: #f4f3f8;
+  --mb-text: #16121f;
+  --mb-muted: #4d4a57;
+  --mb-line: #c9c4d6;
+  display: block;
+  background: var(--mb-surface);
+  color: var(--mb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.mb,
+.mb *,
+.mb *::before,
+.mb *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .mb--theme-system {
+    --mb-surface: #1b1624;
+    --mb-sunk: #272031;
+    --mb-text: #f6f5fa;
+    --mb-muted: #b6b3c2;
+    --mb-line: #4a4459;
+  }
+}
+
+.mb-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--mb-line);
+  border-radius: 0.375rem;
+  background: var(--mb-sunk);
+}
+
+.mb-holder { position: relative; }
+
+.mb-top {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--mb-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.mb-top[aria-expanded="true"] { background: var(--mb-accent); color: var(--mb-on-accent); }
+.mb-top:focus-visible { outline: 2px solid var(--mb-accent-text); outline-offset: 2px; }
+
+.mb-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  min-width: 14rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--mb-line);
+  border-radius: 0.375rem;
+  background: var(--mb-surface);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.mb-item {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--mb-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mb-item:hover { background: var(--mb-sunk); }
+.mb-item:focus-visible { background: var(--mb-sunk); outline: 2px solid var(--mb-accent-text); outline-offset: -2px; }
+.mb-shortcut { flex-shrink: 0; color: var(--mb-muted); font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 0.75rem; }
+
+.mb-status { margin: 0.75rem 0 0; color: var(--mb-muted); font-size: 0.875rem; }

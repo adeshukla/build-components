@@ -19,6 +19,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def ts(text):
+    """A TypeScript double-quoted string body: backslashes and quotes have to be escaped."""
+    return text.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def patch(rel, fn):
     path = ROOT / rel
     text = path.read_text(encoding="utf8")
@@ -44,9 +49,9 @@ def wire(entries):
                 "  {\n"
                 f'    slug: "{e["slug"]}",\n'
                 f'    category: "{e["category"]}",\n'
-                f'    name: "{e["name"]}",\n'
-                f'    summary: "{e["summary"]}",\n'
-                f'    pattern: "{e["pattern"]}",\n'
+                f'    name: "{ts(e["name"])}",\n'
+                f'    summary: "{ts(e["summary"])}",\n'
+                f'    pattern: "{ts(e["pattern"])}",\n'
                 f'    accent: "{e["accent"]}",\n'
                 '    status: "in-stock",\n'
                 "  },\n"
@@ -69,8 +74,8 @@ def wire(entries):
             )
             map_entries += (
                 f'  "{e["slug"]}": {{\n'
-                f'    title: "{e["title"]}",\n'
-                f'    description: "{e["description"]}",\n'
+                f'    title: "{ts(e["title"])}",\n'
+                f'    description: "{ts(e["description"])}",\n'
                 f'    schema: {e["camel"]}Schema,\n'
                 f'    ...{e["camel"]}Docs,\n'
                 f'    renderHtml: (config) => render{e["export"]}Html(config as never),\n'
@@ -162,7 +167,7 @@ def wire(entries):
                     + " },\n"
                     for s in e["steps"]
                 ) + "    ],\n"
-            block += f'  "{e["slug"]}": {{\n    how: "{e["how"]}",\n' + steps + "  },\n"
+            block += f'  "{e["slug"]}": {{\n    how: "{ts(e["how"])}",\n' + steps + "  },\n"
         return text.rstrip()[: -len("};")].rstrip("\n") + "\n" + block + "};\n"
 
     patch("lib/demos.ts", demos)

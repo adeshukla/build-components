@@ -284,6 +284,31 @@ import { addressFieldsSchema } from "@/registry/address-fields/schema";
 import * as addressFieldsDocs from "@/registry/address-fields/docs";
 import { renderAddressFieldsHtml } from "@/registry/address-fields/vanilla/render";
 
+import { skipLinksSchema } from "@/registry/skip-links/schema";
+import * as skipLinksDocs from "@/registry/skip-links/docs";
+import { renderSkipLinksHtml } from "@/registry/skip-links/vanilla/render";
+import { anchorNavSchema } from "@/registry/anchor-nav/schema";
+import * as anchorNavDocs from "@/registry/anchor-nav/docs";
+import { renderAnchorNavHtml } from "@/registry/anchor-nav/vanilla/render";
+import { commandMenuSchema } from "@/registry/command-menu/schema";
+import * as commandMenuDocs from "@/registry/command-menu/docs";
+import { renderCommandMenuHtml } from "@/registry/command-menu/vanilla/render";
+import { menuBarSchema } from "@/registry/menu-bar/schema";
+import * as menuBarDocs from "@/registry/menu-bar/docs";
+import { renderMenuBarHtml } from "@/registry/menu-bar/vanilla/render";
+import { cursorPaginationSchema } from "@/registry/cursor-pagination/schema";
+import * as cursorPaginationDocs from "@/registry/cursor-pagination/docs";
+import { renderCursorPaginationHtml } from "@/registry/cursor-pagination/vanilla/render";
+import { navProgressSchema } from "@/registry/nav-progress/schema";
+import * as navProgressDocs from "@/registry/nav-progress/docs";
+import { renderNavProgressHtml } from "@/registry/nav-progress/vanilla/render";
+import { stickyHeaderSchema } from "@/registry/sticky-header/schema";
+import * as stickyHeaderDocs from "@/registry/sticky-header/docs";
+import { renderStickyHeaderHtml } from "@/registry/sticky-header/vanilla/render";
+import { hoverCardSchema } from "@/registry/hover-card/schema";
+import * as hoverCardDocs from "@/registry/hover-card/docs";
+import { renderHoverCardHtml } from "@/registry/hover-card/vanilla/render";
+
 export type RegistryEntry = {
   title: string;
   description: string;
@@ -949,6 +974,62 @@ export const registry = {
     schema: addressFieldsSchema,
     ...addressFieldsDocs,
     renderHtml: (config) => renderAddressFieldsHtml(config as never),
+  },
+  "skip-links": {
+    title: "Skip links",
+    description: "The first thing on the page, and the one most sites get wrong.",
+    schema: skipLinksSchema,
+    ...skipLinksDocs,
+    renderHtml: (config) => renderSkipLinksHtml(config as never),
+  },
+  "anchor-nav": {
+    title: "Anchor navigation",
+    description: "A table of contents for one page, that keeps up with the reading.",
+    schema: anchorNavSchema,
+    ...anchorNavDocs,
+    renderHtml: (config) => renderAnchorNavHtml(config as never),
+  },
+  "command-menu": {
+    title: "Command menu",
+    description: "A palette of actions, not a second search box.",
+    schema: commandMenuSchema,
+    ...commandMenuDocs,
+    renderHtml: (config) => renderCommandMenuHtml(config as never),
+  },
+  "menu-bar": {
+    title: "Menu bar",
+    description: "The desktop menu bar, with the keyboard model it has always had.",
+    schema: menuBarSchema,
+    ...menuBarDocs,
+    renderHtml: (config) => renderMenuBarHtml(config as never),
+  },
+  "cursor-pagination": {
+    title: "Cursor pagination",
+    description: "Paging a list whose length nobody knows.",
+    schema: cursorPaginationSchema,
+    ...cursorPaginationDocs,
+    renderHtml: (config) => renderCursorPaginationHtml(config as never),
+  },
+  "nav-progress": {
+    title: "Navigation progress",
+    description: "Saying the page is loading, and then which page arrived.",
+    schema: navProgressSchema,
+    ...navProgressDocs,
+    renderHtml: (config) => renderNavProgressHtml(config as never),
+  },
+  "sticky-header": {
+    title: "Shrinking sticky header",
+    description: "A header that gets out of the way without getting lost.",
+    schema: stickyHeaderSchema,
+    ...stickyHeaderDocs,
+    renderHtml: (config) => renderStickyHeaderHtml(config as never),
+  },
+  "hover-card": {
+    title: "Hover card",
+    description: "A preview on hover, done the way 1.4.13 asks for.",
+    schema: hoverCardSchema,
+    ...hoverCardDocs,
+    renderHtml: (config) => renderHoverCardHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

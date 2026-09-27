@@ -30,7 +30,9 @@ export async function expectNoAxeViolations(page: Page) {
           // Scroll- and view-driven animations only finish when the scrolling does, so waiting on
           // one waits for ever: they are left where they are.
           .filter((animation) => animation.timeline === document.timeline)
-          .map((animation) => animation.finished),
+          // A transition that is replaced or interrupted rejects with an AbortError. It has settled,
+          // which is all this is waiting for, so the rejection is not a failure.
+          .map((animation) => animation.finished.catch(() => undefined)),
       ),
       new Promise((resolve) => setTimeout(resolve, 3_000)),
     ]),

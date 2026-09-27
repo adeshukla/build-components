@@ -79,9 +79,10 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
 
   // Hidden by size rather than by display:none or visibility:hidden, because both of those take the
   // link out of the tab order — which is the one thing a skip link has to be in.
-  const hidden = config.alwaysVisible
-    ? ""
-    : "absolute h-px w-px overflow-hidden whitespace-nowrap [clip-path:inset(50%)] focus:static focus:h-auto focus:w-auto focus:overflow-visible focus:whitespace-normal focus:[clip-path:none]";
+  // Padding and a min-height would keep a "1px" link 32px wide and 44px tall, so both wait for focus.
+  const sizing = config.alwaysVisible
+    ? "min-h-11 px-4"
+    : "absolute h-px w-px overflow-hidden whitespace-nowrap [clip-path:inset(50%)] focus:static focus:h-auto focus:min-h-11 focus:w-auto focus:overflow-visible focus:px-4 focus:whitespace-normal focus:[clip-path:none]";
 
   return (
     <div style={style} className="bg-(--sk-surface) text-(--sk-text)">
@@ -102,7 +103,7 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
               target.focus();
               target.scrollIntoView({ block: "start" });
             }}
-            className={`${hidden} z-50 inline-flex min-h-11 items-center rounded-md bg-(--sk-accent) px-4 font-medium text-(--sk-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sk-accent-text)`}
+            className={`${sizing} z-50 inline-flex items-center rounded-md bg-(--sk-accent) font-medium text-(--sk-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sk-accent-text)`}
           >
             {link.label}
           </a>

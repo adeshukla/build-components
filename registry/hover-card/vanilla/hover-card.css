@@ -1,0 +1,75 @@
+/* Hover card — plain CSS. Colours come from the inline custom properties. */
+.hc {
+  --hc-accent: #7c3aed;
+  --hc-accent-text: #6021d6;
+  --hc-surface: #ffffff;
+  --hc-sunk: #f4f3f8;
+  --hc-text: #16121f;
+  --hc-muted: #4d4a57;
+  --hc-line: #c9c4d6;
+  display: block;
+  padding: 1rem;
+  background: var(--hc-surface);
+  color: var(--hc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.hc,
+.hc *,
+.hc *::before,
+.hc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .hc--theme-system {
+    --hc-surface: #1b1624;
+    --hc-sunk: #272031;
+    --hc-text: #f6f5fa;
+    --hc-muted: #b6b3c2;
+    --hc-line: #4a4459;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.hc [hidden] { display: none; }
+
+.hc-text { max-width: 65ch; margin: 0; }
+.hc-holder { position: relative; display: inline-block; }
+
+.hc-trigger {
+  border-radius: 0.25rem;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--hc-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.hc-trigger:focus-visible { outline: 2px solid var(--hc-accent-text); outline-offset: 2px; }
+
+.hc-card {
+  position: absolute;
+  left: 0;
+  z-index: 30;
+  display: block;
+  width: 18rem;
+  padding: 0.75rem;
+  border: 1px solid var(--hc-line);
+  border-radius: 0.5rem;
+  background: var(--hc-surface);
+  text-align: left;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+}
+.hc--below .hc-card { top: 100%; margin-top: 0.5rem; }
+.hc--above .hc-card { bottom: 100%; margin-bottom: 0.5rem; }
+
+.hc-card-title { display: block; font-weight: 600; }
+.hc-card-meta {
+  display: block;
+  margin-top: 0.125rem;
+  color: var(--hc-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+}
+.hc-card-body { display: block; margin-top: 0.5rem; color: var(--hc-muted); font-size: 0.875rem; }

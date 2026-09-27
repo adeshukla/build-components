@@ -512,4 +512,47 @@ export const demos: Record<string, Demo> = {
       { find: "select", action: "click", after: 1200 },
     ],
   },
+  "skip-links": {
+    how: "Hidden by size — never display:none or visibility:hidden, both of which take the link out of the tab order, which is the one place a skip link has to be.",
+  },
+  "anchor-nav": {
+    how: "The current section is marked with aria-current=\"true\", not \"page\" — the page has not changed, only the part of it in view — and by weight and a bar, never by colour alone.",
+    steps: [
+      { find: "a[href*='notes'], .an-link:last-child", action: "click", after: 1400 },
+    ],
+  },
+  "command-menu": {
+    how: "A combobox over a listbox: the field keeps focus and aria-activedescendant marks the highlighted row, so the typing is never stolen and the groups are announced without becoming extra stops.",
+    steps: [
+      { find: "[data-trigger], .cmd-trigger", action: "click", after: 900 },
+      { find: "input[role=combobox]", action: "type", value: "go", after: 1400 },
+    ],
+  },
+  "menu-bar": {
+    how: "One tab stop for the whole bar with a roving tabindex inside it: nine items should not be nine stops on the way to the page's content.",
+    steps: [
+      { find: "[data-top], .mb-top", action: "click", after: 1600 },
+    ],
+  },
+  "cursor-pagination": {
+    how: "The ends carry aria-disabled rather than disabled, so they can still be focused and the reason read; a disabled button tells a keyboard nothing at all.",
+    steps: [
+      { find: "[data-next], .cp-button:last-of-type", action: "click", after: 1500 },
+    ],
+  },
+  "nav-progress": {
+    how: "Nothing is drawn until the load outlasts the delay, because a bar that flashes for 80ms reads as a glitch; and there is no progressbar role, because the component has no idea what fraction is done.",
+    steps: [
+      { find: "[data-trigger], .np-trigger, button", action: "click", after: 2200 },
+    ],
+  },
+  "sticky-header": {
+    how: "Focus anywhere inside brings it back, so a keyboard moving up the page never chases a header that has hidden itself; below 400px of height it stops being sticky at all.",
+  },
+  "hover-card": {
+    how: "All three of what WCAG 1.4.13 asks: Escape dismisses it, the pointer can travel onto it, and it stays until dismissed — and nothing inside it is interactive, because a tooltip must not hold controls.",
+    steps: [
+      { find: "[data-trigger], .hc-trigger", action: "click", after: 1600 },
+    ],
+  },
 };

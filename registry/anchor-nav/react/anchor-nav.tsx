@@ -90,21 +90,31 @@ export function AnchorNav({ config = defaultConfig }: { config?: AnchorNavConfig
     const list = targets.split("|").filter(Boolean);
     const nodes = list.map((target) => document.getElementById(`${id}-${target}`)).filter((node) => node !== null);
     if (nodes.length === 0) return;
-    const seen = new Set<string>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) seen.add(entry.target.id);
-          else seen.delete(entry.target.id);
-        }
-        // The topmost heading still on screen is the one being read; if none is, keep the last answer.
-        const first = nodes.find((node) => seen.has(node.id));
-        if (first !== undefined) setCurrent(first.id.slice(`${id}-`.length));
-      },
-      { rootMargin: "0px 0px -60% 0px" },
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+
+    function update() {
+      // The last heading to have passed the line is the one being read. The line sits near the top,
+      // about where a sticky header would end: any lower and the second heading is already above it
+      // before the page has been scrolled at all.
+      const line = Math.min(window.innerHeight * 0.2, 120);
+      let at = nodes[0];
+      for (const node of nodes) {
+        if (node.getBoundingClientRect().top <= line) at = node;
+      }
+      // At the very bottom the last heading can still sit below the line, so nothing would ever mark
+      // it. Once there is no more to scroll, the last section is the one being read.
+      const scrollable = document.documentElement.scrollHeight > window.innerHeight + 4;
+      const bottom = scrollable && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+      const chosen = bottom ? nodes[nodes.length - 1] : at;
+      setCurrent(chosen.id.slice(`${id}-`.length));
+    }
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, [id, targets, config.markCurrent]);
 
   return (
@@ -127,6 +137,9 @@ export function AnchorNav({ config = defaultConfig }: { config?: AnchorNavConfig
                       event.preventDefault();
                       const node = document.getElementById(`${id}-${section.target}`);
                       if (node === null) return;
+                      // Following a link marks that section at once. On a page too short to scroll,
+                      // no scroll event will ever arrive to do it.
+                      setCurrent(section.target);
                       node.focus();
                       node.scrollIntoView({ block: "start", behavior: config.smoothScroll ? "smooth" : "auto" });
                     }}

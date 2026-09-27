@@ -58,6 +58,9 @@
   position: absolute;
   width: 1px;
   height: 1px;
+  /* Padding and a min-height would keep the box 32px wide and 44px tall, which is not hidden. */
+  min-height: 0;
+  padding: 0;
   overflow: hidden;
   white-space: nowrap;
   clip-path: inset(50%);
@@ -66,6 +69,8 @@
   position: static;
   width: auto;
   height: auto;
+  min-height: 2.75rem;
+  padding: 0 1rem;
   overflow: visible;
   white-space: normal;
   clip-path: none;

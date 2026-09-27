@@ -1,0 +1,65 @@
+/* Cursor pagination — plain CSS. Colours come from the inline custom properties. */
+.cp {
+  --cp-accent: #0f766e;
+  --cp-accent-text: #0b5a54;
+  --cp-surface: #ffffff;
+  --cp-sunk: #f4f3f8;
+  --cp-text: #16121f;
+  --cp-muted: #4d4a57;
+  --cp-line: #c9c4d6;
+  display: block;
+  background: var(--cp-surface);
+  color: var(--cp-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.cp,
+.cp *,
+.cp *::before,
+.cp *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .cp--theme-system {
+    --cp-surface: #141019;
+    --cp-sunk: #221d2e;
+    --cp-text: #f6f5fa;
+    --cp-muted: #b6b3c2;
+    --cp-line: #4a4459;
+  }
+}
+
+.cp-heading { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.cp-heading:focus-visible { outline: 2px solid var(--cp-accent-text); outline-offset: 2px; }
+.cp-range { margin: 0.25rem 0 0; color: var(--cp-muted); font-size: 0.875rem; }
+
+.cp-list { margin: 0.75rem 0 0; padding: 0; border-top: 1px solid var(--cp-line); list-style: none; }
+.cp-row { padding: 0.75rem 0; border-bottom: 1px solid var(--cp-line); }
+.cp-index { color: var(--cp-muted); font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 0.75rem; }
+
+.cp-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+.cp-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--cp-line);
+  border-radius: 0.375rem;
+  background: var(--cp-sunk);
+  color: var(--cp-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cp-button:focus-visible { outline: 2px solid var(--cp-accent-text); outline-offset: 2px; }
+
+/*
+ * aria-disabled, not disabled: a disabled button cannot be focused, so nobody on a keyboard ever
+ * finds out why it will not work.
+ */
+.cp-button[aria-disabled="true"] { color: var(--cp-muted); cursor: default; }
+
+.cp-reason { margin: 0.5rem 0 0; color: var(--cp-muted); font-size: 0.875rem; }
