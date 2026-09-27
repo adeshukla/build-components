@@ -711,6 +711,33 @@ export const parts: Part[] = [
     accent: "#c4b5fd",
     status: "in-stock",
   },
+  {
+    slug: "faq",
+    category: "Content",
+    name: "FAQ",
+    summary: "Questions and answers on native details and summary, so opening, the keyboard and find-on-page all come free.",
+    pattern: "details / summary",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "details-list",
+    category: "Content",
+    name: "Details list",
+    summary: "Label and value pairs that stay paired on a phone, with change links that name their row.",
+    pattern: "Description list",
+    accent: "#a7f3d0",
+    status: "in-stock",
+  },
+  {
+    slug: "comparison-table",
+    category: "Content",
+    name: "Comparison table",
+    summary: "Plans across, features down, and yes or no printed as words rather than a bare tick.",
+    pattern: "Table + row headers",
+    accent: "#5eead4",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */

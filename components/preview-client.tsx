@@ -147,6 +147,12 @@ import { TextareaCounter, type TextareaCounterConfig } from "@/registry/textarea
 
 import { SelectField, type SelectFieldConfig } from "@/registry/select-field/react/select-field";
 
+import { Faq, type FaqConfig } from "@/registry/faq/react/faq";
+
+import { DetailsList, type DetailsListConfig } from "@/registry/details-list/react/details-list";
+
+import { ComparisonTable, type ComparisonTableConfig } from "@/registry/comparison-table/react/comparison-table";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -336,6 +342,9 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "radio-cards" && <RadioCards config={config as unknown as RadioCardsConfig} />}
         {slug === "textarea-counter" && <TextareaCounter config={config as unknown as TextareaCounterConfig} />}
         {slug === "select-field" && <SelectField config={config as unknown as SelectFieldConfig} />}
+        {slug === "faq" && <Faq config={config as unknown as FaqConfig} />}
+        {slug === "details-list" && <DetailsList config={config as unknown as DetailsListConfig} />}
+        {slug === "comparison-table" && <ComparisonTable config={config as unknown as ComparisonTableConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

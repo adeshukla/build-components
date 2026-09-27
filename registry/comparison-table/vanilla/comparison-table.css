@@ -1,0 +1,52 @@
+/* Comparison table — plain CSS. Colours come from the inline custom properties. */
+.cp {
+  --cp-accent: #0f766e;
+  --cp-accent-text: #0b5a54;
+  --cp-surface: #ffffff;
+  --cp-sunk: #f4f3f8;
+  --cp-text: #16121f;
+  --cp-muted: #4d4a57;
+  --cp-line: #c9c4d6;
+  display: block;
+  background: var(--cp-surface);
+  color: var(--cp-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.cp,
+.cp *,
+.cp *::before,
+.cp *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .cp--theme-system {
+    --cp-surface: #141019;
+    --cp-sunk: #221d2e;
+    --cp-text: #f6f5fa;
+    --cp-muted: #b6b3c2;
+    --cp-line: #4a4459;
+  }
+}
+
+.cp-scroll { overflow-x: auto; }
+.cp-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.cp-caption { padding-bottom: 0.75rem; font-weight: 500; text-align: left; }
+.cp-col { width: 40%; padding: 0.75rem; border-bottom: 1px solid var(--cp-line); text-align: left; vertical-align: bottom; }
+.cp-plan { padding: 0.75rem; border-bottom: 1px solid var(--cp-line); text-align: left; vertical-align: bottom; }
+.cp-plan--featured,
+.cp-cell--featured { background: var(--cp-sunk); }
+.cp-name { display: block; font-weight: 600; }
+.cp-note { display: block; color: var(--cp-muted); font-size: 0.75rem; font-weight: 400; }
+/* The highlight is said in words as well as painted. */
+.cp-badge { display: block; color: var(--cp-accent-text); font-size: 0.75rem; font-weight: 500; }
+
+.cp-row { border-bottom: 1px solid var(--cp-line); }
+.cp-row:last-child { border-bottom: 0; }
+.cp-feature { padding: 0.75rem; font-weight: 500; text-align: left; }
+.cp-cell { padding: 0.75rem; }
+.cp-mark--yes { margin-right: 0.25rem; color: var(--cp-accent-text); }
+.cp-mark--no { margin-right: 0.25rem; color: var(--cp-muted); }
+.cp-value--no { color: var(--cp-muted); }

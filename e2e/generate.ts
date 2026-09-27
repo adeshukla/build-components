@@ -217,6 +217,15 @@ import { renderTextareaCounterHtml } from "../registry/textarea-counter/vanilla/
 import { selectFieldSchema } from "../registry/select-field/schema";
 import type { SelectFieldConfig } from "../registry/select-field/react/select-field";
 import { renderSelectFieldHtml } from "../registry/select-field/vanilla/render";
+import { faqSchema } from "../registry/faq/schema";
+import type { FaqConfig } from "../registry/faq/react/faq";
+import { renderFaqHtml } from "../registry/faq/vanilla/render";
+import { detailsListSchema } from "../registry/details-list/schema";
+import type { DetailsListConfig } from "../registry/details-list/react/details-list";
+import { renderDetailsListHtml } from "../registry/details-list/vanilla/render";
+import { comparisonTableSchema } from "../registry/comparison-table/schema";
+import type { ComparisonTableConfig } from "../registry/comparison-table/react/comparison-table";
+import { renderComparisonTableHtml } from "../registry/comparison-table/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -938,6 +947,33 @@ export const components: Record<
     variants: {
       default: "",
       flat: "required=false&size=sm&width=auto&theme=dark&placeholder=Any+yard",
+    },
+  },
+  "faq": {
+    exportName: "Faq",
+    schema: faqSchema,
+    renderHtml: (config) => renderFaqHtml(config as unknown as FaqConfig),
+    variants: {
+      default: "",
+      open: "openFirst=true&showToggleAll=false&theme=dark&heading=Common+questions",
+    },
+  },
+  "details-list": {
+    exportName: "DetailsList",
+    schema: detailsListSchema,
+    renderHtml: (config) => renderDetailsListHtml(config as unknown as DetailsListConfig),
+    variants: {
+      default: "",
+      two: "columns=two&dividers=false&theme=dark&heading=Account",
+    },
+  },
+  "comparison-table": {
+    exportName: "ComparisonTable",
+    schema: comparisonTableSchema,
+    renderHtml: (config) => renderComparisonTableHtml(config as unknown as ComparisonTableConfig),
+    variants: {
+      default: "",
+      two: "highlight=&theme=dark&caption=Compare+the+two+plans",
     },
   },
 };

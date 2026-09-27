@@ -1,0 +1,74 @@
+/* FAQ — plain CSS. Colours come from the inline custom properties. */
+.fq {
+  --fq-accent: #1d4ed8;
+  --fq-accent-text: #1a46c2;
+  --fq-surface: #ffffff;
+  --fq-sunk: #f4f3f8;
+  --fq-text: #16121f;
+  --fq-muted: #4d4a57;
+  --fq-line: #c9c4d6;
+  display: block;
+  background: var(--fq-surface);
+  color: var(--fq-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.fq,
+.fq *,
+.fq *::before,
+.fq *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .fq--theme-system {
+    --fq-surface: #141019;
+    --fq-sunk: #221d2e;
+    --fq-text: #f6f5fa;
+    --fq-muted: #b6b3c2;
+    --fq-line: #4a4459;
+  }
+}
+
+.fq-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0.75rem; }
+.fq-heading { margin: 0; font-size: 1.25rem; }
+.fq-intro { margin: 0.25rem 0 0; color: var(--fq-muted); font-size: 0.875rem; }
+.fq-toggle {
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--fq-line);
+  border-radius: 0.375rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.fq-toggle:focus-visible { outline: 2px solid var(--fq-accent-text); outline-offset: 2px; }
+
+/* Native details and summary: open and close, the keyboard, and find-on-page all come free. */
+.fq-list { margin-top: 1rem; border-top: 1px solid var(--fq-line); border-bottom: 1px solid var(--fq-line); }
+.fq-item { padding: 0.25rem 0; border-bottom: 1px solid var(--fq-line); }
+.fq-item:last-child { border-bottom: 0; }
+.fq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+.fq-question::-webkit-details-marker { display: none; }
+.fq-question:focus-visible { outline: 2px solid var(--fq-accent-text); outline-offset: 2px; }
+.fq-sign { flex-shrink: 0; color: var(--fq-muted); transition: transform 150ms; }
+.fq-item[open] .fq-sign { transform: rotate(45deg); }
+.fq-answer { max-width: 65ch; margin: 0; padding-bottom: 0.75rem; color: var(--fq-muted); font-size: 0.875rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fq-sign { transition: none; }
+}

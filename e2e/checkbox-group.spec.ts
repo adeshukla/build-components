@@ -3,7 +3,7 @@ import { components } from "./generate";
 import { expectNoAxeViolations, open, targets } from "./helpers";
 
 const variants = Object.keys(components["checkbox-group"].variants);
-const box = (page: Page, name: string) => page.getByRole("checkbox", { name });
+const box = (page: Page, name: string | RegExp) => page.getByRole("checkbox", { name });
 const all = (page: Page) => page.getByRole("checkbox", { name: "Everything" });
 
 for (const target of targets("checkbox-group")) {

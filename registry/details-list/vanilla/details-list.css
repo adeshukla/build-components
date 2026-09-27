@@ -1,0 +1,65 @@
+/* Details list — plain CSS. Colours come from the inline custom properties. */
+.dl {
+  --dl-accent: #1d4ed8;
+  --dl-accent-text: #1a46c2;
+  --dl-surface: #ffffff;
+  --dl-sunk: #f4f3f8;
+  --dl-text: #16121f;
+  --dl-muted: #4d4a57;
+  --dl-line: #c9c4d6;
+  display: block;
+  background: var(--dl-surface);
+  color: var(--dl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.dl,
+.dl *,
+.dl *::before,
+.dl *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .dl--theme-system {
+    --dl-surface: #141019;
+    --dl-sunk: #221d2e;
+    --dl-text: #f6f5fa;
+    --dl-muted: #b6b3c2;
+    --dl-line: #4a4459;
+  }
+}
+
+.dl-heading { margin: 0; font-size: 1.125rem; }
+
+/* A description list: the label is the term and the value its description, so the pairing
+   survives without the two-column layout. */
+.dl-list { display: grid; column-gap: 2rem; margin: 0.75rem 0 0; }
+@media (min-width: 640px) {
+  .dl--two .dl-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.dl-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.5rem 0; }
+.dl--dividers .dl-row { border-bottom: 1px solid var(--dl-line); }
+.dl--dividers .dl-row:last-child { border-bottom: 0; }
+.dl-term { color: var(--dl-muted); font-size: 0.875rem; }
+.dl-detail { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin: 0; text-align: right; }
+@media (min-width: 640px) {
+  .dl-detail { text-align: left; }
+}
+.dl-value { font-weight: 500; }
+/* An empty value says so, rather than leaving a gap nobody can read. */
+.dl-value--empty { color: var(--dl-muted); font-style: italic; font-weight: 400; }
+.dl-edit { border-radius: 0.25rem; color: var(--dl-accent-text); font-size: 0.875rem; text-decoration: underline; text-underline-offset: 2px; }
+.dl-edit:focus-visible { outline: 2px solid var(--dl-accent-text); outline-offset: 2px; }
+
+.dl-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -231,6 +231,15 @@ import { renderTextareaCounterHtml } from "@/registry/textarea-counter/vanilla/r
 import { selectFieldSchema } from "@/registry/select-field/schema";
 import * as selectFieldDocs from "@/registry/select-field/docs";
 import { renderSelectFieldHtml } from "@/registry/select-field/vanilla/render";
+import { faqSchema } from "@/registry/faq/schema";
+import * as faqDocs from "@/registry/faq/docs";
+import { renderFaqHtml } from "@/registry/faq/vanilla/render";
+import { detailsListSchema } from "@/registry/details-list/schema";
+import * as detailsListDocs from "@/registry/details-list/docs";
+import { renderDetailsListHtml } from "@/registry/details-list/vanilla/render";
+import { comparisonTableSchema } from "@/registry/comparison-table/schema";
+import * as comparisonTableDocs from "@/registry/comparison-table/docs";
+import { renderComparisonTableHtml } from "@/registry/comparison-table/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -778,6 +787,27 @@ export const registry = {
     schema: selectFieldSchema,
     ...selectFieldDocs,
     renderHtml: (config) => renderSelectFieldHtml(config as never),
+  },
+  "faq": {
+    title: "FAQ",
+    description: "An FAQ built on native disclosure elements.",
+    schema: faqSchema,
+    ...faqDocs,
+    renderHtml: (config) => renderFaqHtml(config as never),
+  },
+  "details-list": {
+    title: "Details list",
+    description: "Key and value details with optional change links.",
+    schema: detailsListSchema,
+    ...detailsListDocs,
+    renderHtml: (config) => renderDetailsListHtml(config as never),
+  },
+  "comparison-table": {
+    title: "Comparison table",
+    description: "A feature comparison whose ticks are readable out loud.",
+    schema: comparisonTableSchema,
+    ...comparisonTableDocs,
+    renderHtml: (config) => renderComparisonTableHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

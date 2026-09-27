@@ -421,4 +421,17 @@ export const demos: Record<string, Demo> = {
       { find: "select", action: "key", value: "ArrowDown", after: 1300 },
     ],
   },
+  "faq": {
+    how: "Native details and summary: the browser handles opening, the keyboard and find-on-page, and Open all sets the state on the elements themselves.",
+    steps: [
+      { find: "summary", action: "click", after: 900 },
+      { find: "[data-toggle-all], button", action: "click", after: 1400 },
+    ],
+  },
+  "details-list": {
+    how: "A description list, so each value keeps its label; every change link names its row instead of five identical Change links.",
+  },
+  "comparison-table": {
+    how: "Features are row headers and plans column headers, so a screen reader says Crew, shared boards, yes.",
+  },
 };
