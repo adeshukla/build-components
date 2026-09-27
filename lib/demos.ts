@@ -555,4 +555,55 @@ export const demos: Record<string, Demo> = {
       { find: "[data-trigger], .hc-trigger", action: "click", after: 1600 },
     ],
   },
+  "bottom-sheet": {
+    how: "The handle is a real button with a name, not a decorative bar: dragging is the extra, because a keyboard cannot drag and many hands cannot either.",
+    steps: [
+      { find: "[data-trigger], .bsh-trigger, button", action: "click", after: 1000 },
+      { find: "[data-handle], .bsh-handle", action: "click", after: 1400 },
+    ],
+  },
+  "loading-button": {
+    how: "Never the disabled attribute: disabling the focused button throws focus to the page body, so the place is lost and nothing is announced. aria-disabled says the press will do nothing instead.",
+    steps: [
+      { find: "button", action: "click", after: 2200 },
+    ],
+  },
+  "undo-snackbar": {
+    how: "The clock stops while the snackbar is hovered or focused, and nought seconds never runs at all — a limit that cannot be extended fails WCAG 2.2.1.",
+    steps: [
+      { find: "[data-trigger], .usb-trigger, button", action: "click", after: 1400 },
+      { find: "[data-undo], .usb-undo", action: "click", after: 1200 },
+    ],
+  },
+  "inline-confirm": {
+    how: "Focus lands on the cancel answer, so a stray Enter after the first press does nothing; the row keeps its height, so nothing shifts out from under a pointer.",
+    steps: [
+      { find: "[data-start], .icf-start", action: "click", after: 1400 },
+      { find: "[data-cancel], .icf-ask button:last-child", action: "click", after: 1000 },
+    ],
+  },
+  "circular-progress": {
+    how: "Indeterminate means no aria-valuenow at all — inventing a number is a lie about the state — and the number is printed on the face, because a partly filled arc is not information.",
+    steps: [
+      { find: "button, .cpr-run", action: "click", after: 2600 },
+    ],
+  },
+  "error-state": {
+    how: "A focusable region rather than role=alert — an alert reads the whole panel over everything else and leaves no way back to it — and focus lands on the panel so the reason is read before it is retried.",
+    steps: [
+      { find: "[data-trigger], .est-trigger, button", action: "click", after: 1800 },
+    ],
+  },
+  "maintenance-notice": {
+    how: "A region landmark rather than a live region — the notice is already there when the page loads, so nothing would be announced — and sticky rather than fixed, so it keeps its own space on a phone.",
+    steps: [
+      { find: "[data-dismiss], .mnt-dismiss", action: "click", after: 1400 },
+    ],
+  },
+  "help-hint": {
+    how: "A disclosure, not a tooltip: hovered help cannot be read twice, cannot be copied from, and barely exists on a touch screen. While it is open it joins the field's description.",
+    steps: [
+      { find: "[data-toggle], .hlp-toggle, button", action: "click", after: 1600 },
+    ],
+  },
 };

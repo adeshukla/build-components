@@ -1,0 +1,104 @@
+/* Help hint — plain CSS. Colours come from the inline custom properties. */
+.hlp {
+  --hlp-accent: #1d4ed8;
+  --hlp-accent-text: #1a41b8;
+  --hlp-surface: #ffffff;
+  --hlp-sunk: #f4f3f8;
+  --hlp-text: #16121f;
+  --hlp-muted: #4d4a57;
+  --hlp-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--hlp-surface);
+  color: var(--hlp-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.hlp,
+.hlp *,
+.hlp *::before,
+.hlp *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .hlp--theme-system {
+    --hlp-surface: #141019;
+    --hlp-sunk: #221d2e;
+    --hlp-text: #f6f5fa;
+    --hlp-muted: #b6b3c2;
+    --hlp-line: #4a4459;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.hlp [hidden] { display: none; }
+
+.hlp-label { display: block; font-weight: 500; }
+.hlp-hint { margin: 0.25rem 0 0; color: var(--hlp-muted); font-size: 0.875rem; }
+
+/*
+ * A disclosure, not a tooltip. Help that has to be hovered cannot be read twice, cannot be copied from,
+ * and vanishes the moment the pointer moves — and on a touch screen it barely exists.
+ */
+.hlp-toggle {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--hlp-accent-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.hlp-toggle:focus-visible { outline: 2px solid var(--hlp-accent-text); outline-offset: 2px; }
+.hlp-mark {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hlp-help {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--hlp-accent);
+  background: var(--hlp-sunk);
+}
+.hlp-help-title { margin: 0; font-weight: 500; }
+.hlp-help-text { margin: 0.25rem 0 0; color: var(--hlp-muted); font-size: 0.875rem; }
+
+.hlp-example {
+  margin: 0.5rem 0 0;
+  color: var(--hlp-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+}
+
+.hlp-field {
+  display: block;
+  width: 100%;
+  max-width: 18rem;
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--hlp-line);
+  border-radius: 0.375rem;
+  background: var(--hlp-sunk);
+  color: var(--hlp-text);
+  font: inherit;
+  text-transform: uppercase;
+}
+.hlp-field:focus-visible { outline: 2px solid var(--hlp-accent-text); outline-offset: 2px; }

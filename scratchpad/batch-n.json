@@ -1,0 +1,136 @@
+[
+  {
+    "slug": "bottom-sheet",
+    "camel": "bottomSheet",
+    "export": "BottomSheet",
+    "name": "Bottom sheet",
+    "title": "Bottom sheet",
+    "category": "Overlays",
+    "summary": "Three heights on a native modal dialog, with a handle that is a real button so the heights work without dragging.",
+    "pattern": "APG Dialog (Modal) + detents",
+    "accent": "#5eead4",
+    "description": "The phone sheet, with heights a keyboard can reach.",
+    "how": "The handle is a real button with a name, not a decorative bar: dragging is the extra, because a keyboard cannot drag and many hands cannot either.",
+    "steps": [
+      { "find": "[data-trigger], .bsh-trigger, button", "action": "click", "after": 1000 },
+      { "find": "[data-handle], .bsh-handle", "action": "click", "after": 1400 }
+    ],
+    "variants": { "default": "", "tall": "detents=full&startAt=full&theme=dark" }
+  },
+  {
+    "slug": "loading-button",
+    "camel": "loadingButton",
+    "export": "LoadingButton",
+    "name": "Loading button",
+    "title": "Loading button",
+    "category": "Feedback",
+    "summary": "aria-busy and aria-disabled rather than the disabled attribute, so the focus and the state survive the wait.",
+    "pattern": "aria-busy + polite outcome",
+    "accent": "#6ee7b7",
+    "description": "A button that says what it is doing, and keeps your place.",
+    "how": "Never the disabled attribute: disabling the focused button throws focus to the page body, so the place is lost and nothing is announced. aria-disabled says the press will do nothing instead.",
+    "steps": [{ "find": "button", "action": "click", "after": 2200 }],
+    "variants": {
+      "default": "",
+      "slow": "demoMs=3000",
+      "fails": "demoOutcome=fails",
+      "bare": "showSpinner=false&theme=dark"
+    }
+  },
+  {
+    "slug": "undo-snackbar",
+    "camel": "undoSnackbar",
+    "export": "UndoSnackbar",
+    "name": "Undo snackbar",
+    "title": "Undo snackbar",
+    "category": "Feedback",
+    "summary": "A way back from an action, with a clock that stops while you are using it and can be turned off entirely.",
+    "pattern": "Polite status + timing adjustable",
+    "accent": "#fcd34d",
+    "description": "Undo, with a time limit that is actually adjustable.",
+    "how": "The clock stops while the snackbar is hovered or focused, and nought seconds never runs at all — a limit that cannot be extended fails WCAG 2.2.1.",
+    "steps": [
+      { "find": "[data-trigger], .usb-trigger, button", "action": "click", "after": 1400 },
+      { "find": "[data-undo], .usb-undo", "action": "click", "after": 1200 }
+    ],
+    "variants": { "default": "", "quick": "seconds=2", "forever": "seconds=0" }
+  },
+  {
+    "slug": "inline-confirm",
+    "camel": "inlineConfirm",
+    "export": "InlineConfirm",
+    "name": "Inline confirm",
+    "title": "Inline confirm",
+    "category": "Feedback",
+    "summary": "The question replaces the button in its own row, with focus on the safe answer and Escape as the way out.",
+    "pattern": "In-place group + focus move",
+    "accent": "#fca5a5",
+    "description": "Are you sure, without a dialog over the page.",
+    "how": "Focus lands on the cancel answer, so a stray Enter after the first press does nothing; the row keeps its height, so nothing shifts out from under a pointer.",
+    "steps": [
+      { "find": "[data-start], .icf-start", "action": "click", "after": 1400 },
+      { "find": "[data-cancel], .icf-ask button:last-child", "action": "click", "after": 1000 }
+    ],
+    "variants": { "default": "", "confirm-first": "focusOn=confirm&theme=dark" }
+  },
+  {
+    "slug": "circular-progress",
+    "camel": "circularProgress",
+    "export": "CircularProgress",
+    "name": "Circular progress",
+    "title": "Circular progress",
+    "category": "Feedback",
+    "summary": "A ring that reads back its value with a unit, prints the number, and carries no value at all when it does not know one.",
+    "pattern": "role=progressbar",
+    "accent": "#5ad1c8",
+    "description": "A progress ring that never invents a number.",
+    "how": "Indeterminate means no aria-valuenow at all — inventing a number is a lie about the state — and the number is printed on the face, because a partly filled arc is not information.",
+    "steps": [{ "find": "button, .cpr-run", "action": "click", "after": 2600 }],
+    "variants": { "default": "", "part-way": "value=62", "indeterminate": "mode=indeterminate&theme=dark" }
+  },
+  {
+    "slug": "error-state",
+    "camel": "errorState",
+    "export": "ErrorState",
+    "name": "Error state with retry",
+    "title": "Error state with retry",
+    "category": "Feedback",
+    "summary": "Names what failed, says whether anything changed, offers a retry, and hides the technical line behind a disclosure.",
+    "pattern": "Focusable region + retry",
+    "accent": "#f87171",
+    "description": "A failure you can actually do something about.",
+    "how": "A focusable region rather than role=alert — an alert reads the whole panel over everything else and leaves no way back to it — and focus lands on the panel so the reason is read before it is retried.",
+    "steps": [{ "find": "[data-trigger], .est-trigger, button", "action": "click", "after": 1800 }],
+    "variants": { "default": "", "stuck": "retrySucceeds=false&theme=dark" }
+  },
+  {
+    "slug": "maintenance-notice",
+    "camel": "maintenanceNotice",
+    "export": "MaintenanceNotice",
+    "name": "Maintenance notice",
+    "title": "Maintenance notice",
+    "category": "Feedback",
+    "summary": "A real time window, what will and will not work, and a dismissal remembered even where storage throws.",
+    "pattern": "Region landmark + time",
+    "accent": "#fde68a",
+    "description": "Planned downtime, said properly.",
+    "how": "A region landmark rather than a live region — the notice is already there when the page loads, so nothing would be announced — and sticky rather than fixed, so it keeps its own space on a phone.",
+    "steps": [{ "find": "[data-dismiss], .mnt-dismiss", "action": "click", "after": 1400 }],
+    "variants": { "default": "", "forgetful": "remember=false", "permanent": "dismissible=false&tone=warning&theme=dark" }
+  },
+  {
+    "slug": "help-hint",
+    "camel": "helpHint",
+    "export": "HelpHint",
+    "name": "Help hint",
+    "title": "Help hint",
+    "category": "Inputs",
+    "summary": "Long help behind a named button that stays open, and joins the field's description while it is.",
+    "pattern": "APG Disclosure + aria-describedby",
+    "accent": "#a5b4fc",
+    "description": "The help behind the question mark, done as a disclosure.",
+    "how": "A disclosure, not a tooltip: hovered help cannot be read twice, cannot be copied from, and barely exists on a touch screen. While it is open it joins the field's description.",
+    "steps": [{ "find": "[data-toggle], .hlp-toggle, button", "action": "click", "after": 1600 }],
+    "variants": { "default": "", "open": "startOpen=true&theme=dark" }
+  }
+]

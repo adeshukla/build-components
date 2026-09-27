@@ -1,0 +1,91 @@
+/* Maintenance notice — plain CSS. Colours come from the inline custom properties. */
+.mnt {
+  --mnt-accent: #e6b24a;
+  --mnt-accent-text: #6b4a05;
+  --mnt-surface: #fffaf0;
+  --mnt-text: #16121f;
+  --mnt-muted: #4d4a57;
+  --mnt-line: #e8d9b5;
+  display: block;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.mnt,
+.mnt *,
+.mnt *::before,
+.mnt *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .mnt--theme-system {
+    --mnt-surface: #211b10;
+    --mnt-text: #f6f5fa;
+    --mnt-muted: #c8c0ad;
+    --mnt-line: #5a4a28;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.mnt [hidden] { display: none; }
+
+/*
+ * Sticky, not fixed, so the notice keeps its own space instead of covering the page on a phone.
+ */
+.mnt-notice {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: block;
+  border-bottom: 4px solid var(--mnt-accent);
+  background: var(--mnt-surface);
+  color: var(--mnt-text);
+}
+
+.mnt-inner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.5rem 1rem; padding: 0.75rem 1rem; }
+.mnt-mark { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: 0.25rem; fill: var(--mnt-accent-text); }
+.mnt-body { flex: 1 1 12rem; min-width: 12rem; }
+.mnt-heading { margin: 0; font-weight: 600; }
+.mnt-when { margin: 0.125rem 0 0; font-size: 0.875rem; }
+.mnt-message { margin: 0.25rem 0 0; color: var(--mnt-muted); font-size: 0.875rem; }
+.mnt-link-row { margin: 0.25rem 0 0; }
+.mnt-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--mnt-accent-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.mnt-link:focus-visible { outline: 2px solid var(--mnt-accent-text); outline-offset: 2px; }
+
+.mnt-dismiss {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+.mnt-dismiss:focus-visible { outline: 2px solid var(--mnt-accent-text); outline-offset: 2px; }
+
+.mnt-page { display: grid; gap: 0.75rem; padding: 1rem; }
+.mnt-said { margin: 0; color: var(--mnt-muted); font-size: 0.875rem; }
+.mnt-page span { display: block; height: 1rem; border-radius: 0.25rem; background: var(--mnt-line); }
+.mnt-page span:nth-of-type(1) { width: 92%; }
+.mnt-page span:nth-of-type(2) { width: 83%; }
+.mnt-page span:nth-of-type(3) { width: 74%; }
+.mnt-page span:nth-of-type(4) { width: 65%; }
+.mnt-page span:nth-of-type(5) { width: 56%; }
+.mnt-page span:nth-of-type(6) { width: 47%; }

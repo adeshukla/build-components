@@ -1,0 +1,97 @@
+/* Error state — plain CSS. Colours come from the inline custom properties. */
+.est {
+  --est-accent: #b42318;
+  --est-accent-text: #8f1c13;
+  --est-on-accent: #ffffff;
+  --est-surface: #ffffff;
+  --est-sunk: #fdf2f1;
+  --est-text: #16121f;
+  --est-muted: #4d4a57;
+  --est-line: #e6b9b4;
+  display: block;
+  background: var(--est-surface);
+  color: var(--est-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.est,
+.est *,
+.est *::before,
+.est *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .est--theme-system {
+    --est-surface: #141019;
+    --est-sunk: #2a1b1d;
+    --est-text: #f6f5fa;
+    --est-muted: #c5b8b8;
+    --est-line: #6b3a38;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.est [hidden] { display: none; }
+
+.est-trigger,
+.est-retry {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 1rem;
+  border: 1px solid var(--est-line);
+  border-radius: 0.375rem;
+  background: var(--est-sunk);
+  color: var(--est-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.est-retry { border-color: var(--est-accent); background: var(--est-accent); color: var(--est-on-accent); }
+.est-trigger:focus-visible,
+.est-retry:focus-visible { outline: 2px solid var(--est-accent-text); outline-offset: 2px; }
+
+/*
+ * A focusable region with a heading, not role="alert": an alert reads the whole panel over whatever
+ * else is happening, and gives no way to get back to it afterwards.
+ */
+.est-panel {
+  max-width: 65ch;
+  padding: 1.25rem;
+  border: 2px solid var(--est-line);
+  border-radius: 0.5rem;
+  background: var(--est-sunk);
+}
+.est-panel:focus-visible { outline: 2px solid var(--est-accent-text); outline-offset: 2px; }
+
+.est-inner { display: flex; align-items: flex-start; gap: 0.75rem; }
+.est-mark { width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-top: 0.125rem; fill: var(--est-accent-text); }
+.est-heading { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.est-message { margin: 0.25rem 0 0; }
+.est-advice { margin: 0.25rem 0 0; color: var(--est-muted); font-size: 0.875rem; }
+.est-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+
+/* A disclosure, so the technical line is there for whoever reports it and out of the way of everyone else. */
+.est-details { margin-top: 1rem; }
+.est-summary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--est-accent-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.est-detail-text {
+  margin: 0.5rem 0 0;
+  color: var(--est-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+  overflow-wrap: break-word;
+}
+
+.est-status { margin: 0.75rem 0 0; color: var(--est-muted); font-size: 0.875rem; }

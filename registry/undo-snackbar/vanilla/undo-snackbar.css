@@ -1,0 +1,113 @@
+/* Undo snackbar — plain CSS. Colours come from the inline custom properties. */
+.usb {
+  --usb-accent: #e6b24a;
+  --usb-accent-on-panel: #e6b24a;
+  --usb-accent-text: #6b4a05;
+  --usb-surface: #ffffff;
+  --usb-sunk: #f4f3f8;
+  --usb-panel: #1b1624;
+  --usb-on-panel: #f6f5fa;
+  --usb-text: #16121f;
+  --usb-muted: #4d4a57;
+  --usb-line: #c9c4d6;
+  position: relative;
+  display: block;
+  min-height: 14rem;
+  background: var(--usb-surface);
+  color: var(--usb-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.usb,
+.usb *,
+.usb *::before,
+.usb *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .usb--theme-system {
+    --usb-surface: #141019;
+    --usb-sunk: #221d2e;
+    --usb-panel: #2c2639;
+    --usb-text: #f6f5fa;
+    --usb-muted: #b6b3c2;
+    --usb-line: #4a4459;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.usb [hidden] { display: none; }
+
+.usb-body { padding: 1rem; }
+
+.usb-trigger {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 1rem;
+  border: 1px solid var(--usb-line);
+  border-radius: 0.375rem;
+  background: var(--usb-sunk);
+  color: var(--usb-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.usb-trigger:focus-visible { outline: 2px solid var(--usb-accent-text); outline-offset: 2px; }
+
+/*
+ * One live region holding nothing but words. The snackbar itself is not a live region: a region that
+ * contains a button gets read as a lump of text, and re-reads itself on every countdown tick.
+ */
+.usb-said { margin: 0.75rem 0 0; color: var(--usb-muted); font-size: 0.875rem; }
+
+.usb-bar {
+  position: absolute;
+  bottom: 0.75rem;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--usb-panel);
+  color: var(--usb-on-panel);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+}
+.usb--left .usb-bar { left: 0.75rem; }
+.usb--centre .usb-bar { left: 50%; transform: translateX(-50%); }
+
+.usb-message { margin: 0; }
+
+.usb-undo {
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--usb-accent-on-panel);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.usb-close {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+.usb-undo:focus-visible,
+.usb-close:focus-visible { outline: 2px solid var(--usb-accent-on-panel); outline-offset: 2px; }
+
+/* A number, not a shrinking bar: a bar says nothing to anyone who cannot see it. */
+.usb-countdown { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 0.75rem; opacity: 0.8; }

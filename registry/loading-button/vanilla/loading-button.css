@@ -1,0 +1,68 @@
+/* Loading button — plain CSS. Colours come from the inline custom properties. */
+.lbn {
+  --lbn-accent: #0f766e;
+  --lbn-accent-text: #0b5a54;
+  --lbn-on-accent: #ffffff;
+  --lbn-surface: #ffffff;
+  --lbn-sunk: #f4f3f8;
+  --lbn-text: #16121f;
+  --lbn-muted: #4d4a57;
+  --lbn-line: #c9c4d6;
+  --lbn-error: #b42318;
+  display: block;
+  background: var(--lbn-surface);
+  color: var(--lbn-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.lbn,
+.lbn *,
+.lbn *::before,
+.lbn *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .lbn--theme-system {
+    --lbn-surface: #141019;
+    --lbn-sunk: #221d2e;
+    --lbn-text: #f6f5fa;
+    --lbn-muted: #b6b3c2;
+    --lbn-line: #4a4459;
+    --lbn-error: #ff9d95;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.lbn [hidden] { display: none; }
+
+.lbn-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--lbn-accent);
+  color: var(--lbn-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.lbn--wide .lbn-button { width: 100%; }
+.lbn-button:focus-visible { outline: 2px solid var(--lbn-accent-text); outline-offset: 2px; }
+.lbn-button[aria-busy="true"] { opacity: 0.8; cursor: default; }
+
+.lbn-spinner { width: 1rem; height: 1rem; flex-shrink: 0; animation: lbn-spin 0.8s linear infinite; }
+@keyframes lbn-spin { to { transform: rotate(1turn); } }
+
+/* A spinning mark is motion with no information in it, so it stops and simply sits there. */
+@media (prefers-reduced-motion: reduce) {
+  .lbn-spinner { animation: none; }
+}
+
+.lbn-outcome { margin: 0.75rem 0 0; color: var(--lbn-muted); font-size: 0.875rem; }
+.lbn-outcome[data-outcome="error"] { color: var(--lbn-error); }

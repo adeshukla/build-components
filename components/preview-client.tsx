@@ -18,6 +18,14 @@ import { CursorPagination, type CursorPaginationConfig } from "@/registry/cursor
 import { NavProgress, type NavProgressConfig } from "@/registry/nav-progress/react/nav-progress";
 import { StickyHeader, type StickyHeaderConfig } from "@/registry/sticky-header/react/sticky-header";
 import { HoverCard, type HoverCardConfig } from "@/registry/hover-card/react/hover-card";
+import { BottomSheet, type BottomSheetConfig } from "@/registry/bottom-sheet/react/bottom-sheet";
+import { LoadingButton, type LoadingButtonConfig } from "@/registry/loading-button/react/loading-button";
+import { UndoSnackbar, type UndoSnackbarConfig } from "@/registry/undo-snackbar/react/undo-snackbar";
+import { InlineConfirm, type InlineConfirmConfig } from "@/registry/inline-confirm/react/inline-confirm";
+import { CircularProgress, type CircularProgressConfig } from "@/registry/circular-progress/react/circular-progress";
+import { ErrorState, type ErrorStateConfig } from "@/registry/error-state/react/error-state";
+import { MaintenanceNotice, type MaintenanceNoticeConfig } from "@/registry/maintenance-notice/react/maintenance-notice";
+import { HelpHint, type HelpHintConfig } from "@/registry/help-hint/react/help-hint";
 import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
 import { Cart, type CartConfig } from "@/registry/cart/react/cart";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
@@ -396,6 +404,14 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "nav-progress" && <NavProgress config={config as unknown as NavProgressConfig} />}
         {slug === "sticky-header" && <StickyHeader config={config as unknown as StickyHeaderConfig} />}
         {slug === "hover-card" && <HoverCard config={config as unknown as HoverCardConfig} />}
+        {slug === "bottom-sheet" && <BottomSheet config={config as unknown as BottomSheetConfig} />}
+        {slug === "loading-button" && <LoadingButton config={config as unknown as LoadingButtonConfig} />}
+        {slug === "undo-snackbar" && <UndoSnackbar config={config as unknown as UndoSnackbarConfig} />}
+        {slug === "inline-confirm" && <InlineConfirm config={config as unknown as InlineConfirmConfig} />}
+        {slug === "circular-progress" && <CircularProgress config={config as unknown as CircularProgressConfig} />}
+        {slug === "error-state" && <ErrorState config={config as unknown as ErrorStateConfig} />}
+        {slug === "maintenance-notice" && <MaintenanceNotice config={config as unknown as MaintenanceNoticeConfig} />}
+        {slug === "help-hint" && <HelpHint config={config as unknown as HelpHintConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

@@ -309,6 +309,31 @@ import { hoverCardSchema } from "@/registry/hover-card/schema";
 import * as hoverCardDocs from "@/registry/hover-card/docs";
 import { renderHoverCardHtml } from "@/registry/hover-card/vanilla/render";
 
+import { bottomSheetSchema } from "@/registry/bottom-sheet/schema";
+import * as bottomSheetDocs from "@/registry/bottom-sheet/docs";
+import { renderBottomSheetHtml } from "@/registry/bottom-sheet/vanilla/render";
+import { loadingButtonSchema } from "@/registry/loading-button/schema";
+import * as loadingButtonDocs from "@/registry/loading-button/docs";
+import { renderLoadingButtonHtml } from "@/registry/loading-button/vanilla/render";
+import { undoSnackbarSchema } from "@/registry/undo-snackbar/schema";
+import * as undoSnackbarDocs from "@/registry/undo-snackbar/docs";
+import { renderUndoSnackbarHtml } from "@/registry/undo-snackbar/vanilla/render";
+import { inlineConfirmSchema } from "@/registry/inline-confirm/schema";
+import * as inlineConfirmDocs from "@/registry/inline-confirm/docs";
+import { renderInlineConfirmHtml } from "@/registry/inline-confirm/vanilla/render";
+import { circularProgressSchema } from "@/registry/circular-progress/schema";
+import * as circularProgressDocs from "@/registry/circular-progress/docs";
+import { renderCircularProgressHtml } from "@/registry/circular-progress/vanilla/render";
+import { errorStateSchema } from "@/registry/error-state/schema";
+import * as errorStateDocs from "@/registry/error-state/docs";
+import { renderErrorStateHtml } from "@/registry/error-state/vanilla/render";
+import { maintenanceNoticeSchema } from "@/registry/maintenance-notice/schema";
+import * as maintenanceNoticeDocs from "@/registry/maintenance-notice/docs";
+import { renderMaintenanceNoticeHtml } from "@/registry/maintenance-notice/vanilla/render";
+import { helpHintSchema } from "@/registry/help-hint/schema";
+import * as helpHintDocs from "@/registry/help-hint/docs";
+import { renderHelpHintHtml } from "@/registry/help-hint/vanilla/render";
+
 export type RegistryEntry = {
   title: string;
   description: string;
@@ -1030,6 +1055,62 @@ export const registry = {
     schema: hoverCardSchema,
     ...hoverCardDocs,
     renderHtml: (config) => renderHoverCardHtml(config as never),
+  },
+  "bottom-sheet": {
+    title: "Bottom sheet",
+    description: "The phone sheet, with heights a keyboard can reach.",
+    schema: bottomSheetSchema,
+    ...bottomSheetDocs,
+    renderHtml: (config) => renderBottomSheetHtml(config as never),
+  },
+  "loading-button": {
+    title: "Loading button",
+    description: "A button that says what it is doing, and keeps your place.",
+    schema: loadingButtonSchema,
+    ...loadingButtonDocs,
+    renderHtml: (config) => renderLoadingButtonHtml(config as never),
+  },
+  "undo-snackbar": {
+    title: "Undo snackbar",
+    description: "Undo, with a time limit that is actually adjustable.",
+    schema: undoSnackbarSchema,
+    ...undoSnackbarDocs,
+    renderHtml: (config) => renderUndoSnackbarHtml(config as never),
+  },
+  "inline-confirm": {
+    title: "Inline confirm",
+    description: "Are you sure, without a dialog over the page.",
+    schema: inlineConfirmSchema,
+    ...inlineConfirmDocs,
+    renderHtml: (config) => renderInlineConfirmHtml(config as never),
+  },
+  "circular-progress": {
+    title: "Circular progress",
+    description: "A progress ring that never invents a number.",
+    schema: circularProgressSchema,
+    ...circularProgressDocs,
+    renderHtml: (config) => renderCircularProgressHtml(config as never),
+  },
+  "error-state": {
+    title: "Error state with retry",
+    description: "A failure you can actually do something about.",
+    schema: errorStateSchema,
+    ...errorStateDocs,
+    renderHtml: (config) => renderErrorStateHtml(config as never),
+  },
+  "maintenance-notice": {
+    title: "Maintenance notice",
+    description: "Planned downtime, said properly.",
+    schema: maintenanceNoticeSchema,
+    ...maintenanceNoticeDocs,
+    renderHtml: (config) => renderMaintenanceNoticeHtml(config as never),
+  },
+  "help-hint": {
+    title: "Help hint",
+    description: "The help behind the question mark, done as a disclosure.",
+    schema: helpHintSchema,
+    ...helpHintDocs,
+    renderHtml: (config) => renderHelpHintHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

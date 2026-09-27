@@ -1,0 +1,77 @@
+/* Inline confirm — plain CSS. Colours come from the inline custom properties. */
+.icf {
+  --icf-accent: #b42318;
+  --icf-accent-text: #8f1c13;
+  --icf-on-accent: #ffffff;
+  --icf-surface: #ffffff;
+  --icf-sunk: #f4f3f8;
+  --icf-text: #16121f;
+  --icf-muted: #4d4a57;
+  --icf-line: #c9c4d6;
+  display: block;
+  background: var(--icf-surface);
+  color: var(--icf-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.icf,
+.icf *,
+.icf *::before,
+.icf *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .icf--theme-system {
+    --icf-surface: #141019;
+    --icf-sunk: #221d2e;
+    --icf-text: #f6f5fa;
+    --icf-muted: #b6b3c2;
+    --icf-line: #4a4459;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.icf [hidden] { display: none; }
+
+.icf-list { margin: 0; padding: 0; list-style: none; }
+
+/* The row keeps its height whichever state it is in, so nothing moves out from under a pointer. */
+.icf-row {
+  display: flex;
+  min-height: 4rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  border-top: 1px solid var(--icf-line);
+  border-bottom: 1px solid var(--icf-line);
+}
+.icf-row:focus-visible { outline: 2px solid var(--icf-accent-text); outline-offset: 2px; }
+.icf-name[data-gone="true"] { color: var(--icf-muted); text-decoration: line-through; }
+
+.icf-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.icf-question { font-size: 0.875rem; font-weight: 500; }
+
+.icf-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 0.75rem;
+  border: 1px solid var(--icf-line);
+  border-radius: 0.375rem;
+  background: var(--icf-sunk);
+  color: var(--icf-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.icf-button:focus-visible { outline: 2px solid var(--icf-accent-text); outline-offset: 2px; }
+.icf-start { color: var(--icf-accent-text); }
+.icf-confirm { border-color: var(--icf-accent); background: var(--icf-accent); color: var(--icf-on-accent); }
+
+.icf-done { color: var(--icf-muted); font-size: 0.875rem; }
+.icf-result { margin: 0.75rem 0 0; color: var(--icf-muted); font-size: 0.875rem; }

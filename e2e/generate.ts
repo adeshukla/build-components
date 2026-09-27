@@ -292,6 +292,30 @@ import { renderStickyHeaderHtml } from "../registry/sticky-header/vanilla/render
 import { hoverCardSchema } from "../registry/hover-card/schema";
 import type { HoverCardConfig } from "../registry/hover-card/react/hover-card";
 import { renderHoverCardHtml } from "../registry/hover-card/vanilla/render";
+import { bottomSheetSchema } from "../registry/bottom-sheet/schema";
+import type { BottomSheetConfig } from "../registry/bottom-sheet/react/bottom-sheet";
+import { renderBottomSheetHtml } from "../registry/bottom-sheet/vanilla/render";
+import { loadingButtonSchema } from "../registry/loading-button/schema";
+import type { LoadingButtonConfig } from "../registry/loading-button/react/loading-button";
+import { renderLoadingButtonHtml } from "../registry/loading-button/vanilla/render";
+import { undoSnackbarSchema } from "../registry/undo-snackbar/schema";
+import type { UndoSnackbarConfig } from "../registry/undo-snackbar/react/undo-snackbar";
+import { renderUndoSnackbarHtml } from "../registry/undo-snackbar/vanilla/render";
+import { inlineConfirmSchema } from "../registry/inline-confirm/schema";
+import type { InlineConfirmConfig } from "../registry/inline-confirm/react/inline-confirm";
+import { renderInlineConfirmHtml } from "../registry/inline-confirm/vanilla/render";
+import { circularProgressSchema } from "../registry/circular-progress/schema";
+import type { CircularProgressConfig } from "../registry/circular-progress/react/circular-progress";
+import { renderCircularProgressHtml } from "../registry/circular-progress/vanilla/render";
+import { errorStateSchema } from "../registry/error-state/schema";
+import type { ErrorStateConfig } from "../registry/error-state/react/error-state";
+import { renderErrorStateHtml } from "../registry/error-state/vanilla/render";
+import { maintenanceNoticeSchema } from "../registry/maintenance-notice/schema";
+import type { MaintenanceNoticeConfig } from "../registry/maintenance-notice/react/maintenance-notice";
+import { renderMaintenanceNoticeHtml } from "../registry/maintenance-notice/vanilla/render";
+import { helpHintSchema } from "../registry/help-hint/schema";
+import type { HelpHintConfig } from "../registry/help-hint/react/help-hint";
+import { renderHelpHintHtml } from "../registry/help-hint/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -1240,6 +1264,83 @@ export const components: Record<
       default: "",
       instant: "openDelayMs=0&closeDelayMs=600",
       above: "placement=above&openDelayMs=0&theme=dark",
+    },
+  },
+  "bottom-sheet": {
+    exportName: "BottomSheet",
+    schema: bottomSheetSchema,
+    renderHtml: (config) => renderBottomSheetHtml(config as unknown as BottomSheetConfig),
+    variants: {
+      default: "",
+      tall: "detents=full&startAt=full&theme=dark",
+    },
+  },
+  "loading-button": {
+    exportName: "LoadingButton",
+    schema: loadingButtonSchema,
+    renderHtml: (config) => renderLoadingButtonHtml(config as unknown as LoadingButtonConfig),
+    variants: {
+      default: "",
+      slow: "demoMs=3000",
+      fails: "demoOutcome=fails",
+      bare: "showSpinner=false&theme=dark",
+    },
+  },
+  "undo-snackbar": {
+    exportName: "UndoSnackbar",
+    schema: undoSnackbarSchema,
+    renderHtml: (config) => renderUndoSnackbarHtml(config as unknown as UndoSnackbarConfig),
+    variants: {
+      default: "",
+      quick: "seconds=2",
+      forever: "seconds=0",
+    },
+  },
+  "inline-confirm": {
+    exportName: "InlineConfirm",
+    schema: inlineConfirmSchema,
+    renderHtml: (config) => renderInlineConfirmHtml(config as unknown as InlineConfirmConfig),
+    variants: {
+      default: "",
+      "confirm-first": "focusOn=confirm&theme=dark",
+    },
+  },
+  "circular-progress": {
+    exportName: "CircularProgress",
+    schema: circularProgressSchema,
+    renderHtml: (config) => renderCircularProgressHtml(config as unknown as CircularProgressConfig),
+    variants: {
+      default: "",
+      "part-way": "value=62",
+      indeterminate: "mode=indeterminate&theme=dark",
+    },
+  },
+  "error-state": {
+    exportName: "ErrorState",
+    schema: errorStateSchema,
+    renderHtml: (config) => renderErrorStateHtml(config as unknown as ErrorStateConfig),
+    variants: {
+      default: "",
+      stuck: "retrySucceeds=false&theme=dark",
+    },
+  },
+  "maintenance-notice": {
+    exportName: "MaintenanceNotice",
+    schema: maintenanceNoticeSchema,
+    renderHtml: (config) => renderMaintenanceNoticeHtml(config as unknown as MaintenanceNoticeConfig),
+    variants: {
+      default: "",
+      forgetful: "remember=false",
+      permanent: "dismissible=false&tone=warning&theme=dark",
+    },
+  },
+  "help-hint": {
+    exportName: "HelpHint",
+    schema: helpHintSchema,
+    renderHtml: (config) => renderHelpHintHtml(config as unknown as HelpHintConfig),
+    variants: {
+      default: "",
+      open: "startOpen=true&theme=dark",
     },
   },
 };
