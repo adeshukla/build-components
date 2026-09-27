@@ -1,0 +1,70 @@
+/* Textarea with counter — plain CSS. Colours come from the inline custom properties. */
+.tc {
+  --tc-accent: #1d4ed8;
+  --tc-accent-text: #1a46c2;
+  --tc-surface: #ffffff;
+  --tc-sunk: #f4f3f8;
+  --tc-text: #16121f;
+  --tc-muted: #4d4a57;
+  --tc-line: #c9c4d6;
+  --tc-error: #b42318;
+  display: block;
+  background: var(--tc-surface);
+  color: var(--tc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.tc,
+.tc *,
+.tc *::before,
+.tc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tc--theme-system {
+    --tc-surface: #141019;
+    --tc-sunk: #221d2e;
+    --tc-text: #f6f5fa;
+    --tc-muted: #b6b3c2;
+    --tc-line: #4a4459;
+    --tc-error: #ff9d95;
+  }
+}
+
+.tc-label { display: block; font-weight: 500; }
+.tc-hint { margin: 0; color: var(--tc-muted); font-size: 0.875rem; }
+.tc-field {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--tc-line);
+  border-radius: 0.375rem;
+  background: var(--tc-sunk);
+  color: var(--tc-text);
+  font: inherit;
+}
+.tc-field:focus-visible { outline: 2px solid var(--tc-accent-text); outline-offset: 2px; }
+.tc-field[aria-invalid="true"] { border-color: var(--tc-error); }
+
+.tc-foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-top: 0.25rem; }
+/* The number itself is not a live region; the status line carries what is worth saying. */
+.tc-counter { margin: 0; color: var(--tc-muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.tc-counter--warn { color: var(--tc-text); }
+.tc-counter--over { color: var(--tc-error); font-weight: 500; }
+.tc-raw { margin: 0; color: var(--tc-muted); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+
+.tc-error { margin: 0.25rem 0 0; color: var(--tc-error); font-size: 0.875rem; }
+.tc-error[hidden] { display: none; }
+
+.tc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

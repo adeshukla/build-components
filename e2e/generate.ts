@@ -205,6 +205,18 @@ import { renderSlotPickerHtml } from "../registry/slot-picker/vanilla/render";
 import { wizardSchema } from "../registry/wizard/schema";
 import type { WizardConfig } from "../registry/wizard/react/wizard";
 import { renderWizardHtml } from "../registry/wizard/vanilla/render";
+import { checkboxGroupSchema } from "../registry/checkbox-group/schema";
+import type { CheckboxGroupConfig } from "../registry/checkbox-group/react/checkbox-group";
+import { renderCheckboxGroupHtml } from "../registry/checkbox-group/vanilla/render";
+import { radioCardsSchema } from "../registry/radio-cards/schema";
+import type { RadioCardsConfig } from "../registry/radio-cards/react/radio-cards";
+import { renderRadioCardsHtml } from "../registry/radio-cards/vanilla/render";
+import { textareaCounterSchema } from "../registry/textarea-counter/schema";
+import type { TextareaCounterConfig } from "../registry/textarea-counter/react/textarea-counter";
+import { renderTextareaCounterHtml } from "../registry/textarea-counter/vanilla/render";
+import { selectFieldSchema } from "../registry/select-field/schema";
+import type { SelectFieldConfig } from "../registry/select-field/react/select-field";
+import { renderSelectFieldHtml } from "../registry/select-field/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -890,6 +902,42 @@ export const components: Record<
     variants: {
       default: "",
       bare: "showProgress=false&theme=dark&heading=Get+a+quote&finishText=Send+the+quote",
+    },
+  },
+  "checkbox-group": {
+    exportName: "CheckboxGroup",
+    schema: checkboxGroupSchema,
+    renderHtml: (config) => renderCheckboxGroupHtml(config as unknown as CheckboxGroupConfig),
+    variants: {
+      default: "",
+      compact: "showSelectAll=false&showCount=false&columns=two&theme=dark&minRequired=0",
+    },
+  },
+  "radio-cards": {
+    exportName: "RadioCards",
+    schema: radioCardsSchema,
+    renderHtml: (config) => renderRadioCardsHtml(config as unknown as RadioCardsConfig),
+    variants: {
+      default: "",
+      list: "columns=one&showTick=false&theme=dark&legend=Pick+a+plan",
+    },
+  },
+  "textarea-counter": {
+    exportName: "TextareaCounter",
+    schema: textareaCounterSchema,
+    renderHtml: (config) => renderTextareaCounterHtml(config as unknown as TextareaCounterConfig),
+    variants: {
+      default: "",
+      hard: "allowOver=false&maxLength=60&warnAt=20&rows=3&theme=dark&label=Note+for+the+driver",
+    },
+  },
+  "select-field": {
+    exportName: "SelectField",
+    schema: selectFieldSchema,
+    renderHtml: (config) => renderSelectFieldHtml(config as unknown as SelectFieldConfig),
+    variants: {
+      default: "",
+      flat: "required=false&size=sm&width=auto&theme=dark&placeholder=Any+yard",
     },
   },
 };

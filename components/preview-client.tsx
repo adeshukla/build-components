@@ -139,6 +139,14 @@ import { SlotPicker, type SlotPickerConfig } from "@/registry/slot-picker/react/
 
 import { Wizard, type WizardConfig } from "@/registry/wizard/react/wizard";
 
+import { CheckboxGroup, type CheckboxGroupConfig } from "@/registry/checkbox-group/react/checkbox-group";
+
+import { RadioCards, type RadioCardsConfig } from "@/registry/radio-cards/react/radio-cards";
+
+import { TextareaCounter, type TextareaCounterConfig } from "@/registry/textarea-counter/react/textarea-counter";
+
+import { SelectField, type SelectFieldConfig } from "@/registry/select-field/react/select-field";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -324,6 +332,10 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "countdown" && <Countdown config={config as unknown as CountdownConfig} />}
         {slug === "slot-picker" && <SlotPicker config={config as unknown as SlotPickerConfig} />}
         {slug === "wizard" && <Wizard config={config as unknown as WizardConfig} />}
+        {slug === "checkbox-group" && <CheckboxGroup config={config as unknown as CheckboxGroupConfig} />}
+        {slug === "radio-cards" && <RadioCards config={config as unknown as RadioCardsConfig} />}
+        {slug === "textarea-counter" && <TextareaCounter config={config as unknown as TextareaCounterConfig} />}
+        {slug === "select-field" && <SelectField config={config as unknown as SelectFieldConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

@@ -1,0 +1,78 @@
+/* Radio cards — plain CSS. Colours come from the inline custom properties. */
+.rc {
+  --rc-accent: #0f766e;
+  --rc-accent-text: #0b5a54;
+  --rc-surface: #ffffff;
+  --rc-sunk: #f4f3f8;
+  --rc-text: #16121f;
+  --rc-muted: #4d4a57;
+  --rc-line: #c9c4d6;
+  display: block;
+  background: var(--rc-surface);
+  color: var(--rc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.rc,
+.rc *,
+.rc *::before,
+.rc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .rc--theme-system {
+    --rc-surface: #141019;
+    --rc-sunk: #221d2e;
+    --rc-text: #f6f5fa;
+    --rc-muted: #b6b3c2;
+    --rc-line: #4a4459;
+  }
+}
+
+.rc-set { margin: 0; padding: 0; border: 0; }
+.rc-legend { font-weight: 500; }
+.rc-hint { margin: 0; color: var(--rc-muted); font-size: 0.875rem; }
+
+.rc-grid { display: grid; gap: 0.75rem; margin-top: 0.75rem; }
+@media (min-width: 640px) {
+  .rc--two .rc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rc--three .rc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* A card is only paint: the radio inside it is what makes this one choice with one tab stop. */
+.rc-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 2.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--rc-line);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.rc-card:has(input:checked) { border-color: var(--rc-accent); background: var(--rc-sunk); box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); }
+.rc-card:has(input:focus-visible) { outline: 2px solid var(--rc-accent-text); outline-offset: 2px; }
+.rc-card:has(input:disabled) { border-style: dashed; color: var(--rc-muted); cursor: not-allowed; }
+
+.rc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.rc-label { font-weight: 500; }
+.rc-tick { margin-right: 0.25rem; color: var(--rc-accent-text); }
+.rc-tick[hidden] { display: none; }
+.rc-meta { flex-shrink: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
+.rc-note { margin-top: 0.25rem; color: var(--rc-muted); font-size: 0.875rem; }
+.rc-off { margin-top: 0.25rem; font-size: 0.75rem; }
+
+.rc-status { margin: 0.75rem 0 0; color: var(--rc-muted); font-size: 0.875rem; }
+
+.rc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

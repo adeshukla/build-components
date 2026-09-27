@@ -394,4 +394,31 @@ export const demos: Record<string, Demo> = {
       { find: "[data-next], button:last-of-type", action: "click", after: 1300 },
     ],
   },
+  "checkbox-group": {
+    how: "One fieldset, native boxes, and an everything box that goes indeterminate when only some are ticked.",
+    steps: [
+      { find: "[data-option], input[type=checkbox]", action: "click", after: 800 },
+      { find: "[data-all], input[type=checkbox]", action: "click", after: 1400 },
+    ],
+  },
+  "radio-cards": {
+    how: "The card is paint around a radio, so the arrow keys move between them and the form submits without script.",
+    steps: [
+      { find: "input[type=radio]:not([disabled])", action: "click", after: 900 },
+      { find: "input[type=radio]:not([disabled]):not(:checked)", action: "click", after: 1400 },
+    ],
+  },
+  "textarea-counter": {
+    how: "The count is part of the field's description and is announced at the warning point and the limit, never per letter.",
+    steps: [
+      { find: "textarea", action: "type", value: "The winch jammed halfway through the lift.", after: 1600 },
+    ],
+  },
+  "select-field": {
+    how: "A native select keeps type-ahead and the phone's own picker; the error sets aria-invalid and moves focus back.",
+    steps: [
+      { find: "[data-go], button", action: "click", after: 1000 },
+      { find: "select", action: "key", value: "ArrowDown", after: 1300 },
+    ],
+  },
 };

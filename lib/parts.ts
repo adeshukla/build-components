@@ -675,6 +675,42 @@ export const parts: Part[] = [
     accent: "#93c5fd",
     status: "in-stock",
   },
+  {
+    slug: "checkbox-group",
+    category: "Inputs",
+    name: "Checkbox group",
+    summary: "Boxes under one question, an everything box that shows the mixed state, and a count said politely.",
+    pattern: "Fieldset + checkboxes",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "radio-cards",
+    category: "Inputs",
+    name: "Radio cards",
+    summary: "Choices as cards that are still real radios: one tab stop, arrow keys, and unavailable said in words.",
+    pattern: "Fieldset + radio cards",
+    accent: "#5eead4",
+    status: "in-stock",
+  },
+  {
+    slug: "textarea-counter",
+    category: "Inputs",
+    name: "Textarea with counter",
+    summary: "A character count that is read out at the marks that matter, not on every keystroke.",
+    pattern: "Textarea + polite counter",
+    accent: "#fdba74",
+    status: "in-stock",
+  },
+  {
+    slug: "select-field",
+    category: "Inputs",
+    name: "Select field",
+    summary: "The humble native select done properly: real label, optgroups, and an error that takes focus back.",
+    pattern: "Native select + validation",
+    accent: "#c4b5fd",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */

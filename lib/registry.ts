@@ -219,6 +219,18 @@ import { renderSlotPickerHtml } from "@/registry/slot-picker/vanilla/render";
 import { wizardSchema } from "@/registry/wizard/schema";
 import * as wizardDocs from "@/registry/wizard/docs";
 import { renderWizardHtml } from "@/registry/wizard/vanilla/render";
+import { checkboxGroupSchema } from "@/registry/checkbox-group/schema";
+import * as checkboxGroupDocs from "@/registry/checkbox-group/docs";
+import { renderCheckboxGroupHtml } from "@/registry/checkbox-group/vanilla/render";
+import { radioCardsSchema } from "@/registry/radio-cards/schema";
+import * as radioCardsDocs from "@/registry/radio-cards/docs";
+import { renderRadioCardsHtml } from "@/registry/radio-cards/vanilla/render";
+import { textareaCounterSchema } from "@/registry/textarea-counter/schema";
+import * as textareaCounterDocs from "@/registry/textarea-counter/docs";
+import { renderTextareaCounterHtml } from "@/registry/textarea-counter/vanilla/render";
+import { selectFieldSchema } from "@/registry/select-field/schema";
+import * as selectFieldDocs from "@/registry/select-field/docs";
+import { renderSelectFieldHtml } from "@/registry/select-field/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -738,6 +750,34 @@ export const registry = {
     schema: wizardSchema,
     ...wizardDocs,
     renderHtml: (config) => renderWizardHtml(config as never),
+  },
+  "checkbox-group": {
+    title: "Checkbox group",
+    description: "Checkboxes under one legend, with select-all and a minimum.",
+    schema: checkboxGroupSchema,
+    ...checkboxGroupDocs,
+    renderHtml: (config) => renderCheckboxGroupHtml(config as never),
+  },
+  "radio-cards": {
+    title: "Radio cards",
+    description: "A radio group drawn as cards, with notes and figures.",
+    schema: radioCardsSchema,
+    ...radioCardsDocs,
+    renderHtml: (config) => renderRadioCardsHtml(config as never),
+  },
+  "textarea-counter": {
+    title: "Textarea with counter",
+    description: "A message box whose counter does not talk over the typing.",
+    schema: textareaCounterSchema,
+    ...textareaCounterDocs,
+    renderHtml: (config) => renderTextareaCounterHtml(config as never),
+  },
+  "select-field": {
+    title: "Select field",
+    description: "A native select with groups, a prompt and a proper error.",
+    schema: selectFieldSchema,
+    ...selectFieldDocs,
+    renderHtml: (config) => renderSelectFieldHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 
