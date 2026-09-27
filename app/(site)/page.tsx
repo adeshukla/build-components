@@ -62,7 +62,7 @@ export default function Home() {
                 <Arrow />
               </Link>
               <Link href="/date-picker" className="btn-outline-board">
-                Try Almanac, the date picker
+                Try the date picker
               </Link>
             </div>
             {/* Counted from the catalogue, not typed in, so it cannot go stale. */}
@@ -84,16 +84,16 @@ export default function Home() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-1 lg:gap-10">
-            <MountedPart caption="Almanac · date picker · live, try it">
+            <MountedPart caption="Date picker · live, try it">
               <DatePicker />
             </MountedPart>
             <div className="lg:translate-x-10">
-              <MountedPart caption="Sextant · searchable select · live, try it">
+              <MountedPart caption="Searchable select · live, try it">
                 <SearchableSelect />
               </MountedPart>
             </div>
             <div className="sm:col-span-2 lg:col-span-1 lg:translate-x-20">
-              <MountedPart caption="Porthole · modal · live, try it">
+              <MountedPart caption="Modal dialog · live, try it">
                 <Modal />
               </MountedPart>
             </div>
@@ -208,14 +208,14 @@ export default function Home() {
           </h2>
           <div className="flex flex-wrap gap-3">
             <Link href="/date-picker" className="btn-pad">
-              Almanac
+              Date picker
               <Arrow />
             </Link>
             <Link href="/searchable-select" className="btn-outline-board">
-              Sextant
+              Searchable select
             </Link>
             <Link href="/modal" className="btn-outline-board">
-              Porthole
+              Modal dialog
             </Link>
           </div>
         </div>

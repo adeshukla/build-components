@@ -10,7 +10,7 @@ import { inStock } from "../lib/parts";
 test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only");
 
 for (const part of inStock) {
-  test(`${part.codename}: both outputs load in the editor without errors`, async ({ page }) => {
+  test(`${part.name}: both outputs load in the editor without errors`, async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (message) => {
       if (message.type() === "error") errors.push(message.text());

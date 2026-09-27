@@ -3,8 +3,6 @@
 
 export type Part = {
   slug: string;
-  /** The part's own name, e.g. "Almanac". */
-  codename: string;
   /** What it is in plain words, e.g. "Date picker". */
   name: string;
   summary: string;
@@ -23,7 +21,6 @@ export const parts: Part[] = [
   {
     slug: "date-picker",
     category: "Inputs",
-    codename: "Almanac",
     name: "Date picker",
     summary: "One date or a range, typed in your format, with month and year views and earliest/latest dates.",
     pattern: "APG Date Picker Dialog",
@@ -33,8 +30,7 @@ export const parts: Part[] = [
   {
     slug: "modal",
     category: "Overlays",
-    codename: "Porthole",
-    name: "Modal",
+    name: "Modal dialog",
     summary: "Centred dialog or bottom sheet. Focus stays inside, Escape closes, motion respects reduced-motion settings.",
     pattern: "APG Dialog (Modal)",
     accent: "#5ad1c8",
@@ -43,7 +39,6 @@ export const parts: Part[] = [
   {
     slug: "searchable-select",
     category: "Inputs",
-    codename: "Sextant",
     name: "Searchable select",
     summary: "Type to filter a long list, pick with the keyboard or the mouse, with matches highlighted.",
     pattern: "APG Combobox",
@@ -53,8 +48,7 @@ export const parts: Part[] = [
   {
     slug: "form",
     category: "Inputs",
-    codename: "Logbook",
-    name: "Form with validation",
+    name: "Form validation",
     summary: "Your rules, and error messages that say what went wrong and how to fix it.",
     pattern: "Native form + error summary",
     accent: "#9d7bea",
@@ -63,7 +57,6 @@ export const parts: Part[] = [
   {
     slug: "header",
     category: "Page sections",
-    codename: "Masthead",
     name: "Site header",
     summary: "Logo, links, call to action and a mobile menu that behaves.",
     pattern: "APG Disclosure navigation",
@@ -73,7 +66,6 @@ export const parts: Part[] = [
   {
     slug: "tabs",
     category: "Navigation",
-    codename: "Compass",
     name: "Tabs",
     summary: "One area, several panels. Arrow keys move between tabs, in a row or down the side.",
     pattern: "APG Tabs",
@@ -83,8 +75,7 @@ export const parts: Part[] = [
   {
     slug: "cart",
     category: "Content",
-    codename: "Cargo",
-    name: "Basket",
+    name: "Shopping cart",
     summary: "Lines, quantities, removing, delivery and totals, as a panel or a drawer.",
     pattern: "Native dialog + live totals",
     accent: "#f2a65a",
@@ -93,7 +84,6 @@ export const parts: Part[] = [
   {
     slug: "carousel",
     category: "Content",
-    codename: "Capstan",
     name: "Carousel",
     summary: "A row of slides that scrolls, swipes and steps, with dots, a counter and optional rotation.",
     pattern: "APG Carousel",
@@ -103,7 +93,6 @@ export const parts: Part[] = [
   {
     slug: "mega-menu",
     category: "Navigation",
-    codename: "Chartroom",
     name: "Mega menu",
     summary: "Several columns of links under one heading, opened by click or hover, closed by Escape.",
     pattern: "APG Disclosure navigation",
@@ -113,7 +102,6 @@ export const parts: Part[] = [
   {
     slug: "footer",
     category: "Page sections",
-    codename: "Keel",
     name: "Site footer",
     summary: "Brand, links, social profiles and the legal line. Plain HTML, no JavaScript.",
     pattern: "Landmark contentinfo",
@@ -123,8 +111,7 @@ export const parts: Part[] = [
   {
     slug: "cta",
     category: "Page sections",
-    codename: "Beacon",
-    name: "CTA section",
+    name: "Call to action section",
     summary: "Heading, supporting text and actions. Plain HTML, no JavaScript.",
     pattern: "Landmark section",
     accent: "#ef7ba4",
@@ -133,7 +120,6 @@ export const parts: Part[] = [
   {
     slug: "accordion",
     category: "Content",
-    codename: "Bellows",
     name: "Accordion",
     summary: "Sections that open one at a time, or all at once, with the content in the page from the start.",
     pattern: "APG Accordion",
@@ -143,7 +129,6 @@ export const parts: Part[] = [
   {
     slug: "tooltip",
     category: "Overlays",
-    codename: "Pennant",
     name: "Tooltip",
     summary: "A short note on a control, opened by hover and by keyboard focus, closed by Escape.",
     pattern: "APG Tooltip",
@@ -153,7 +138,6 @@ export const parts: Part[] = [
   {
     slug: "menu",
     category: "Navigation",
-    codename: "Helm",
     name: "Dropdown menu",
     summary: "A button that opens a list of actions: arrow keys, type to jump, Escape to close.",
     pattern: "APG Menu Button",
@@ -163,7 +147,6 @@ export const parts: Part[] = [
   {
     slug: "popover",
     category: "Overlays",
-    codename: "Spyglass",
     name: "Popover",
     summary: "An anchored panel you can use: focus moves in, Escape closes it and comes back out.",
     pattern: "Anchored dialog",
@@ -173,8 +156,7 @@ export const parts: Part[] = [
   {
     slug: "toast",
     category: "Overlays",
-    codename: "Klaxon",
-    name: "Notifications",
+    name: "Toast notifications",
     summary: "Messages that appear, announce themselves, pause while you read and clear themselves.",
     pattern: "ARIA live region",
     accent: "#f28b82",
@@ -183,7 +165,6 @@ export const parts: Part[] = [
   {
     slug: "table",
     category: "Content",
-    codename: "Manifest",
     name: "Data table",
     summary: "Rows that sort by value, select by row and stack into cards on a phone.",
     pattern: "HTML table + aria-sort",
@@ -193,7 +174,6 @@ export const parts: Part[] = [
   {
     slug: "pagination",
     category: "Navigation",
-    codename: "Ladder",
     name: "Pagination",
     summary: "Numbered pages with gaps, previous and next, as links or as buttons.",
     pattern: "Navigation + aria-current",
@@ -203,7 +183,6 @@ export const parts: Part[] = [
   {
     slug: "breadcrumbs",
     category: "Navigation",
-    codename: "Wake",
     name: "Breadcrumbs",
     summary: "The trail back up the site, collapsing to first and current on a phone. No JavaScript.",
     pattern: "Navigation + aria-current",
@@ -213,7 +192,6 @@ export const parts: Part[] = [
   {
     slug: "stepper",
     category: "Navigation",
-    codename: "Course",
     name: "Stepper",
     summary: "Where you are in a multi-step flow, with each state said in words. No JavaScript.",
     pattern: "Navigation + aria-current=step",
@@ -223,7 +201,6 @@ export const parts: Part[] = [
   {
     slug: "sidebar",
     category: "Navigation",
-    codename: "Gangway",
     name: "Sidebar navigation",
     summary: "Sections of links with the current page marked, folding into a drawer on a phone.",
     pattern: "Navigation + disclosure",
@@ -233,7 +210,6 @@ export const parts: Part[] = [
   {
     slug: "upload",
     category: "Inputs",
-    codename: "Hoist",
     name: "File upload",
     summary: "Choose or drop files, with the kind and size checked and every change announced.",
     pattern: "File input + drop area",
@@ -243,7 +219,6 @@ export const parts: Part[] = [
   {
     slug: "multi-select",
     category: "Inputs",
-    codename: "Trawl",
     name: "Multi-select",
     summary: "Pick several from a long list, with each choice removable and every change announced.",
     pattern: "APG Combobox, multi-select",
@@ -253,7 +228,6 @@ export const parts: Part[] = [
   {
     slug: "password",
     category: "Inputs",
-    codename: "Cipher",
     name: "Password field",
     summary: "Rules read with the field, strength said in words, and a show button that says its state.",
     pattern: "Labelled input + live rules",
@@ -263,8 +237,7 @@ export const parts: Part[] = [
   {
     slug: "otp",
     category: "Inputs",
-    codename: "Semaphore",
-    name: "One-time code",
+    name: "OTP input",
     summary: "Boxes that fill as you type, take a pasted code whole, and say when the code is complete.",
     pattern: "Grouped inputs + one-time-code",
     accent: "#f6c177",
@@ -273,7 +246,6 @@ export const parts: Part[] = [
   {
     slug: "slider",
     category: "Inputs",
-    codename: "Fathom",
     name: "Range slider",
     summary: "One value or a range, on native range inputs that keep their keyboard and announce their unit.",
     pattern: "Native range inputs",
@@ -283,8 +255,7 @@ export const parts: Part[] = [
   {
     slug: "search",
     category: "Navigation",
-    codename: "Lookout",
-    name: "Global search",
+    name: "Search with suggestions",
     summary: "Point it at any data, nested or flat, and search it from anywhere with ⌘K.",
     pattern: "APG Combobox in a dialog",
     accent: "#ffb86b",
@@ -293,7 +264,6 @@ export const parts: Part[] = [
   {
     slug: "time-picker",
     category: "Inputs",
-    codename: "Chronometer",
     name: "Time picker",
     summary: "Type a time any common way or pick from a list, in 12- or 24-hour, with earliest and latest times.",
     pattern: "APG Combobox (editable)",
@@ -303,7 +273,6 @@ export const parts: Part[] = [
   {
     slug: "tree-view",
     category: "Navigation",
-    codename: "Rigging",
     name: "Tree view",
     summary: "Folders and items as deep as you like, with the full arrow-key model, type-ahead and one Tab stop.",
     pattern: "APG Tree View",
@@ -313,8 +282,7 @@ export const parts: Part[] = [
   {
     slug: "sortable-list",
     category: "Inputs",
-    codename: "Muster",
-    name: "Sortable list",
+    name: "Drag-and-drop list",
     summary: "Reorder by dragging, by keyboard or with move buttons, with every move announced.",
     pattern: "Toggle-button handles + live region",
     accent: "#f0abfc",
@@ -323,7 +291,6 @@ export const parts: Part[] = [
   {
     slug: "drawer",
     category: "Overlays",
-    codename: "Hatch",
     name: "Drawer",
     summary: "A panel that slides in from a side or the bottom, keeps focus inside and closes with a swipe.",
     pattern: "APG Dialog (Modal)",
@@ -333,7 +300,6 @@ export const parts: Part[] = [
   {
     slug: "cookie-consent",
     category: "Overlays",
-    codename: "Customs",
     name: "Cookie consent",
     summary: "Accept and reject side by side, nothing ticked in advance, and a way back to change your mind.",
     pattern: "Landmark region + dialog",
@@ -343,7 +309,6 @@ export const parts: Part[] = [
   {
     slug: "card-fields",
     category: "Inputs",
-    codename: "Purser",
     name: "Card payment fields",
     summary: "Number, expiry and code that format as you type, name the card type and catch typos before paying.",
     pattern: "Native form + autocomplete cc-*",
@@ -353,8 +318,7 @@ export const parts: Part[] = [
   {
     slug: "tour",
     category: "Overlays",
-    codename: "Pilot",
-    name: "Guided tour",
+    name: "Product tour",
     summary: "Steps that point at parts of your page, move focus with them, and can be skipped at any moment.",
     pattern: "Non-modal dialog steps",
     accent: "#c4b5fd",
@@ -363,8 +327,7 @@ export const parts: Part[] = [
   {
     slug: "feed",
     category: "Content",
-    codename: "Current",
-    name: "Load-more feed",
+    name: "Infinite feed",
     summary: "A list that loads more on request or as you scroll, keeps your place and says when it has ended.",
     pattern: "APG Feed",
     accent: "#67e8f9",
@@ -373,7 +336,6 @@ export const parts: Part[] = [
   {
     slug: "lightbox",
     category: "Content",
-    codename: "Lantern",
     name: "Lightbox",
     summary: "Thumbnails that open a full-screen viewer with arrow keys, swipe, captions and focus kept inside.",
     pattern: "APG Dialog (Modal) gallery",
@@ -383,8 +345,7 @@ export const parts: Part[] = [
   {
     slug: "resizable-panels",
     category: "Content",
-    codename: "Bulkhead",
-    name: "Resizable panels",
+    name: "Split panes",
     summary: "Two panels and a divider you can drag, move with the arrow keys or collapse with Enter.",
     pattern: "APG Window Splitter",
     accent: "#93c5fd",
@@ -393,7 +354,6 @@ export const parts: Part[] = [
   {
     slug: "switch",
     category: "Inputs",
-    codename: "Seacock",
     name: "Switch",
     summary: "An on/off control that says which it is in words, on a real checkbox so the keyboard comes free.",
     pattern: "Checkbox with role=switch",
@@ -403,7 +363,6 @@ export const parts: Part[] = [
   {
     slug: "rating",
     category: "Inputs",
-    codename: "Sounding",
     name: "Rating",
     summary: "Stars to pick a rating, or an average shown as one figure a screen reader reads in full.",
     pattern: "Radio group / image",
@@ -413,7 +372,6 @@ export const parts: Part[] = [
   {
     slug: "segmented",
     category: "Inputs",
-    codename: "Tiller",
     name: "Segmented control",
     summary: "A handful of choices side by side, on radios, so arrow keys and forms work without script.",
     pattern: "Radio group",
@@ -423,7 +381,6 @@ export const parts: Part[] = [
   {
     slug: "alert-banner",
     category: "Feedback",
-    codename: "Ensign",
     name: "Alert banner",
     summary: "Inline messages that say their tone in words first, and only interrupt when it is an error.",
     pattern: "role=alert / role=status",
@@ -433,7 +390,6 @@ export const parts: Part[] = [
   {
     slug: "skeleton",
     category: "Feedback",
-    codename: "Shroud",
     name: "Skeleton",
     summary: "Placeholder shapes while content loads, announced once in words instead of as empty boxes.",
     pattern: "role=status + hidden shapes",
@@ -443,7 +399,6 @@ export const parts: Part[] = [
   {
     slug: "empty-state",
     category: "Feedback",
-    codename: "Doldrums",
     name: "Empty state",
     summary: "A calm screen for nothing-to-show, saying what happened and exactly what to do next.",
     pattern: "Heading + actions",
@@ -453,7 +408,6 @@ export const parts: Part[] = [
   {
     slug: "avatar-group",
     category: "Content",
-    codename: "Crew",
     name: "Avatar group",
     summary: "Overlapping faces or initials, with the extra people named rather than hidden behind a number.",
     pattern: "Labelled list of images",
@@ -463,8 +417,7 @@ export const parts: Part[] = [
   {
     slug: "badge",
     category: "Content",
-    codename: "Burgee",
-    name: "Badges",
+    name: "Badge",
     summary: "Status pills whose words carry the meaning, so colour is never doing the work alone.",
     pattern: "List of labelled pills",
     accent: "#5eead4",
@@ -473,7 +426,6 @@ export const parts: Part[] = [
   {
     slug: "tag-input",
     category: "Inputs",
-    codename: "Netting",
     name: "Tag input",
     summary: "Type and press Enter to add a tag; each one is removable and every change is announced.",
     pattern: "Field + labelled chip list",
@@ -483,8 +435,7 @@ export const parts: Part[] = [
   {
     slug: "quantity",
     category: "Inputs",
-    codename: "Winch",
-    name: "Quantity stepper",
+    name: "Quantity input",
     summary: "Minus, a real number field and plus, with the new amount and its limits said in words.",
     pattern: "Number input + buttons",
     accent: "#fde68a",
@@ -493,7 +444,6 @@ export const parts: Part[] = [
   {
     slug: "currency-input",
     category: "Inputs",
-    codename: "Doubloon",
     name: "Currency input",
     summary: "Type an amount freely; it is tidied on leaving and sent to your server as a plain number.",
     pattern: "Text input + hidden value",
@@ -503,7 +453,6 @@ export const parts: Part[] = [
   {
     slug: "phone-input",
     category: "Inputs",
-    codename: "Hailer",
     name: "Phone input",
     summary: "Country code beside the number, digits grouped the local way, one value for your server.",
     pattern: "Select + tel input",
@@ -513,7 +462,6 @@ export const parts: Part[] = [
   {
     slug: "inline-edit",
     category: "Inputs",
-    codename: "Quill",
     name: "Inline edit",
     summary: "A value that turns into a field on click, with Enter to save, Escape to cancel, and focus kept.",
     pattern: "Button to field, with focus moves",
@@ -523,7 +471,6 @@ export const parts: Part[] = [
   {
     slug: "color-picker",
     category: "Inputs",
-    codename: "Pigment",
     name: "Colour picker",
     summary: "Named swatches as one radio group, plus the browser's own picker for anything else.",
     pattern: "Radio group + native colour input",
@@ -533,8 +480,7 @@ export const parts: Part[] = [
   {
     slug: "back-to-top",
     category: "Navigation",
-    codename: "Windlass",
-    name: "Back to top",
+    name: "Back to top button",
     summary: "Appears once you have scrolled, and moves focus to the top as well as the page.",
     pattern: "Button + focus move",
     accent: "#c7d2fe",
@@ -543,8 +489,7 @@ export const parts: Part[] = [
   {
     slug: "reading-progress",
     category: "Navigation",
-    codename: "Logline",
-    name: "Reading progress",
+    name: "Reading progress bar",
     summary: "A progress bar for how far you have read, and a contents list that marks the section you are in.",
     pattern: "role=progressbar + aria-current",
     accent: "#99f6e4",
@@ -553,7 +498,6 @@ export const parts: Part[] = [
   {
     slug: "language-switcher",
     category: "Navigation",
-    codename: "Parley",
     name: "Language switcher",
     summary: "Languages written in their own language, as real links carrying lang and hreflang.",
     pattern: "Disclosure + links",
@@ -563,7 +507,6 @@ export const parts: Part[] = [
   {
     slug: "filter-bar",
     category: "Inputs",
-    codename: "Sieve",
     name: "Filter bar",
     summary: "Chips that are real toggles, removable pills for what is on, and one status line that sums it up.",
     pattern: "Toggle buttons + status",
@@ -573,7 +516,6 @@ export const parts: Part[] = [
   {
     slug: "data-grid",
     category: "Content",
-    codename: "Ledger",
     name: "Data grid",
     summary: "A table with a header that stays put, sortable columns reporting aria-sort, and columns you can resize by arrow key.",
     pattern: "Table + sort + resize",
@@ -583,7 +525,6 @@ export const parts: Part[] = [
   {
     slug: "kanban",
     category: "Content",
-    codename: "Bosun",
     name: "Kanban board",
     summary: "Cards that move by button as well as by drag, with focus and announcements following them.",
     pattern: "Board + move buttons",
@@ -593,8 +534,7 @@ export const parts: Part[] = [
   {
     slug: "confirm-dialog",
     category: "Overlays",
-    codename: "Bulwark",
-    name: "Typed confirmation",
+    name: "Confirm dialog",
     summary: "The dangerous button stays off until the words are typed exactly, with the reason said out loud.",
     pattern: "Modal dialog + guard",
     accent: "#fca5a5",
@@ -603,7 +543,6 @@ export const parts: Part[] = [
   {
     slug: "session-timeout",
     category: "Overlays",
-    codename: "Hourglass",
     name: "Session timeout",
     summary: "An idle warning that counts down, speaks at the marks worth hearing, and treats Escape as staying.",
     pattern: "Timed modal dialog",
@@ -613,7 +552,6 @@ export const parts: Part[] = [
   {
     slug: "unsaved-changes",
     category: "Feedback",
-    codename: "Ledgerlock",
     name: "Unsaved changes guard",
     summary: "Asks before leaving only while there is something to lose, in the page and on closing the tab.",
     pattern: "Dirty state + dialog",
@@ -623,7 +561,6 @@ export const parts: Part[] = [
   {
     slug: "offline-banner",
     category: "Feedback",
-    codename: "Foghorn",
     name: "Offline banner",
     summary: "Says the connection went and what is being kept, politely, with a retry that actually re-checks.",
     pattern: "Network status region",
@@ -633,8 +570,7 @@ export const parts: Part[] = [
   {
     slug: "shortcut-help",
     category: "Overlays",
-    codename: "Keyring",
-    name: "Shortcut help",
+    name: "Keyboard shortcuts dialog",
     summary: "One key brings up the shortcut sheet — unless you are typing, where ? is just a question mark.",
     pattern: "Modal dialog + hotkey",
     accent: "#5eead4",
@@ -643,7 +579,6 @@ export const parts: Part[] = [
   {
     slug: "pricing-table",
     category: "Page sections",
-    codename: "Tariff",
     name: "Pricing table",
     summary: "Plans with a monthly/yearly radio group, a badge in words on the highlighted plan, and prices exactly as you write them.",
     pattern: "Radio group + cards",
@@ -653,8 +588,7 @@ export const parts: Part[] = [
   {
     slug: "stats-tiles",
     category: "Content",
-    codename: "Cross-staff",
-    name: "Stats tiles",
+    name: "Stat cards",
     summary: "KPI tiles as a description list, with the change written in words so colour is never the only clue.",
     pattern: "Description list",
     accent: "#a7f3d0",
@@ -663,7 +597,6 @@ export const parts: Part[] = [
   {
     slug: "timeline",
     category: "Content",
-    codename: "Watchlog",
     name: "Activity timeline",
     summary: "An ordered list of what happened, with real time elements and the older entries behind one button.",
     pattern: "Ordered list + reveal",
@@ -673,7 +606,6 @@ export const parts: Part[] = [
   {
     slug: "comment-thread",
     category: "Content",
-    codename: "Wardroom",
     name: "Comment thread",
     summary: "Comments and replies as nested lists, a box that cannot post nothing, and a count that follows along.",
     pattern: "List + form",
@@ -683,7 +615,6 @@ export const parts: Part[] = [
   {
     slug: "product-card",
     category: "Content",
-    codename: "Chandler",
     name: "Product card",
     summary: "Variant options as real radio groups, out-of-stock said in words, and an add button that waits for every choice.",
     pattern: "Fieldsets + guarded action",
@@ -693,7 +624,6 @@ export const parts: Part[] = [
   {
     slug: "signature-pad",
     category: "Inputs",
-    codename: "Inkwell",
     name: "Signature pad",
     summary: "Draw a signature with a pointer, or type the name instead — the alternative is the whole point.",
     pattern: "Canvas + typed alternative",
@@ -703,8 +633,7 @@ export const parts: Part[] = [
   {
     slug: "code-block",
     category: "Content",
-    codename: "Cipherstone",
-    name: "Code block",
+    name: "Code block with copy",
     summary: "Copy to clipboard with a real fallback when the clipboard is refused, plus line numbers that never get copied.",
     pattern: "Clipboard + status",
     accent: "#5eead4",
@@ -713,7 +642,6 @@ export const parts: Part[] = [
   {
     slug: "toolbar",
     category: "Navigation",
-    codename: "Binnacle",
     name: "Toolbar",
     summary: "One tab stop for the whole bar, arrow keys inside it, and toggles that report their state.",
     pattern: "APG toolbar",
@@ -723,7 +651,6 @@ export const parts: Part[] = [
   {
     slug: "countdown",
     category: "Feedback",
-    codename: "Glass",
     name: "Countdown",
     summary: "Digits that tick every second without being read out every second — the announcement follows the coarse reading.",
     pattern: "Timer + polite status",
@@ -733,8 +660,7 @@ export const parts: Part[] = [
   {
     slug: "slot-picker",
     category: "Inputs",
-    codename: "Berth",
-    name: "Booking slots",
+    name: "Time slot picker",
     summary: "One radio group across every day, taken slots said in words, and announcements that carry the day as well as the time.",
     pattern: "Grouped radio group",
     accent: "#a7f3d0",
@@ -743,7 +669,6 @@ export const parts: Part[] = [
   {
     slug: "wizard",
     category: "Navigation",
-    codename: "Coxswain",
     name: "Multi-step wizard",
     summary: "One step at a time, focus moved to each step's heading, and a needed field you cannot walk past.",
     pattern: "Steps + per-step validation",

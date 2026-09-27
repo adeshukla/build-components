@@ -76,21 +76,21 @@ export function Catalogue({ parts }: { parts: Part[] }) {
             >
               <span aria-hidden="true" className="absolute inset-x-4 top-0 h-0.5 rounded-b bg-(--part-accent)" />
               <div className="flex items-baseline justify-between gap-3">
-                <h3 className="font-display text-xl leading-none font-semibold uppercase">
+                <h3 className="font-display text-lg leading-tight font-semibold">
                   {inStock ? (
                     <Link
                       href={`/${part.slug}`}
                       className="after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none"
                     >
-                      {part.codename}
+                      {part.name}
                     </Link>
                   ) : (
-                    part.codename
+                    part.name
                   )}
                 </h3>
                 <span className="font-mono text-[0.6875rem] text-ink-muted uppercase">{part.category}</span>
               </div>
-              <p className="mt-1.5 text-sm font-medium">{part.name}</p>
+              <p className="mt-1.5 font-mono text-xs text-ink-muted">{part.pattern}</p>
               <p className="mt-1 line-clamp-2 text-sm text-pretty text-ink-muted">{part.summary}</p>
               {/* The preview is a picture-in-words for anyone not using a pointer: the panel itself is
                   inert, so the frame inside it is never a focus trap. */}
@@ -102,8 +102,8 @@ export function Catalogue({ parts }: { parts: Part[] }) {
                   inert
                   className="absolute -inset-x-2 -top-2 z-30 flex flex-col overflow-hidden rounded-xl border border-(--part-accent) bg-paper shadow-2xl"
                 >
-                  <p className="flex items-baseline justify-between gap-2 px-4 pt-3 font-display text-xl leading-none font-semibold uppercase">
-                    {part.codename}
+                  <p className="flex items-baseline justify-between gap-2 px-4 pt-3 font-display text-lg leading-tight font-semibold">
+                    {part.name}
                     <span className="font-mono text-[0.6875rem] text-ink-muted normal-case">Live preview</span>
                   </p>
                   <div className="mt-3 h-52 overflow-hidden border-y border-rule bg-white">

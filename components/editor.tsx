@@ -128,7 +128,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
             <div className="mx-auto transition-[max-width] duration-700 ease-out-expo" style={{ maxWidth: width }}>
               <p className="mb-2 flex justify-between gap-4 font-mono text-xs text-ink-muted">
                 <span>
-                  {part.codename} · {outputName}
+                  {part.name} · {outputName}
                 </span>
                 <span>{width === "100%" ? "Full width" : width}</span>
               </p>

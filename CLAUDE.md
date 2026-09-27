@@ -30,7 +30,7 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `lib/schema.ts` — option types incl. `list` (repeatable items) and URL-safe `format: "url"`; `parseConfig` validates untrusted query params; `isDefault`, `toSearchParams`, `isVisible`.
 - `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.
 - `lib/registry.ts` — the one map of slug → title, description, schema. Used by the registry route and the preview page.
-- `lib/parts.ts` — catalogue: ship-themed part name (Almanac, Porthole, …), plain name, pattern, accent, status and `category` (drives the home filters).
+- `lib/parts.ts` — catalogue: the part's plain name (the one a developer would search for), summary, pattern, accent, status and `category` (drives the home filters). The old ship-themed codenames were dropped on 2026-09-27: nobody could tell what a "Binnacle" was.
 - `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
 - `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
 - Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
