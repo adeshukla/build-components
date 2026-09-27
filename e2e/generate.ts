@@ -238,6 +238,15 @@ import { renderHowItWorksHtml } from "../registry/how-it-works/vanilla/render";
 import { newsletterSchema } from "../registry/newsletter/schema";
 import type { NewsletterConfig } from "../registry/newsletter/react/newsletter";
 import { renderNewsletterHtml } from "../registry/newsletter/vanilla/render";
+import { toggleGroupSchema } from "../registry/toggle-group/schema";
+import type { ToggleGroupConfig } from "../registry/toggle-group/react/toggle-group";
+import { renderToggleGroupHtml } from "../registry/toggle-group/vanilla/render";
+import { unitInputSchema } from "../registry/unit-input/schema";
+import type { UnitInputConfig } from "../registry/unit-input/react/unit-input";
+import { renderUnitInputHtml } from "../registry/unit-input/vanilla/render";
+import { maskedInputSchema } from "../registry/masked-input/schema";
+import type { MaskedInputConfig } from "../registry/masked-input/react/masked-input";
+import { renderMaskedInputHtml } from "../registry/masked-input/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -1022,6 +1031,33 @@ export const components: Record<
     variants: {
       default: "",
       stacked: "layout=stacked&requireConsent=false&theme=dark&buttonText=Subscribe",
+    },
+  },
+  "toggle-group": {
+    exportName: "ToggleGroup",
+    schema: toggleGroupSchema,
+    renderHtml: (config) => renderToggleGroupHtml(config as unknown as ToggleGroupConfig),
+    variants: {
+      default: "",
+      loose: "minOne=false&size=sm&showCount=false&theme=dark&legend=Filter+by+tag",
+    },
+  },
+  "unit-input": {
+    exportName: "UnitInput",
+    schema: unitInputSchema,
+    renderHtml: (config) => renderUnitInputHtml(config as unknown as UnitInputConfig),
+    variants: {
+      default: "",
+      weight: "label=How+heavy+is+it%3F&name=weight&unitName=weightUnit&min=0&max=5000&step=1&theme=dark&errorText=Give+a+weight+between+0+and+5000.",
+    },
+  },
+  "masked-input": {
+    exportName: "MaskedInput",
+    schema: maskedInputSchema,
+    renderHtml: (config) => renderMaskedInputHtml(config as unknown as MaskedInputConfig),
+    variants: {
+      default: "",
+      date: "mask=%23%23%2F%23%23%2F%23%23%23%23&label=Date+of+birth&name=dob&errorText=Use+the+day%2C+month+and+year.&theme=dark",
     },
   },
 };

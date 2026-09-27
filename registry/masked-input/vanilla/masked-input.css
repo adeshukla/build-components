@@ -1,0 +1,58 @@
+/* Masked input — plain CSS. Colours come from the inline custom properties. */
+.mi {
+  --mi-accent: #1d4ed8;
+  --mi-accent-text: #1a46c2;
+  --mi-surface: #ffffff;
+  --mi-sunk: #f4f3f8;
+  --mi-text: #16121f;
+  --mi-muted: #4d4a57;
+  --mi-line: #c9c4d6;
+  --mi-error: #b42318;
+  display: block;
+  background: var(--mi-surface);
+  color: var(--mi-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.mi,
+.mi *,
+.mi *::before,
+.mi *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .mi--theme-system {
+    --mi-surface: #141019;
+    --mi-sunk: #221d2e;
+    --mi-text: #f6f5fa;
+    --mi-muted: #b6b3c2;
+    --mi-line: #4a4459;
+    --mi-error: #ff9d95;
+  }
+}
+
+.mi-label { display: block; font-weight: 500; }
+/* The shape is said in the hint, not left to be discovered by typing into a field that fights back. */
+.mi-hint { margin: 0; color: var(--mi-muted); font-size: 0.875rem; }
+.mi-field {
+  width: 100%;
+  max-width: 16rem;
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--mi-line);
+  border-radius: 0.375rem;
+  background: var(--mi-sunk);
+  color: var(--mi-text);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+.mi-field[aria-invalid="true"] { border-color: var(--mi-error); }
+.mi-field:focus-visible { outline: 2px solid var(--mi-accent-text); outline-offset: 2px; }
+
+.mi-error { margin: 0.25rem 0 0; color: var(--mi-error); font-size: 0.875rem; }
+.mi-error[hidden] { display: none; }
+.mi-status { margin: 0.5rem 0 0; color: var(--mi-muted); font-size: 0.875rem; min-height: 1.5rem; }

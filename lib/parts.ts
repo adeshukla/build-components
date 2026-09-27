@@ -774,6 +774,33 @@ export const parts: Part[] = [
     accent: "#fdba74",
     status: "in-stock",
   },
+  {
+    slug: "toggle-group",
+    category: "Inputs",
+    name: "Toggle group",
+    summary: "Several answers to one question as checkboxes drawn like buttons, with the last one refusing to turn off.",
+    pattern: "Fieldset + checkboxes",
+    accent: "#5eead4",
+    status: "in-stock",
+  },
+  {
+    slug: "unit-input",
+    category: "Inputs",
+    name: "Value with unit",
+    summary: "A number and its unit as two labelled fields and one answer, read back together.",
+    pattern: "Number + select",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "masked-input",
+    category: "Inputs",
+    name: "Masked input",
+    summary: "Punctuation filled in as you type, nothing refused outright, and the shape said before you start.",
+    pattern: "Pattern mask",
+    accent: "#c4b5fd",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */

@@ -252,6 +252,15 @@ import { renderHowItWorksHtml } from "@/registry/how-it-works/vanilla/render";
 import { newsletterSchema } from "@/registry/newsletter/schema";
 import * as newsletterDocs from "@/registry/newsletter/docs";
 import { renderNewsletterHtml } from "@/registry/newsletter/vanilla/render";
+import { toggleGroupSchema } from "@/registry/toggle-group/schema";
+import * as toggleGroupDocs from "@/registry/toggle-group/docs";
+import { renderToggleGroupHtml } from "@/registry/toggle-group/vanilla/render";
+import { unitInputSchema } from "@/registry/unit-input/schema";
+import * as unitInputDocs from "@/registry/unit-input/docs";
+import { renderUnitInputHtml } from "@/registry/unit-input/vanilla/render";
+import { maskedInputSchema } from "@/registry/masked-input/schema";
+import * as maskedInputDocs from "@/registry/masked-input/docs";
+import { renderMaskedInputHtml } from "@/registry/masked-input/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -848,6 +857,27 @@ export const registry = {
     schema: newsletterSchema,
     ...newsletterDocs,
     renderHtml: (config) => renderNewsletterHtml(config as never),
+  },
+  "toggle-group": {
+    title: "Toggle group",
+    description: "Multi-select toggles that are still real checkboxes.",
+    schema: toggleGroupSchema,
+    ...toggleGroupDocs,
+    renderHtml: (config) => renderToggleGroupHtml(config as never),
+  },
+  "unit-input": {
+    title: "Value with unit",
+    description: "A measurement field whose unit is its own value.",
+    schema: unitInputSchema,
+    ...unitInputDocs,
+    renderHtml: (config) => renderUnitInputHtml(config as never),
+  },
+  "masked-input": {
+    title: "Masked input",
+    description: "A field that formats itself without fighting the typing.",
+    schema: maskedInputSchema,
+    ...maskedInputDocs,
+    renderHtml: (config) => renderMaskedInputHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

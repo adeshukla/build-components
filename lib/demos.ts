@@ -452,4 +452,23 @@ export const demos: Record<string, Demo> = {
       { find: "button[type=submit], .nl-button", action: "click", after: 1400 },
     ],
   },
+  "toggle-group": {
+    how: "Checkboxes under a legend, so the form sends them and each is an answer to the same question; the last one left says why it will not turn off.",
+    steps: [
+      { find: "input[type=checkbox]", action: "click", after: 700 },
+      { find: "input[type=checkbox]:not(:checked)", action: "click", after: 1400 },
+    ],
+  },
+  "unit-input": {
+    how: "The unit is a real select with its own form value, so the server never has to guess what 12 means.",
+    steps: [
+      { find: "[data-amount], input[type=text]", action: "type", value: "12.5", after: 1500 },
+    ],
+  },
+  "masked-input": {
+    how: "Characters that cannot go in a slot are skipped rather than the entry being refused, so pasting with or without punctuation both work.",
+    steps: [
+      { find: "input[type=text]", action: "type", value: "tr112ab", after: 1600 },
+    ],
+  },
 };

@@ -161,6 +161,12 @@ import { HowItWorks, type HowItWorksConfig } from "@/registry/how-it-works/react
 
 import { Newsletter, type NewsletterConfig } from "@/registry/newsletter/react/newsletter";
 
+import { ToggleGroup, type ToggleGroupConfig } from "@/registry/toggle-group/react/toggle-group";
+
+import { UnitInput, type UnitInputConfig } from "@/registry/unit-input/react/unit-input";
+
+import { MaskedInput, type MaskedInputConfig } from "@/registry/masked-input/react/masked-input";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -357,6 +363,9 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "feature-grid" && <FeatureGrid config={config as unknown as FeatureGridConfig} />}
         {slug === "how-it-works" && <HowItWorks config={config as unknown as HowItWorksConfig} />}
         {slug === "newsletter" && <Newsletter config={config as unknown as NewsletterConfig} />}
+        {slug === "toggle-group" && <ToggleGroup config={config as unknown as ToggleGroupConfig} />}
+        {slug === "unit-input" && <UnitInput config={config as unknown as UnitInputConfig} />}
+        {slug === "masked-input" && <MaskedInput config={config as unknown as MaskedInputConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}
