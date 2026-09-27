@@ -344,3 +344,28 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 ## 2026-09-25 — D56. Safari, dialogs and focus
 **Decision:** Every dialog closes itself before handing focus back, and remembers its opener from the click rather than from `document.activeElement`.
 **Why:** Safari does not focus a button when it is clicked, so `document.activeElement` is the body there; and focus cannot leave a modal dialog that is still open, which Safari enforces even when React has already re-rendered. Both bit three of the Batch D parts in WebKit and on the iPhone.
+
+## 2026-09-27 — D57. Parts are named the way developers search for them
+**Decision:** The ship-themed codenames (Almanac, Porthole, Binnacle…) are removed from the data model and every page. Each part leads with its plain name; the card's second line is the pattern it follows. Twenty-six plain names were also changed to the industry term people actually search for.
+**Why:** Adesh: "not understandable by any developer or layman person". A catalogue is a shop window — the label has to say what the thing is. The codenames were charming to us and useless to everyone else, and they pushed the real name into small grey text.
+**Cost:** one field deleted, four display sites and one test title updated. Nothing in the exported components referenced them.
+
+## 2026-09-27 — D58. The catalogue is searched, not scrolled
+**Decision:** A search box over name, summary, pattern, category and slug; type filters showing live counts and disabling when empty; "/" to focus the box (never while typing); a polite count; an explicit way out when nothing matches. Preview iframes are lazy.
+**Why:** Eighty-four parts. Filters alone still left four rows to read, and people arrive knowing the word for what they want ("dialog", "upload", "color") rather than our category for it.
+
+## 2026-09-27 — D59. Batch H: the four form controls everyone rewrites
+**Decision:** Checkbox group, radio cards, textarea with counter, select field.
+**Notable choices:**
+- **Checkbox group:** an "everything" box carrying the indeterminate state, which is the only checkbox state that cannot be set in markup.
+- **Radio cards:** the card is paint around a real radio — one tab stop, arrow keys, form submission, no script. The tick keeps its place in the markup whether it shows or not, so the label's text never changes between outputs.
+- **Textarea counter:** the count joins the field's description and is announced only at the warning point and the limit; going over is an error to fix rather than a silent truncation of a pasted sentence.
+- **Select field:** a native select on purpose (phone picker, type-ahead, nothing to keep in sync), with optgroups, a real prompt option and an error that takes focus back.
+
+## 2026-09-27 — D60. Batches I and J: content and page sections
+**Decision:** FAQ, details list, comparison table; hero, feature grid, how it works, newsletter signup.
+**Notable choices:**
+- **FAQ** is native `details`/`summary`: opening, the keyboard and find-on-page come free, and Open all sets the state on the elements rather than mirroring it. Structured data is deliberately left to the page, so it can never be out of step with the questions shipped.
+- **Comparison table:** yes and no are printed as words; a bare tick is read as a stray character or as nothing at all.
+- **Hero:** the eyebrow is a paragraph and the heading level is an option, because a mid-page hero must not be a second h1. The picture panel is drawn in CSS, so the exported file requests nothing.
+- **Newsletter:** the address is checked in the component (the browser's bubble cannot be read back), a consent problem moves focus to the box rather than the field, and consent is never pre-ticked.

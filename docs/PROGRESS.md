@@ -1,8 +1,8 @@
 # Progress
 
-Last updated: 2026-09-25 (session 9)
+Last updated: 2026-09-27 (session 10)
 
-## Current status (session 9)
+## Current status (session 10)
 
 ### How Adesh can test
 ```
@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The seventy-three parts, all in stock
+### The eighty-four parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -93,6 +93,17 @@ Open http://localhost:3000.
 | **Glass** | Countdown | Timer + polite status |
 | **Berth** | Booking slots | Grouped radio group |
 | **Coxswain** | Multi-step wizard | Steps + per-step validation |
+
+### Session 10 (2026-09-27): plain names, a searchable catalogue, and the first eleven of fifty new parts (D57-D60)
+Adesh asked for three things: names a developer or a layman could understand, fifty more components with more options each, and a cleaner, more interactive site.
+
+- **Names (D57):** the ship-themed codenames are gone. Nobody outside this repo could tell what a "Binnacle" or a "Ledgerlock" was, and every card led with the joke instead of the component. Cards, part pages, the editor and the home page now lead with the plain name, and the card's second line is the pattern. Twenty-six parts were also renamed to the term people search for: Basket → Shopping cart, One-time code → OTP input, Load-more feed → Infinite feed, Typed confirmation → Confirm dialog, Booking slots → Time slot picker, and so on.
+- **Catalogue search (D58):** eighty-four parts is too many to scan. There is now a search box matching name, summary, pattern, category and slug (so "color" finds the colour picker and "dialog" finds every dialog), type filters with live counts that disable when they would show nothing, "/" to jump to the box, a polite result count, and a way out when nothing matches. Preview frames are lazy now, so the page no longer warms up eight iframes.
+- **New parts, first eleven of fifty (D59, D60):** checkbox group, radio cards, textarea with counter, select field, FAQ, details list, comparison table, hero section, feature grid, how it works, newsletter signup. Every one has ten to fourteen options, both outputs, docs, a hover demo and its own spec; all green in chromium, WebKit and the emulated iPhone.
+
+**Still to come from Adesh's fifty** (39 parts, in this order): date range and time range fields, dual range slider, PIN pad, autosaving field, form error summary, address fields, masked input, value with unit, toggle group · skip links, anchor navigation, command menu, menu bar, cursor pagination, navigation progress, shrinking sticky header, hover card · bottom sheet, loading button, undo snackbar, inline confirm, circular progress, error state with retry, maintenance notice, help hint · changelog, notification list, list with row actions, order tracker, invoice summary, article card, author byline, image gallery, click-to-load video embed, pull quote, team grid, logo wall · page header, split feature, stat comparison.
+
+**Test note:** the full 4,000-test sweep has not been re-run since the rename; each batch is green across the three browsers, and `e2e/editor.spec.ts` + `e2e/home.spec.ts` (every part, both outputs, every hover preview) were green against a production build earlier in the session.
 
 ### Session 9, part 2 (2026-09-25): twenty-eight more parts, batches B to G (D50-D55)
 Adesh asked for at least thirty more parts, the everyday ones and the ones that are hard to find done properly. Twenty-eight arrived in this half of the session (thirty-six counting Batch A), each with both outputs, a schema, a keyboard map, a manual checklist, a hover demo and its own cross-browser spec.
