@@ -1,0 +1,74 @@
+/* How it works — plain CSS. Colours come from the inline custom properties. */
+.hw {
+  --hw-accent: #16303f;
+  --hw-accent-text: #142936;
+  --hw-on-accent: #ffffff;
+  --hw-surface: #ffffff;
+  --hw-sunk: #f4f3f8;
+  --hw-text: #16121f;
+  --hw-muted: #4d4a57;
+  --hw-line: #c9c4d6;
+  display: block;
+  background: var(--hw-surface);
+  color: var(--hw-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.hw,
+.hw *,
+.hw *::before,
+.hw *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .hw--theme-system {
+    --hw-surface: #141019;
+    --hw-sunk: #221d2e;
+    --hw-text: #f6f5fa;
+    --hw-muted: #b6b3c2;
+    --hw-line: #4a4459;
+  }
+}
+
+.hw-heading { margin: 0; font-size: 1.25rem; }
+.hw-intro { max-width: 65ch; margin: 0.25rem 0 0; color: var(--hw-muted); }
+
+/* An ordered list: the order is the whole point, so it lives in the markup, not in the numbers. */
+.hw-list { display: grid; gap: 1.5rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+@media (min-width: 640px) {
+  .hw--across .hw-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .hw--across .hw-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.hw--down .hw-step { display: grid; grid-template-columns: auto 1fr; column-gap: 1rem; }
+
+.hw-rail { display: flex; align-items: center; gap: 0.75rem; }
+.hw--down .hw-rail { flex-direction: column; align-items: center; gap: 0; }
+/* The number repeats what the list already says, for people reading it as a picture. */
+.hw-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--hw-accent);
+  color: var(--hw-on-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.hw-thread { flex: 1; background: var(--hw-line); }
+.hw--across .hw-thread { display: none; height: 1px; }
+@media (min-width: 640px) {
+  .hw--across .hw-thread { display: block; }
+}
+.hw--down .hw-thread { width: 1px; margin-top: 0.25rem; }
+
+.hw-body { margin-top: 0.75rem; }
+.hw--down .hw-body { margin-top: 0; padding-bottom: 0.5rem; }
+.hw-title { margin: 0; font-size: 1rem; font-weight: 500; }
+.hw-text { margin: 0.25rem 0 0; color: var(--hw-muted); font-size: 0.875rem; text-wrap: pretty; }
+.hw-meta { margin: 0.25rem 0 0; color: var(--hw-muted); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.75rem; }

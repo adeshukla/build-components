@@ -434,4 +434,22 @@ export const demos: Record<string, Demo> = {
   "comparison-table": {
     how: "Features are row headers and plans column headers, so a screen reader says Crew, shared boards, yes.",
   },
+  "hero": {
+    how: "The line above the heading is a paragraph, not a fake heading, and the heading level is an option so a mid-page hero is never a second h1.",
+  },
+  "feature-grid": {
+    how: "A list of headings, so a screen reader counts them and can jump between them; the glyphs are decoration and every link names its feature.",
+  },
+  "how-it-works": {
+    how: "An ordered list: the circles and the line are aria-hidden pictures of an order the markup already carries.",
+  },
+  "newsletter": {
+    how: "The address is checked in the component so the message can be read out; a consent problem sends focus to the box, not the field.",
+    steps: [
+      { find: "button[type=submit], .nl-button", action: "click", after: 900 },
+      { find: "input[type=email]", action: "type", value: "ade@example.com", after: 700 },
+      { find: "input[type=checkbox]", action: "click", after: 600 },
+      { find: "button[type=submit], .nl-button", action: "click", after: 1400 },
+    ],
+  },
 };

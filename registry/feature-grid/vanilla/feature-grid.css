@@ -1,0 +1,77 @@
+/* Feature grid — plain CSS. Colours come from the inline custom properties. */
+.fg {
+  --fg-accent: #0f766e;
+  --fg-accent-text: #0b5a54;
+  --fg-surface: #ffffff;
+  --fg-sunk: #f4f3f8;
+  --fg-text: #16121f;
+  --fg-muted: #4d4a57;
+  --fg-line: #c9c4d6;
+  display: block;
+  background: var(--fg-surface);
+  color: var(--fg-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.fg,
+.fg *,
+.fg *::before,
+.fg *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .fg--theme-system {
+    --fg-surface: #141019;
+    --fg-sunk: #221d2e;
+    --fg-text: #f6f5fa;
+    --fg-muted: #b6b3c2;
+    --fg-line: #4a4459;
+  }
+}
+
+.fg-heading { margin: 0; font-size: 1.25rem; }
+.fg-intro { max-width: 65ch; margin: 0.25rem 0 0; color: var(--fg-muted); }
+
+/* A list, so a screen reader says how many features there are before reading them. */
+.fg-list { display: grid; gap: 1.25rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+@media (min-width: 640px) {
+  .fg--two .fg-list,
+  .fg--three .fg-list,
+  .fg--four .fg-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .fg--three .fg-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fg--four .fg-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.fg--rule .fg-item { padding-top: 1rem; border-top: 1px solid var(--fg-line); }
+
+/* Decoration: the heading next to it carries the meaning. */
+.fg-glyph { margin: 0; color: var(--fg-accent-text); font-size: 1.125rem; }
+.fg-title { margin: 0.25rem 0 0; font-size: 1rem; font-weight: 500; }
+.fg-text { margin: 0.25rem 0 0; color: var(--fg-muted); font-size: 0.875rem; text-wrap: pretty; }
+.fg-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  border-radius: 0.25rem;
+  color: var(--fg-accent-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.fg-link:focus-visible { outline: 2px solid var(--fg-accent-text); outline-offset: 2px; }
+
+.fg-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

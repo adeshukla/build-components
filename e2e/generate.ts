@@ -226,6 +226,18 @@ import { renderDetailsListHtml } from "../registry/details-list/vanilla/render";
 import { comparisonTableSchema } from "../registry/comparison-table/schema";
 import type { ComparisonTableConfig } from "../registry/comparison-table/react/comparison-table";
 import { renderComparisonTableHtml } from "../registry/comparison-table/vanilla/render";
+import { heroSchema } from "../registry/hero/schema";
+import type { HeroConfig } from "../registry/hero/react/hero";
+import { renderHeroHtml } from "../registry/hero/vanilla/render";
+import { featureGridSchema } from "../registry/feature-grid/schema";
+import type { FeatureGridConfig } from "../registry/feature-grid/react/feature-grid";
+import { renderFeatureGridHtml } from "../registry/feature-grid/vanilla/render";
+import { howItWorksSchema } from "../registry/how-it-works/schema";
+import type { HowItWorksConfig } from "../registry/how-it-works/react/how-it-works";
+import { renderHowItWorksHtml } from "../registry/how-it-works/vanilla/render";
+import { newsletterSchema } from "../registry/newsletter/schema";
+import type { NewsletterConfig } from "../registry/newsletter/react/newsletter";
+import { renderNewsletterHtml } from "../registry/newsletter/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -974,6 +986,42 @@ export const components: Record<
     variants: {
       default: "",
       two: "highlight=&theme=dark&caption=Compare+the+two+plans",
+    },
+  },
+  "hero": {
+    exportName: "Hero",
+    schema: heroSchema,
+    renderHtml: (config) => renderHeroHtml(config as unknown as HeroConfig),
+    variants: {
+      default: "",
+      centred: "align=centre&showPanel=false&theme=dark&headingLevel=h2",
+    },
+  },
+  "feature-grid": {
+    exportName: "FeatureGrid",
+    schema: featureGridSchema,
+    renderHtml: (config) => renderFeatureGridHtml(config as unknown as FeatureGridConfig),
+    variants: {
+      default: "",
+      four: "columns=four&showRule=false&theme=dark&heading=Why+this+yard",
+    },
+  },
+  "how-it-works": {
+    exportName: "HowItWorks",
+    schema: howItWorksSchema,
+    renderHtml: (config) => renderHowItWorksHtml(config as unknown as HowItWorksConfig),
+    variants: {
+      default: "",
+      down: "layout=down&showConnector=true&theme=dark&heading=From+quote+to+launch",
+    },
+  },
+  "newsletter": {
+    exportName: "Newsletter",
+    schema: newsletterSchema,
+    renderHtml: (config) => renderNewsletterHtml(config as unknown as NewsletterConfig),
+    variants: {
+      default: "",
+      stacked: "layout=stacked&requireConsent=false&theme=dark&buttonText=Subscribe",
     },
   },
 };

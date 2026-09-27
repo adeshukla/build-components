@@ -1,0 +1,78 @@
+/* Hero section — plain CSS. Colours come from the inline custom properties. */
+.hr {
+  --hr-accent: #16303f;
+  --hr-accent-text: #142936;
+  --hr-on-accent: #ffffff;
+  --hr-surface: #ffffff;
+  --hr-sunk: #f4f3f8;
+  --hr-text: #16121f;
+  --hr-muted: #4d4a57;
+  --hr-line: #c9c4d6;
+  display: block;
+  padding: 2.5rem 1rem;
+  background: var(--hr-surface);
+  color: var(--hr-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+@media (min-width: 640px) {
+  .hr { padding: 3.5rem 1.5rem; }
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.hr,
+.hr *,
+.hr *::before,
+.hr *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .hr--theme-system {
+    --hr-surface: #141019;
+    --hr-sunk: #221d2e;
+    --hr-text: #f6f5fa;
+    --hr-muted: #b6b3c2;
+    --hr-line: #4a4459;
+  }
+}
+
+.hr-inner { display: grid; align-items: center; gap: 2rem; max-width: 64rem; margin: 0 auto; }
+@media (min-width: 640px) {
+  .hr--split .hr-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.hr--centre .hr-body { max-width: 42rem; margin: 0 auto; text-align: center; }
+
+/* Above the heading, but not a heading itself: a fake one would break the page outline. */
+.hr-eyebrow { margin: 0; color: var(--hr-muted); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.hr-heading { margin: 0.5rem 0 0; font-size: 1.875rem; line-height: 1.15; font-weight: 700; text-wrap: balance; }
+@media (min-width: 640px) {
+  .hr-heading { font-size: 2.25rem; }
+}
+.hr-copy { max-width: 65ch; margin: 0.75rem 0 0; color: var(--hr-muted); text-wrap: pretty; }
+.hr--centre .hr-copy { margin-inline: auto; }
+
+.hr-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+.hr--centre .hr-actions { justify-content: center; }
+.hr-primary,
+.hr-secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.hr-primary { background: var(--hr-accent); color: var(--hr-on-accent); }
+.hr-secondary { border: 1px solid var(--hr-line); color: inherit; }
+.hr-primary:focus-visible,
+.hr-secondary:focus-visible { outline: 2px solid var(--hr-accent-text); outline-offset: 2px; }
+.hr-note { margin: 0.75rem 0 0; color: var(--hr-muted); font-size: 0.875rem; }
+
+/* A place for a picture, drawn rather than loaded: the exported file carries no image of ours. */
+.hr-panel {
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--hr-line);
+  border-radius: 0.75rem;
+  background: var(--hr-sunk) repeating-linear-gradient(135deg, transparent 0 18px, rgb(0 0 0 / 0.04) 18px 36px);
+}

@@ -153,6 +153,14 @@ import { DetailsList, type DetailsListConfig } from "@/registry/details-list/rea
 
 import { ComparisonTable, type ComparisonTableConfig } from "@/registry/comparison-table/react/comparison-table";
 
+import { Hero, type HeroConfig } from "@/registry/hero/react/hero";
+
+import { FeatureGrid, type FeatureGridConfig } from "@/registry/feature-grid/react/feature-grid";
+
+import { HowItWorks, type HowItWorksConfig } from "@/registry/how-it-works/react/how-it-works";
+
+import { Newsletter, type NewsletterConfig } from "@/registry/newsletter/react/newsletter";
+
 type Config = Record<string, unknown>;
 
 // The frame shows the component on its own surface, whatever theme the site is in.
@@ -345,6 +353,10 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "faq" && <Faq config={config as unknown as FaqConfig} />}
         {slug === "details-list" && <DetailsList config={config as unknown as DetailsListConfig} />}
         {slug === "comparison-table" && <ComparisonTable config={config as unknown as ComparisonTableConfig} />}
+        {slug === "hero" && <Hero config={config as unknown as HeroConfig} />}
+        {slug === "feature-grid" && <FeatureGrid config={config as unknown as FeatureGridConfig} />}
+        {slug === "how-it-works" && <HowItWorks config={config as unknown as HowItWorksConfig} />}
+        {slug === "newsletter" && <Newsletter config={config as unknown as NewsletterConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

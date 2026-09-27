@@ -240,6 +240,18 @@ import { renderDetailsListHtml } from "@/registry/details-list/vanilla/render";
 import { comparisonTableSchema } from "@/registry/comparison-table/schema";
 import * as comparisonTableDocs from "@/registry/comparison-table/docs";
 import { renderComparisonTableHtml } from "@/registry/comparison-table/vanilla/render";
+import { heroSchema } from "@/registry/hero/schema";
+import * as heroDocs from "@/registry/hero/docs";
+import { renderHeroHtml } from "@/registry/hero/vanilla/render";
+import { featureGridSchema } from "@/registry/feature-grid/schema";
+import * as featureGridDocs from "@/registry/feature-grid/docs";
+import { renderFeatureGridHtml } from "@/registry/feature-grid/vanilla/render";
+import { howItWorksSchema } from "@/registry/how-it-works/schema";
+import * as howItWorksDocs from "@/registry/how-it-works/docs";
+import { renderHowItWorksHtml } from "@/registry/how-it-works/vanilla/render";
+import { newsletterSchema } from "@/registry/newsletter/schema";
+import * as newsletterDocs from "@/registry/newsletter/docs";
+import { renderNewsletterHtml } from "@/registry/newsletter/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -808,6 +820,34 @@ export const registry = {
     schema: comparisonTableSchema,
     ...comparisonTableDocs,
     renderHtml: (config) => renderComparisonTableHtml(config as never),
+  },
+  "hero": {
+    title: "Hero section",
+    description: "A page opening with two buttons and a picture panel.",
+    schema: heroSchema,
+    ...heroDocs,
+    renderHtml: (config) => renderHeroHtml(config as never),
+  },
+  "feature-grid": {
+    title: "Feature grid",
+    description: "A features section that reads well out loud.",
+    schema: featureGridSchema,
+    ...featureGridDocs,
+    renderHtml: (config) => renderFeatureGridHtml(config as never),
+  },
+  "how-it-works": {
+    title: "How it works",
+    description: "A process section where the order is in the markup.",
+    schema: howItWorksSchema,
+    ...howItWorksDocs,
+    renderHtml: (config) => renderHowItWorksHtml(config as never),
+  },
+  "newsletter": {
+    title: "Newsletter signup",
+    description: "A signup form with consent and a spoken outcome.",
+    schema: newsletterSchema,
+    ...newsletterDocs,
+    renderHtml: (config) => renderNewsletterHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

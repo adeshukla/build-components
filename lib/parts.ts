@@ -738,6 +738,42 @@ export const parts: Part[] = [
     accent: "#5eead4",
     status: "in-stock",
   },
+  {
+    slug: "hero",
+    category: "Page sections",
+    name: "Hero section",
+    summary: "A page opening whose heading level is yours to set, with a drawn picture panel and no image requests.",
+    pattern: "Landmark section",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "feature-grid",
+    category: "Page sections",
+    name: "Feature grid",
+    summary: "Features as a real list with real headings, glyphs hidden from screen readers and links that name themselves.",
+    pattern: "List + headings",
+    accent: "#5eead4",
+    status: "in-stock",
+  },
+  {
+    slug: "how-it-works",
+    category: "Page sections",
+    name: "How it works",
+    summary: "Numbered steps as an ordered list, so the sequence survives without the drawn circles.",
+    pattern: "Ordered list",
+    accent: "#a7f3d0",
+    status: "in-stock",
+  },
+  {
+    slug: "newsletter",
+    category: "Page sections",
+    name: "Newsletter signup",
+    summary: "An email form that writes its own errors, keeps focus on what needs fixing and never pre-ticks consent.",
+    pattern: "Form + status",
+    accent: "#fdba74",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */

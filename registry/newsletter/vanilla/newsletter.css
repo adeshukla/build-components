@@ -1,0 +1,79 @@
+/* Newsletter signup — plain CSS. Colours come from the inline custom properties. */
+.nl {
+  --nl-accent: #0f766e;
+  --nl-accent-text: #0b5a54;
+  --nl-on-accent: #ffffff;
+  --nl-surface: #ffffff;
+  --nl-sunk: #f4f3f8;
+  --nl-text: #16121f;
+  --nl-muted: #4d4a57;
+  --nl-line: #c9c4d6;
+  --nl-error: #b42318;
+  display: block;
+  padding: 1.25rem;
+  border: 1px solid var(--nl-line);
+  border-radius: 0.75rem;
+  background: var(--nl-sunk);
+  color: var(--nl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.nl,
+.nl *,
+.nl *::before,
+.nl *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .nl--theme-system {
+    --nl-surface: #141019;
+    --nl-sunk: #221d2e;
+    --nl-text: #f6f5fa;
+    --nl-muted: #b6b3c2;
+    --nl-line: #4a4459;
+    --nl-error: #ff9d95;
+  }
+}
+
+.nl-heading { margin: 0; font-size: 1.125rem; }
+.nl-copy { max-width: 65ch; margin: 0.25rem 0 0; color: var(--nl-muted); font-size: 0.875rem; }
+.nl-form { margin-top: 1rem; }
+.nl-row { display: grid; gap: 0.75rem; }
+.nl--inline .nl-row { display: flex; flex-wrap: wrap; align-items: flex-end; }
+.nl--inline .nl-field-wrap { flex: 1; min-width: 14rem; }
+.nl-label { display: block; font-size: 0.875rem; font-weight: 500; }
+.nl-field {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--nl-line);
+  border-radius: 0.375rem;
+  background: var(--nl-surface);
+  color: var(--nl-text);
+  font: inherit;
+}
+.nl-field[aria-invalid="true"] { border-color: var(--nl-error); }
+.nl-field:focus-visible,
+.nl-button:focus-visible,
+.nl-box:focus-visible { outline: 2px solid var(--nl-accent-text); outline-offset: 2px; }
+.nl-button {
+  flex-shrink: 0;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--nl-accent);
+  color: var(--nl-on-accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.nl-consent { display: flex; align-items: flex-start; gap: 0.75rem; min-height: 2.75rem; margin-top: 0.75rem; font-size: 0.875rem; cursor: pointer; }
+.nl-box { flex-shrink: 0; width: 1.25rem; height: 1.25rem; margin-top: 0.125rem; accent-color: var(--nl-accent); }
+.nl-note { margin: 0.5rem 0 0; color: var(--nl-muted); font-size: 0.75rem; }
+.nl-error { margin: 0.5rem 0 0; color: var(--nl-error); font-size: 0.875rem; }
+.nl-error[hidden] { display: none; }
+.nl-status { margin: 0.75rem 0 0; color: var(--nl-muted); font-size: 0.875rem; min-height: 1.5rem; }
