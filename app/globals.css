@@ -270,6 +270,57 @@
   }
 }
 
+/* The part arriving on the board: it is uncovered from the top edge, the way a chip is set down. */
+@keyframes mount-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(-0.75rem) scale(0.985);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+}
+
+/* A contact pad taking current: it warms, brightens, then settles. The live colour is the one that
+   reads on either paper — purple on white, gold on ink. */
+@keyframes pad-live {
+  0% {
+    fill: var(--color-rule-strong);
+    filter: none;
+  }
+  55% {
+    fill: var(--color-link);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-link) 70%, transparent));
+  }
+  100% {
+    fill: var(--color-rule-strong);
+    filter: none;
+  }
+}
+
+/* Swapping one part for another in the same socket. */
+@keyframes swap-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* A drawn diagram filling itself in when it comes into view. */
+@keyframes draw-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 @utility trace-path {
   stroke-dasharray: 1;
   animation: trace-draw 1.4s var(--ease-out-expo) both;
@@ -278,6 +329,31 @@
 @utility slab-line {
   display: block;
   animation: slab-in 0.9s var(--ease-out-expo) both;
+}
+
+@utility mount-in {
+  animation: mount-in 0.62s var(--ease-out-expo) both;
+}
+
+@utility pad-live {
+  animation: pad-live 2.6s ease-in-out infinite;
+}
+
+@utility swap-in {
+  animation: swap-in 0.34s var(--ease-out-expo) both;
+}
+
+@utility draw-in {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-in 1.1s var(--ease-out-expo) both;
+}
+
+/* Drawn diagrams wait until they are on screen, and the class is only added there. */
+@utility diagram-live {
+  & .draw-in {
+    animation-play-state: running;
+  }
 }
 
 @utility stamp-in {
@@ -309,5 +385,17 @@
 
   .reveal {
     animation: none !important;
+  }
+
+  /* Nothing loops, nothing travels, nothing is clipped into view: the arrival is a plain fade. */
+  .pad-live,
+  .trace-signal {
+    animation: none !important;
+  }
+
+  .mount-in,
+  .swap-in {
+    clip-path: none !important;
+    transform: none !important;
   }
 }

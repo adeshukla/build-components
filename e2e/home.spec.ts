@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { demos } from "../lib/demos";
 import { inStock } from "../lib/parts";
+import { expectNoAxeViolations } from "./helpers";
 
 /** Chromium only: the catalogue is plain layout, and hover is the same everywhere. */
 test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only");
@@ -37,9 +38,12 @@ test("the preview opens on keyboard focus as well as hover", async ({ page }) =>
   const card = page.locator("#catalogue-list li").filter({ hasText: "Modal dialog" }).first();
   await card.getByRole("link", { name: "Modal dialog" }).focus();
   await expect(card.locator("[inert]")).toBeVisible();
-  // Inert: the frame inside can never swallow the Tab key.
+  // Inert: Tab goes on to the next card, never into the frame inside the panel.
   await page.keyboard.press("Tab");
-  await expect(page.locator("#catalogue-list li [inert]")).toHaveCount(0);
+  await expect(page.locator("#catalogue-list li a:focus")).toBeVisible();
+  await expect(page.locator("iframe:focus")).toHaveCount(0);
+  // And the card being left closes its own preview.
+  await expect(card.locator("[inert]")).toHaveCount(0);
 });
 
 test("searching the catalogue narrows it, and says how many are left", async ({ page }) => {
@@ -77,4 +81,32 @@ test("slash jumps to the search box, but not while typing in it", async ({ page 
   await expect(search).toBeFocused();
   await page.keyboard.type("table");
   await expect(search).toHaveValue("table");
+});
+
+test("the home page itself has no axe violations", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("tab", { name: /Date picker/ })).toBeVisible();
+  await expectNoAxeViolations(page);
+});
+
+test("the reel is a real tablist: arrows move it and the part changes with it", async ({ page }) => {
+  await page.goto("/");
+  const reel = page.getByRole("tablist", { name: "Parts you can try here" });
+  await expect(reel.getByRole("tab", { name: /Date picker/ })).toHaveAttribute("aria-selected", "true");
+  await reel.getByRole("tab", { name: /Date picker/ }).focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(reel.getByRole("tab", { name: /Searchable select/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel")).toContainText("Country");
+  await page.keyboard.press("End");
+  await expect(reel.getByRole("tab", { name: /Rating/ })).toHaveAttribute("aria-selected", "true");
+});
+
+test("the reel holds still while it is being used", async ({ page }) => {
+  await page.goto("/");
+  const reel = page.getByRole("tablist", { name: "Parts you can try here" });
+  await reel.getByRole("tab", { name: /Switch/ }).click();
+  await expect(page.getByText(/Held\./)).toBeVisible();
+  // Nine seconds is the hold; it must not move on while the pointer is on it.
+  await page.waitForTimeout(3000);
+  await expect(reel.getByRole("tab", { name: /Switch/ })).toHaveAttribute("aria-selected", "true");
 });

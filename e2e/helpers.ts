@@ -22,12 +22,18 @@ export async function expectNoAxeViolations(page: Page) {
   // Let open animations finish: mid-fade colours would give false contrast failures. Endless ones
   // (a skeleton's pulse, a spinner) never finish, so they are left running instead of waited for.
   await page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
-        .map((animation) => animation.finished),
-    ),
+    Promise.race([
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+          // Scroll- and view-driven animations only finish when the scrolling does, so waiting on
+          // one waits for ever: they are left where they are.
+          .filter((animation) => animation.timeline === document.timeline)
+          .map((animation) => animation.finished),
+      ),
+      new Promise((resolve) => setTimeout(resolve, 3_000)),
+    ]),
   );
   const { violations } = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
