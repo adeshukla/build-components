@@ -369,3 +369,9 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 - **Comparison table:** yes and no are printed as words; a bare tick is read as a stray character or as nothing at all.
 - **Hero:** the eyebrow is a paragraph and the heading level is an option, because a mid-page hero must not be a second h1. The picture panel is drawn in CSS, so the exported file requests nothing.
 - **Newsletter:** the address is checked in the component (the browser's bubble cannot be read back), a consent problem moves focus to the box rather than the field, and consent is never pre-ticked.
+
+## 2026-09-27 — D61. The home page performs the idea instead of describing it
+**Decision:** The home page keeps the Parts Datasheet world and turns it up: one authored arrival in the hero (traces draw, pads take current, the part is uncovered from its top edge), a new socket section where four real exported components take turns under a WAI-ARIA tablist, and three drawn diagrams for the three steps. Spacing moved to a clamp rhythm. No video, no new dependency — CSS keyframes, SVG and IntersectionObserver only.
+**Why:** Adesh asked for spacious, fresh, interactive, with motion graphics. The page already claimed "real, running components as the imagery" and then showed a static stack of three. The reel makes that claim literal and gives visitors something to try before they commit to anything.
+**Rules it follows:** one focal moment rather than an entrance on every section; the reel stops on pointer, focus, off-screen and reduced motion; reduced motion gets the finished diagram, not a blank one; every colour comes from the two-theme tokens so the diagrams read on white paper and on ink.
+**Rejected:** a video slot (nothing real to play, and a third-party embed would mean a CSP change for no content), and GSAP or Framer Motion (a runtime dependency on the site for choreography the stack already expresses).

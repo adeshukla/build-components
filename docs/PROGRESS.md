@@ -16,7 +16,7 @@ Open http://localhost:3000.
 - **Each component's own Theme option** (Style tab) previews light, dark or "follow the device".
 - **iPhone look:** open any part page on an iPhone (or in Safari's responsive mode with an iPhone user agent) to see the iOS treatment.
 
-### The eighty-four parts, all in stock
+### The eighty-eight parts, all in stock
 | Name | Component | Pattern |
 |---|---|---|
 | **Almanac** | Date picker | APG Date Picker Dialog |
@@ -93,6 +93,23 @@ Open http://localhost:3000.
 | **Glass** | Countdown | Timer + polite status |
 | **Berth** | Booking slots | Grouped radio group |
 | **Coxswain** | Multi-step wizard | Steps + per-step validation |
+
+### Session 10, part 2 (2026-09-27): the home page performs its own idea (D61)
+Adesh asked for a home page that is more spacious, fresher and more interactive, with motion graphics, using the design skills already installed. Run through the `impeccable` skill against the project's own DESIGN.md world rather than a new look. He chose motion graphics over video, at full strength.
+
+- **Hero:** one part, set down once — traces draw, pads take current, and the mounted component is uncovered from its top edge at 280ms. That is the page's single authored moment; nothing else on the page uses the same entrance.
+- **New section, "Try them here first":** four real exported components in one socket (date picker, searchable select, switch, rating) as a WAI-ARIA tablist with a gold pad marking what is live. It advances itself every nine seconds and stops on pointer, on focus, when off screen, and under reduced motion. Arrows, Home and End move it.
+- **How it works:** three drawn SVG diagrams — an options panel filling in, a bench with the keyboard path traced across it, a file leaving — replacing three same-size number-heading-text cards. Each draws once, on arrival.
+- **Spacing** moved to a clamp rhythm throughout; heading and body sizes up a step.
+- **Two-theme colour:** the diagrams use the `link` token (purple on paper, gold on ink) so they read in both themes. Reduced motion gets the finished state, never a blank one.
+- No new dependency: CSS keyframes, SVG and IntersectionObserver.
+
+**Two test-infrastructure bugs found doing it,** both fixed: `expectNoAxeViolations` waited for ever on scroll-driven animations (they only finish when the scrolling does), and a Tab assertion in `home.spec.ts` was checking that no preview was open rather than that focus had gone to the next card instead of into the frame. The home page itself is now axe-checked, and the reel has keyboard and hold-while-in-use tests.
+
+### Session 10, part 3 (2026-09-27): fourteen of the fifty new parts
+Batches H to K: checkbox group, radio cards, textarea with counter, select field · FAQ, details list, comparison table · hero, feature grid, how it works, newsletter signup · toggle group, value with unit, masked input. All green across chromium, WebKit and the emulated iPhone.
+
+**Still to come from the fifty** (36 parts): date range and time range fields, dual range slider, PIN pad, autosaving field, form error summary, address fields · skip links, anchor navigation, command menu, menu bar, cursor pagination, navigation progress, shrinking sticky header, hover card · bottom sheet, loading button, undo snackbar, inline confirm, circular progress, error state with retry, maintenance notice, help hint · changelog, notification list, list with row actions, order tracker, invoice summary, article card, author byline, image gallery, click-to-load video embed, pull quote, team grid, logo wall · page header, split feature, stat comparison.
 
 ### Session 10 (2026-09-27): plain names, a searchable catalogue, and the first eleven of fifty new parts (D57-D60)
 Adesh asked for three things: names a developer or a layman could understand, fifty more components with more options each, and a cleaner, more interactive site.
