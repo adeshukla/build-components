@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type HeroConfig = {
   eyebrow: string;
@@ -80,6 +80,7 @@ function safeHref(value: string) {
 }
 
 export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
+  const id = useId();
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -100,7 +101,7 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
   return (
     <section
       style={style}
-      aria-labelledby="hero-heading"
+      aria-labelledby={`${id}-hero-heading`}
       className="bg-(--hr-surface) px-4 py-10 text-(--hr-text) sm:px-6 sm:py-14"
     >
       <div className={`mx-auto grid max-w-5xl items-center gap-8 ${config.showPanel && !centred ? "sm:grid-cols-2" : ""}`}>
@@ -109,7 +110,7 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
             // Above the heading, but not a heading itself: a fake one would break the page outline.
             <p className="font-mono text-xs tracking-wide text-(--hr-muted) uppercase">{config.eyebrow}</p>
           )}
-          <Heading id="hero-heading" className="mt-2 text-3xl leading-tight font-bold text-balance sm:text-4xl">
+          <Heading id={`${id}-hero-heading`} className="mt-2 text-3xl leading-tight font-bold text-balance sm:text-4xl">
             {config.heading}
           </Heading>
           {config.copy.trim() !== "" && <p className="mt-3 max-w-prose text-pretty text-(--hr-muted)">{config.copy}</p>}

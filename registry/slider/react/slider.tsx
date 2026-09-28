@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type SliderConfig = {
   label: string;
@@ -76,6 +76,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
+  const id = useId();
   const min = config.min;
   const max = Math.max(config.min + config.step, config.max);
   const clamp = (value: number) => Math.min(max, Math.max(min, value));
@@ -112,7 +113,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
   return (
     <div style={style} className="bg-(--sl-surface) text-(--sl-text)">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p id="slider-label" className="font-medium">
+        <p id={`${id}-slider-label`} className="font-medium">
           {config.label}
         </p>
         {config.showValue && (
@@ -122,7 +123,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
         )}
       </div>
       {config.hint.trim() !== "" && (
-        <p id="slider-hint" className="mt-0.5 text-sm text-(--sl-muted)">
+        <p id={`${id}-slider-hint`} className="mt-0.5 text-sm text-(--sl-muted)">
           {config.hint}
         </p>
       )}
@@ -141,8 +142,8 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
             max={max}
             step={config.step}
             value={value}
-            aria-labelledby="slider-label"
-            aria-describedby={config.hint.trim() !== "" ? "slider-hint" : undefined}
+            aria-labelledby={`${id}-slider-label`}
+            aria-describedby={config.hint.trim() !== "" ? `${id}-slider-hint` : undefined}
             aria-valuetext={show(value)}
             onChange={(event) => setValue(Number(event.target.value))}
             className={`relative ${input}`}
@@ -164,7 +165,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
             step={config.step}
             value={lower}
             aria-label={`${config.label}, lowest`}
-            aria-describedby={config.hint.trim() !== "" ? "slider-hint" : undefined}
+            aria-describedby={config.hint.trim() !== "" ? `${id}-slider-hint` : undefined}
             aria-valuetext={show(lower)}
             onChange={(event) => setLower(Math.min(Number(event.target.value), upper))}
             className={`absolute inset-0 ${stacked}`}

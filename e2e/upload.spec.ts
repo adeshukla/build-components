@@ -10,9 +10,14 @@ const attach = (page: Page, files: { name: string; mimeType: string; buffer: Buf
 
 /** The component's own message list, not Next's route announcer. */
 const alerts = (page: Page) => page.locator("ul[role=alert], [role=alert] li").first();
-/** A row in the list of attached files — not the message list, which names files too. */
+/**
+ * A row in the list of attached files — not the message list, which names files too.
+ *
+ * Ends with, rather than equals: the React output prefixes its ids with useId(), so that two of the
+ * part on one page do not answer to the same name.
+ */
 const fileRow = (page: Page, name: string) =>
-  page.locator("ul[aria-labelledby='upload-label'] li").filter({ hasText: name });
+  page.locator("ul[aria-labelledby$='upload-label'] li").filter({ hasText: name });
 
 const brief = { name: "brief.pdf", mimeType: "application/pdf", buffer: Buffer.alloc(1024) };
 const photo = { name: "photo.png", mimeType: "image/png", buffer: Buffer.alloc(2048) };

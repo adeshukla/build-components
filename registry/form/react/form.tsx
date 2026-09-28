@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent } from "react";
+import { useId, useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent } from "react";
 
 export type FormField = {
   label: string;
@@ -196,6 +196,12 @@ export function validateField(field: FormField, value: string, checked: boolean)
 }
 
 export function ContactForm({ config = defaultConfig }: { config?: FormConfig }) {
+  const id = useId();
+  /*
+   * The name is the answer's name in the submitted data and stays exactly as it is; the id is only
+   * an address on this page, and two of these forms on one page must not share one.
+   */
+  const fieldId = (name: string) => `${id}-${name}`;
   const fields = config.fields.filter((field) => field.label.trim() !== "");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [values, setValues] = useState<Record<string, string>>({});
@@ -290,11 +296,11 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
           <div
             ref={summaryRef}
             role="alert"
-            aria-labelledby="form-summary-title"
+            aria-labelledby={`${id}-form-summary-title`}
             tabIndex={-1}
             className="rounded-(--fm-radius) border-2 border-(--fm-error) p-4"
           >
-            <h3 id="form-summary-title" className="font-semibold text-(--fm-error)">
+            <h3 id={`${id}-form-summary-title`} className="font-semibold text-(--fm-error)">
               There is a problem
             </h3>
             <ul className="mt-2 flex list-none flex-col gap-1 p-0">
@@ -333,7 +339,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
             const required = isRequired(field);
             const max = limit(field.max);
             const wide = type === "textarea" || type === "checkbox";
-            const describedBy = [field.help.trim() !== "" ? `${name}-help` : "", error !== "" ? `${name}-error` : ""]
+            const describedBy = [field.help.trim() !== "" ? `${fieldId(name)}-help` : "", error !== "" ? `${fieldId(name)}-error` : ""]
               .filter(Boolean)
               .join(" ");
 
@@ -342,7 +348,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                 <div key={name} className={config.layout === "two" ? "sm:col-span-2" : ""}>
                   <div className="flex items-start gap-3">
                     <input
-                      id={name}
+                      id={fieldId(name)}
                       name={name}
                       type="checkbox"
                       checked={checkedOf(field)}
@@ -354,12 +360,12 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                       }}
                       className={`mt-0.5 size-6 shrink-0 accent-(--fm-accent) ${focus}`}
                     />
-                    <label htmlFor={name} className="text-pretty">
+                    <label htmlFor={fieldId(name)} className="text-pretty">
                       {field.label}
                     </label>
                   </div>
                   {error !== "" && (
-                    <p id={`${name}-error`} className="mt-1 text-sm font-medium text-(--fm-error)">
+                    <p id={`${fieldId(name)}-error`} className="mt-1 text-sm font-medium text-(--fm-error)">
                       <span className="sr-only">Error: </span>
                       {error}
                     </p>
@@ -376,13 +382,13 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                 }`}
               >
                 <div>
-                  <label htmlFor={name} className="block font-medium">
+                  <label htmlFor={fieldId(name)} className="block font-medium">
                     {field.label}
                     {config.marker === "optional" && !required && <span className="text-(--fm-muted)"> (optional)</span>}
                     {config.marker === "required" && required && <span className="text-(--fm-muted)"> (required)</span>}
                   </label>
                   {field.help.trim() !== "" && (
-                    <p id={`${name}-help`} className="mt-0.5 text-sm text-(--fm-muted)">
+                    <p id={`${fieldId(name)}-help`} className="mt-0.5 text-sm text-(--fm-muted)">
                       {field.help}
                     </p>
                   )}
@@ -390,7 +396,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
 
                 {type === "textarea" ? (
                   <textarea
-                    id={name}
+                    id={fieldId(name)}
                     name={name}
                     rows={5}
                     value={valueOf(field)}
@@ -406,7 +412,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                   />
                 ) : type === "select" ? (
                   <select
-                    id={name}
+                    id={fieldId(name)}
                     name={name}
                     value={valueOf(field)}
                     aria-describedby={describedBy || undefined}
@@ -427,7 +433,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                   </select>
                 ) : (
                   <input
-                    id={name}
+                    id={fieldId(name)}
                     name={name}
                     type={type === "number" ? "text" : type}
                     inputMode={type === "number" ? "numeric" : undefined}
@@ -452,7 +458,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                     count. Both live in one row so the grid stays aligned. */}
                 <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 text-sm">
                   {error !== "" ? (
-                    <p id={`${name}-error`} className="font-medium text-(--fm-error)">
+                    <p id={`${fieldId(name)}-error`} className="font-medium text-(--fm-error)">
                       <span className="sr-only">Error: </span>
                       {error}
                     </p>

@@ -1,6 +1,14 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type ClipboardEvent, type CSSProperties, type KeyboardEvent } from "react";
+import {
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ClipboardEvent,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
 
 export type OtpConfig = {
   label: string;
@@ -68,6 +76,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
+  const id = useId();
   const length = Math.min(10, Math.max(3, Math.round(config.length)));
   const [digits, setDigits] = useState<string[]>(() => Array.from({ length }, () => ""));
   const [single, setSingle] = useState("");
@@ -139,7 +148,7 @@ export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
       <fieldset className="m-0 border-0 p-0">
         <legend className="font-medium">{config.label}</legend>
         {config.hint.trim() !== "" && (
-          <p id="otp-hint" className="mt-0.5 text-sm text-(--ot-muted)">
+          <p id={`${id}-otp-hint`} className="mt-0.5 text-sm text-(--ot-muted)">
             {config.hint}
           </p>
         )}
@@ -151,7 +160,7 @@ export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
             autoComplete="one-time-code"
             maxLength={length}
             aria-label={config.label}
-            aria-describedby={config.hint.trim() !== "" ? "otp-hint" : undefined}
+            aria-describedby={config.hint.trim() !== "" ? `${id}-otp-hint` : undefined}
             value={single}
             onChange={(event) => setSingle(event.target.value.replace(allowed, "").toUpperCase().slice(0, length))}
             className={`mt-2 w-48 rounded-(--ot-radius) border border-(--ot-line) bg-(--ot-surface) px-3 py-2 text-center text-xl tracking-[0.4em] tabular-nums ${focus}`}
@@ -170,7 +179,7 @@ export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
                 autoComplete={index === 0 ? "one-time-code" : "off"}
                 maxLength={1}
                 aria-label={`Character ${index + 1} of ${length}`}
-                aria-describedby={config.hint.trim() !== "" && index === 0 ? "otp-hint" : undefined}
+                aria-describedby={config.hint.trim() !== "" && index === 0 ? `${id}-otp-hint` : undefined}
                 value={digit}
                 onChange={(event) => setDigit(index, event.target.value)}
                 onKeyDown={(event) => onKeyDown(event, index)}

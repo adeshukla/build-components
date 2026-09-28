@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent } from "react";
+import { useId, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent } from "react";
 
 export type TabsConfig = {
   label: string;
@@ -74,6 +74,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function Tabs({ config = defaultConfig }: { config?: TabsConfig }) {
+  const id = useId();
   const items = config.items.filter((item) => item.label.trim() !== "");
   const [selected, setSelected] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -143,9 +144,9 @@ export function Tabs({ config = defaultConfig }: { config?: TabsConfig }) {
               }}
               type="button"
               role="tab"
-              id={`tabs-tab-${index}`}
+              id={`${id}-tabs-tab-${index}`}
               aria-selected={active}
-              aria-controls={`tabs-panel-${index}`}
+              aria-controls={`${id}-tabs-panel-${index}`}
               tabIndex={active ? 0 : -1}
               onClick={() => setSelected(index)}
               onKeyDown={(event) => onKeyDown(event, index)}
@@ -169,8 +170,8 @@ export function Tabs({ config = defaultConfig }: { config?: TabsConfig }) {
         <div
           key={index}
           role="tabpanel"
-          id={`tabs-panel-${index}`}
-          aria-labelledby={`tabs-tab-${index}`}
+          id={`${id}-tabs-panel-${index}`}
+          aria-labelledby={`${id}-tabs-tab-${index}`}
           // The panel takes focus itself, because its content may hold nothing focusable.
           tabIndex={0}
           hidden={index !== current}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type CtaConfig = {
   eyebrow: string;
@@ -99,6 +99,7 @@ function safeHref(value: string) {
 }
 
 export function Cta({ config = defaultConfig }: { config?: CtaConfig }) {
+  const id = useId();
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -128,7 +129,7 @@ export function Cta({ config = defaultConfig }: { config?: CtaConfig }) {
 
   return (
     <section
-      aria-labelledby="cta-heading"
+      aria-labelledby={`${id}-cta-heading`}
       style={style}
       className={`bg-(--cta-outer) ${config.look === "card" ? "p-4 sm:p-6" : ""}`}
     >
@@ -172,7 +173,7 @@ export function Cta({ config = defaultConfig }: { config?: CtaConfig }) {
               </p>
             )}
             <Heading
-              id="cta-heading"
+              id={`${id}-cta-heading`}
               className="text-3xl leading-[1.08] font-bold tracking-[-0.02em] text-balance sm:text-4xl lg:text-5xl"
             >
               {config.heading}

@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
 
 export type MultiSelectConfig = {
   label: string;
@@ -77,6 +85,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectConfig }) {
+  const id = useId();
   const all = config.options.map((option) => option.label).filter((label) => label.trim() !== "");
   const [chosen, setChosen] = useState<string[]>([]);
   const [query, setQuery] = useState("");
@@ -169,11 +178,11 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
 
   return (
     <div ref={rootRef} style={style} className="relative bg-(--ms-surface) text-(--ms-text)">
-      <label htmlFor="multi-select-input" className="block font-medium">
+      <label htmlFor={`${id}-multi-select-input`} className="block font-medium">
         {config.label}
       </label>
       {config.hint.trim() !== "" && (
-        <p id="multi-select-hint" className="mt-0.5 text-sm text-(--ms-muted)">
+        <p id={`${id}-multi-select-hint`} className="mt-0.5 text-sm text-(--ms-muted)">
           {config.hint}
         </p>
       )}
@@ -217,14 +226,14 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
       <div className="mt-2">
         <input
           ref={inputRef}
-          id="multi-select-input"
+          id={`${id}-multi-select-input`}
           type="text"
           role="combobox"
           aria-expanded={open}
-          aria-controls="multi-select-list"
+          aria-controls={`${id}-multi-select-list`}
           aria-autocomplete="list"
-          aria-activedescendant={open && matches[active] ? `multi-select-option-${active}` : undefined}
-          aria-describedby={config.hint.trim() !== "" ? "multi-select-hint" : undefined}
+          aria-activedescendant={open && matches[active] ? `${id}-multi-select-option-${active}` : undefined}
+          aria-describedby={config.hint.trim() !== "" ? `${id}-multi-select-hint` : undefined}
           placeholder={config.placeholder}
           value={query}
           onChange={(event) => {
@@ -245,7 +254,7 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
       </p>
 
       <ul
-        id="multi-select-list"
+        id={`${id}-multi-select-list`}
         role="listbox"
         aria-label={config.label}
         aria-multiselectable="true"
@@ -260,7 +269,7 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
           return (
             <li
               key={label}
-              id={`multi-select-option-${index}`}
+              id={`${id}-multi-select-option-${index}`}
               role="option"
               aria-selected={selected}
               onMouseDown={(event) => {

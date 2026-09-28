@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type MegaMenuItem = { menu: string; group: string; label: string; href: string; description: string };
 
@@ -133,9 +133,10 @@ function groupItems(items: MegaMenuItem[]) {
   return menus;
 }
 
-const panelId = (name: string) => `mega-panel-${name.replace(/\W+/g, "-").toLowerCase()}`;
+const panelId = (id: string, name: string) => `${id}-mega-panel-${name.replace(/\W+/g, "-").toLowerCase()}`;
 
 export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }) {
+  const id = useId();
   const [open, setOpen] = useState<string | null>(null);
   const [drawer, setDrawer] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
@@ -260,7 +261,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
             ref={toggleRef}
             type="button"
             aria-expanded={drawer}
-            aria-controls="mega-drawer"
+            aria-controls={`${id}-mega-drawer`}
             onClick={() => {
               setDrawer(!drawer);
               setOpen(null);
@@ -274,7 +275,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
           </button>
         </div>
 
-        <div id="mega-drawer" hidden={!drawer} className="border-b border-(--mm-line) px-4 py-3">
+        <div id={`${id}-mega-drawer`} hidden={!drawer} className="border-b border-(--mm-line) px-4 py-3">
           {current ? (
             <div>
               <button
@@ -300,7 +301,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
                   }}
                   type="button"
                   aria-expanded={false}
-                  aria-controls={panelId(menu.name)}
+                  aria-controls={panelId(id, menu.name)}
                   onClick={() => setOpen(menu.name)}
                   className={`cursor-pointer ${top} w-full justify-between`}
                 >
@@ -344,7 +345,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
                 }}
                 type="button"
                 aria-expanded={expanded}
-                aria-controls={panelId(menu.name)}
+                aria-controls={panelId(id, menu.name)}
                 onClick={() => setOpen(expanded ? null : menu.name)}
                 onKeyDown={(event) => {
                   if (event.key !== "ArrowDown") return;
@@ -371,7 +372,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
               </button>
 
               <div
-                id={panelId(menu.name)}
+                id={panelId(id, menu.name)}
                 data-panel={menu.name}
                 hidden={!expanded}
                 // Below the whole bar by default, so a wrapped bar never gets covered; once there

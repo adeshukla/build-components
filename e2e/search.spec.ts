@@ -68,9 +68,9 @@ for (const target of targets("search")) {
     test("the arrows point at a result while the caret stays in the box", async ({ page }) => {
       await start(page, target.url("default"));
       await box(page).fill("a");
-      await expect(box(page)).toHaveAttribute("aria-activedescendant", "search-result-0");
+      await expect(box(page)).toHaveAttribute("aria-activedescendant", /search-result-0$/);
       await page.keyboard.press("ArrowDown");
-      await expect(box(page)).toHaveAttribute("aria-activedescendant", "search-result-1");
+      await expect(box(page)).toHaveAttribute("aria-activedescendant", /search-result-1$/);
       await expect(box(page)).toBeFocused();
     });
 

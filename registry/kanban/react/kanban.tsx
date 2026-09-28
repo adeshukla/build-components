@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type KanbanConfig = {
   label: string;
@@ -73,6 +73,7 @@ const slug = (value: string) =>
     .replace(/^-|-$/g, "");
 
 export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
+  const id = useId();
   const columns = config.columns.filter((column) => column.name.trim() !== "");
   const [cards, setCards] = useState(() =>
     config.cards
@@ -120,7 +121,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
           return (
             <section
               key={column.name}
-              aria-labelledby={`kb-${slug(column.name)}`}
+              aria-labelledby={`${id}-kb-${slug(column.name)}`}
               onDragOver={config.allowDrag ? (event) => event.preventDefault() : undefined}
               onDrop={
                 config.allowDrag
@@ -133,7 +134,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
               }
               className="rounded-lg border border-(--kb-line) bg-(--kb-sunk) p-3"
             >
-              <h3 id={`kb-${slug(column.name)}`} className="text-sm font-semibold">
+              <h3 id={`${id}-kb-${slug(column.name)}`} className="text-sm font-semibold">
                 {column.name}
                 {/* Part of the heading, with the space, so the name reads "To do (2)" rather than "To do(2)". */}
                 {config.showCounts && <span className="font-normal text-(--kb-muted)">{` (${inColumn.length})`}</span>}

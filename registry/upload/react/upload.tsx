@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type CSSProperties, type DragEvent } from "react";
+import { useId, useRef, useState, useSyncExternalStore, type CSSProperties, type DragEvent } from "react";
 
 export type UploadConfig = {
   label: string;
@@ -97,6 +97,7 @@ export function fileProblem(file: { name: string; size: number }, accept: string
 type Chosen = { name: string; size: number };
 
 export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
+  const id = useId();
   const [files, setFiles] = useState<Chosen[]>([]);
   const [problems, setProblems] = useState<string[]>([]);
   const [message, setMessage] = useState("");
@@ -156,11 +157,11 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
 
   return (
     <div style={style} className="bg-(--up-surface) text-(--up-text)">
-      <p id="upload-label" className="font-medium">
+      <p id={`${id}-upload-label`} className="font-medium">
         {config.label}
       </p>
       {config.hint.trim() !== "" && (
-        <p id="upload-hint" className="mt-0.5 text-sm text-(--up-muted)">
+        <p id={`${id}-upload-hint`} className="mt-0.5 text-sm text-(--up-muted)">
           {config.hint}
         </p>
       )}
@@ -186,7 +187,7 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
             type="file"
             multiple={config.multiple}
             accept={config.accept}
-            aria-describedby={config.hint.trim() !== "" ? "upload-hint" : undefined}
+            aria-describedby={config.hint.trim() !== "" ? `${id}-upload-hint` : undefined}
             onChange={(event) => {
               add(Array.from(event.target.files ?? []).map((file) => ({ name: file.name, size: file.size })));
               event.target.value = "";
@@ -213,7 +214,7 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
       )}
 
       {files.length > 0 && (
-        <ul aria-labelledby="upload-label" className="mt-3 flex list-none flex-col gap-2 p-0">
+        <ul aria-labelledby={`${id}-upload-label`} className="mt-3 flex list-none flex-col gap-2 p-0">
           {files.map((file, index) => (
             <li
               key={`${file.name}-${index}`}

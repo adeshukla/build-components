@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type PasswordConfig = {
   label: string;
@@ -96,6 +96,7 @@ export function passwordStrength(value: string, config: PasswordConfig) {
 }
 
 export function Password({ config = defaultConfig }: { config?: PasswordConfig }) {
+  const id = useId();
   const [value, setValue] = useState("");
   const [shown, setShown] = useState(false);
   const [caps, setCaps] = useState(false);
@@ -119,24 +120,24 @@ export function Password({ config = defaultConfig }: { config?: PasswordConfig }
     "--pw-bad": palette.bad,
   } as CSSProperties;
   const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pw-accent-text)";
-  const describedBy = [config.hint.trim() !== "" ? "password-hint" : "", config.showRules ? "password-rules" : ""]
+  const describedBy = [config.hint.trim() !== "" ? `${id}-password-hint` : "", config.showRules ? `${id}-password-rules` : ""]
     .filter(Boolean)
     .join(" ");
 
   return (
     <div style={style} className="bg-(--pw-surface) text-(--pw-text)">
-      <label htmlFor="password-input" className="block font-medium">
+      <label htmlFor={`${id}-password-input`} className="block font-medium">
         {config.label}
       </label>
       {config.hint.trim() !== "" && (
-        <p id="password-hint" className="mt-0.5 text-sm text-(--pw-muted)">
+        <p id={`${id}-password-hint`} className="mt-0.5 text-sm text-(--pw-muted)">
           {config.hint}
         </p>
       )}
 
       <div className="mt-2 flex gap-2">
         <input
-          id="password-input"
+          id={`${id}-password-input`}
           type={shown ? "text" : "password"}
           value={value}
           autoComplete="new-password"
@@ -185,7 +186,7 @@ export function Password({ config = defaultConfig }: { config?: PasswordConfig }
       )}
 
       {config.showRules && (
-        <ul id="password-rules" className="mt-3 flex list-none flex-col gap-1 p-0 text-sm">
+        <ul id={`${id}-password-rules`} className="mt-3 flex list-none flex-col gap-1 p-0 text-sm">
           {rules.map((rule) => (
             <li key={rule.text} className="flex items-center gap-2">
               <span aria-hidden="true" className={rule.met ? "text-(--pw-good)" : "text-(--pw-muted)"}>

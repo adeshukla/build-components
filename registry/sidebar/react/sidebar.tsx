@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type SidebarItem = { section: string; label: string; href: string; badge: string };
 
@@ -114,6 +114,7 @@ function groupItems(items: SidebarItem[]) {
 }
 
 export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) {
+  const id = useId();
   const sections = groupItems(config.items);
   const [closed, setClosed] = useState<string[]>([]);
   const [drawer, setDrawer] = useState(false);
@@ -164,7 +165,7 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
     <nav aria-label={config.label} className="flex flex-col gap-4">
       {sections.map((section) => {
         const open = !closed.includes(section.name);
-        const id = `sidebar-${section.name.replace(/\W+/g, "-").toLowerCase()}`;
+        const sectionId = `${id}-sidebar-${section.name.replace(/\W+/g, "-").toLowerCase()}`;
         return (
           <div key={section.name}>
             {section.name.trim() !== "" &&
@@ -173,7 +174,7 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
                   <button
                     type="button"
                     aria-expanded={open}
-                    aria-controls={id}
+                    aria-controls={sectionId}
                     onClick={() =>
                       setClosed(open ? [...closed, section.name] : closed.filter((entry) => entry !== section.name))
                     }
@@ -200,7 +201,7 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
 
             {/* A display class beats the hidden attribute, so the class has to go too. */}
             <ul
-              id={id}
+              id={sectionId}
               hidden={config.collapsible && !open}
               className={`list-none flex-col gap-0.5 p-0 ${config.collapsible && !open ? "hidden" : "flex"}`}
             >
@@ -246,7 +247,7 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
           ref={toggleRef}
           type="button"
           aria-expanded={drawer}
-          aria-controls="sidebar-drawer"
+          aria-controls={`${id}-sidebar-drawer`}
           onClick={() => setDrawer(!drawer)}
           className={`flex cursor-pointer items-center gap-2 rounded-(--sb-radius) border border-(--sb-line) px-3 py-2 font-medium ${focus}`}
         >
@@ -256,7 +257,7 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
           {config.toggleText}
         </button>
 
-        <div id="sidebar-drawer" hidden={!drawer} className="mt-2 rounded-(--sb-radius) border border-(--sb-line) p-2">
+        <div id={`${id}-sidebar-drawer`} hidden={!drawer} className="mt-2 rounded-(--sb-radius) border border-(--sb-line) p-2">
           {list}
         </div>
       </div>

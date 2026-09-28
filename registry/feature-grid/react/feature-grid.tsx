@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type FeatureGridConfig = {
   heading: string;
@@ -75,6 +75,7 @@ function safeHref(value: string) {
 }
 
 export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridConfig }) {
+  const id = useId();
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -93,8 +94,8 @@ export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridCo
     config.columns === "four" ? "sm:grid-cols-2 lg:grid-cols-4" : config.columns === "three" ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2";
 
   return (
-    <section style={style} aria-labelledby="features-heading" className="bg-(--fg-surface) text-(--fg-text)">
-      <h2 id="features-heading" className="text-xl font-semibold">
+    <section style={style} aria-labelledby={`${id}-features-heading`} className="bg-(--fg-surface) text-(--fg-text)">
+      <h2 id={`${id}-features-heading`} className="text-xl font-semibold">
         {config.heading}
       </h2>
       {config.intro.trim() !== "" && <p className="mt-1 max-w-prose text-(--fg-muted)">{config.intro}</p>}

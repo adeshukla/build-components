@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 
 export type MenuItem = { label: string; href: string };
 
@@ -84,6 +92,7 @@ export function Menu({
   /** Called with the item's label when one is picked, so the page can act on it. */
   onChoose?: (label: string) => void;
 }) {
+  const id = useId();
   const items = config.items.filter((item) => item.label.trim() !== "");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -187,7 +196,7 @@ export function Menu({
         type="button"
         aria-haspopup="true"
         aria-expanded={open}
-        aria-controls="menu-list"
+        aria-controls={`${id}-menu-list`}
         onClick={() => (open ? setOpen(false) : openMenu(0))}
         onKeyDown={(event) => {
           if (event.key === "ArrowDown") {
@@ -217,7 +226,7 @@ export function Menu({
       </button>
 
       <div
-        id="menu-list"
+        id={`${id}-menu-list`}
         role="menu"
         aria-label={config.buttonText}
         hidden={!open}

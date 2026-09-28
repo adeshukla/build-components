@@ -7,7 +7,24 @@ import { expect, test, type Page } from "@playwright/test";
  * The pages around those components had never been checked at all — which is how the editor ended up
  * with a 20px "Reset all" on a phone while every part inside it was 44px.
  */
-const pages = ["/", "/parts", "/in-use", "/tested", "/start", "/about", "/accessibility", "/date-picker"];
+/*
+ * The site, plus the four part pages whose option panels are the biggest: every part page is the
+ * same template, so what differs between them is the schema the panel is built from.
+ */
+const pages = [
+  "/",
+  "/parts",
+  "/in-use",
+  "/tested",
+  "/start",
+  "/about",
+  "/accessibility",
+  "/date-picker",
+  "/mega-menu",
+  "/cart",
+  "/form",
+  "/footer",
+];
 const widths = [375, 768, 1280];
 
 async function problemsOn(page: Page, viewport: number) {

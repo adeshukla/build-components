@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type AccordionItem = { title: string; content: string };
 
@@ -72,6 +72,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function Accordion({ config = defaultConfig }: { config?: AccordionConfig }) {
+  const id = useId();
   const items = config.items.filter((item) => item.title.trim() !== "");
   const [open, setOpen] = useState<number[]>(config.openFirst && items.length > 0 ? [0] : []);
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -117,9 +118,9 @@ export function Accordion({ config = defaultConfig }: { config?: AccordionConfig
             <Heading className="m-0">
               <button
                 type="button"
-                id={`accordion-button-${index}`}
+                id={`${id}-accordion-button-${index}`}
                 aria-expanded={expanded}
-                aria-controls={`accordion-panel-${index}`}
+                aria-controls={`${id}-accordion-panel-${index}`}
                 onClick={() => toggle(index)}
                 className="flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-4 text-left text-base font-medium hover:bg-(--ac-sunk) focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--ac-accent-text)"
               >
@@ -137,9 +138,9 @@ export function Accordion({ config = defaultConfig }: { config?: AccordionConfig
               </button>
             </Heading>
             <div
-              id={`accordion-panel-${index}`}
+              id={`${id}-accordion-panel-${index}`}
               role="region"
-              aria-labelledby={`accordion-button-${index}`}
+              aria-labelledby={`${id}-accordion-button-${index}`}
               hidden={!expanded}
               className="px-4 pb-4 text-pretty text-(--ac-muted)"
             >

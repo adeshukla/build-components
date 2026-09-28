@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 
 export type PopoverConfig = {
   triggerText: string;
@@ -85,6 +93,7 @@ function safeHref(value: string) {
 }
 
 export function Popover({ config = defaultConfig }: { config?: PopoverConfig }) {
+  const id = useId();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -149,7 +158,7 @@ export function Popover({ config = defaultConfig }: { config?: PopoverConfig }) 
         ref={triggerRef}
         type="button"
         aria-expanded={open}
-        aria-controls="popover-panel"
+        aria-controls={`${id}-popover-panel`}
         onClick={() => setOpen(!open)}
         className={`cursor-pointer rounded-(--pv-radius) border border-(--pv-line) px-3 py-2 font-medium ${focus}`}
       >
@@ -158,7 +167,7 @@ export function Popover({ config = defaultConfig }: { config?: PopoverConfig }) 
 
       <div
         ref={panelRef}
-        id="popover-panel"
+        id={`${id}-popover-panel`}
         // A dialog role tells a screen reader that focus has moved somewhere new.
         role="dialog"
         aria-label={config.heading}

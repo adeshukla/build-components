@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type CartLine = { name: string; variant: string; price: string; quantity: string };
 
@@ -102,6 +102,7 @@ const count = (value: string) => Math.min(99, Math.max(1, Math.round(amount(valu
 const money = (value: number, currency: CartConfig["currency"]) => `${symbols[currency]}${value.toFixed(2)}`;
 
 export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
+  const id = useId();
   const [lines, setLines] = useState(() =>
     config.lines
       .filter((line) => line.name.trim() !== "")
@@ -167,7 +168,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
   const body = (
     <div className="flex h-full flex-col gap-5 bg-(--ct-surface) text-(--ct-text)">
       <div className="flex items-baseline justify-between gap-4">
-        <h2 id="cart-title" className="text-xl font-semibold">
+        <h2 id={`${id}-cart-title`} className="text-xl font-semibold">
           {config.title}
         </h2>
         <p className="text-sm text-(--ct-muted)">
@@ -306,7 +307,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
 
   if (config.layout === "panel") {
     return (
-      <section aria-labelledby="cart-title" style={style} className="rounded-(--ct-radius) border border-(--ct-line) bg-(--ct-surface) p-5">
+      <section aria-labelledby={`${id}-cart-title`} style={style} className="rounded-(--ct-radius) border border-(--ct-line) bg-(--ct-surface) p-5">
         {body}
       </section>
     );
@@ -324,7 +325,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
 
       <dialog
         ref={dialogRef}
-        aria-labelledby="cart-title"
+        aria-labelledby={`${id}-cart-title`}
         onClose={() => setOpen(false)}
         onMouseDown={(event) => {
           // Clicking the backdrop closes; clicking inside must not steal focus from the drawer.

@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   useSyncExternalStore,
@@ -199,6 +200,7 @@ function parse(data: string): unknown {
 }
 
 export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
+  const id = useId();
   const fields = config.fields
     .split(",")
     .map((field) => field.trim())
@@ -303,7 +305,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
 
   const panel = (
     <div className="flex flex-col gap-2">
-      <label htmlFor="search-input" className={dialog ? "sr-only" : "font-medium"}>
+      <label htmlFor={`${id}-search-input`} className={dialog ? "sr-only" : "font-medium"}>
         {config.label}
       </label>
       <div className="relative">
@@ -320,13 +322,13 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
         </svg>
         <input
           ref={inputRef}
-          id="search-input"
+          id={`${id}-search-input`}
           type="search"
           role="combobox"
           aria-expanded={query.trim() !== ""}
-          aria-controls="search-results"
+          aria-controls={`${id}-search-results`}
           aria-autocomplete="list"
-          aria-activedescendant={order[active] ? `search-result-${active}` : undefined}
+          aria-activedescendant={order[active] ? `${id}-search-result-${active}` : undefined}
           placeholder={config.placeholder}
           value={query}
           autoComplete="off"
@@ -348,7 +350,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
       )}
 
       <div
-        id="search-results"
+        id={`${id}-search-results`}
         role="listbox"
         aria-label={`${config.label}, results`}
         hidden={results.length === 0}
@@ -366,7 +368,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
               return (
                 <div
                   key={`${entry.path.join("/")}/${entry.title}`}
-                  id={`search-result-${index}`}
+                  id={`${id}-search-result-${index}`}
                   role="option"
                   aria-selected={index === active}
                   onMouseDown={(event) => {

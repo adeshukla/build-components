@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type HowItWorksConfig = {
   heading: string;
@@ -68,6 +68,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function HowItWorks({ config = defaultConfig }: { config?: HowItWorksConfig }) {
+  const id = useId();
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -86,8 +87,8 @@ export function HowItWorks({ config = defaultConfig }: { config?: HowItWorksConf
   const across = config.layout === "across";
 
   return (
-    <section style={style} aria-labelledby="how-heading" className="bg-(--hw-surface) text-(--hw-text)">
-      <h2 id="how-heading" className="text-xl font-semibold">
+    <section style={style} aria-labelledby={`${id}-how-heading`} className="bg-(--hw-surface) text-(--hw-text)">
+      <h2 id={`${id}-how-heading`} className="text-xl font-semibold">
         {config.heading}
       </h2>
       {config.intro.trim() !== "" && <p className="mt-1 max-w-prose text-(--hw-muted)">{config.intro}</p>}
