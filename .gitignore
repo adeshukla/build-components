@@ -51,3 +51,4 @@ next-env.d.ts
 
 # Test logs from a session, not part of the project.
 scratchpad/*.log
+scratchpad/*.html

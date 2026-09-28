@@ -53,7 +53,11 @@ function nameFor(path: string) {
 test.describe("the catalogue page", () => {
   test("lists every part, not just the first few", async ({ page }) => {
     await ready(page, "/parts");
-    // The home page shows eight behind a button; this page shows the lot, so there is no button.
+    /*
+     * The home page shows the first eight and links here for the rest. It used to carry a "Show all"
+     * button of its own as well, directly above that link — two buttons for one idea — so neither
+     * page has one now, and this is the guard against it coming back.
+     */
     await expect(page.getByRole("button", { name: /^Show all / })).toHaveCount(0);
     const cards = page.getByRole("listitem");
     expect(await cards.count()).toBeGreaterThan(100);
