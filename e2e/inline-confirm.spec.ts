@@ -73,13 +73,19 @@ for (const target of targets("inline-confirm")) {
       await open(page, target.url("default"));
       const row = page.getByRole("listitem");
       const name = page.locator("[data-name], li > span").first();
-      const before = await name.boundingBox();
+      /*
+       * Measured against the document, not the viewport: focus moves to the cancel answer when the
+       * question appears, and scrolling that into view would look like the layout moving.
+       */
+      const whereIsTheName = () =>
+        name.evaluate((node) => Math.round(node.getBoundingClientRect().top + window.scrollY));
+
+      const before = await whereIsTheName();
       const idle = (await row.boundingBox())?.height ?? 0;
       await start(page).click();
-      const after = await name.boundingBox();
       // The thing being acted on stays exactly where it was: on a narrow screen the question wraps
       // below it rather than squeezing it, so the row grows downwards and never upwards.
-      expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThan(2);
+      expect(Math.abs((await whereIsTheName()) - before)).toBeLessThan(2);
       expect((await row.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(idle);
     });
 

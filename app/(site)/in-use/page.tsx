@@ -55,7 +55,7 @@ export default function InUsePage() {
             screen, and you can check both in about a minute.
           </p>
           <p className="mt-3">
-            <Link href="/parts" className="font-medium underline decoration-2 underline-offset-4">
+            <Link href="/parts" className="inline-flex min-h-6 items-center font-medium underline decoration-2 underline-offset-4">
               Browse all the parts
             </Link>
           </p>

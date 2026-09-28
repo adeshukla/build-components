@@ -165,7 +165,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
           type="button"
           onClick={onResetAll}
           disabled={changedCount === 0}
-          className="cursor-pointer font-semibold text-link underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-ink-muted disabled:no-underline"
+          className="inline-flex min-h-11 cursor-pointer items-center font-semibold text-link underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-ink-muted disabled:no-underline"
         >
           Reset all
         </button>

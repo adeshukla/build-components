@@ -46,8 +46,43 @@ async function problemsOn(page: Page, width: number) {
       // A control wrapped in its label is pressed through the label, so that is the target to
       // measure — this is how a visually hidden file input with a styled button works.
       const target = element.matches("input") ? (element.closest("label") ?? element) : element;
-      const size = target.getBoundingClientRect();
-      if (pressable && (size.width < 24 || size.height < 24) && !seen.has(`small${name}`)) {
+      /*
+       * A card whose title link carries an ::after at inset 0 is pressed anywhere on the card — that
+       * overlay is the activation area, so the text is not the target. Measure what a thumb can hit.
+       */
+      const spread = ["::after", "::before"].some((part) => {
+        const pseudo = getComputedStyle(element, part);
+        return pseudo.position === "absolute" && pseudo.content !== "none" && pseudo.inset !== "auto";
+      });
+      let measured: Element = target;
+      if (spread) {
+        for (let node = element.parentElement; node; node = node.parentElement) {
+          if (getComputedStyle(node).position !== "static") {
+            measured = node;
+            break;
+          }
+        }
+      }
+      const size = measured.getBoundingClientRect();
+
+      /*
+       * WCAG 2.5.8 exempts two things, and without them this check reports parts that are right.
+       *
+       * Not displayed: a skip link is clipped to a pixel until it takes focus. The rule is about
+       * targets that are presented; measuring the hidden state would force it to be visible, which is
+       * the opposite of what a skip link is.
+       */
+      const hidden = style.clipPath !== "none" || style.clip !== "auto";
+      /*
+       * Inline: "the target is in a sentence, or its size is otherwise constrained by the line-height
+       * of non-target text". A link in running prose cannot be 24px tall without pushing the lines of
+       * the paragraph apart, so the standard does not ask it to be.
+       */
+      const inSentence =
+        style.display === "inline" &&
+        (target.parentElement?.textContent ?? "").trim().length > (target.textContent ?? "").trim().length;
+
+      if (pressable && !hidden && !inSentence && (size.width < 24 || size.height < 24) && !seen.has(`small${name}`)) {
         seen.add(`small${name}`);
         found.push(`${name} is ${Math.round(size.width)}x${Math.round(size.height)}, under the 24px minimum`);
       }

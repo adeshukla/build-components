@@ -50,7 +50,20 @@
 .dl-value { font-weight: 500; }
 /* An empty value says so, rather than leaving a gap nobody can read. */
 .dl-value--empty { color: var(--dl-muted); font-style: italic; font-weight: 400; }
-.dl-edit { border-radius: 0.25rem; color: var(--dl-accent-text); font-size: 0.875rem; text-decoration: underline; text-underline-offset: 2px; }
+/*
+ * A standalone action in a row, not a word in a sentence, so it needs a real target: 24px is the
+ * minimum WCAG 2.5.8 asks for anything that is not inline text.
+ */
+.dl-edit {
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: center;
+  border-radius: 0.25rem;
+  color: var(--dl-accent-text);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .dl-edit:focus-visible { outline: 2px solid var(--dl-accent-text); outline-offset: 2px; }
 
 .dl-sr {

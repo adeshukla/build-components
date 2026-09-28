@@ -37,11 +37,16 @@
 
 .icf-list { margin: 0; padding: 0; list-style: none; }
 
-/* The row keeps its height whichever state it is in, so nothing moves out from under a pointer. */
+/*
+ * The name and the delete button keep their exact position when the question appears: the row only
+ * ever grows downwards. align-content matters — without it the spare height of a one-line row is
+ * shared out, and the first line rises the moment a second one wraps under it.
+ */
 .icf-row {
   display: flex;
   min-height: 4rem;
   flex-wrap: wrap;
+  align-content: flex-start;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
@@ -50,6 +55,9 @@
   border-bottom: 1px solid var(--icf-line);
 }
 .icf-row:focus-visible { outline: 2px solid var(--icf-accent-text); outline-offset: 2px; }
+/* As tall as the buttons beside it: the delete button leaves the line when the question appears,
+   and without this the name would rise to meet the shorter line. */
+.icf-name { display: inline-flex; min-height: 2.75rem; align-items: center; }
 .icf-name[data-gone="true"] { color: var(--icf-muted); text-decoration: line-through; }
 
 .icf-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }

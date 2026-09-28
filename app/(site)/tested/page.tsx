@@ -122,7 +122,7 @@ export default function TestedPage() {
             stays on it — emulation is not a device.
           </p>
           <p className="mt-4">
-            <Link href="/accessibility" className="font-medium underline decoration-2 underline-offset-4">
+            <Link href="/accessibility" className="inline-flex min-h-6 items-center font-medium underline decoration-2 underline-offset-4">
               The accessibility statement
             </Link>
           </p>

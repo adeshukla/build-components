@@ -112,7 +112,8 @@ export function DetailsList({ config = defaultConfig }: { config?: DetailsListCo
               {row.href.trim() !== "" && (
                 <a
                   href={safeHref(row.href)}
-                  className="rounded text-sm text-(--dl-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dl-accent-text)"
+                  // A standalone action in a row, not a word in a sentence, so it needs a real 24px target.
+                  className="inline-flex min-h-6 items-center rounded text-sm text-(--dl-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dl-accent-text)"
                 >
                   {config.editText}
                   {/* Five identical "Change" links are useless in a list of links: name the row. */}

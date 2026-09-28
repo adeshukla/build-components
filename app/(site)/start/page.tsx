@@ -40,8 +40,8 @@ export default function StartPage() {
           into your project, and after that it is yours — including the bits you disagree with.
         </p>
 
-        <div className="mt-14 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-          <div className="grid gap-12">
+        <div className="mt-14 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 [&>*]:min-w-0">
+          <div className="grid gap-12 [&>*]:min-w-0">
             <section aria-labelledby="two-ways">
               <h2 id="two-ways" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
                 Two ways in
@@ -140,7 +140,7 @@ export default function StartPage() {
                 undecided rather than permissive — ask first if you are putting it in something you ship.
               </p>
               <p className="mt-3">
-                <Link href="/about" className="font-medium underline decoration-2 underline-offset-4">
+                <Link href="/about" className="inline-flex min-h-6 items-center font-medium underline decoration-2 underline-offset-4">
                   How to ask
                 </Link>
               </p>

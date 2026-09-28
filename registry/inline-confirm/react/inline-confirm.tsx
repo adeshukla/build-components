@@ -117,13 +117,24 @@ export function InlineConfirm({ config = defaultConfig }: { config?: InlineConfi
   return (
     <div ref={root} style={style} className="bg-(--icf-surface) text-(--icf-text)">
       <ul className="m-0 list-none p-0">
-        {/* The row keeps its height whichever state it is in, so nothing moves out from under a pointer. */}
+        {/*
+          The name and the delete button keep their exact position when the question appears: the row
+          only ever grows downwards. content-start matters — without it the spare height of a one-line
+          row is shared out, and the first line rises the moment a second one wraps under it.
+        */}
         <li
           data-row
           tabIndex={-1}
-          className="flex min-h-16 flex-wrap items-center justify-between gap-3 border-y border-(--icf-line) px-1 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--icf-accent-text)"
+          className="flex min-h-16 flex-wrap content-start items-center justify-between gap-3 border-y border-(--icf-line) px-1 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--icf-accent-text)"
         >
-          <span data-name className={gone ? "text-(--icf-muted) line-through" : ""}>{config.itemLabel}</span>
+          {/* As tall as the buttons beside it: the delete button leaves the line when the question
+              appears, and without this the name would rise to meet the shorter line. */}
+          <span
+            data-name
+            className={`inline-flex min-h-11 items-center ${gone ? "text-(--icf-muted) line-through" : ""}`}
+          >
+            {config.itemLabel}
+          </span>
 
           {!asking && !gone && (
             <button

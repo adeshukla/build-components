@@ -49,7 +49,7 @@ export function HeaderNav() {
             href={link.href}
             onClick={() => setOpen(false)}
             aria-current={pathname === link.href ? "page" : undefined}
-            className="block rounded px-3 py-2 text-silk-muted transition-colors hover:bg-board-raised hover:text-silk"
+            className="flex min-h-11 items-center rounded px-3 text-silk-muted transition-colors hover:bg-board-raised hover:text-silk"
           >
             {link.label}
           </Link>
@@ -66,7 +66,7 @@ export function HeaderNav() {
         aria-expanded={open}
         aria-controls="site-menu"
         onClick={() => setOpen(!open)}
-        className="ml-auto flex items-center gap-2 rounded-md border border-board-line px-2.5 py-1.5 text-sm text-silk transition-colors hover:bg-board-raised sm:hidden"
+        className="ml-auto flex min-h-11 items-center gap-2 rounded-md border border-board-line px-3 text-sm text-silk transition-colors hover:bg-board-raised sm:hidden"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
           {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}

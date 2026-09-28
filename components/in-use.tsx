@@ -282,13 +282,17 @@ export function InUse() {
                 <p className="max-w-lg text-sm text-pretty text-ink-muted">{screen.blurb}</p>
               </div>
 
-              {/* 24px tall and spaced: a row of small links is the easiest way to fail WCAG 2.5.8. */}
+              {/*
+                24px tall and spaced: a row of small links is the easiest way to fail WCAG 2.5.8.
+                Wide enough too — "FAQ" is 22px of text — with the padding taken back out of the
+                margin, so the gaps look exactly as they did.
+              */}
               <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs text-ink-muted">
                 {screen.parts.map((slug) => (
                   <Link
                     key={slug}
                     href={`/${slug}`}
-                    className="inline-flex min-h-6 items-center underline-offset-2 hover:underline"
+                    className="-mx-1 inline-flex min-h-6 items-center px-1 underline-offset-2 hover:underline"
                   >
                     {partBySlug(slug).name}
                   </Link>

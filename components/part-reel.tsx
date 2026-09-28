@@ -151,7 +151,7 @@ export function PartReel() {
           <span>{running ? "Moving on its own — hover or focus to hold it" : "Held. Arrow keys move between parts"}</span>
           <Link
             href={`/${current.slug}`}
-            className="rounded text-silk underline decoration-pad decoration-2 underline-offset-4 hover:text-pad focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad"
+            className="inline-flex min-h-6 items-center rounded text-silk underline decoration-pad decoration-2 underline-offset-4 hover:text-pad focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad"
           >
             {`Open ${current.name.toLowerCase()}`}
           </Link>
