@@ -36,7 +36,15 @@ phone and that some of it lacked what the desktop had. Both were true.
 ### Test state (session 12)
 - `site-layout` (114), `home`, `unique-ids` (121 parts, two copies of each on one page), `editor` on
   chromium (127), and every spec touched by the id change (1,005 across the three browsers) are green.
-- **The whole sweep — 8,304 tests — was still running when this was written.** Its result goes here.
+- **The whole sweep ran end to end for the first time: 8,304 tests, 7,777 passed, 524 skipped, 3
+  failed.** That is the verification session 11 left outstanding.
+  - One was real, and mine: making Get started stop scrolling sideways turned its install command
+    into a block that scrolls instead — and a region you can only reach by dragging is no use to a
+    keyboard (axe `scrollable-region-focusable`). It takes focus now. The fix is the answer to the
+    fix; the sideways scroll was the worse of the two.
+  - One was a Windows worker crash (`code=3221226505`) that took a team-grid test with it.
+  - One was a WebKit drag landing a sortable item one place out.
+  - All three suites pass on a rerun: 255 tests green.
 
 ### The count
 The catalogue is **125 parts**, all in stock. Session 11's note of 126 was one out; `lib/parts.ts` and

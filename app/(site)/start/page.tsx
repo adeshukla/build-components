@@ -14,7 +14,15 @@ export const metadata: Metadata = {
 /** One shell block. Tagged so the page's own copy button has something to point at. */
 function Command({ children }: { children: string }) {
   return (
-    <pre className="mt-3 overflow-x-auto rounded-lg border border-rule bg-board px-4 py-3 font-mono text-sm text-silk">
+    /*
+      Focusable, because on a phone this block is the thing that scrolls: the command is one long
+      unbreakable word. A region you can only reach by dragging it is no use to a keyboard.
+    */
+    <pre
+      tabIndex={0}
+      aria-label="Command, scrollable"
+      className="mt-3 overflow-x-auto rounded-lg border border-rule bg-board px-4 py-3 font-mono text-sm text-silk focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad"
+    >
       <code>{children}</code>
     </pre>
   );
