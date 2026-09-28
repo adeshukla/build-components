@@ -105,8 +105,14 @@ test("the reel holds still while it is being used", async ({ page }) => {
   await page.goto("/");
   const reel = page.getByRole("tablist", { name: "Parts you can try here" });
   await reel.getByRole("tab", { name: /Switch/ }).click();
+  /*
+   * And it stays held with the pointer nowhere near it: a phone cannot hover, and Safari does not
+   * focus a button when it is tapped, so a hold that depends on either leaves a phone with a reel
+   * that swaps the part out from under whoever is trying it.
+   */
+  await page.mouse.move(0, 0);
   await expect(page.getByText(/Held\./)).toBeVisible();
-  // Nine seconds is the hold; it must not move on while the pointer is on it.
+  // Nine seconds is the hold; it must not move on.
   await page.waitForTimeout(3000);
   await expect(reel.getByRole("tab", { name: /Switch/ })).toHaveAttribute("aria-selected", "true");
 });

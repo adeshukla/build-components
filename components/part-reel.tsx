@@ -73,7 +73,13 @@ export function PartReel() {
     return () => watcher.disconnect();
   }, []);
 
-  const running = onScreen && !paused && !still;
+  /*
+   * A touch screen cannot hover, and Safari does not focus a button when it is tapped — so on a phone
+   * neither of the two holds below ever happens, and the reel would swap the part out from under
+   * someone in the middle of trying it. The first touch or click holds it for good.
+   */
+  const [held, setHeld] = useState(false);
+  const running = onScreen && !paused && !still && !held;
   useEffect(() => {
     if (!running) return;
     const timer = window.setInterval(() => setAt((current) => (current + 1) % slides.length), HOLD);
@@ -101,6 +107,7 @@ export function PartReel() {
   return (
     <div
       ref={rootRef}
+      onPointerDown={() => setHeld(true)}
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -148,7 +155,7 @@ export function PartReel() {
         </div>
 
         <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-silk-muted">
-          <span>{running ? "Moving on its own — hover or focus to hold it" : "Held. Arrow keys move between parts"}</span>
+          <span>{running ? "Moving on its own — touch it, hover it or focus it to hold" : "Held. Arrow keys move between parts"}</span>
           <Link
             href={`/${current.slug}`}
             className="inline-flex min-h-6 items-center rounded text-silk underline decoration-pad decoration-2 underline-offset-4 hover:text-pad focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad"

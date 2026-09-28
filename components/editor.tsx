@@ -27,10 +27,15 @@ type Props = {
 
 type Output = "react" | "vanilla";
 
+/*
+ * Only ever narrower than the bench, never wider, so this works on a phone too — where 320 is the
+ * width WCAG 1.4.10 asks a page to survive, and the one worth checking a part at.
+ */
 const widths = [
+  { value: "320px", label: "320" },
   { value: "375px", label: "Phone" },
   { value: "768px", label: "Tablet" },
-  { value: "100%", label: "Desktop" },
+  { value: "100%", label: "Full" },
 ];
 
 const subscribeNever = () => () => {};
@@ -110,8 +115,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
                   ]}
                 />
               </div>
-              {/* On a phone you are already at phone width, so the switcher would only take room. */}
-              <div className="hidden w-64 max-w-full sm:block">
+              <div className="w-full max-w-full sm:w-72">
                 <Segmented
                   name={`${idBase}-width`}
                   legend={<span className="text-sm">Screen width</span>}
