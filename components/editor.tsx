@@ -181,17 +181,27 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
 
         {/* Take it home */}
         <section aria-labelledby={`${idBase}-code-heading`} className="overflow-hidden rounded-lg border border-rule bg-paper">
-          <div className="p-4">
-            <h2 id={`${idBase}-code-heading`} className="font-display text-2xl leading-none font-semibold uppercase">
-              Take it home
-            </h2>
-            <p className="mt-1 text-sm text-pretty text-ink-muted">
-              {output === "react"
-                ? "React + Tailwind CSS v4: install with one command, or copy the file. Your options are already in it."
-                : js === ""
-                  ? "Plain HTML and CSS, no JavaScript at all. Paste the markup, ship the stylesheet."
-                  : "Three plain files and no library. The HTML file shows where the CSS and JS go."}
-            </p>
+          <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 p-4">
+            <div>
+              <h2 id={`${idBase}-code-heading`} className="font-display text-2xl leading-none font-semibold uppercase">
+                Take it home
+              </h2>
+              <p className="mt-1 text-sm text-pretty text-ink-muted">
+                {output === "react"
+                  ? "React + Tailwind CSS v4: install with one command, or copy the file. Your options are already in it."
+                  : js === ""
+                    ? "Plain HTML and CSS, no JavaScript at all. Paste the markup, ship the stylesheet."
+                    : "Three plain files and no library. The HTML file shows where the CSS and JS go."}
+              </p>
+            </div>
+            {/* Every file at once, as the one page they make: paste it into a file and it runs. */}
+            {output === "vanilla" && (
+              <CopyButton
+                text={() => onePage(html, sources.css, js)}
+                label={`Copy all ${files.length === 3 ? "three" : "two"} as one page`}
+                doneLabel="The whole page is on the clipboard"
+              />
+            )}
           </div>
           <TabList label="Code" idBase={`${idBase}-code`} value={activeCode} onChange={setCodeTab} tabs={codeTabs} />
           <div {...tabPanelProps(`${idBase}-code`, activeCode)}>
@@ -292,6 +302,20 @@ function VanillaFrame({ title, srcDoc }: { title: string; srcDoc: string }) {
 /** Preview only, never exported: reports the height of the page's content (not of the frame). */
 const reportHeight = `<script>(function(){function send(){var b=document.body,bottom=0;for(var i=0;i<b.children.length;i++){var c=b.children[i];if(c.tagName==="SCRIPT"||getComputedStyle(c).position==="fixed")continue;bottom=Math.max(bottom,c.getBoundingClientRect().bottom+window.scrollY)}parent.postMessage({type:"vanilla-height",height:Math.ceil(bottom+parseFloat(getComputedStyle(b).paddingBottom))},"*")}var o=new ResizeObserver(send);for(var i=0;i<document.body.children.length;i++)o.observe(document.body.children[i]);send()})()</script>`;
 
+/**
+ * The exported files as the single page they add up to: the same markup, with the stylesheet and the
+ * script written in where the two tags pointed at them. Nothing is added that was not exported.
+ */
+function onePage(html: string, css: string, js: string) {
+  return html
+    .replace(/ *<link rel="stylesheet" href="[^"]+">/, () => `    <style>
+${css}
+    </style>`)
+    .replace(/ *<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `    <script>
+${js}
+    </script>`));
+}
+
 /** Inlines the exported CSS and JS into the exported HTML page, so the frame runs the real files. */
 function vanillaDocument(html: string, css: string, js: string, dark: boolean, bleed: boolean) {
   const page = dark ? "background:#141019;color:#f6f5fa" : "background:#ffffff;color:#16121f";
@@ -367,12 +391,22 @@ function CopyButton({
   doneLabel: string;
   tone?: "paper" | "board";
 }) {
-  const [copied, setCopied] = useState(false);
+  const [said, setSaid] = useState<"" | "done" | "failed">("");
 
   async function copy() {
-    await navigator.clipboard.writeText(text());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const value = text();
+    try {
+      await navigator.clipboard.writeText(value);
+      setSaid("done");
+    } catch {
+      /*
+       * There is no clipboard API at all on a page served over plain http — which is what you get
+       * opening the dev server from a phone on the same network — and it can be refused anywhere.
+       * The old selection copy still works in both cases.
+       */
+      setSaid(oldWayCopy(value) ? "done" : "failed");
+    }
+    setTimeout(() => setSaid(""), 2500);
   }
 
   return (
@@ -387,7 +421,7 @@ function CopyButton({
         }
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
-          {copied ? (
+          {said === "done" ? (
             <path d="m5 12 5 5L20 7" />
           ) : (
             <>
@@ -396,13 +430,31 @@ function CopyButton({
             </>
           )}
         </svg>
-        {copied ? "Copied" : label}
+        {said === "done" ? "Copied" : said === "failed" ? "Press Ctrl+C instead" : label}
       </button>
       <span aria-live="polite" className="sr-only">
-        {copied ? doneLabel : ""}
+        {said === "done" ? doneLabel : said === "failed" ? "The browser refused the clipboard. Select the text and copy it by hand." : ""}
       </span>
     </>
   );
+}
+
+/** The pre-clipboard-API copy: a field off the side of the page, selected and copied. */
+function oldWayCopy(value: string) {
+  const field = document.createElement("textarea");
+  field.value = value;
+  field.readOnly = true;
+  field.style.cssText = "position:fixed;top:0;left:-9999px";
+  document.body.append(field);
+  field.select();
+  let done = false;
+  try {
+    done = document.execCommand("copy");
+  } catch {
+    done = false;
+  }
+  field.remove();
+  return done;
 }
 
 function KeyboardMap({ rows }: { rows: KeyboardRow[] }) {

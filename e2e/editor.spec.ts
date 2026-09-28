@@ -55,3 +55,23 @@ test("cookie preferences save inside the sandboxed HTML/CSS/JS frame", async ({ 
   await expect(frame.getByRole("button", { name: "Cookie settings" })).toBeFocused();
   expect(errors).toEqual([]);
 });
+
+test("copy all three gives one page that runs on its own", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/date-picker");
+  await page.locator('input[value="vanilla"]').check({ force: true });
+  await page.getByRole("button", { name: /^Copy all three/ }).click();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+
+  // Nothing left pointing at a file that is not there, and everything written in instead.
+  expect(copied).not.toContain('<link rel="stylesheet"');
+  expect(copied).not.toContain("<script src=");
+  expect(copied).toContain(".dp-");
+  expect(copied).toContain("function");
+
+  // And it is a page: put it in a browser as it is, and the component works.
+  const loose = await context.newPage();
+  await loose.setContent(copied);
+  await loose.getByRole("button", { name: "Choose date" }).click();
+  await expect(loose.getByRole("dialog")).toBeVisible();
+});

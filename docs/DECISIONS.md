@@ -446,3 +446,30 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 - `aria-hidden` does not excuse a contrast failure — contrast is a visual requirement, and axe is right to flag HTML text whatever the accessibility tree says. The deliberately failing samples are drawn as SVG text instead, which is what they always were in spirit.
 
 **Also:** six of the parts written this session hard-coded an element id, which collides the moment two of them share a page. Those now use `useId`. About twenty older parts still hard-code theirs; that is recorded in PROGRESS as the next thing to do rather than fixed quietly in the same commit.
+
+## 2026-09-28 — D67. The site is held to the target sizes its parts are
+**Decision:** `e2e/site-layout.spec.ts` runs the same layout and target-size checks over the site's own pages that `e2e/layout.spec.ts` runs over every exported part, at 375, 768 and 1280.
+**Why:** Adesh said things were not working on a phone. The parts were all checked; the site around them never had been, which is how the editor ended up with a 20px "Reset all" on a phone while every part inside it was 44px.
+**Both checks also had to learn what a target is:**
+- A card whose title link carries an `::after` at `inset: 0` is pressed anywhere on the card. The measured target is the positioned ancestor, not the text — without that, the catalogue reported 126 failures that were all correct.
+- WCAG 2.5.8 exempts a target that is not displayed (a skip link clipped to a pixel until it takes focus) and one whose size is set by the line-height of the sentence it sits in. Both are now modelled, which removed 72 failures that were the standard working as intended.
+
+**What it found, all real, all on a phone:** "Reset all" at 58x20; the header's menu button at 34px and its links at 36px; the reel's link into a part at 16px; three standalone paragraph links at 21px; "FAQ" 22px wide in the `/in-use` part list; and Get started scrolling sideways, because a grid item is `min-width: auto` and the unbreakable install command inside its scrollable block stretched the column to 679px.
+
+## 2026-09-28 — D68. Two things a phone could not do at all
+**Decision:** the reel is held by the first touch or click, not only by hover and focus; and the test bench's screen-width switcher is shown at every width, with a 320 choice added.
+**Why:** a touch screen cannot hover, and Safari does not focus a button when it is tapped — so on a phone the reel kept moving and swapped the part out from under whoever was trying it. And the switcher was hidden below 640px, on the one device where you cannot resize the window. It only ever makes the bench narrower, so it does the same job on a phone as on a desktop; 320 is the width WCAG 1.4.10 asks a page to survive.
+
+## 2026-09-28 — D69. Every element id belongs to its own copy of the part
+**Decision:** every hard-coded id in the React output is prefixed with `useId()`, and `e2e/unique-ids.spec.ts` renders two of every part on one page and fails on a repeated id.
+**Why:** an id is a page-wide address. Two copies sharing one means every `aria-labelledby`, `aria-controls` and `<label for>` resolves to the first — a label naming the wrong field, a button opening the other one's menu. `/in-use` puts seven parts on a page, which makes two of a part an ordinary thing to want.
+**Details:**
+- Ids built out of content are the same bug: `accordion-button-0`, `tabs-tab-0`, `mega-panel-products`, `sidebar-work`, `kb-to-do`.
+- The form's field **name** stays exactly as it was — it is the name the answer is submitted under. Only the id is prefixed.
+- Four parts are exempt and the spec says why: a skip link's target comes from an option because it has to match the landmark already on your page; a table of contents and a sticky header number the article's headings, which are the fragments a reader copies out of the address bar; a tour is pointed at selectors you give it. Two of a page inside a page is a contradiction, not a bug in the part.
+- The test needed somewhere to render two of a part, so the preview route takes `?twice=1`. Nothing links to it.
+
+## 2026-09-28 — D70. Copying works on a page that is not localhost, and copies the whole thing
+**Decision:** the editor's copy buttons fall back to the old selection copy when `navigator.clipboard` is missing or refused, and say so if even that fails. The HTML/CSS/JS output gets one more button: every file at once, as the single page they add up to.
+**Why:** there is no clipboard API at all on a page served over plain http — which is exactly what you get opening the dev server from a phone on the same network — so every copy button on this site did nothing there, silently. The code-block part already had this fallback; the site around it did not.
+**The one page** is the exported markup with the stylesheet and the script written in where the two tags pointed at them, and nothing else added. `e2e/editor.spec.ts` copies it, loads it into a blank page as it is, and opens the date picker in it.
