@@ -1,8 +1,62 @@
 # Progress
 
-Last updated: 2026-09-28 (session 11)
+Last updated: 2026-09-28 (session 12)
 
-## Current status (session 11)
+## Current status (session 12)
+
+**This session was the phone, and the id collisions.** Adesh said features were not working on a
+phone and that some of it lacked what the desktop had. Both were true.
+
+### What was wrong on a phone, and is not now
+- **Get started scrolled sideways.** A grid item is `min-width: auto`, so the unbreakable install
+  command inside its scrollable block stretched the whole column to 679px on a 375px screen.
+- **The reel could not be held.** It stopped only while hovered or focused; a touch screen cannot
+  hover, and Safari does not focus a button when it is tapped, so it kept moving and swapped the part
+  out from under whoever was trying it. The first touch holds it now.
+- **The screen-width switcher was not there at all** below 640px — on the one device where you cannot
+  resize the window. It is shown everywhere now, with a 320 choice.
+- **Every copy button did nothing** on a page served over plain http, which is what you get opening
+  the dev server from a phone on the same network: there is no clipboard API there. They fall back to
+  the old selection copy, and say so if even that is refused.
+- **Seven targets were under the minimum size**, in the site's own chrome: "Reset all" at 58x20, the
+  header menu at 34px and its links at 36px, the reel's link into a part at 16px, three standalone
+  paragraph links at 21px, and "FAQ" at 22px wide.
+- **Inline confirm's row did move** on a phone after all: the delete button leaves the line when the
+  question appears, and the name rose to meet the shorter line.
+
+### What is new
+- **`e2e/site-layout.spec.ts`** holds the site's own pages to what its parts are held to, at three
+  widths — the check that had never existed (D67). Both it and `layout.spec.ts` now measure the real
+  target (a card pressed through a full-bleed `::after`) and model WCAG 2.5.8's two exceptions.
+- **`e2e/unique-ids.spec.ts`** renders two of every part on one page and fails on a repeated id
+  (D69). Twenty parts hard-coded one; they use `useId()` now.
+- **Copy all three as one page** for the HTML/CSS/JS output (D70), tested by loading what it copies
+  into a blank page and opening the date picker in it.
+
+### Test state (session 12)
+- `site-layout` (114), `home`, `unique-ids` (121 parts, two copies of each on one page), `editor` on
+  chromium (127), and every spec touched by the id change (1,005 across the three browsers) are green.
+- **The whole sweep — 8,304 tests — was still running when this was written.** Its result goes here.
+
+### The count
+The catalogue is **125 parts**, all in stock. Session 11's note of 126 was one out; `lib/parts.ts` and
+`lib/registry.ts` agree on 125, and the pages read the number from `inStock.length` rather than a
+written-down figure.
+
+### Still to do — doesn't need Adesh
+- Configurable UI strings for the date picker and select (button labels, error messages).
+- Screen-reader pass (NVDA) on the parts added in sessions 10 and 11, then fold anything learnt into
+  the checklists.
+- Run the sweep against a production build (`next build && next start`), not only `next dev`.
+
+### Needs Adesh
+1. **A licence for the exported code.** `/start` still says `[TODO: no licence has been chosen]`.
+2. **Deploy.** Nothing has been pushed. The live site is still on session 10 — 88 parts and the old
+   home page. Everything since then is local commits on `main`.
+3. **Manual checks:** the checklists with NVDA and on a real iPhone. Emulation is not a device, and
+   this session was entirely about the things emulation nearly hid.
+
+## Previous status (session 11)
 
 **All fifty parts Adesh asked for are built.** 126 parts in stock, every one tested as a React + Tailwind
 file and as plain HTML, CSS and JavaScript, across chromium, WebKit and an emulated iPhone. The site is
