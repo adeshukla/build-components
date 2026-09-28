@@ -739,6 +739,7 @@ export const components: Record<
     variants: {
       default: "",
       average: "mode=show&value=4.2&countText=128%20ratings&theme=dark",
+      halves: "halfStars=true&value=3.5",
     },
   },
   "segmented": {

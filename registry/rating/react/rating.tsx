@@ -7,6 +7,7 @@ export type RatingConfig = {
   mode: "pick" | "show";
   max: number;
   value: number;
+  halfStars: boolean;
   showValue: boolean;
   countText: string;
   name: string;
@@ -20,6 +21,7 @@ const defaultConfig: RatingConfig = {
   mode: "pick",
   max: 5,
   value: 4,
+  halfStars: false,
   showValue: true,
   countText: "",
   name: "rating",
@@ -69,10 +71,32 @@ function show(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
+const STAR_PATH = "m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z";
+
 function Star({ className = "" }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={`size-7 ${className}`}>
-      <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z" />
+      <path d={STAR_PATH} />
+    </svg>
+  );
+}
+
+/**
+ * One side of a star, for picking half ratings.
+ *
+ * The same path in a window half as wide: the left half shows the first twelve units of it, the right
+ * half the last twelve. Each half is 24px across — the smallest a target may be — which is why a row
+ * of half stars is drawn larger than a row of whole ones.
+ */
+function HalfStar({ side, className = "" }: { side: "left" | "right"; className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox={side === "left" ? "0 0 12 24" : "12 0 12 24"}
+      fill="currentColor"
+      className={`h-12 w-6 ${className}`}
+    >
+      <path d={STAR_PATH} />
     </svg>
   );
 }
@@ -80,7 +104,8 @@ function Star({ className = "" }: { className?: string }) {
 export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
   const id = useId();
   const max = Math.max(2, Math.min(10, Math.round(config.max)));
-  const [picked, setPicked] = useState(Math.min(max, Math.max(0, Math.round(config.value))));
+  const round = (value: number) => (config.halfStars ? Math.round(value * 2) / 2 : Math.round(value));
+  const [picked, setPicked] = useState(Math.min(max, Math.max(0, round(config.value))));
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -93,6 +118,8 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
     "--ra-empty": palette.empty,
   } as CSSProperties;
   const stars = Array.from({ length: max }, (_, index) => index + 1);
+  /** What one star offers: both halves of it, or just the whole. */
+  const steps = (star: number) => (config.halfStars ? [star - 0.5, star] : [star]);
   const count = config.countText.trim();
 
   // Showing an average: one image with the whole thing in its name. Part stars are drawn by
@@ -136,27 +163,39 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
       <fieldset>
         <legend className="font-medium">{config.label}</legend>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <div className="flex">
+          {/* Half stars wrap by whole star, never between the two sides of one. */}
+          <div className="flex flex-wrap">
             {stars.map((star) => (
-              <label key={star} className="cursor-pointer p-0.5">
-                <input
-                  type="radio"
-                  name={config.name || `${id}-rating`}
-                  value={star}
-                  checked={picked === star}
-                  onChange={() => setPicked(star)}
-                  className="peer sr-only"
-                />
-                <span className="sr-only">{star === 1 ? "1 star" : `${star} stars`}</span>
-                <Star
-                  className={`transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--ra-accent-text) motion-reduce:transition-none ${star <= picked ? "text-(--ra-accent)" : "text-(--ra-empty)"}`}
-                />
-              </label>
+              <span key={star} className="inline-flex">
+                {steps(star).map((step) => (
+                  <label key={step} className="cursor-pointer p-0.5">
+                    <input
+                      type="radio"
+                      name={config.name || `${id}-rating`}
+                      value={step}
+                      checked={picked === step}
+                      onChange={() => setPicked(step)}
+                      className="peer sr-only"
+                    />
+                    <span className="sr-only">{step === 1 ? "1 star" : `${show(step)} stars`}</span>
+                    {config.halfStars ? (
+                      <HalfStar
+                        side={step === star ? "right" : "left"}
+                        className={`transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--ra-accent-text) motion-reduce:transition-none ${step <= picked ? "text-(--ra-accent)" : "text-(--ra-empty)"}`}
+                      />
+                    ) : (
+                      <Star
+                        className={`transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--ra-accent-text) motion-reduce:transition-none ${step <= picked ? "text-(--ra-accent)" : "text-(--ra-empty)"}`}
+                      />
+                    )}
+                  </label>
+                ))}
+              </span>
             ))}
           </div>
           {config.showValue && (
             <output className="text-sm font-medium tabular-nums">
-              {picked === 0 ? "Not rated yet" : `${picked} out of ${max}`}
+              {picked === 0 ? "Not rated yet" : `${show(picked)} out of ${max}`}
             </output>
           )}
           {count !== "" && <span className="text-sm text-(--ra-muted)">{count}</span>}

@@ -22,6 +22,15 @@ export const ratingSchema = [
   },
   { key: "max", label: "Stars", group: "Behaviour", type: "number", default: 5, min: 2, max: 10 },
   {
+    key: "halfStars",
+    label: "Half stars",
+    description:
+      "Lets a rating be picked in halves. Each half has to stay 24px across, so the stars are drawn larger.",
+    group: "Behaviour",
+    type: "boolean",
+    default: false,
+  },
+  {
     key: "value",
     label: "Value",
     description: "The starting choice, or the average to show. Averages can have a decimal.",

@@ -365,7 +365,7 @@ export const parts: Part[] = [
     slug: "rating",
     category: "Inputs",
     name: "Rating",
-    summary: "Stars to pick a rating, or an average shown as one figure a screen reader reads in full.",
+    summary: "Stars to pick a rating, in whole or half stars, or an average shown as one figure a screen reader reads in full.",
     pattern: "Radio group / image",
     accent: "#fbbf24",
     status: "in-stock",

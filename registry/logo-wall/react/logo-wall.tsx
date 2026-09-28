@@ -112,11 +112,20 @@ export function LogoWall({ config = defaultConfig }: { config?: LogoWallConfig }
       {/*
         A list, so a screen reader counts them. Each entry is the name in words: a wordmark is a picture
         of a name, and the name is what anyone needs.
+
+        The column count is what to do when there is room for it. Three across a phone gives each name
+        about 90px, which breaks "Tailwind CSS" into three lines — so below the width they fit in, the
+        wall drops to two columns, and then to one.
       */}
       <ul
         aria-labelledby={headingId}
-        className="mt-4 grid list-none items-center gap-4 p-0"
-        style={{ gridTemplateColumns: `repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))` }}
+        className="mt-4 grid list-none items-center gap-4 p-0 [grid-template-columns:repeat(var(--lw-columns),minmax(0,1fr))] max-[34rem]:[grid-template-columns:repeat(var(--lw-columns-narrow),minmax(0,1fr))] max-[22rem]:[grid-template-columns:minmax(0,1fr)]"
+        style={
+          {
+            "--lw-columns": Math.max(config.columns, 1),
+            "--lw-columns-narrow": Math.min(Math.max(config.columns, 1), 2),
+          } as CSSProperties
+        }
       >
         {config.items.map((item, index) => {
           const src = safeUrl(item.src);

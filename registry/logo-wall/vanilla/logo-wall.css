@@ -46,7 +46,23 @@
  * A list, so a screen reader counts them. Each entry is the name in words: a wordmark is a picture of a
  * name, and the name is what anyone needs.
  */
-.lw-list { display: grid; align-items: center; gap: 1rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.lw-list {
+  display: grid;
+  grid-template-columns: repeat(var(--lw-columns, 3), minmax(0, 1fr));
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The chosen number of columns is what to do when there is room for it. */
+@media (max-width: 34rem) {
+  .lw-list { grid-template-columns: repeat(var(--lw-columns-narrow, 2), minmax(0, 1fr)); }
+}
+@media (max-width: 22rem) {
+  .lw-list { grid-template-columns: minmax(0, 1fr); }
+}
 .lw-item {
   display: grid;
   min-height: 4rem;

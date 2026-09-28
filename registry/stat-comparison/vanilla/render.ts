@@ -52,6 +52,13 @@ export function renderStatComparisonMarkup(config: StatComparisonConfig) {
     .join("\n");
 
   return `    <div class="stc stc--theme-${config.theme}" style="${vars}">
+      <!--
+        Three columns do not fit on a phone, and squeezing them breaks the words up a letter or two at
+        a time. Below the width they fit in, the table keeps its columns and scrolls sideways — as a
+        labelled region that takes focus, because a thing you can only reach by dragging is no use to
+        a keyboard.
+      -->
+      <div class="stc-scroll" role="region" aria-label="${escapeHtml(config.caption)}" tabindex="0">
       <table class="stc-table">
         <caption class="stc-caption">${escapeHtml(config.caption)}</caption>
         <thead class="stc-head">
@@ -73,6 +80,7 @@ export function renderStatComparisonMarkup(config: StatComparisonConfig) {
 ${rows}
         </tbody>
       </table>
+      </div>
 
       ${config.note.trim() === "" ? "" : `<p class="stc-note">${escapeHtml(config.note)}</p>`}
     </div>`;

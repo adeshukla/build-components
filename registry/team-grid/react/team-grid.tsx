@@ -112,11 +112,14 @@ export function TeamGrid({ config = defaultConfig }: { config?: TeamGridConfig }
       {/*
         A list of people, not a grid of headings. Four names as h3s would put four entries in the page's
         outline that nobody wants to navigate by.
+
+        Two across a phone gives each person about 130px beside a 48px circle, which is not enough for
+        a name and a role, so below the width they fit in the list is one column.
       */}
       <ul
         aria-labelledby={headingId}
-        className="mt-5 grid list-none gap-5 p-0"
-        style={{ gridTemplateColumns: `repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))` }}
+        className="mt-5 grid list-none gap-5 p-0 [grid-template-columns:repeat(var(--tm-columns),minmax(0,1fr))] max-[30rem]:[grid-template-columns:minmax(0,1fr)]"
+        style={{ "--tm-columns": Math.max(config.columns, 1) } as CSSProperties}
       >
         {config.people.map((person, index) => (
           <li key={`${person.name}-${index}`} className="flex items-center gap-3">

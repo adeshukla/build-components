@@ -30,6 +30,30 @@ for (const target of targets("rating")) {
       await expect(page.getByText("5 out of 5")).toBeVisible();
     });
 
+    test("halves: every half is its own choice, and each one is big enough to hit", async ({ page }) => {
+      await open(page, target.url("halves"));
+      await expect(page.getByRole("radio")).toHaveCount(10);
+      await expect(star(page, "3.5 stars")).toBeChecked();
+      await expect(page.getByText("3.5 out of 5")).toBeVisible();
+
+      // A half target is half a star wide, which is why the stars are drawn twice the size.
+      const box = await star(page, "0.5 stars").evaluate((node) => {
+        const label = node.closest("label") as HTMLElement;
+        const { width, height } = label.getBoundingClientRect();
+        return { width, height };
+      });
+      expect(box.width).toBeGreaterThanOrEqual(24);
+      expect(box.height).toBeGreaterThanOrEqual(24);
+    });
+
+    test("halves: an arrow key moves half a star at a time", async ({ page }) => {
+      await open(page, target.url("halves"));
+      await star(page, "3.5 stars").focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(star(page, "4 stars")).toBeChecked();
+      await expect(page.getByText("4 out of 5")).toBeVisible();
+    });
+
     test("average: read out once, in full", async ({ page }) => {
       await open(page, target.url("average"));
       await expect(page.getByRole("img", { name: "4.2 out of 5" })).toBeVisible();

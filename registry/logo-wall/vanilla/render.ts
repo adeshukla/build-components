@@ -61,7 +61,12 @@ export function renderLogoWallMarkup(config: LogoWallConfig) {
         A list, so a screen reader counts them. Each entry is the name in words: a wordmark is a picture
         of a name, and the name is what anyone needs.
       -->
-      <ul class="lw-list" aria-labelledby="lw-heading" style="grid-template-columns: repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))">
+      <!--
+        The column count is what to do when there is room for it. Three across a phone gives each name
+        about 90px, which breaks "Tailwind CSS" into three lines — so below the width they fit, the
+        wall drops to two columns, and then to one.
+      -->
+      <ul class="lw-list" aria-labelledby="lw-heading" style="--lw-columns: ${Math.max(config.columns, 1)}; --lw-columns-narrow: ${Math.min(Math.max(config.columns, 1), 2)}">
 ${items}
       </ul>
 

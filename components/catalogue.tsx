@@ -43,15 +43,18 @@ export function Catalogue({
   const [query, setQuery] = useState(initialQuery);
   // Only the card being pointed at or tabbed to runs a preview, so one frame exists at a time.
   const [showing, setShowing] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const root = useRef<HTMLDivElement>(null);
 
   const searching = query.trim() !== "";
   const matching = parts.filter((part) => (filter === ALL || part.category === filter) && matches(part, query));
-  // While searching, everything that matches is shown: hiding results behind a button would be odd.
-  const collapsible = !showAll && !searching && filter === ALL && matching.length > PREVIEW;
-  const shown = collapsible && !expanded ? matching.slice(0, PREVIEW) : matching;
+  /*
+   * The teaser on the home page shows the first few and then sends you to the catalogue page. It
+   * used to carry a "Show all" button of its own as well, directly above a link promising the same
+   * thing — two buttons for one idea. While searching it shows every match: hiding results behind a
+   * button would be odd.
+   */
+  const shown = showAll || searching || filter !== ALL ? matching : matching.slice(0, PREVIEW);
   const choices = [ALL, ...categories].map((name) => ({
     name,
     count: parts.filter((part) => (name === ALL || part.category === name) && matches(part, query)).length,
@@ -123,10 +126,7 @@ export function Catalogue({
               autoComplete="off"
               placeholder="dialog, upload, table…"
               aria-describedby={`${id}-hint`}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setExpanded(false);
-              }}
+              onChange={(event) => setQuery(event.target.value)}
               className="min-h-11 w-full rounded-full border border-rule-strong bg-paper pr-3 pl-9 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
             />
           </div>
@@ -258,15 +258,6 @@ export function Catalogue({
         </ul>
       )}
 
-      {collapsible && !expanded && (
-        <button
-          type="button"
-          onClick={() => setExpanded(true)}
-          className="mt-5 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-rule-strong px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
-        >
-          {`Show all ${matching.length} parts`}
-        </button>
-      )}
     </div>
   );
 }

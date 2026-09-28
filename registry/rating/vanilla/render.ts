@@ -6,8 +6,16 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", empty: "#4a4458" },
 };
 
-const STAR =
-  '<svg class="ra-star" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></svg>';
+const STAR_PATH = "m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z";
+const STAR = `<svg class="ra-star" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="${STAR_PATH}"/></svg>`;
+
+/*
+ * One side of a star, for picking half ratings: the same path in a window half as wide. The left half
+ * shows the first twelve units of it, the right half the last twelve. Each half is 24px across — the
+ * smallest a target may be — which is why a row of half stars is drawn larger than a row of whole ones.
+ */
+const HALF = (side: "left" | "right") =>
+  `<svg class="ra-star ra-star--half" aria-hidden="true" viewBox="${side === "left" ? "0 0 12 24" : "12 0 12 24"}" fill="currentColor"><path d="${STAR_PATH}"/></svg>`;
 
 /** Darkens or lightens the accent until it clears 4.5:1 against the surface it sits on. */
 function readableAccent(hex: string, onDark: boolean) {
@@ -53,14 +61,25 @@ ${config.showValue ? `        <span class="ra-value">${show(value)} <span class=
     </div>`;
   }
 
-  const picked = Math.min(max, Math.max(0, Math.round(config.value)));
+  const picked = Math.min(
+    max,
+    Math.max(0, config.halfStars ? Math.round(config.value * 2) / 2 : Math.round(config.value)),
+  );
+  /** What one star offers: both halves of it, or just the whole. */
+  const steps = (star: number) => (config.halfStars ? [star - 0.5, star] : [star]);
   const inputs = stars
     .map(
-      (star) => `          <label class="ra-pick">
-            <input class="ra-input" type="radio" name="${escapeHtml(config.name || "rating")}" value="${star}"${star === picked ? " checked" : ""}>
-            <span class="ra-sr">${star === 1 ? "1 star" : `${star} stars`}</span>
-            ${STAR}
-          </label>`,
+      (star) => `          <span class="ra-star-pair">
+${steps(star)
+  .map(
+    (step) => `            <label class="ra-pick">
+              <input class="ra-input" type="radio" name="${escapeHtml(config.name || "rating")}" value="${step}"${step === picked ? " checked" : ""}>
+              <span class="ra-sr">${step === 1 ? "1 star" : `${show(step)} stars`}</span>
+              ${config.halfStars ? HALF(step === star ? "right" : "left") : STAR}
+            </label>`,
+  )
+  .join("\n")}
+          </span>`,
     )
     .join("\n");
 
@@ -71,7 +90,7 @@ ${config.showValue ? `        <span class="ra-value">${show(value)} <span class=
           <div class="ra-picks">
 ${inputs}
           </div>
-${config.showValue ? `          <output class="ra-value" data-output>${picked === 0 ? "Not rated yet" : `${picked} out of ${max}`}</output>` : ""}${countHtml}
+${config.showValue ? `          <output class="ra-value" data-output>${picked === 0 ? "Not rated yet" : `${show(picked)} out of ${max}`}</output>` : ""}${countHtml}
         </div>
       </fieldset>
     </div>`;

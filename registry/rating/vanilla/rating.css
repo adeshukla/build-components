@@ -39,11 +39,15 @@
 .ra-filled { position: absolute; inset: 0 auto 0 0; display: flex; overflow: hidden; color: var(--ra-accent); }
 .ra-filled .ra-star { flex-shrink: 0; }
 
-.ra-picks { display: flex; }
+/* Half stars wrap by whole star, never between the two sides of one. */
+.ra-picks { display: flex; flex-wrap: wrap; }
+.ra-star-pair { display: inline-flex; }
+.ra-star--half { width: 1.5rem; height: 3rem; }
 .ra-pick { padding: 0.125rem; color: var(--ra-empty); cursor: pointer; }
 .ra-input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
 /* Every star up to and including the checked one is filled: later siblings are cleared again. */
 .ra-picks:has(.ra-input:checked) .ra-pick { color: var(--ra-accent); }
+.ra-star-pair:has(.ra-input:checked) ~ .ra-star-pair .ra-pick,
 .ra-pick:has(.ra-input:checked) ~ .ra-pick { color: var(--ra-empty); }
 .ra-pick:has(.ra-input:focus-visible) { outline: 2px solid var(--ra-accent-text); outline-offset: 2px; border-radius: 0.25rem; }
 
@@ -65,5 +69,6 @@
 @media (forced-colors: active) {
   .ra-pick { color: CanvasText; }
   .ra-picks:has(.ra-input:checked) .ra-pick { color: Highlight; }
+  .ra-star-pair:has(.ra-input:checked) ~ .ra-star-pair .ra-pick,
   .ra-pick:has(.ra-input:checked) ~ .ra-pick { color: CanvasText; }
 }

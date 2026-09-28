@@ -65,7 +65,7 @@ export function renderTeamGridMarkup(config: TeamGridConfig) {
         A list of people, not a grid of headings. Four names as h3s would put four entries in the page's
         outline that nobody wants to navigate by.
       -->
-      <ul class="tm-list" aria-labelledby="tm-heading" style="grid-template-columns: repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))">
+      <ul class="tm-list" aria-labelledby="tm-heading" style="--tm-columns: ${Math.max(config.columns, 1)}">
 ${people}
       </ul>
 

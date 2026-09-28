@@ -32,7 +32,10 @@
   }
 }
 
-.stc-table { width: 100%; border-collapse: collapse; text-align: left; }
+.stc-scroll { overflow-x: auto; }
+.stc-scroll:focus-visible { outline: 2px solid var(--stc-accent-text); outline-offset: 2px; }
+/* The columns keep a width they can be read at; the region scrolls instead of the words breaking up. */
+.stc-table { width: 100%; min-width: 24rem; border-collapse: collapse; text-align: left; }
 .stc-caption { padding-bottom: 0.75rem; font-size: 1.25rem; font-weight: 600; text-align: left; }
 .stc-table th,
 .stc-table td { padding: 0.75rem; text-align: left; vertical-align: top; }
@@ -71,10 +74,9 @@
   clip-path: inset(50%);
 }
 
-/* At a narrow width the values stay in their columns and the measure wraps. */
+/* A little tighter on a narrow screen, but never tight enough to break the words up. */
 @media (max-width: 30rem) {
   .stc-table { font-size: 0.875rem; }
   .stc-table th,
-  .stc-table td { padding: 0.625rem 0.375rem; }
-  .stc-metric { overflow-wrap: break-word; }
+  .stc-table td { padding: 0.625rem 0.5rem; }
 }

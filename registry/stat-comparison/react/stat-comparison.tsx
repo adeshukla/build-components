@@ -90,58 +90,71 @@ export function StatComparison({ config = defaultConfig }: { config?: StatCompar
 
   return (
     <div style={style} className="bg-(--stc-surface) p-1 text-(--stc-text)">
-      <table className="w-full border-collapse text-left">
-        <caption className="pb-3 text-left text-xl font-semibold">{config.caption}</caption>
-        <thead>
-          <tr className="border-b-2 border-(--stc-line)">
-            {/*
-              The first header can be empty to the eye but never to the markup: it is the corner of the
-              table, and a blank th with no scope leaves the column headers unanchored.
-            */}
-            <th scope="col" className={`${cell} font-medium`}>
-              {config.metricHeader.trim() === "" ? <span className="sr-only">Measure</span> : config.metricHeader}
-            </th>
-            <th scope="col" className={`${cell} font-semibold`}>
-              {config.leftHeader}
-            </th>
-            <th scope="col" className={`${cell} font-semibold`}>
-              {config.rightHeader}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {config.rows.map((row) => (
-            <tr key={row.metric} className="border-b border-(--stc-line)">
-              {/* The measure is the row's header, so a reader says it alongside both values. */}
-              <th scope="row" className={`${cell} font-normal text-(--stc-muted)`}>
-                {row.metric}
+      {/*
+        Three columns do not fit on a phone, and squeezing them breaks the words up a letter or two
+        at a time. Below the width they fit in, the table keeps its columns and scrolls sideways —
+        as a labelled region that takes focus, because a thing you can only reach by dragging is no
+        use to a keyboard.
+      */}
+      <div
+        role="region"
+        aria-label={config.caption}
+        tabIndex={0}
+        className="overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--stc-accent-text)"
+      >
+        <table className="w-full min-w-[24rem] border-collapse text-left">
+          <caption className="pb-3 text-left text-xl font-semibold">{config.caption}</caption>
+          <thead>
+            <tr className="border-b-2 border-(--stc-line)">
+              {/*
+                The first header can be empty to the eye but never to the markup: it is the corner of the
+                table, and a blank th with no scope leaves the column headers unanchored.
+              */}
+              <th scope="col" className={`${cell} font-medium`}>
+                {config.metricHeader.trim() === "" ? <span className="sr-only">Measure</span> : config.metricHeader}
               </th>
-              {(["left", "right"] as const).map((side) => {
-                const winner = config.showBetter && row.better === side;
-                return (
-                  <td
-                    key={side}
-                    data-side={side}
-                    data-better={winner ? "true" : undefined}
-                    className={`${cell} font-medium tabular-nums ${winner ? "bg-(--stc-sunk)" : ""}`}
-                  >
-                    {side === "left" ? row.left : row.right}
-                    {/*
-                      Which one is better is said in words, not by a tint. A shaded cell is invisible to a
-                      screen reader and to anyone who cannot tell the two shades apart.
-                    */}
-                    {winner && (
-                      <span className="mt-0.5 block text-xs font-semibold tracking-wide text-(--stc-accent-text) uppercase">
-                        {config.betterWord}
-                      </span>
-                    )}
-                  </td>
-                );
-              })}
+              <th scope="col" className={`${cell} font-semibold`}>
+                {config.leftHeader}
+              </th>
+              <th scope="col" className={`${cell} font-semibold`}>
+                {config.rightHeader}
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {config.rows.map((row) => (
+              <tr key={row.metric} className="border-b border-(--stc-line)">
+                {/* The measure is the row's header, so a reader says it alongside both values. */}
+                <th scope="row" className={`${cell} font-normal text-(--stc-muted)`}>
+                  {row.metric}
+                </th>
+                {(["left", "right"] as const).map((side) => {
+                  const winner = config.showBetter && row.better === side;
+                  return (
+                    <td
+                      key={side}
+                      data-side={side}
+                      data-better={winner ? "true" : undefined}
+                      className={`${cell} font-medium tabular-nums ${winner ? "bg-(--stc-sunk)" : ""}`}
+                    >
+                      {side === "left" ? row.left : row.right}
+                      {/*
+                        Which one is better is said in words, not by a tint. A shaded cell is invisible to a
+                        screen reader and to anyone who cannot tell the two shades apart.
+                      */}
+                      {winner && (
+                        <span className="mt-0.5 block text-xs font-semibold tracking-wide text-(--stc-accent-text) uppercase">
+                          {config.betterWord}
+                        </span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {config.note.trim() !== "" && <p className="mt-4 max-w-prose text-sm text-(--stc-muted)">{config.note}</p>}
     </div>
