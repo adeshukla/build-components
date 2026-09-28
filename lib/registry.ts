@@ -334,6 +334,53 @@ import { helpHintSchema } from "@/registry/help-hint/schema";
 import * as helpHintDocs from "@/registry/help-hint/docs";
 import { renderHelpHintHtml } from "@/registry/help-hint/vanilla/render";
 
+import { changelogSchema } from "@/registry/changelog/schema";
+import * as changelogDocs from "@/registry/changelog/docs";
+import { renderChangelogHtml } from "@/registry/changelog/vanilla/render";
+import { notificationListSchema } from "@/registry/notification-list/schema";
+import * as notificationListDocs from "@/registry/notification-list/docs";
+import { renderNotificationListHtml } from "@/registry/notification-list/vanilla/render";
+import { rowActionsSchema } from "@/registry/row-actions/schema";
+import * as rowActionsDocs from "@/registry/row-actions/docs";
+import { renderRowActionsHtml } from "@/registry/row-actions/vanilla/render";
+import { orderTrackerSchema } from "@/registry/order-tracker/schema";
+import * as orderTrackerDocs from "@/registry/order-tracker/docs";
+import { renderOrderTrackerHtml } from "@/registry/order-tracker/vanilla/render";
+import { invoiceSummarySchema } from "@/registry/invoice-summary/schema";
+import * as invoiceSummaryDocs from "@/registry/invoice-summary/docs";
+import { renderInvoiceSummaryHtml } from "@/registry/invoice-summary/vanilla/render";
+import { articleCardSchema } from "@/registry/article-card/schema";
+import * as articleCardDocs from "@/registry/article-card/docs";
+import { renderArticleCardHtml } from "@/registry/article-card/vanilla/render";
+import { authorBylineSchema } from "@/registry/author-byline/schema";
+import * as authorBylineDocs from "@/registry/author-byline/docs";
+import { renderAuthorBylineHtml } from "@/registry/author-byline/vanilla/render";
+import { imageGallerySchema } from "@/registry/image-gallery/schema";
+import * as imageGalleryDocs from "@/registry/image-gallery/docs";
+import { renderImageGalleryHtml } from "@/registry/image-gallery/vanilla/render";
+import { videoEmbedSchema } from "@/registry/video-embed/schema";
+import * as videoEmbedDocs from "@/registry/video-embed/docs";
+import { renderVideoEmbedHtml } from "@/registry/video-embed/vanilla/render";
+import { pullQuoteSchema } from "@/registry/pull-quote/schema";
+import * as pullQuoteDocs from "@/registry/pull-quote/docs";
+import { renderPullQuoteHtml } from "@/registry/pull-quote/vanilla/render";
+import { teamGridSchema } from "@/registry/team-grid/schema";
+import * as teamGridDocs from "@/registry/team-grid/docs";
+import { renderTeamGridHtml } from "@/registry/team-grid/vanilla/render";
+import { logoWallSchema } from "@/registry/logo-wall/schema";
+import * as logoWallDocs from "@/registry/logo-wall/docs";
+import { renderLogoWallHtml } from "@/registry/logo-wall/vanilla/render";
+
+import { pageHeaderSchema } from "@/registry/page-header/schema";
+import * as pageHeaderDocs from "@/registry/page-header/docs";
+import { renderPageHeaderHtml } from "@/registry/page-header/vanilla/render";
+import { splitFeatureSchema } from "@/registry/split-feature/schema";
+import * as splitFeatureDocs from "@/registry/split-feature/docs";
+import { renderSplitFeatureHtml } from "@/registry/split-feature/vanilla/render";
+import { statComparisonSchema } from "@/registry/stat-comparison/schema";
+import * as statComparisonDocs from "@/registry/stat-comparison/docs";
+import { renderStatComparisonHtml } from "@/registry/stat-comparison/vanilla/render";
+
 export type RegistryEntry = {
   title: string;
   description: string;
@@ -1111,6 +1158,111 @@ export const registry = {
     schema: helpHintSchema,
     ...helpHintDocs,
     renderHtml: (config) => renderHelpHintHtml(config as never),
+  },
+  "changelog": {
+    title: "Changelog",
+    description: "What changed, in an order a screen reader can count.",
+    schema: changelogSchema,
+    ...changelogDocs,
+    renderHtml: (config) => renderChangelogHtml(config as never),
+  },
+  "notification-list": {
+    title: "Notification list",
+    description: "An inbox where every button says what it acts on.",
+    schema: notificationListSchema,
+    ...notificationListDocs,
+    renderHtml: (config) => renderNotificationListHtml(config as never),
+  },
+  "row-actions": {
+    title: "List with row actions",
+    description: "Rows of records, each with actions that say what they act on.",
+    schema: rowActionsSchema,
+    ...rowActionsDocs,
+    renderHtml: (config) => renderRowActionsHtml(config as never),
+  },
+  "order-tracker": {
+    title: "Order tracker",
+    description: "An order's progress, read out rather than drawn.",
+    schema: orderTrackerSchema,
+    ...orderTrackerDocs,
+    renderHtml: (config) => renderOrderTrackerHtml(config as never),
+  },
+  "invoice-summary": {
+    title: "Invoice summary",
+    description: "Numbers that add up, and say what they are.",
+    schema: invoiceSummarySchema,
+    ...invoiceSummaryDocs,
+    renderHtml: (config) => renderInvoiceSummaryHtml(config as never),
+  },
+  "article-card": {
+    title: "Article card",
+    description: "A card that gives a screen reader one link, not two.",
+    schema: articleCardSchema,
+    ...articleCardDocs,
+    renderHtml: (config) => renderArticleCardHtml(config as never),
+  },
+  "author-byline": {
+    title: "Author byline",
+    description: "A byline that says published and updated.",
+    schema: authorBylineSchema,
+    ...authorBylineDocs,
+    renderHtml: (config) => renderAuthorBylineHtml(config as never),
+  },
+  "image-gallery": {
+    title: "Image gallery",
+    description: "Pictures with captions, and alt text taken seriously.",
+    schema: imageGallerySchema,
+    ...imageGalleryDocs,
+    renderHtml: (config) => renderImageGalleryHtml(config as never),
+  },
+  "video-embed": {
+    title: "Click-to-load video",
+    description: "An embed that costs nothing until it is asked for.",
+    schema: videoEmbedSchema,
+    ...videoEmbedDocs,
+    renderHtml: (config) => renderVideoEmbedHtml(config as never),
+  },
+  "pull-quote": {
+    title: "Pull quote",
+    description: "A quotation whose markup says who said it, correctly.",
+    schema: pullQuoteSchema,
+    ...pullQuoteDocs,
+    renderHtml: (config) => renderPullQuoteHtml(config as never),
+  },
+  "team-grid": {
+    title: "Team grid",
+    description: "Who is on the team, without polluting the page outline.",
+    schema: teamGridSchema,
+    ...teamGridDocs,
+    renderHtml: (config) => renderTeamGridHtml(config as never),
+  },
+  "logo-wall": {
+    title: "Logo wall",
+    description: "A row of names, said properly.",
+    schema: logoWallSchema,
+    ...logoWallDocs,
+    renderHtml: (config) => renderLogoWallHtml(config as never),
+  },
+  "page-header": {
+    title: "Page header",
+    description: "The top of an inside page, with the one h1 on it.",
+    schema: pageHeaderSchema,
+    ...pageHeaderDocs,
+    renderHtml: (config) => renderPageHeaderHtml(config as never),
+  },
+  "split-feature": {
+    title: "Split feature",
+    description: "A feature block that cannot be read back to front.",
+    schema: splitFeatureSchema,
+    ...splitFeatureDocs,
+    renderHtml: (config) => renderSplitFeatureHtml(config as never),
+  },
+  "stat-comparison": {
+    title: "Stat comparison",
+    description: "A comparison that says on what terms.",
+    schema: statComparisonSchema,
+    ...statComparisonDocs,
+    renderHtml: (config) => renderStatComparisonHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

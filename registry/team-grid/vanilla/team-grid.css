@@ -1,0 +1,74 @@
+/* Team grid — plain CSS. Colours come from the inline custom properties. */
+.tm {
+  --tm-accent: #0f766e;
+  --tm-accent-text: #0b5a54;
+  --tm-surface: #ffffff;
+  --tm-sunk: #eef0f2;
+  --tm-text: #16121f;
+  --tm-muted: #4d4a57;
+  --tm-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--tm-surface);
+  color: var(--tm-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.tm,
+.tm *,
+.tm *::before,
+.tm *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .tm--theme-system {
+    --tm-surface: #141019;
+    --tm-sunk: #272031;
+    --tm-text: #f6f5fa;
+    --tm-muted: #b6b3c2;
+    --tm-line: #4a4459;
+  }
+}
+
+.tm-heading { margin: 0; font-size: 1.25rem; font-weight: 600; }
+.tm-intro { max-width: 65ch; margin: 0.25rem 0 0; color: var(--tm-muted); }
+
+/*
+ * A list of people, not a grid of headings. Four names as h3s would put four entries in the page's
+ * outline that nobody wants to navigate by.
+ */
+.tm-list { display: grid; gap: 1.25rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.tm-person { display: flex; align-items: center; gap: 0.75rem; }
+
+/*
+ * Initials, not a photograph: no images ship with this part, and the name is right beside it, so the
+ * circle is decoration either way.
+ */
+.tm-initials {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--tm-sunk);
+  color: var(--tm-accent-text);
+  font-weight: 600;
+}
+
+.tm-body { min-width: 0; }
+.tm-name { margin: 0; font-weight: 600; }
+.tm-name a {
+  color: var(--tm-text);
+  text-decoration: underline;
+  text-decoration-color: var(--tm-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.tm-name a:focus-visible { outline: 2px solid var(--tm-accent-text); outline-offset: 2px; }
+
+/* The role is the same kind of thing for everyone, so it reads as a pair with the name. */
+.tm-role { margin: 0.125rem 0 0; color: var(--tm-muted); font-size: 0.875rem; }
+.tm-note { margin: 1.25rem 0 0; color: var(--tm-muted); font-size: 0.75rem; }

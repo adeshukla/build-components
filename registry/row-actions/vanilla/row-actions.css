@@ -1,0 +1,66 @@
+/* Row actions — plain CSS. Colours come from the inline custom properties. */
+.rwa {
+  --rwa-accent: #1d4ed8;
+  --rwa-accent-text: #1a41b8;
+  --rwa-surface: #ffffff;
+  --rwa-sunk: #f4f3f8;
+  --rwa-text: #16121f;
+  --rwa-muted: #4d4a57;
+  --rwa-line: #c9c4d6;
+  --rwa-danger: #b42318;
+  display: block;
+  padding: 0.25rem;
+  background: var(--rwa-surface);
+  color: var(--rwa-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.rwa,
+.rwa *,
+.rwa *::before,
+.rwa *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .rwa--theme-system {
+    --rwa-surface: #141019;
+    --rwa-sunk: #221d2e;
+    --rwa-text: #f6f5fa;
+    --rwa-muted: #b6b3c2;
+    --rwa-line: #4a4459;
+    --rwa-danger: #ff9d95;
+  }
+}
+
+.rwa-table { width: 100%; border-collapse: collapse; text-align: left; }
+.rwa-caption { padding-bottom: 0.75rem; font-size: 1.25rem; font-weight: 600; text-align: left; }
+.rwa-table th,
+.rwa-table td { text-align: left; }
+.rwa-head th { padding: 0.5rem 0.75rem 0.5rem 0; font-weight: 500; }
+.rwa-head tr { border-bottom: 1px solid var(--rwa-line); }
+.rwa-row { border-bottom: 1px solid var(--rwa-line); }
+.rwa-name { padding: 0.75rem 0.75rem 0.75rem 0; font-weight: 400; }
+.rwa-meta { padding: 0.75rem 0.75rem 0.75rem 0; color: var(--rwa-muted); font-size: 0.875rem; }
+.rwa-actions-cell { padding: 0.75rem 0; }
+.rwa-actions { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+.rwa-action {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 0.625rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--rwa-accent-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.rwa-action--danger { color: var(--rwa-danger); }
+.rwa-action:focus-visible { outline: 2px solid var(--rwa-accent-text); outline-offset: 2px; }
+
+.rwa-status { margin: 0.75rem 0 0; color: var(--rwa-muted); font-size: 0.875rem; }

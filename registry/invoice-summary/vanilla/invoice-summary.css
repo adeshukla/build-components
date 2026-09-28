@@ -1,0 +1,64 @@
+/* Invoice summary — plain CSS. Colours come from the inline custom properties. */
+.inv {
+  --inv-accent: #1d4ed8;
+  --inv-accent-text: #1a41b8;
+  --inv-surface: #ffffff;
+  --inv-sunk: #f4f3f8;
+  --inv-text: #16121f;
+  --inv-muted: #4d4a57;
+  --inv-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--inv-surface);
+  color: var(--inv-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.inv,
+.inv *,
+.inv *::before,
+.inv *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .inv--theme-system {
+    --inv-surface: #141019;
+    --inv-sunk: #221d2e;
+    --inv-text: #f6f5fa;
+    --inv-muted: #b6b3c2;
+    --inv-line: #4a4459;
+  }
+}
+
+.inv-table { width: 100%; border-collapse: collapse; }
+.inv-caption { padding-bottom: 0.75rem; font-size: 1.25rem; font-weight: 600; text-align: left; }
+
+.inv-table thead tr { border-bottom: 1px solid var(--inv-line); }
+.inv-table th,
+.inv-table td { padding: 0.5rem 0; }
+.inv-label { font-weight: 500; text-align: left; }
+.inv-number { text-align: right; font-variant-numeric: tabular-nums; }
+
+.inv-table tbody tr { border-bottom: 1px solid var(--inv-line); }
+.inv-item { font-weight: 400; text-align: left; }
+.inv-amount { font-weight: 500; }
+
+/* The totals are a real tfoot, so they are part of the table rather than loose text under it. */
+.inv-foot-label { font-weight: 400; text-align: right; }
+.inv-total-row { border-top: 2px solid var(--inv-line); }
+.inv-total-row .inv-foot-label { font-weight: 600; }
+.inv-total-row .inv-number { font-size: 1.125rem; font-weight: 600; }
+
+.inv-note { margin: 1rem 0 0; color: var(--inv-muted); font-size: 0.875rem; }
+
+/*
+ * On a narrow screen the numbers stay in their columns and the item description wraps. The columns are
+ * kept, rather than stacked, because the whole point of an invoice is comparing the amounts down the
+ * right-hand edge — and the same treatment is in the React output, so the two never drift.
+ */
+@media (max-width: 30rem) {
+  .inv-table { font-size: 0.875rem; }
+  .inv-item { overflow-wrap: break-word; }
+}

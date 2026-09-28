@@ -1,0 +1,80 @@
+/* Author byline — plain CSS. Colours come from the inline custom properties. */
+.byl {
+  --byl-accent: #7c3aed;
+  --byl-accent-text: #6021d6;
+  --byl-surface: #ffffff;
+  --byl-sunk: #f1eff7;
+  --byl-text: #16121f;
+  --byl-muted: #4d4a57;
+  --byl-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--byl-surface);
+  color: var(--byl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.byl,
+.byl *,
+.byl *::before,
+.byl *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .byl--theme-system {
+    --byl-surface: #141019;
+    --byl-sunk: #272031;
+    --byl-text: #f6f5fa;
+    --byl-muted: #b6b3c2;
+    --byl-line: #4a4459;
+  }
+}
+
+/*
+ * Not an <address> element: that is for the contact details of the nearest article or of the page, and a
+ * byline on its own is neither. It is a paragraph about who wrote the thing.
+ */
+.byl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.byl--stacked .byl-row { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; }
+
+/*
+ * Initials, not a photograph: there is no image to ship, and the name is right beside it, so the circle
+ * is decoration either way.
+ */
+.byl-avatar {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--byl-sunk);
+  color: var(--byl-accent-text);
+  font-weight: 600;
+}
+
+.byl-name { margin: 0; }
+.byl-by,
+.byl-role { color: var(--byl-muted); }
+.byl-who { font-weight: 600; }
+.byl-link {
+  color: var(--byl-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--byl-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.byl-link:focus-visible { outline: 2px solid var(--byl-accent-text); outline-offset: 2px; }
+
+.byl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.5rem;
+  margin: 0.125rem 0 0;
+  color: var(--byl-muted);
+  font-size: 0.875rem;
+}

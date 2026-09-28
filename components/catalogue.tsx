@@ -21,10 +21,26 @@ function matches(part: Part, query: string) {
  * The parts catalogue: search and type filters instead of one long list.
  * Filters are native radios, so arrow keys move between them and a screen reader hears the group.
  */
-export function Catalogue({ parts }: { parts: Part[] }) {
+export function Catalogue({
+  parts,
+  showAll = false,
+  syncUrl = false,
+  initialQuery = "",
+  initialFilter = ALL,
+}: {
+  parts: Part[];
+  /** On its own page every match is listed; on the home page only the first few are. */
+  showAll?: boolean;
+  /** Writes the search and the filter into the address bar, so a result can be sent to someone. */
+  syncUrl?: boolean;
+  initialQuery?: string;
+  initialFilter?: string;
+}) {
   const id = useId();
-  const [filter, setFilter] = useState<string>(ALL);
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<string>(
+    [ALL, ...categories].includes(initialFilter) ? initialFilter : ALL,
+  );
+  const [query, setQuery] = useState(initialQuery);
   // Only the card being pointed at or tabbed to runs a preview, so one frame exists at a time.
   const [showing, setShowing] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -33,12 +49,28 @@ export function Catalogue({ parts }: { parts: Part[] }) {
   const searching = query.trim() !== "";
   const matching = parts.filter((part) => (filter === ALL || part.category === filter) && matches(part, query));
   // While searching, everything that matches is shown: hiding results behind a button would be odd.
-  const collapsible = !searching && filter === ALL && matching.length > PREVIEW;
+  const collapsible = !showAll && !searching && filter === ALL && matching.length > PREVIEW;
   const shown = collapsible && !expanded ? matching.slice(0, PREVIEW) : matching;
   const choices = [ALL, ...categories].map((name) => ({
     name,
     count: parts.filter((part) => (name === ALL || part.category === name) && matches(part, query)).length,
   }));
+
+  /*
+   * The search and the filter go in the address bar with replaceState rather than a router push: the
+   * server half of the page does not depend on them, so a navigation would only cost a round trip. The
+   * point is that a filtered list can be sent to someone.
+   */
+  useEffect(() => {
+    if (!syncUrl) return;
+    const params = new URLSearchParams(window.location.search);
+    if (query.trim() === "") params.delete("q");
+    else params.set("q", query.trim());
+    if (filter === ALL) params.delete("type");
+    else params.set("type", filter);
+    const search = params.toString();
+    window.history.replaceState(null, "", search === "" ? window.location.pathname : `?${search}`);
+  }, [syncUrl, query, filter]);
 
   // "/" jumps to the search box, as it does in most tools — but never while someone is typing.
   useEffect(() => {

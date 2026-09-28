@@ -1,0 +1,75 @@
+/* Changelog — plain CSS. Colours come from the inline custom properties. */
+.chg {
+  --chg-accent: #7c3aed;
+  --chg-accent-text: #6021d6;
+  --chg-on-accent: #ffffff;
+  --chg-surface: #ffffff;
+  --chg-sunk: #f4f3f8;
+  --chg-text: #16121f;
+  --chg-muted: #4d4a57;
+  --chg-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--chg-surface);
+  color: var(--chg-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.chg,
+.chg *,
+.chg *::before,
+.chg *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .chg--theme-system {
+    --chg-surface: #141019;
+    --chg-sunk: #221d2e;
+    --chg-text: #f6f5fa;
+    --chg-muted: #b6b3c2;
+    --chg-line: #4a4459;
+  }
+}
+
+.chg-heading { margin: 0; font-size: 1.5rem; font-weight: 600; }
+
+/* An ordered list of releases, newest first, so the order is in the markup and not just the layout. */
+.chg-list { margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.chg-release { padding: 1.25rem 0; border-top: 1px solid var(--chg-line); }
+.chg-release:first-child { padding-top: 0; border-top: 0; }
+
+.chg-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
+.chg-version {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.chg-date { color: var(--chg-muted); font-size: 0.875rem; }
+.chg-latest {
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: var(--chg-accent);
+  color: var(--chg-on-accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chg-group { margin-top: 0.75rem; }
+
+/*
+ * The kind is a word, not a coloured dot. A legend of colours is no use to anyone who cannot tell them
+ * apart, and none at all to a screen reader.
+ */
+.chg-kind {
+  margin: 0;
+  color: var(--chg-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.chg-items { margin: 0.25rem 0 0; padding-left: 1.25rem; }
+.chg-items li { margin-top: 0.25rem; }

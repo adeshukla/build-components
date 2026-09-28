@@ -1,0 +1,65 @@
+/* Pull quote — plain CSS. Colours come from the inline custom properties. */
+.pq {
+  --pq-accent: #7c3aed;
+  --pq-accent-text: #6021d6;
+  --pq-surface: #ffffff;
+  --pq-sunk: #f1eff7;
+  --pq-text: #16121f;
+  --pq-muted: #4d4a57;
+  --pq-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--pq-surface);
+  color: var(--pq-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.pq,
+.pq *,
+.pq *::before,
+.pq *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .pq--theme-system {
+    --pq-surface: #141019;
+    --pq-sunk: #272031;
+    --pq-text: #f6f5fa;
+    --pq-muted: #b6b3c2;
+    --pq-line: #4a4459;
+  }
+}
+
+/*
+ * A figure with the quotation in a blockquote and the attribution in a figcaption. The attribution does
+ * not go inside the blockquote: that would make it part of what was said.
+ */
+.pq-figure { max-width: 42rem; margin: 0; }
+.pq--left .pq-figure { padding-left: 1.25rem; border-left: 4px solid var(--pq-accent); }
+.pq--centre .pq-figure { text-align: center; }
+
+.pq-quote { margin: 0; font-size: 1.5rem; font-weight: 500; line-height: 1.375; text-wrap: balance; }
+.pq--huge .pq-quote { font-size: 1.875rem; line-height: 1.2; }
+@media (min-width: 40rem) {
+  .pq--huge .pq-quote { font-size: 2.25rem; }
+}
+
+/*
+ * The marks are decoration: a screen reader already says "quote" for a blockquote, and reading a stray
+ * left double quotation mark is noise.
+ */
+.pq-mark { color: var(--pq-accent-text); }
+.pq-mark--open { margin-right: 0.25rem; }
+.pq-mark--close { margin-left: 0.25rem; }
+
+.pq-caption { margin-top: 1rem; color: var(--pq-muted); font-size: 0.875rem; }
+.pq-who { color: var(--pq-text); font-weight: 600; }
+.pq-source { font-style: italic; }
+.pq-source a {
+  color: var(--pq-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pq-source a:focus-visible { outline: 2px solid var(--pq-accent-text); outline-offset: 2px; }

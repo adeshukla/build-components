@@ -55,7 +55,15 @@ export function parseConfig<S extends Schema>(schema: S, params: URLSearchParams
 }
 
 // Links from a shared URL must never run script: allow relative, fragment, http(s), mailto and tel only.
-const safeUrl = (value: string) => (/^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#");
+/*
+ * Empty is a real answer: a dozen options say "leave it empty for none", and turning "" into "#" made
+ * every one of them impossible to set. Anything else that is not a safe scheme still becomes "#".
+ */
+const safeUrl = (value: string) => {
+  const text = value.trim();
+  if (text === "") return "";
+  return /^(\/|#|https?:\/\/|mailto:|tel:)/i.test(text) ? text : "#";
+};
 
 function coerce(option: Option, raw: string) {
   switch (option.type) {

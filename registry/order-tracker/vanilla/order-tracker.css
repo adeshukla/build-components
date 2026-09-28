@@ -1,0 +1,99 @@
+/* Order tracker — plain CSS. Colours come from the inline custom properties. */
+.ord {
+  --ord-accent: #0f766e;
+  --ord-accent-text: #0b5a54;
+  --ord-on-accent: #ffffff;
+  --ord-surface: #ffffff;
+  --ord-sunk: #f4f3f8;
+  --ord-text: #16121f;
+  --ord-muted: #4d4a57;
+  --ord-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--ord-surface);
+  color: var(--ord-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ord,
+.ord *,
+.ord *::before,
+.ord *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ord--theme-system {
+    --ord-surface: #141019;
+    --ord-sunk: #221d2e;
+    --ord-text: #f6f5fa;
+    --ord-muted: #b6b3c2;
+    --ord-line: #4a4459;
+  }
+}
+
+.ord-heading { margin: 0; font-size: 1.25rem; font-weight: 600; }
+.ord-reference {
+  margin: 0.125rem 0 0;
+  color: var(--ord-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.875rem;
+}
+
+/*
+ * Where the order is, in one sentence, before the list. It is the answer most people came for, and it
+ * is the only part a screen reader has to hear to get it.
+ */
+.ord-now { margin: 0.75rem 0 0; font-weight: 500; }
+
+.ord-list { margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.ord-list[data-layout="horizontal"] { display: flex; flex-wrap: wrap; row-gap: 1.5rem; }
+
+.ord-step { position: relative; }
+.ord-list[data-layout="vertical"] .ord-step {
+  padding: 0 0 1.5rem 1.5rem;
+  border-left: 2px solid var(--ord-accent);
+}
+.ord-list[data-layout="vertical"] .ord-step:last-child { padding-bottom: 0; border-left-color: transparent; }
+.ord-list[data-layout="vertical"] .ord-step[data-state="todo"] { border-left-color: var(--ord-line); }
+.ord-list[data-layout="horizontal"] .ord-step { flex: 1 1 10rem; min-width: 10rem; padding-right: 1rem; }
+
+/* The marker is a picture of the state the words already give, so it is hidden. */
+.ord-mark {
+  position: absolute;
+  top: 0;
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 2px solid var(--ord-accent);
+  border-radius: 999px;
+  background: var(--ord-accent);
+  color: var(--ord-on-accent);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.ord-list[data-layout="vertical"] .ord-mark { left: -0.7rem; }
+.ord-list[data-layout="horizontal"] .ord-mark { left: 0; }
+.ord-step[data-state="todo"] .ord-mark {
+  border-color: var(--ord-line);
+  background: var(--ord-surface);
+  color: transparent;
+}
+.ord-list[data-layout="horizontal"] .ord-body { padding-top: 1.75rem; }
+
+.ord-label { margin: 0; font-weight: 500; }
+.ord-step[data-state="current"] .ord-label { font-weight: 600; }
+
+/* The state is a word next to the step, never the tick or the colour alone. */
+.ord-state {
+  margin: 0.125rem 0 0;
+  color: var(--ord-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ord-detail,
+.ord-date { margin: 0.25rem 0 0; color: var(--ord-muted); font-size: 0.875rem; }

@@ -6,9 +6,10 @@ import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
-  { href: "/#catalogue", label: "Catalogue" },
-  { href: "/#how", label: "How it works" },
-  { href: "/accessibility", label: "Accessibility" },
+  { href: "/parts", label: "Catalogue" },
+  { href: "/in-use", label: "In use" },
+  { href: "/tested", label: "How it is tested" },
+  { href: "/start", label: "Get started" },
   { href: "/about", label: "About" },
 ];
 

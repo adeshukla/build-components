@@ -1,0 +1,206 @@
+[
+  {
+    "slug": "changelog",
+    "camel": "changelog",
+    "export": "Changelog",
+    "name": "Changelog",
+    "title": "Changelog",
+    "category": "Content",
+    "summary": "Releases as an ordered list, each kind named in words, with real dates and nothing behind a disclosure.",
+    "pattern": "Ordered list + time",
+    "accent": "#c4b5fd",
+    "description": "What changed, in an order a screen reader can count.",
+    "how": "The kind is a word — Added, Fixed, Removed — not a coloured dot, and nothing is behind a disclosure: a changelog people have to expand release by release is one nobody reads.",
+    "variants": { "default": "", "plain": "showLatest=false&heading=Release+notes&headingLevel=h3&theme=dark" }
+  },
+  {
+    "slug": "notification-list",
+    "camel": "notificationList",
+    "export": "NotificationList",
+    "name": "Notification list",
+    "title": "Notification list",
+    "category": "Feedback",
+    "summary": "Every mark-as-read button named with its own item, unread said in words, and a count that stays in step.",
+    "pattern": "List + per-item action names",
+    "accent": "#93c5fd",
+    "description": "An inbox where every button says what it acts on.",
+    "how": "Each button is named with the thing it acts on — \"Mark as read: Build 4812 failed\" — because five buttons all called \"Mark as read\" is exactly what a screen reader would otherwise read out.",
+    "steps": [{ "find": "[data-mark-one], .ntf-mark-one", "action": "click", "after": 1400 }],
+    "variants": { "default": "", "quiet": "heading=Inbox&showCount=false&unreadWord=New&theme=dark" }
+  },
+  {
+    "slug": "row-actions",
+    "camel": "rowActions",
+    "export": "RowActions",
+    "name": "List with row actions",
+    "title": "List with row actions",
+    "category": "Content",
+    "summary": "A table whose per-row buttons are each named with their row, so nine buttons have nine names.",
+    "pattern": "Table + scoped action names",
+    "accent": "#5eead4",
+    "description": "Rows of records, each with actions that say what they act on.",
+    "how": "Every action is named with its row, and the row's name is a th with scope=row, so a screen reader says the record alongside each cell it reads.",
+    "steps": [{ "find": "[data-action], .rwa-action", "action": "click", "after": 1400 }],
+    "variants": {
+      "default": "",
+      "two": "caption=Team+invites&actions=%5B%7B%22label%22%3A%22Resend%22%2C%22kind%22%3A%22normal%22%7D%2C%7B%22label%22%3A%22Revoke%22%2C%22kind%22%3A%22danger%22%7D%5D&theme=dark"
+    }
+  },
+  {
+    "slug": "order-tracker",
+    "camel": "orderTracker",
+    "export": "OrderTracker",
+    "name": "Order tracker",
+    "title": "Order tracker",
+    "category": "Content",
+    "summary": "Where it has got to, said in one sentence first, then a list of stages each with its state in words.",
+    "pattern": "Ordered list + aria-current=step",
+    "accent": "#6ee7b7",
+    "description": "An order's progress, read out rather than drawn.",
+    "how": "Where the order is is said in one sentence before the list — the answer most people came for — and each stage's state is a word, never the tick or the colour alone.",
+    "variants": { "default": "", "horizontal": "layout=horizontal&currentStep=2&theme=dark" }
+  },
+  {
+    "slug": "invoice-summary",
+    "camel": "invoiceSummary",
+    "export": "InvoiceSummary",
+    "name": "Invoice summary",
+    "title": "Invoice summary",
+    "category": "Content",
+    "summary": "Lines, subtotal, tax and total worked out in whole pennies, in a table whose footer is a real tfoot.",
+    "pattern": "Table + tfoot totals",
+    "accent": "#a5b4fc",
+    "description": "Numbers that add up, and say what they are.",
+    "how": "Every total is worked out from the lines in whole pennies — in floating point 0.1 + 0.2 is 0.30000000000000004, which is how invoices end up a penny out.",
+    "variants": {
+      "default": "",
+      "zero-rated": "taxPercent=0&taxLabel=No+VAT",
+      "euro": "currency=%E2%82%AC&caption=Invoice+1043&theme=dark"
+    }
+  },
+  {
+    "slug": "article-card",
+    "camel": "articleCard",
+    "export": "ArticleCard",
+    "name": "Article card",
+    "title": "Article card",
+    "category": "Content",
+    "summary": "One link per card and it is the title, with the whole card clickable through that link rather than a second one.",
+    "pattern": "Card with one link",
+    "accent": "#f9a8d4",
+    "description": "A card that gives a screen reader one link, not two.",
+    "how": "One link per card, and it is the title: a card with a \"Read more\" as well gives a screen reader two links to the same place, one of them called \"Read more\".",
+    "variants": {
+      "default": "",
+      "grid": "headingLevel=h3&wholeCardClickable=false&theme=dark",
+      "described": "thumbAlt=A+focus+ring+drawn+round+a+button+on+a+dark+board"
+    }
+  },
+  {
+    "slug": "author-byline",
+    "camel": "authorByline",
+    "export": "AuthorByline",
+    "name": "Author byline",
+    "title": "Author byline",
+    "category": "Content",
+    "summary": "Who wrote it and when, with both dates said, rel=author on the link, and no misused address element.",
+    "pattern": "Byline + rel=author",
+    "accent": "#c4b5fd",
+    "description": "A byline that says published and updated.",
+    "how": "Not an <address> element — that is for the contact details of the nearest article — and both dates are said, because replacing published with updated hides a fact people look for.",
+    "variants": {
+      "default": "",
+      "bare": "nameHref=&showAvatar=false&updatedDate=&readingMinutes=0&theme=dark"
+    }
+  },
+  {
+    "slug": "image-gallery",
+    "camel": "imageGallery",
+    "export": "ImageGallery",
+    "name": "Image gallery",
+    "title": "Image gallery",
+    "category": "Content",
+    "summary": "Figures in a list, with empty and described alt treated as the different things they are, and space reserved before loading.",
+    "pattern": "Figure list + reserved ratio",
+    "accent": "#5ad1c8",
+    "description": "Pictures with captions, and alt text taken seriously.",
+    "how": "An empty alt and a missing alt are not the same thing: empty says skip this, missing makes a reader announce the file name. A caption is not a substitute for either.",
+    "variants": {
+      "default": "",
+      "sourced": "items=%5B%7B%22src%22%3A%22%2Ficon.svg%22%2C%22alt%22%3A%22The+Build+Components+chip+mark%22%2C%22caption%22%3A%22The+mark%2C+at+last%22%7D%5D",
+      "square": "aspect=1-1&columns=3&showCaptions=false&theme=dark"
+    }
+  },
+  {
+    "slug": "video-embed",
+    "camel": "videoEmbed",
+    "export": "VideoEmbed",
+    "name": "Click-to-load video",
+    "title": "Click-to-load video",
+    "category": "Content",
+    "summary": "No request to the video host until you press play, a button named with the video, and a titled frame.",
+    "pattern": "Deferred iframe",
+    "accent": "#fca5a5",
+    "description": "An embed that costs nothing until it is asked for.",
+    "how": "Nothing is requested from the video host until the button is pressed — no script, no cookie, no frame — and the frame that appears is titled, which most embeds are not.",
+    "steps": [{ "find": "[data-play], .vid-play", "action": "click", "after": 1600 }],
+    "variants": {
+      "default": "",
+      "loaded": "embedUrl=https%3A%2F%2Fbuild-components.devstash.me%2F&watchUrl=https%3A%2F%2Fbuild-components.devstash.me%2F&providerName=devstash&theme=dark"
+    }
+  },
+  {
+    "slug": "pull-quote",
+    "camel": "pullQuote",
+    "export": "PullQuote",
+    "name": "Pull quote",
+    "title": "Pull quote",
+    "category": "Content",
+    "summary": "The attribution in a figcaption rather than inside the quotation, and cite used for the work, not the person.",
+    "pattern": "Figure + blockquote",
+    "accent": "#a78bfa",
+    "description": "A quotation whose markup says who said it, correctly.",
+    "how": "The attribution goes in the figcaption, not inside the blockquote — that would make the speaker's name part of what they said — and <cite> wraps the work, never the person.",
+    "variants": {
+      "default": "",
+      "sourced": "sourceHref=https%3A%2F%2Fbuild-components.devstash.me%2Faccessibility",
+      "bare": "showMarks=false&align=centre&size=huge&attribution=&theme=dark"
+    }
+  },
+  {
+    "slug": "team-grid",
+    "camel": "teamGrid",
+    "export": "TeamGrid",
+    "name": "Team grid",
+    "title": "Team grid",
+    "category": "Page sections",
+    "summary": "People as a list rather than a stack of headings, with initials instead of photographs and nobody invented.",
+    "pattern": "Labelled list of people",
+    "accent": "#86efac",
+    "description": "Who is on the team, without polluting the page outline.",
+    "how": "A list of people, not a grid of headings: twelve names as h3s puts twelve entries in the page's outline that nobody wants to navigate by.",
+    "variants": {
+      "default": "",
+      "linked": "people=%5B%7B%22name%22%3A%22Adesh+Shukla%22%2C%22role%22%3A%22UI+developer%22%2C%22href%22%3A%22https%3A%2F%2Fdevstash.me%22%7D%5D",
+      "bare": "showInitials=false&columns=1&intro=&theme=dark"
+    }
+  },
+  {
+    "slug": "logo-wall",
+    "camel": "logoWall",
+    "export": "LogoWall",
+    "name": "Logo wall",
+    "title": "Logo wall",
+    "category": "Page sections",
+    "summary": "Names as text when there is no image, alt that is the name rather than the word logo, and no borrowed endorsements.",
+    "pattern": "Labelled list of marks",
+    "accent": "#fdba74",
+    "description": "A row of names, said properly.",
+    "how": "Each alt is the name — never \"… logo\", since a screen reader already says image — and with no file set the name is simply text, because a wordmark is a picture of a name.",
+    "variants": {
+      "default": "",
+      "pictured": "items=%5B%7B%22name%22%3A%22Build+Components%22%2C%22href%22%3A%22%22%2C%22src%22%3A%22%2Ficon.svg%22%7D%5D",
+      "quiet": "headingLevel=p&columns=6&grayscale=true&theme=dark"
+    }
+  }
+]

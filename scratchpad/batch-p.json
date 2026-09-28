@@ -1,0 +1,54 @@
+[
+  {
+    "slug": "page-header",
+    "camel": "pageHeader",
+    "export": "PageHeader",
+    "name": "Page header",
+    "title": "Page header",
+    "category": "Page sections",
+    "summary": "The page's one h1 in a header landmark, with a named trail whose last step is not a link.",
+    "pattern": "Landmark + breadcrumb",
+    "accent": "#93c5fd",
+    "description": "The top of an inside page, with the one h1 on it.",
+    "how": "A header landmark holding the page's single h1, with the trail as its own named nav and the current page as a non-link last step carrying aria-current.",
+    "variants": {
+      "default": "",
+      "bare": "showTrail=false&primaryLabel=&secondaryLabel=&metaValue=&align=centre&theme=dark"
+    }
+  },
+  {
+    "slug": "split-feature",
+    "camel": "splitFeature",
+    "export": "SplitFeature",
+    "name": "Split feature",
+    "title": "Split feature",
+    "category": "Page sections",
+    "summary": "Words beside a picture, with the words first in the source whichever side the picture is on.",
+    "pattern": "Two-column section",
+    "accent": "#6ee7b7",
+    "description": "A feature block that cannot be read back to front.",
+    "how": "Only the grid column changes when the picture swaps sides — the words stay first in the source, because swapping with order or row-reverse is how a page ends up read back to front.",
+    "variants": {
+      "default": "",
+      "flipped": "mediaSide=left&headingLevel=h3&theme=dark",
+      "described": "mediaAlt=The+test+bench+with+a+date+picker+open+on+it"
+    }
+  },
+  {
+    "slug": "stat-comparison",
+    "camel": "statComparison",
+    "export": "StatComparison",
+    "name": "Stat comparison",
+    "title": "Stat comparison",
+    "category": "Page sections",
+    "summary": "Two options compared row by row, with the better one said in words and rows allowed to have no winner.",
+    "pattern": "Comparison table",
+    "accent": "#5eead4",
+    "description": "A comparison that says on what terms.",
+    "how": "Which one is better is said in words as well as shaded, and a row may be marked as neither — pretending every measure has a winner is the commonest dishonesty in this pattern.",
+    "variants": {
+      "default": "",
+      "plain": "showBetter=false&metricHeader=What+differs&note=&theme=dark"
+    }
+  }
+]

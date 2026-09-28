@@ -1,0 +1,95 @@
+/* Split feature — plain CSS. Colours come from the inline custom properties. */
+.spl {
+  --spl-accent: #0f766e;
+  --spl-accent-text: #0b5a54;
+  --spl-surface: #ffffff;
+  --spl-sunk: #eceaf3;
+  --spl-text: #16121f;
+  --spl-muted: #4d4a57;
+  --spl-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--spl-surface);
+  color: var(--spl-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.spl,
+.spl *,
+.spl *::before,
+.spl *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .spl--theme-system {
+    --spl-surface: #141019;
+    --spl-sunk: #272031;
+    --spl-text: #f6f5fa;
+    --spl-muted: #b6b3c2;
+    --spl-line: #4a4459;
+  }
+}
+
+.spl-section { display: grid; align-items: center; gap: 2rem; }
+@media (min-width: 48rem) {
+  .spl-section { grid-template-columns: 1fr 1fr; gap: 3rem; }
+  /*
+   * The words come first in the source whichever side the picture is on. Only the column placement
+   * changes, so the reading order never depends on the layout.
+   */
+  .spl--media-left .spl-words { grid-column: 2; grid-row: 1; }
+  .spl--media-left .spl-media-holder { grid-column: 1; grid-row: 1; }
+}
+
+.spl-heading { margin: 0; font-size: 1.5rem; font-weight: 600; text-wrap: balance; }
+@media (min-width: 40rem) {
+  .spl-heading { font-size: 1.875rem; }
+}
+.spl-body { max-width: 65ch; margin: 0.75rem 0 0; color: var(--spl-muted); text-wrap: pretty; }
+
+.spl-points { display: grid; gap: 0.5rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.spl-points li { display: flex; gap: 0.75rem; }
+/* The tick is decoration: it is a list, and a screen reader says so. */
+.spl-tick { width: 1rem; height: 1rem; flex-shrink: 0; margin-top: 0.25rem; fill: var(--spl-accent-text); }
+
+.spl-link-row { margin: 1.5rem 0 0; }
+.spl-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--spl-accent-text);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.spl-link:focus-visible { outline: 2px solid var(--spl-accent-text); outline-offset: 2px; }
+
+.spl-media {
+  width: 100%;
+  border: 1px solid var(--spl-line);
+  border-radius: 0.75rem;
+  background: var(--spl-sunk);
+  object-fit: cover;
+}
+.spl--4-3 .spl-media { aspect-ratio: 4 / 3; }
+.spl--1-1 .spl-media { aspect-ratio: 1 / 1; }
+.spl--16-9 .spl-media { aspect-ratio: 16 / 9; }
+
+/* No image ships with this part. A drawn panel, and it says so rather than pretending. */
+.spl-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 0.75rem;
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--spl-accent) 18%, transparent) 0 14px,
+    transparent 14px 28px
+  );
+  color: var(--spl-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+  text-align: center;
+}

@@ -1,0 +1,81 @@
+/* Logo wall — plain CSS. Colours come from the inline custom properties. */
+.lw {
+  --lw-accent: #7c3aed;
+  --lw-accent-text: #6021d6;
+  --lw-surface: #ffffff;
+  --lw-sunk: #f4f3f8;
+  --lw-text: #16121f;
+  --lw-muted: #4d4a57;
+  --lw-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--lw-surface);
+  color: var(--lw-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.lw,
+.lw *,
+.lw *::before,
+.lw *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .lw--theme-system {
+    --lw-surface: #141019;
+    --lw-sunk: #221d2e;
+    --lw-text: #f6f5fa;
+    --lw-muted: #b6b3c2;
+    --lw-line: #4a4459;
+  }
+}
+
+.lw-heading { margin: 0; font-size: 1.25rem; font-weight: 600; }
+.lw-heading--quiet {
+  color: var(--lw-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/*
+ * A list, so a screen reader counts them. Each entry is the name in words: a wordmark is a picture of a
+ * name, and the name is what anyone needs.
+ */
+.lw-list { display: grid; align-items: center; gap: 1rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.lw-item {
+  display: grid;
+  min-height: 4rem;
+  place-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--lw-line);
+  border-radius: 0.5rem;
+  background: var(--lw-sunk);
+  text-align: center;
+}
+.lw-name { font-weight: 600; letter-spacing: -0.01em; }
+
+.lw-link {
+  display: grid;
+  min-height: 2.75rem;
+  place-items: center;
+  color: var(--lw-text);
+  text-decoration: none;
+}
+.lw-link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--lw-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.lw-link:focus-visible { outline: 2px solid var(--lw-accent-text); outline-offset: 2px; }
+
+.lw-mark { max-height: 2rem; width: auto; }
+.lw--grayscale .lw-mark { filter: grayscale(1) contrast(1.25); }
+.lw--grayscale .lw-item:hover .lw-mark { filter: none; }
+
+.lw-note { margin: 1rem 0 0; color: var(--lw-muted); font-size: 0.75rem; }

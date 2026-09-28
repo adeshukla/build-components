@@ -26,6 +26,21 @@ import { CircularProgress, type CircularProgressConfig } from "@/registry/circul
 import { ErrorState, type ErrorStateConfig } from "@/registry/error-state/react/error-state";
 import { MaintenanceNotice, type MaintenanceNoticeConfig } from "@/registry/maintenance-notice/react/maintenance-notice";
 import { HelpHint, type HelpHintConfig } from "@/registry/help-hint/react/help-hint";
+import { Changelog, type ChangelogConfig } from "@/registry/changelog/react/changelog";
+import { NotificationList, type NotificationListConfig } from "@/registry/notification-list/react/notification-list";
+import { RowActions, type RowActionsConfig } from "@/registry/row-actions/react/row-actions";
+import { OrderTracker, type OrderTrackerConfig } from "@/registry/order-tracker/react/order-tracker";
+import { InvoiceSummary, type InvoiceSummaryConfig } from "@/registry/invoice-summary/react/invoice-summary";
+import { ArticleCard, type ArticleCardConfig } from "@/registry/article-card/react/article-card";
+import { AuthorByline, type AuthorBylineConfig } from "@/registry/author-byline/react/author-byline";
+import { ImageGallery, type ImageGalleryConfig } from "@/registry/image-gallery/react/image-gallery";
+import { VideoEmbed, type VideoEmbedConfig } from "@/registry/video-embed/react/video-embed";
+import { PullQuote, type PullQuoteConfig } from "@/registry/pull-quote/react/pull-quote";
+import { TeamGrid, type TeamGridConfig } from "@/registry/team-grid/react/team-grid";
+import { LogoWall, type LogoWallConfig } from "@/registry/logo-wall/react/logo-wall";
+import { PageHeader, type PageHeaderConfig } from "@/registry/page-header/react/page-header";
+import { SplitFeature, type SplitFeatureConfig } from "@/registry/split-feature/react/split-feature";
+import { StatComparison, type StatComparisonConfig } from "@/registry/stat-comparison/react/stat-comparison";
 import { Carousel, type CarouselConfig } from "@/registry/carousel/react/carousel";
 import { Cart, type CartConfig } from "@/registry/cart/react/cart";
 import { Cta, type CtaConfig } from "@/registry/cta/react/cta";
@@ -412,6 +427,21 @@ export function PreviewClient({ slug, initialConfig, demo = false }: { slug: str
         {slug === "error-state" && <ErrorState config={config as unknown as ErrorStateConfig} />}
         {slug === "maintenance-notice" && <MaintenanceNotice config={config as unknown as MaintenanceNoticeConfig} />}
         {slug === "help-hint" && <HelpHint config={config as unknown as HelpHintConfig} />}
+        {slug === "changelog" && <Changelog config={config as unknown as ChangelogConfig} />}
+        {slug === "notification-list" && <NotificationList config={config as unknown as NotificationListConfig} />}
+        {slug === "row-actions" && <RowActions config={config as unknown as RowActionsConfig} />}
+        {slug === "order-tracker" && <OrderTracker config={config as unknown as OrderTrackerConfig} />}
+        {slug === "invoice-summary" && <InvoiceSummary config={config as unknown as InvoiceSummaryConfig} />}
+        {slug === "article-card" && <ArticleCard config={config as unknown as ArticleCardConfig} />}
+        {slug === "author-byline" && <AuthorByline config={config as unknown as AuthorBylineConfig} />}
+        {slug === "image-gallery" && <ImageGallery config={config as unknown as ImageGalleryConfig} />}
+        {slug === "video-embed" && <VideoEmbed config={config as unknown as VideoEmbedConfig} />}
+        {slug === "pull-quote" && <PullQuote config={config as unknown as PullQuoteConfig} />}
+        {slug === "team-grid" && <TeamGrid config={config as unknown as TeamGridConfig} />}
+        {slug === "logo-wall" && <LogoWall config={config as unknown as LogoWallConfig} />}
+        {slug === "page-header" && <PageHeader config={config as unknown as PageHeaderConfig} />}
+        {slug === "split-feature" && <SplitFeature config={config as unknown as SplitFeatureConfig} />}
+        {slug === "stat-comparison" && <StatComparison config={config as unknown as StatComparisonConfig} />}
         {slug === "date-picker" && <DatePicker config={config as unknown as DatePickerConfig} />}
         {slug === "carousel" && <Carousel config={config as unknown as CarouselConfig} />}
         {slug === "cart" && <Cart config={config as unknown as CartConfig} />}

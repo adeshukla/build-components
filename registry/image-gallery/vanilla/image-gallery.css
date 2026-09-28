@@ -1,0 +1,80 @@
+/* Image gallery — plain CSS. Colours come from the inline custom properties. */
+.gal {
+  --gal-accent: #0f766e;
+  --gal-accent-text: #0b5a54;
+  --gal-surface: #ffffff;
+  --gal-sunk: #eceaf3;
+  --gal-text: #16121f;
+  --gal-muted: #4d4a57;
+  --gal-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--gal-surface);
+  color: var(--gal-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.gal,
+.gal *,
+.gal *::before,
+.gal *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .gal--theme-system {
+    --gal-surface: #141019;
+    --gal-sunk: #272031;
+    --gal-text: #f6f5fa;
+    --gal-muted: #b6b3c2;
+    --gal-line: #4a4459;
+  }
+}
+
+.gal-heading { margin: 0; font-size: 1.25rem; font-weight: 600; }
+
+/* A list of figures, so a screen reader counts the pictures and can move between them. */
+.gal-list { display: grid; gap: 1rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.gal-figure { margin: 0; }
+
+/*
+ * The ratio is set in CSS so the space is reserved before the file arrives: no layout shift, and the
+ * caption does not jump down the page.
+ */
+.gal-media {
+  width: 100%;
+  border: 1px solid var(--gal-line);
+  border-radius: 0.5rem;
+  background: var(--gal-sunk);
+  object-fit: cover;
+}
+.gal--4-3 .gal-media { aspect-ratio: 4 / 3; }
+.gal--1-1 .gal-media { aspect-ratio: 1 / 1; }
+.gal--16-9 .gal-media { aspect-ratio: 16 / 9; }
+
+/*
+ * No image set. A drawn placeholder rather than a stock photograph, and it says so rather than
+ * pretending: set src to your own file.
+ */
+.gal-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--gal-accent) 18%, transparent) 0 12px,
+    transparent 12px 24px
+  );
+  color: var(--gal-muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/*
+ * A caption is not alt text. It says something about the picture; alt says what the picture is, for
+ * someone who cannot see it.
+ */
+.gal-caption { margin-top: 0.5rem; color: var(--gal-muted); font-size: 0.875rem; }
+.gal-note { margin: 1rem 0 0; color: var(--gal-muted); font-size: 0.75rem; }

@@ -606,4 +606,58 @@ export const demos: Record<string, Demo> = {
       { find: "[data-toggle], .hlp-toggle, button", action: "click", after: 1600 },
     ],
   },
+  "changelog": {
+    how: "The kind is a word — Added, Fixed, Removed — not a coloured dot, and nothing is behind a disclosure: a changelog people have to expand release by release is one nobody reads.",
+  },
+  "notification-list": {
+    how: "Each button is named with the thing it acts on — \"Mark as read: Build 4812 failed\" — because five buttons all called \"Mark as read\" is exactly what a screen reader would otherwise read out.",
+    steps: [
+      { find: "[data-mark-one], .ntf-mark-one", action: "click", after: 1400 },
+    ],
+  },
+  "row-actions": {
+    how: "Every action is named with its row, and the row's name is a th with scope=row, so a screen reader says the record alongside each cell it reads.",
+    steps: [
+      { find: "[data-action], .rwa-action", action: "click", after: 1400 },
+    ],
+  },
+  "order-tracker": {
+    how: "Where the order is is said in one sentence before the list — the answer most people came for — and each stage's state is a word, never the tick or the colour alone.",
+  },
+  "invoice-summary": {
+    how: "Every total is worked out from the lines in whole pennies — in floating point 0.1 + 0.2 is 0.30000000000000004, which is how invoices end up a penny out.",
+  },
+  "article-card": {
+    how: "One link per card, and it is the title: a card with a \"Read more\" as well gives a screen reader two links to the same place, one of them called \"Read more\".",
+  },
+  "author-byline": {
+    how: "Not an <address> element — that is for the contact details of the nearest article — and both dates are said, because replacing published with updated hides a fact people look for.",
+  },
+  "image-gallery": {
+    how: "An empty alt and a missing alt are not the same thing: empty says skip this, missing makes a reader announce the file name. A caption is not a substitute for either.",
+  },
+  "video-embed": {
+    how: "Nothing is requested from the video host until the button is pressed — no script, no cookie, no frame — and the frame that appears is titled, which most embeds are not.",
+    steps: [
+      { find: "[data-play], .vid-play", action: "click", after: 1600 },
+    ],
+  },
+  "pull-quote": {
+    how: "The attribution goes in the figcaption, not inside the blockquote — that would make the speaker's name part of what they said — and <cite> wraps the work, never the person.",
+  },
+  "team-grid": {
+    how: "A list of people, not a grid of headings: twelve names as h3s puts twelve entries in the page's outline that nobody wants to navigate by.",
+  },
+  "logo-wall": {
+    how: "Each alt is the name — never \"… logo\", since a screen reader already says image — and with no file set the name is simply text, because a wordmark is a picture of a name.",
+  },
+  "page-header": {
+    how: "A header landmark holding the page's single h1, with the trail as its own named nav and the current page as a non-link last step carrying aria-current.",
+  },
+  "split-feature": {
+    how: "Only the grid column changes when the picture swaps sides — the words stay first in the source, because swapping with order or row-reverse is how a page ends up read back to front.",
+  },
+  "stat-comparison": {
+    how: "Which one is better is said in words as well as shaded, and a row may be marked as neither — pretending every measure has a winner is the commonest dishonesty in this pattern.",
+  },
 };

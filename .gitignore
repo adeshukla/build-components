@@ -48,3 +48,6 @@ next-env.d.ts
 # impeccable decision-page session state
 /.impeccable/questions/
 /.impeccable/review/
+
+# Test logs from a session, not part of the project.
+scratchpad/*.log

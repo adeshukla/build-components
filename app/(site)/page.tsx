@@ -111,7 +111,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Catalogue */}
+      {/*
+        A taste of the catalogue, not the whole thing: 126 cards is a page nobody scrolls, and the
+        catalogue has its own page now, with the search in the address bar so a list can be shared.
+      */}
       <section id="catalogue" aria-labelledby="catalogue-heading" className="scroll-mt-4">
         <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-5">
@@ -119,11 +122,64 @@ export default function Home() {
               Parts catalogue
             </h2>
             <p className="max-w-md text-pretty text-ink-muted">
-              Every part is in stock and tested on both outputs. Search it, filter by type, or open one to configure it.
+              Every part is in stock and tested on both outputs. Search here, or open the full catalogue to
+              filter it by type.
             </p>
           </div>
 
           <Catalogue parts={parts} />
+
+          <p className="mt-8">
+            <Link href="/parts" className="btn-pad">
+              {`All ${inStock.length} parts`}
+              <Arrow />
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* The parts composed into whole screens: the thing a catalogue of cards cannot show. */}
+      <section aria-labelledby="in-use-heading" className="border-y border-rule bg-paper-sunk">
+        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-16">
+          <div>
+            <h2
+              id="in-use-heading"
+              className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl"
+            >
+              See them together
+            </h2>
+            <p className="mt-5 max-w-xl text-lg text-pretty text-ink-muted">
+              A part on its own page is easy to like. Three whole screens — a product page, a checkout, an
+              admin screen — are made out of the catalogue and running, with a switch that draws a line
+              round every part and names it.
+            </p>
+            <p className="mt-6 flex flex-wrap gap-3">
+              <Link href="/in-use" className="btn-pad">
+                Open the screens
+                <Arrow />
+              </Link>
+              <Link href="/tested" className="btn-outline">
+                Count the tab stops
+              </Link>
+            </p>
+          </div>
+          {/* Three labelled slabs: a picture of the idea, not a screenshot of it. */}
+          <ul aria-hidden="true" className="grid gap-3">
+            {[
+              ["A product page", "7 parts"],
+              ["A checkout", "5 parts"],
+              ["An admin screen", "6 parts"],
+            ].map(([name, count], index) => (
+              <li
+                key={name}
+                className="reveal flex items-center justify-between gap-4 rounded-lg border border-rule bg-paper px-4 py-3.5"
+                style={{ animationDelay: `${index * 90}ms` }}
+              >
+                <span className="font-display text-xl font-semibold uppercase">{name}</span>
+                <span className="font-mono text-xs text-ink-muted">{count}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

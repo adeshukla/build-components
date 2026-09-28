@@ -16,7 +16,7 @@ export function SiteFooter() {
             into your project. No library to install.
           </p>
           <p className="mt-6">
-            <Link href="/#catalogue" className="btn-outline-board">
+            <Link href="/parts" className="btn-outline-board">
               Browse the catalogue
             </Link>
           </p>
@@ -43,6 +43,10 @@ export function SiteFooter() {
           <nav aria-label="Footer">
             <ul className="flex flex-wrap gap-x-4">
               {[
+                ["/parts", "Catalogue"],
+                ["/in-use", "In use"],
+                ["/tested", "How it is tested"],
+                ["/start", "Get started"],
                 ["/about", "About"],
                 ["/accessibility", "Accessibility"],
                 ["/sitemap.xml", "Sitemap"],

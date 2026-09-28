@@ -1,0 +1,115 @@
+/* Notification list — plain CSS. Colours come from the inline custom properties. */
+.ntf {
+  --ntf-accent: #1d4ed8;
+  --ntf-accent-text: #1a41b8;
+  --ntf-on-accent: #ffffff;
+  --ntf-surface: #ffffff;
+  --ntf-sunk: #f4f3f8;
+  --ntf-text: #16121f;
+  --ntf-muted: #4d4a57;
+  --ntf-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--ntf-surface);
+  color: var(--ntf-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.ntf,
+.ntf *,
+.ntf *::before,
+.ntf *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .ntf--theme-system {
+    --ntf-surface: #141019;
+    --ntf-sunk: #221d2e;
+    --ntf-text: #f6f5fa;
+    --ntf-muted: #b6b3c2;
+    --ntf-line: #4a4459;
+  }
+}
+
+/* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
+.ntf [hidden] { display: none; }
+
+.ntf-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ntf-line);
+}
+.ntf-heading { margin: 0; font-size: 1.25rem; font-weight: 600; }
+
+.ntf-mark-all {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 0.75rem;
+  border: 1px solid var(--ntf-line);
+  border-radius: 0.375rem;
+  background: var(--ntf-sunk);
+  color: var(--ntf-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ntf-mark-all:focus-visible { outline: 2px solid var(--ntf-accent-text); outline-offset: 2px; }
+
+.ntf-list { margin: 0; padding: 0; list-style: none; }
+.ntf-item {
+  display: flex;
+  min-height: 4rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0 0.75rem 1rem;
+  border-bottom: 1px solid var(--ntf-line);
+}
+.ntf-item[data-unread="true"] {
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--ntf-accent);
+}
+
+.ntf-body { flex: 1 1 12rem; min-width: 12rem; }
+.ntf-title { margin: 0; }
+.ntf-item[data-unread="true"] .ntf-title { font-weight: 600; }
+
+/* Unread is a word as well as a bar, never colour or a dot alone. */
+.ntf-flag {
+  margin-left: 0.5rem;
+  color: var(--ntf-accent-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ntf-meta { margin: 0.125rem 0 0; color: var(--ntf-muted); font-size: 0.875rem; }
+
+.ntf-mark-one {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--ntf-accent-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.ntf-mark-one:focus-visible { outline: 2px solid var(--ntf-accent-text); outline-offset: 2px; }
+
+.ntf-status { margin: 0.75rem 0 0; color: var(--ntf-muted); font-size: 0.875rem; }

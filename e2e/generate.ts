@@ -316,6 +316,51 @@ import { renderMaintenanceNoticeHtml } from "../registry/maintenance-notice/vani
 import { helpHintSchema } from "../registry/help-hint/schema";
 import type { HelpHintConfig } from "../registry/help-hint/react/help-hint";
 import { renderHelpHintHtml } from "../registry/help-hint/vanilla/render";
+import { changelogSchema } from "../registry/changelog/schema";
+import type { ChangelogConfig } from "../registry/changelog/react/changelog";
+import { renderChangelogHtml } from "../registry/changelog/vanilla/render";
+import { notificationListSchema } from "../registry/notification-list/schema";
+import type { NotificationListConfig } from "../registry/notification-list/react/notification-list";
+import { renderNotificationListHtml } from "../registry/notification-list/vanilla/render";
+import { rowActionsSchema } from "../registry/row-actions/schema";
+import type { RowActionsConfig } from "../registry/row-actions/react/row-actions";
+import { renderRowActionsHtml } from "../registry/row-actions/vanilla/render";
+import { orderTrackerSchema } from "../registry/order-tracker/schema";
+import type { OrderTrackerConfig } from "../registry/order-tracker/react/order-tracker";
+import { renderOrderTrackerHtml } from "../registry/order-tracker/vanilla/render";
+import { invoiceSummarySchema } from "../registry/invoice-summary/schema";
+import type { InvoiceSummaryConfig } from "../registry/invoice-summary/react/invoice-summary";
+import { renderInvoiceSummaryHtml } from "../registry/invoice-summary/vanilla/render";
+import { articleCardSchema } from "../registry/article-card/schema";
+import type { ArticleCardConfig } from "../registry/article-card/react/article-card";
+import { renderArticleCardHtml } from "../registry/article-card/vanilla/render";
+import { authorBylineSchema } from "../registry/author-byline/schema";
+import type { AuthorBylineConfig } from "../registry/author-byline/react/author-byline";
+import { renderAuthorBylineHtml } from "../registry/author-byline/vanilla/render";
+import { imageGallerySchema } from "../registry/image-gallery/schema";
+import type { ImageGalleryConfig } from "../registry/image-gallery/react/image-gallery";
+import { renderImageGalleryHtml } from "../registry/image-gallery/vanilla/render";
+import { videoEmbedSchema } from "../registry/video-embed/schema";
+import type { VideoEmbedConfig } from "../registry/video-embed/react/video-embed";
+import { renderVideoEmbedHtml } from "../registry/video-embed/vanilla/render";
+import { pullQuoteSchema } from "../registry/pull-quote/schema";
+import type { PullQuoteConfig } from "../registry/pull-quote/react/pull-quote";
+import { renderPullQuoteHtml } from "../registry/pull-quote/vanilla/render";
+import { teamGridSchema } from "../registry/team-grid/schema";
+import type { TeamGridConfig } from "../registry/team-grid/react/team-grid";
+import { renderTeamGridHtml } from "../registry/team-grid/vanilla/render";
+import { logoWallSchema } from "../registry/logo-wall/schema";
+import type { LogoWallConfig } from "../registry/logo-wall/react/logo-wall";
+import { renderLogoWallHtml } from "../registry/logo-wall/vanilla/render";
+import { pageHeaderSchema } from "../registry/page-header/schema";
+import type { PageHeaderConfig } from "../registry/page-header/react/page-header";
+import { renderPageHeaderHtml } from "../registry/page-header/vanilla/render";
+import { splitFeatureSchema } from "../registry/split-feature/schema";
+import type { SplitFeatureConfig } from "../registry/split-feature/react/split-feature";
+import { renderSplitFeatureHtml } from "../registry/split-feature/vanilla/render";
+import { statComparisonSchema } from "../registry/stat-comparison/schema";
+import type { StatComparisonConfig } from "../registry/stat-comparison/react/stat-comparison";
+import { renderStatComparisonHtml } from "../registry/stat-comparison/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
@@ -1341,6 +1386,148 @@ export const components: Record<
     variants: {
       default: "",
       open: "startOpen=true&theme=dark",
+    },
+  },
+  "changelog": {
+    exportName: "Changelog",
+    schema: changelogSchema,
+    renderHtml: (config) => renderChangelogHtml(config as unknown as ChangelogConfig),
+    variants: {
+      default: "",
+      plain: "showLatest=false&heading=Release+notes&headingLevel=h3&theme=dark",
+    },
+  },
+  "notification-list": {
+    exportName: "NotificationList",
+    schema: notificationListSchema,
+    renderHtml: (config) => renderNotificationListHtml(config as unknown as NotificationListConfig),
+    variants: {
+      default: "",
+      quiet: "heading=Inbox&showCount=false&unreadWord=New&theme=dark",
+    },
+  },
+  "row-actions": {
+    exportName: "RowActions",
+    schema: rowActionsSchema,
+    renderHtml: (config) => renderRowActionsHtml(config as unknown as RowActionsConfig),
+    variants: {
+      default: "",
+      two: "caption=Team+invites&actions=%5B%7B%22label%22%3A%22Resend%22%2C%22kind%22%3A%22normal%22%7D%2C%7B%22label%22%3A%22Revoke%22%2C%22kind%22%3A%22danger%22%7D%5D&theme=dark",
+    },
+  },
+  "order-tracker": {
+    exportName: "OrderTracker",
+    schema: orderTrackerSchema,
+    renderHtml: (config) => renderOrderTrackerHtml(config as unknown as OrderTrackerConfig),
+    variants: {
+      default: "",
+      horizontal: "layout=horizontal&currentStep=2&theme=dark",
+    },
+  },
+  "invoice-summary": {
+    exportName: "InvoiceSummary",
+    schema: invoiceSummarySchema,
+    renderHtml: (config) => renderInvoiceSummaryHtml(config as unknown as InvoiceSummaryConfig),
+    variants: {
+      default: "",
+      "zero-rated": "taxPercent=0&taxLabel=No+VAT",
+      euro: "currency=%E2%82%AC&caption=Invoice+1043&theme=dark",
+    },
+  },
+  "article-card": {
+    exportName: "ArticleCard",
+    schema: articleCardSchema,
+    renderHtml: (config) => renderArticleCardHtml(config as unknown as ArticleCardConfig),
+    variants: {
+      default: "",
+      grid: "headingLevel=h3&wholeCardClickable=false&theme=dark",
+      described: "thumbAlt=A+focus+ring+drawn+round+a+button+on+a+dark+board",
+    },
+  },
+  "author-byline": {
+    exportName: "AuthorByline",
+    schema: authorBylineSchema,
+    renderHtml: (config) => renderAuthorBylineHtml(config as unknown as AuthorBylineConfig),
+    variants: {
+      default: "",
+      bare: "nameHref=&showAvatar=false&updatedDate=&readingMinutes=0&theme=dark",
+    },
+  },
+  "image-gallery": {
+    exportName: "ImageGallery",
+    schema: imageGallerySchema,
+    renderHtml: (config) => renderImageGalleryHtml(config as unknown as ImageGalleryConfig),
+    variants: {
+      default: "",
+      sourced: "items=%5B%7B%22src%22%3A%22%2Ficon.svg%22%2C%22alt%22%3A%22The+Build+Components+chip+mark%22%2C%22caption%22%3A%22The+mark%2C+at+last%22%7D%5D",
+      square: "aspect=1-1&columns=3&showCaptions=false&theme=dark",
+    },
+  },
+  "video-embed": {
+    exportName: "VideoEmbed",
+    schema: videoEmbedSchema,
+    renderHtml: (config) => renderVideoEmbedHtml(config as unknown as VideoEmbedConfig),
+    variants: {
+      default: "",
+      loaded: "embedUrl=https%3A%2F%2Fbuild-components.devstash.me%2F&watchUrl=https%3A%2F%2Fbuild-components.devstash.me%2F&providerName=devstash&theme=dark",
+    },
+  },
+  "pull-quote": {
+    exportName: "PullQuote",
+    schema: pullQuoteSchema,
+    renderHtml: (config) => renderPullQuoteHtml(config as unknown as PullQuoteConfig),
+    variants: {
+      default: "",
+      sourced: "sourceHref=https%3A%2F%2Fbuild-components.devstash.me%2Faccessibility",
+      bare: "showMarks=false&align=centre&size=huge&attribution=&theme=dark",
+    },
+  },
+  "team-grid": {
+    exportName: "TeamGrid",
+    schema: teamGridSchema,
+    renderHtml: (config) => renderTeamGridHtml(config as unknown as TeamGridConfig),
+    variants: {
+      default: "",
+      linked: "people=%5B%7B%22name%22%3A%22Adesh+Shukla%22%2C%22role%22%3A%22UI+developer%22%2C%22href%22%3A%22https%3A%2F%2Fdevstash.me%22%7D%5D",
+      bare: "showInitials=false&columns=1&intro=&theme=dark",
+    },
+  },
+  "logo-wall": {
+    exportName: "LogoWall",
+    schema: logoWallSchema,
+    renderHtml: (config) => renderLogoWallHtml(config as unknown as LogoWallConfig),
+    variants: {
+      default: "",
+      pictured: "items=%5B%7B%22name%22%3A%22Build+Components%22%2C%22href%22%3A%22%22%2C%22src%22%3A%22%2Ficon.svg%22%7D%5D",
+      quiet: "headingLevel=p&columns=6&grayscale=true&theme=dark",
+    },
+  },
+  "page-header": {
+    exportName: "PageHeader",
+    schema: pageHeaderSchema,
+    renderHtml: (config) => renderPageHeaderHtml(config as unknown as PageHeaderConfig),
+    variants: {
+      default: "",
+      "bare": "showTrail=false&primaryLabel=&secondaryLabel=&metaValue=&align=centre&theme=dark",
+    },
+  },
+  "split-feature": {
+    exportName: "SplitFeature",
+    schema: splitFeatureSchema,
+    renderHtml: (config) => renderSplitFeatureHtml(config as unknown as SplitFeatureConfig),
+    variants: {
+      default: "",
+      flipped: "mediaSide=left&headingLevel=h3&theme=dark",
+      described: "mediaAlt=The+test+bench+with+a+date+picker+open+on+it",
+    },
+  },
+  "stat-comparison": {
+    exportName: "StatComparison",
+    schema: statComparisonSchema,
+    renderHtml: (config) => renderStatComparisonHtml(config as unknown as StatComparisonConfig),
+    variants: {
+      default: "",
+      plain: "showBetter=false&metricHeader=What+differs&note=&theme=dark",
     },
   },
 };

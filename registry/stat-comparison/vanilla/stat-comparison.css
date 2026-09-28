@@ -1,0 +1,80 @@
+/* Stat comparison — plain CSS. Colours come from the inline custom properties. */
+.stc {
+  --stc-accent: #0f766e;
+  --stc-accent-text: #0b5a54;
+  --stc-surface: #ffffff;
+  --stc-sunk: #f1f5f4;
+  --stc-text: #16121f;
+  --stc-muted: #4d4a57;
+  --stc-line: #c9c4d6;
+  display: block;
+  padding: 0.25rem;
+  background: var(--stc-surface);
+  color: var(--stc-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+/* Sizes include padding and border, whatever the host page does. */
+.stc,
+.stc *,
+.stc *::before,
+.stc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  .stc--theme-system {
+    --stc-surface: #141019;
+    --stc-sunk: #1c2422;
+    --stc-text: #f6f5fa;
+    --stc-muted: #b6b3c2;
+    --stc-line: #4a4459;
+  }
+}
+
+.stc-table { width: 100%; border-collapse: collapse; text-align: left; }
+.stc-caption { padding-bottom: 0.75rem; font-size: 1.25rem; font-weight: 600; text-align: left; }
+.stc-table th,
+.stc-table td { padding: 0.75rem; text-align: left; vertical-align: top; }
+
+.stc-head tr { border-bottom: 2px solid var(--stc-line); }
+.stc-corner { font-weight: 500; }
+.stc-option { font-weight: 600; }
+
+.stc-row { border-bottom: 1px solid var(--stc-line); }
+.stc-metric { color: var(--stc-muted); font-weight: 400; }
+.stc-value { font-weight: 500; font-variant-numeric: tabular-nums; }
+.stc-value[data-better="true"] { background: var(--stc-sunk); }
+
+/*
+ * Which one is better is said in words, not by a tint. A shaded cell is invisible to a screen reader and
+ * to anyone who cannot tell the two shades apart.
+ */
+.stc-better {
+  display: block;
+  margin-top: 0.125rem;
+  color: var(--stc-accent-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stc-note { max-width: 65ch; margin: 1rem 0 0; color: var(--stc-muted); font-size: 0.875rem; }
+
+.stc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/* At a narrow width the values stay in their columns and the measure wraps. */
+@media (max-width: 30rem) {
+  .stc-table { font-size: 0.875rem; }
+  .stc-table th,
+  .stc-table td { padding: 0.625rem 0.375rem; }
+  .stc-metric { overflow-wrap: break-word; }
+}

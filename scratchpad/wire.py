@@ -129,7 +129,8 @@ def wire(entries):
                 f'import type {{ {e["export"]}Config }} from "../registry/{e["slug"]}/react/{e["slug"]}";\n'
                 f'import {{ render{e["export"]}Html }} from "../registry/{e["slug"]}/vanilla/render";\n'
             )
-            variants = "".join(f'      {k}: "{v}",\n' for k, v in e["variants"].items())
+            # Quoted: a key like "zero-rated" is not a bare identifier.
+            variants = "".join(f'      "{k}": "{v}",\n' for k, v in e["variants"].items())
             map_entries += (
                 f'  "{e["slug"]}": {{\n'
                 f'    exportName: "{e["export"]}",\n'
