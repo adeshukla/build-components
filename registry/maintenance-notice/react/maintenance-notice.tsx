@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useCallback, useState, useSyncExternalStore, type CSSProperties } from "react";
 
 export type MaintenanceNoticeConfig = {
   heading: string;
@@ -130,6 +130,8 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
   }, []);
   const getSnapshot = useCallback(() => readDismissed(key), [key]);
   const stored = useSyncExternalStore(subscribe, getSnapshot, () => false);
+  const id = useId();
+  const headingId = `${id}-mnt-heading`;
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -155,7 +157,7 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
       {!gone && (
       <section
         data-notice
-        aria-labelledby="mnt-heading"
+        aria-labelledby={headingId}
         className="sticky top-0 z-30 border-b-4 border-(--mnt-accent) bg-(--mnt-surface) text-(--mnt-text)"
       >
         <div className="flex flex-wrap items-start gap-x-4 gap-y-2 px-4 py-3">
@@ -167,7 +169,7 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
             )}
           </svg>
           <div className="min-w-48 flex-1">
-            <p id="mnt-heading" className="m-0 font-semibold">
+            <p id={headingId} className="m-0 font-semibold">
               {config.heading}
             </p>
             {when !== "" && (

@@ -1,6 +1,95 @@
 # Progress
 
-Last updated: 2026-09-27 (session 10)
+Last updated: 2026-09-28 (session 11)
+
+## Current status (session 11)
+
+**All fifty parts Adesh asked for are built.** 126 parts in stock, every one tested as a React + Tailwind
+file and as plain HTML, CSS and JavaScript, across chromium, WebKit and an emulated iPhone. The site is
+five pages now rather than one long one.
+
+### How Adesh can test
+```
+cd C:\Users\shukl\OneDrive\Desktop\build-components
+pnpm dev
+```
+Open http://localhost:3000.
+- **Home:** the board hero, four parts to try in one socket, a catalogue teaser, the three drawn diagrams,
+  the test report.
+- **`/parts`:** the whole catalogue. Search it and watch the address bar — a filtered list can be sent to
+  someone, and arrives already applied.
+- **`/in-use`:** three whole screens made out of the catalogue. Turn on **X-ray** and every part is outlined
+  and named, each label a link to that part.
+- **`/tested`:** press **Number the tab stops** and compare the menu bar (one stop for nine items) with the
+  address block (one per field). Then pick a colour that fails contrast and watch the correction.
+- **`/start`:** the two ways to take a part, and what a project needs for each output.
+- **Any part page:** configure on the left, the test bench in the middle, the keyboard map and manual
+  checklist under it, install command and code below.
+
+### The fifty, finished (sessions 10 and 11)
+| Batch | Parts |
+|---|---|
+| H-K (session 10) | checkbox group, radio cards, textarea with counter, select field, FAQ, details list, comparison table, hero, feature grid, how it works, newsletter, toggle group, value with unit, masked input |
+| L | date range, time range, dual range slider, PIN pad, autosaving field, form error summary, address fields |
+| M | skip links, anchor navigation, command menu, menu bar, cursor pagination, navigation progress, shrinking sticky header, hover card |
+| N | bottom sheet, loading button, undo snackbar, inline confirm, circular progress, error state with retry, maintenance notice, help hint |
+| O | changelog, notification list, list with row actions, order tracker, invoice summary, article card, author byline, image gallery, click-to-load video, pull quote, team grid, logo wall |
+| P | page header, split feature, stat comparison |
+
+### Bugs found by the tests this session (D63-D66)
+Each of these would have shipped:
+1. **A sticky header that shrinks fought itself.** Shrinking shortens the content above it, so the browser
+   nudges the scroll position to keep the view still — and read as direction, those nudges say "up", which
+   brought the header back the instant it hid.
+2. **A `display` declaration beats `[hidden]`.** The command menu's filtered-out options and the whole hover
+   card stayed on screen in the plain output. Tailwind's preflight hides the React output's, which is why
+   only one side was wrong.
+3. **`display: flex` on a `<dialog>`** beats `dialog:not([open]) { display: none }`, so the closed bottom
+   sheet sat on the page.
+4. **A "hidden" skip link was a 32x44 box:** with `border-box`, padding wins over `width: 1px`.
+5. **The anchor nav marked the wrong section** (a line at 35% of the viewport is already above the second
+   heading before anything is scrolled) **and never the last one.**
+6. **A URL option could never be cleared:** `safeUrl` turned `""` into `"#"`, so a dozen "leave it empty for
+   none" options were impossible to set.
+7. **Six of this session's parts hard-coded an element id,** which collides the moment two of them share a
+   page.
+8. **My own tab-order tracer counted three stops for a menubar that has one** — `button` matches a button
+   with `tabindex="-1"`, which is exactly what a roving tabindex puts it on.
+9. **A row of small links on `/in-use` was under the 24px minimum target size** on a phone (WCAG 2.5.8).
+
+Two test-infrastructure fixes as well: `animation.finished` rejects when an animation is interrupted, which
+failed the whole animation wait in `expectNoAxeViolations`; and the new pages needed a `data-ready` marker,
+because typing into a field before React has hydrated types into nothing.
+
+### Test state
+- Batch L: green on all three browsers. Batch M: 408 tests green. Batch N: 438 green. Batches O and P: 747
+  green. The four new pages: 63 green.
+- `e2e/editor.spec.ts` (every part, both outputs, in the real editor) and `e2e/home.spec.ts` are green. One
+  modal editor test failed once with an empty frame and passed on a rerun — the known dev-server artefact.
+- **The full sweep across every spec has not been run end to end this session.** Each batch and each suite is
+  green on its own; that is the one piece of verification still outstanding.
+
+### Still to do — doesn't need Adesh
+- **Hard-coded ids in about twenty older parts** (cart, cta, feature-grid, form, hero, how-it-works,
+  mega-menu, menu, multi-select, otp, password, popover, search and others). Each breaks if two of that part
+  share a page, which `/in-use` now makes an ordinary thing to do. `useId()` in each, and a test that renders
+  two of one part and checks for duplicate ids.
+- **Run the whole sweep** (about 5,500 tests now) in one go, and against a production build.
+- A "copy all files" button for the HTML/CSS/JS output.
+- Configurable UI strings for the date picker and select.
+- Screen-reader pass (NVDA) on the parts added this session, then fold anything learnt into the checklists.
+
+### Needs Adesh
+1. **A licence for the exported code.** `/start` says `[TODO: no licence has been chosen]` rather than
+   implying one. MIT is the usual choice; it is your call, and until it is made the page is honest but
+   unhelpful.
+2. **Deploy.** Nothing has been pushed. The live site is still on the state from session 10 — 88 parts, one
+   long home page.
+3. **Manual checks:** the checklists with NVDA and on a real iPhone. Emulation is not a device.
+4. The Mitosis / Web Components question (D6) is still open. 126 parts in two hand-written outputs each is
+   the cost a third output would multiply.
+
+---
 
 ## Current status (session 10)
 

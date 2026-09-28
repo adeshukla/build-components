@@ -1,5 +1,6 @@
 // The parts catalogue: what exists, and what is planned (shown as coming, never as available).
-// Each part has a name of its own from one family (ship's instruments) plus a plain description.
+// Each part's name is the term a developer would search for. The ship's-instrument codenames were
+// dropped on 2026-09-27 (D57): nobody outside this repo could tell what a "Binnacle" was.
 
 export type Part = {
   slug: string;

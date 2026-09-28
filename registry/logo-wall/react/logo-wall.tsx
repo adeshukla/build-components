@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type LogoWallConfig = {
   heading: string;
@@ -79,6 +79,8 @@ function safeUrl(value: string) {
 }
 
 export function LogoWall({ config = defaultConfig }: { config?: LogoWallConfig }) {
+  const id = useId();
+  const headingId = `${id}-lw-heading`;
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -97,7 +99,7 @@ export function LogoWall({ config = defaultConfig }: { config?: LogoWallConfig }
   return (
     <div style={style} className="bg-(--lw-surface) p-1 text-(--lw-text)">
       <Heading
-        id="lw-heading"
+        id={headingId}
         className={
           config.headingLevel === "p"
             ? "m-0 font-mono text-xs tracking-wide text-(--lw-muted) uppercase"
@@ -112,7 +114,7 @@ export function LogoWall({ config = defaultConfig }: { config?: LogoWallConfig }
         of a name, and the name is what anyone needs.
       */}
       <ul
-        aria-labelledby="lw-heading"
+        aria-labelledby={headingId}
         className="mt-4 grid list-none items-center gap-4 p-0"
         style={{ gridTemplateColumns: `repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))` }}
       >

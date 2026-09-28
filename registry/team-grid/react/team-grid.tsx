@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type TeamGridConfig = {
   heading: string;
@@ -87,6 +87,8 @@ function safeHref(href: string) {
 }
 
 export function TeamGrid({ config = defaultConfig }: { config?: TeamGridConfig }) {
+  const id = useId();
+  const headingId = `${id}-tm-heading`;
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -102,7 +104,7 @@ export function TeamGrid({ config = defaultConfig }: { config?: TeamGridConfig }
 
   return (
     <div style={style} className="bg-(--tm-surface) p-1 text-(--tm-text)">
-      <h2 id="tm-heading" className="text-xl font-semibold">
+      <h2 id={headingId} className="text-xl font-semibold">
         {config.heading}
       </h2>
       {config.intro.trim() !== "" && <p className="mt-1 max-w-prose text-(--tm-muted)">{config.intro}</p>}
@@ -112,7 +114,7 @@ export function TeamGrid({ config = defaultConfig }: { config?: TeamGridConfig }
         outline that nobody wants to navigate by.
       */}
       <ul
-        aria-labelledby="tm-heading"
+        aria-labelledby={headingId}
         className="mt-5 grid list-none gap-5 p-0"
         style={{ gridTemplateColumns: `repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))` }}
       >

@@ -45,6 +45,7 @@ export function Catalogue({
   const [showing, setShowing] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const root = useRef<HTMLDivElement>(null);
 
   const searching = query.trim() !== "";
   const matching = parts.filter((part) => (filter === ALL || part.category === filter) && matches(part, query));
@@ -72,6 +73,14 @@ export function Catalogue({
     window.history.replaceState(null, "", search === "" ? window.location.pathname : `?${search}`);
   }, [syncUrl, query, filter]);
 
+  /*
+   * Says when React is listening, so a test never types into a field that is still server-rendered. Set
+   * on the DOM rather than kept in state: nothing about the page renders differently because of it.
+   */
+  useEffect(() => {
+    root.current?.setAttribute("data-ready", "true");
+  }, []);
+
   // "/" jumps to the search box, as it does in most tools — but never while someone is typing.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -88,7 +97,7 @@ export function Catalogue({
   }, []);
 
   return (
-    <div className="mt-6">
+    <div ref={root} className="mt-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="w-full max-w-sm">
           <label htmlFor={`${id}-search`} className="block text-sm font-medium">

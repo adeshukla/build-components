@@ -4,15 +4,22 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AddressFields } from "@/registry/address-fields/react/address-fields";
 import { MenuBar } from "@/registry/menu-bar/react/menu-bar";
 
-/** Everything the browser will stop on, in the order it will stop. */
+/**
+ * Everything the browser will stop on, in the order it will stop.
+ *
+ * Every one of these excludes tabindex="-1": a roving tabindex — which is how a menubar, a toolbar or a
+ * tablist gets down to one stop — puts it on the very elements that would otherwise match "button".
+ */
 const FOCUSABLE = [
   "a[href]",
   "button:not([disabled])",
   "input:not([disabled]):not([type=hidden])",
   "select:not([disabled])",
   "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(",");
+  "[tabindex]",
+]
+  .map((selector) => `${selector}:not([tabindex="-1"])`)
+  .join(",");
 
 const subjects = {
   "menu-bar": {
@@ -41,6 +48,7 @@ export function FocusTrace() {
   const [which, setWhich] = useState<keyof typeof subjects>("menu-bar");
   const [stops, setStops] = useState<Stop[] | null>(null);
   const panel = useRef<HTMLDivElement | null>(null);
+  const root = useRef<HTMLDivElement | null>(null);
 
   const measure = useCallback(() => {
     const node = panel.current;
@@ -69,8 +77,13 @@ export function FocusTrace() {
 
   const subject = subjects[which];
 
+  // Says when React is listening, so a test never presses a button that is still server-rendered.
+  useEffect(() => {
+    root.current?.setAttribute("data-ready", "true");
+  }, []);
+
   return (
-    <div className="rounded-xl border border-rule bg-paper p-4 sm:p-6">
+    <div ref={root} className="rounded-xl border border-rule bg-paper p-4 sm:p-6">
       <fieldset className="m-0 border-0 p-0">
         <legend className="font-mono text-xs tracking-wide text-ink-muted uppercase">Trace which part</legend>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -114,7 +127,7 @@ export function FocusTrace() {
       </div>
 
       {/* The count in words, politely, because a set of badges appearing is not a message. */}
-      <p role="status" className="mt-3 text-sm text-ink-muted">
+      <p role="status" data-count className="mt-3 text-sm text-ink-muted">
         {stops === null ? "" : `${stops.length} tab ${stops.length === 1 ? "stop" : "stops"} in ${subject.name.toLowerCase()}.`}
       </p>
 

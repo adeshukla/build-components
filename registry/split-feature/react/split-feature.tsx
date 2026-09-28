@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type SplitFeatureConfig = {
   heading: string;
@@ -88,6 +88,8 @@ function safeUrl(value: string) {
 }
 
 export function SplitFeature({ config = defaultConfig }: { config?: SplitFeatureConfig }) {
+  const id = useId();
+  const headingId = `${id}-spl-heading`;
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -108,13 +110,13 @@ export function SplitFeature({ config = defaultConfig }: { config?: SplitFeature
 
   return (
     <div style={style} className="bg-(--spl-surface) p-1 text-(--spl-text)">
-      <section aria-labelledby="spl-heading" className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
+      <section aria-labelledby={headingId} className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
         {/*
           The words come first in the source whichever side the picture is on. Only the column placement
           changes, so the reading order never depends on the layout.
         */}
         <div className={config.mediaSide === "left" ? "md:col-start-2 md:row-start-1" : ""}>
-          <Heading id="spl-heading" className="text-2xl font-semibold text-balance sm:text-3xl">
+          <Heading id={headingId} className="text-2xl font-semibold text-balance sm:text-3xl">
             {config.heading}
           </Heading>
           <p className="mt-3 max-w-prose text-pretty text-(--spl-muted)">{config.body}</p>

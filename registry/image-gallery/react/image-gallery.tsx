@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useId, useSyncExternalStore, type CSSProperties } from "react";
 
 export type ImageGalleryConfig = {
   heading: string;
@@ -79,6 +79,8 @@ function safeSrc(src: string) {
 }
 
 export function ImageGallery({ config = defaultConfig }: { config?: ImageGalleryConfig }) {
+  const id = useId();
+  const headingId = `${id}-gal-heading`;
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -94,13 +96,13 @@ export function ImageGallery({ config = defaultConfig }: { config?: ImageGallery
 
   return (
     <div style={style} className="bg-(--gal-surface) p-1 text-(--gal-text)">
-      <h2 id="gal-heading" className="text-xl font-semibold">
+      <h2 id={headingId} className="text-xl font-semibold">
         {config.heading}
       </h2>
 
       {/* A list of figures, so a screen reader counts the pictures and can move between them. */}
       <ul
-        aria-labelledby="gal-heading"
+        aria-labelledby={headingId}
         className="mt-4 grid list-none gap-4 p-0"
         style={{ gridTemplateColumns: `repeat(${Math.max(config.columns, 1)}, minmax(0, 1fr))` }}
       >

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { partBySlug } from "@/lib/parts";
 
 import { AddressFields } from "@/registry/address-fields/react/address-fields";
@@ -10,7 +10,7 @@ import { CircularProgress } from "@/registry/circular-progress/react/circular-pr
 import { Faq } from "@/registry/faq/react/faq";
 import { FeatureGrid } from "@/registry/feature-grid/react/feature-grid";
 import { HelpHint } from "@/registry/help-hint/react/help-hint";
-import { Hero } from "@/registry/hero/react/hero";
+import { Hero, type HeroConfig } from "@/registry/hero/react/hero";
 import { InvoiceSummary } from "@/registry/invoice-summary/react/invoice-summary";
 import { LoadingButton } from "@/registry/loading-button/react/loading-button";
 import { LogoWall } from "@/registry/logo-wall/react/logo-wall";
@@ -50,6 +50,28 @@ function Wrapped({ slug, xray, children }: { slug: string; xray: boolean; childr
 
 type Screen = { id: string; tab: string; heading: string; blurb: string; parts: string[]; render: (xray: boolean) => ReactNode };
 
+/*
+ * The one thing a composition has to override. The page already has its h1, so the hero inside it takes
+ * an h2 — which is exactly what the part's headingLevel option exists for. Everything else on these
+ * screens is the part's own default.
+ */
+const heroInPage: HeroConfig = {
+  eyebrow: "Refit yard, Falmouth",
+  heading: "Get your boat ready before the season starts",
+  headingLevel: "h2",
+  copy: "Rigging, engines, hulls and electronics under one roof. Tell us what it needs and we will send a written quote within two working days.",
+  primaryText: "Ask for a quote",
+  primaryHref: "/quote",
+  secondaryText: "See the yard",
+  secondaryHref: "/yard",
+  note: "No deposit until the work is agreed.",
+  align: "left",
+  showPanel: true,
+  panelLabel: "Photograph of the yard goes here",
+  theme: "light",
+  accentColor: "#16303f",
+};
+
 const screens: Screen[] = [
   {
     id: "product",
@@ -61,7 +83,7 @@ const screens: Screen[] = [
     render: (xray) => (
       <div className="grid gap-10">
         <Wrapped slug="hero" xray={xray}>
-          <Hero />
+          <Hero config={heroInPage} />
         </Wrapped>
         <Wrapped slug="logo-wall" xray={xray}>
           <LogoWall />
@@ -161,6 +183,13 @@ export function InUse() {
   const [at, setAt] = useState(0);
   const [xray, setXray] = useState(false);
   const tabs = useRef<HTMLDivElement | null>(null);
+  const root = useRef<HTMLDivElement | null>(null);
+
+  // Says when React is listening, so a test never presses a tab that is still server-rendered. Set on
+  // the DOM rather than kept in state: nothing about the page renders differently because of it.
+  useEffect(() => {
+    root.current?.setAttribute("data-ready", "true");
+  }, []);
 
   const move = (to: number) => {
     const next = (to + screens.length) % screens.length;
@@ -171,7 +200,7 @@ export function InUse() {
   const screen = screens[at];
 
   return (
-    <div>
+    <div ref={root}>
       <div className="flex flex-wrap items-end justify-between gap-4">
         {/* A tablist, so the three screens are one stop and the arrows move between them. */}
         <div ref={tabs} role="tablist" aria-label="Screens built from the catalogue" className="flex flex-wrap gap-2">
@@ -249,9 +278,14 @@ export function InUse() {
                 <p className="max-w-lg text-sm text-pretty text-ink-muted">{screen.blurb}</p>
               </div>
 
-              <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs text-ink-muted">
+              {/* 24px tall and spaced: a row of small links is the easiest way to fail WCAG 2.5.8. */}
+              <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs text-ink-muted">
                 {screen.parts.map((slug) => (
-                  <Link key={slug} href={`/${slug}`} className="underline-offset-2 hover:underline">
+                  <Link
+                    key={slug}
+                    href={`/${slug}`}
+                    className="inline-flex min-h-6 items-center underline-offset-2 hover:underline"
+                  >
                     {partBySlug(slug).name}
                   </Link>
                 ))}

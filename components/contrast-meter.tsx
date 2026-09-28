@@ -102,13 +102,22 @@ export function ContrastMeter() {
                   {row.label}
                 </th>
                 <td className="py-3 pr-3">
-                  {/* The sample carries the colour; the numbers next to it carry the meaning. */}
-                  <span
-                    className="inline-block rounded px-2 py-1 font-semibold"
-                    style={{ color: row.colour, background: row.against }}
+                  {/*
+                    Drawn, not set: two of these four rows are meant to fail contrast — that is the whole
+                    demonstration — and aria-hidden does not excuse a contrast failure, because contrast is
+                    a visual requirement. So the sample is a picture of text, and the ratio and the verdict
+                    beside it carry the meaning in words.
+                  */}
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 132 32"
+                    className="h-8 w-33 rounded"
+                    style={{ background: row.against }}
                   >
-                    Sample text
-                  </span>
+                    <text x="8" y="21" fill={row.colour} fontSize="14" fontWeight="600" fontFamily="inherit">
+                      Sample text
+                    </text>
+                  </svg>
                 </td>
                 <td className="py-3 pr-3 text-right font-mono tabular-nums">{say(row.value)}</td>
                 {/* Pass or fail in words, never a green or red dot on its own. */}

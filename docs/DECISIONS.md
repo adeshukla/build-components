@@ -375,3 +375,74 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 **Why:** Adesh asked for spacious, fresh, interactive, with motion graphics. The page already claimed "real, running components as the imagery" and then showed a static stack of three. The reel makes that claim literal and gives visitors something to try before they commit to anything.
 **Rules it follows:** one focal moment rather than an entrance on every section; the reel stops on pointer, focus, off-screen and reduced motion; reduced motion gets the finished diagram, not a blank one; every colour comes from the two-theme tokens so the diagrams read on white paper and on ink.
 **Rejected:** a video slot (nothing real to play, and a third-party embed would mean a CSP change for no content), and GSAP or Framer Motion (a runtime dependency on the site for choreography the stack already expresses).
+
+## 2026-09-28 — D62. Batch L: the seven remaining input parts
+**Decision:** Date range, time range, dual range slider, PIN pad, autosaving field, form error summary, address fields.
+**Notable choices:**
+- **Date and time ranges** are pairs of native inputs that narrow each other's limits, so the browser's own picker greys out the impossible days rather than refusing them afterwards. A span is said in words ("14 nights, 4 March to 18 March"; "3 hours 30 minutes", never "3:30", which reads as half past three).
+- **Dual range slider:** two separate sliders, not two thumbs on one track. Overlapping thumbs need `pointer-events` trickery and are very hard to reach from a keyboard; two sliders each with its own label and form value are reachable by definition. `aria-valuetext` says £320, not 320.
+- **PIN pad:** real buttons over one hidden field, typing works as well as tapping, and the live region says "three of four digits entered" — never the digits, because a live region is read out loud in the room. The pad order is fixed, not shuffled: a shuffled pad defeats muscle memory and is far slower for anyone with a motor impairment.
+- **Autosaving field:** a polite status, not an alert, because an assertive region would interrupt the very typing it is reporting on. Four states in words, and a failure that keeps the draft.
+- **Error summary:** focus moves to the summary rather than the first bad field, so the whole list is read before anything is corrected; each line is a link to its answer, and the message is repeated at the field because the summary is off screen by the time the answer is being changed.
+- **Address fields:** autocomplete tokens throughout (WCAG 1.3.5), a postcode field called what that country calls it, and a region field only for countries that have one.
+
+## 2026-09-28 — D63. Batch M: navigation, and four bugs it took to get there
+**Decision:** Skip links, anchor navigation, command menu, menu bar, cursor pagination, navigation progress, shrinking sticky header, hover card.
+**Notable choices:**
+- **Command menu** is a combobox over a grouped listbox: the field keeps focus and `aria-activedescendant` moves. A listbox may only own options and groups of options, so the group heading is a picture of the group's own `aria-label`, and the empty message lives outside the listbox.
+- **Menu bar** is the APG menubar in full — one tab stop with a roving tabindex, sideways from an open menu opening the next one, type-ahead.
+- **Cursor pagination** has no page numbers, because a cursor finds the end by getting a short page. The ends carry `aria-disabled` rather than `disabled`, so they can still be focused and the reason read.
+- **Navigation progress** has no `progressbar` role: the component has no idea what fraction is done, and a progressbar with an invented value is a lie. Nothing is drawn until the load outlasts a delay.
+- **Hover card** meets all three parts of WCAG 1.4.13 and holds nothing interactive, because a tooltip may not contain controls. A preview that needs its own buttons is a popover.
+
+**Bugs this batch found, each of which would have shipped:**
+1. **A sticky header that shrinks fights itself.** Shrinking shortens the content above it, so the browser nudges the scroll position a few pixels to keep the view still — and read as direction, those nudges say "scrolling up", which brought the header straight back the instant it hid. Only a move of 8px or more counts as direction now.
+2. **A `display` declaration beats `[hidden]`.** The command menu's filtered-out options and the whole hover card stayed on screen in the plain output. Tailwind's preflight already says `[hidden] { display: none !important }`, which is why only the plain CSS was wrong; every stylesheet that sets a display now repeats it.
+3. **A "hidden" skip link was a 32×44 box.** With `box-sizing: border-box`, padding and a min-height win over `width: 1px`. Both wait for focus now.
+4. **The anchor nav marked the wrong section and never the last one.** A line at 35% of the viewport is already above the second heading before anything has been scrolled. The line sits near the top now, following a link marks its section at once, and the bottom of a scrollable page marks the last.
+
+## 2026-09-28 — D64. Batch N: feedback, and the timing rule nobody implements
+**Decision:** Bottom sheet, loading button, undo snackbar, inline confirm, circular progress, error state with retry, maintenance notice, help hint.
+**Notable choices:**
+- **Loading button:** `aria-busy` and `aria-disabled`, never the `disabled` attribute. Disabling the focused button moves focus to the page body, so the place is lost and nothing is announced. The widest of the three labels sets the width, so the button does not move under a pointer.
+- **Undo snackbar:** the clock stops while the snackbar is hovered or focused, and nought seconds never runs at all — a time limit that cannot be extended fails WCAG 2.2.1. The words live in a live region of their own, because a region containing a button is read as a lump of text and re-reads itself on every countdown tick.
+- **Bottom sheet:** the drag handle is a real button with a name. Dragging is the extra; a keyboard cannot drag, and many hands cannot either.
+- **Circular progress:** indeterminate means no `aria-valuenow` at all. Inventing a number, or animating a fake one, is a lie about the state.
+- **Error state:** a focusable region, not `role="alert"`. An alert reads the whole panel over whatever else is happening and leaves no way back to it. It says whether anything changed, which is the first thing anyone wants to know and almost no error state answers.
+- **Maintenance notice:** a region landmark rather than a live region, because the notice is already there when the page loads, so nothing would be announced.
+- **Help hint** is a disclosure, not a tooltip: hovered help cannot be read twice, cannot be copied from, and barely exists on a touch screen.
+
+**Bug found:** `display: flex` on a `<dialog>` beats the browser's own `dialog:not([open]) { display: none }`, so the closed bottom sheet was sitting on the page. The flex column moved into a wrapper inside the dialog, in both outputs.
+**Overclaim corrected:** "the row keeps its height in all three states" was only true where there is room. At 390px the question has to wrap below the filename. The claim is now the true one: the thing being acted on never moves, and the row only grows downwards.
+
+## 2026-09-28 — D65. Batches O and P: content and page sections, and two limits in the option system
+**Decision:** Changelog, notification list, list with row actions, order tracker, invoice summary, article card, author byline, image gallery, click-to-load video, pull quote, team grid, logo wall; page header, split feature, stat comparison.
+**Notable choices:**
+- **Per-row actions are named with their row.** "Delete Churn by cohort", not "Delete" nine times, which is exactly what a screen reader would otherwise list.
+- **Invoice totals are worked out in whole pennies.** In floating point 0.1 + 0.2 is 0.30000000000000004, which is how an invoice ends up a penny out.
+- **Click-to-load video** requests nothing from the host until the button is pressed — no script, no cookie, no frame — and the frame it then creates is titled, which most embeds are not. Nothing ships with it, and pressing play with no address set says so rather than showing a black box.
+- **Article card** has one link and it is the title. A card with a "Read more" as well gives a screen reader two links to the same place, one of them called "Read more". The whole card is clickable through an overlay on that one link, which costs text selection — so it is an option.
+- **Pull quote:** the attribution is in the figcaption, not inside the blockquote, and `<cite>` wraps the work rather than the person. Both are the commonest mistakes in quoted markup.
+- **Image gallery** treats an empty alt and a missing alt as the different things they are, and says that a caption is not a substitute for either.
+- **Split feature** keeps the words first in the source whichever side the picture is on: only the grid column changes, because swapping with `order` or `row-reverse` is how a page ends up read back to front.
+- **Logo wall** defaults to the tools this site is built with — a claim about us. A "trusted by" wall is a claim about someone else, and the part says so.
+- **Stat comparison** allows a row with no winner. Pretending every measure has one is the commonest dishonesty in the pattern.
+
+**Two limits in the option system, one fixed:**
+1. **Fixed: a URL option could never be cleared.** `safeUrl` turned `""` into `"#"`, so every option that says "leave it empty for none" — a dozen of them — was impossible to set from a shared link or the editor. Empty is a real answer now; anything else unsafe still becomes `"#"`.
+2. **Not fixed: an empty list cannot be expressed in a query string.** `parseConfig` reads `[]` as "not specified" and falls back to the default, which is the right call for a malformed URL but means a list cannot be emptied. Optional blocks use a boolean instead — the page header's trail is `showTrail`, the way `showLine2` and `showDetails` already worked.
+
+## 2026-09-28 — D66. Four pages the catalogue had outgrown
+**Decision:** `/parts`, `/in-use`, `/tested` and `/start`, with the header, footer and sitemap pointing at all four. The home page keeps a catalogue teaser rather than 126 cards.
+**Why:** Adesh asked for a whole website rather than one long page. At 126 parts the home page had become a list nobody would reach the bottom of, and the two things that would actually convince a developer — that the parts compose, and that the testing is real — were claims in prose.
+**What each page is for:**
+- **`/parts`** lists every match, and writes the search and the type filter into the address bar with `replaceState` rather than a router push, because the server half of the page does not depend on them. The point is that a filtered list can be sent to someone.
+- **`/in-use`** builds three whole screens out of the catalogue — a product page, a checkout, an admin screen — running for real, with an X-ray switch that draws a line round every part and names it, each label a link to that part. Only the chosen screen is rendered: three screens of live components on one page would be a waste of everyone's battery. Nothing is restyled to fit, and the page says so; the single exception is the hero's heading level, which is what that option exists for.
+- **`/tested`** carries two tools that run the parts' own maths rather than describing it: a tracer that reads the real tab order out of the page and numbers every stop, and the contrast correction every part applies to an accent colour. The tracer is a better argument for the menu bar than any sentence about roving tabindex.
+- **`/start`** is the two ways in, what a project needs, and how theming works. The licence is marked `[TODO]` rather than implied — it is still Adesh's call.
+
+**Two things the tests caught in the new pages:**
+- The tracer counted three stops for a menubar that has one: `button` matches a button with `tabindex="-1"`, which is exactly what a roving tabindex puts it on. Every selector now excludes it.
+- `aria-hidden` does not excuse a contrast failure — contrast is a visual requirement, and axe is right to flag HTML text whatever the accessibility tree says. The deliberately failing samples are drawn as SVG text instead, which is what they always were in spirit.
+
+**Also:** six of the parts written this session hard-coded an element id, which collides the moment two of them share a page. Those now use `useId`. About twenty older parts still hard-code theirs; that is recorded in PROGRESS as the next thing to do rather than fixed quietly in the same commit.

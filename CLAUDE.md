@@ -30,10 +30,11 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `lib/schema.ts` — option types incl. `list` (repeatable items) and URL-safe `format: "url"`; `parseConfig` validates untrusted query params; `isDefault`, `toSearchParams`, `isVisible`.
 - `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.
 - `lib/registry.ts` — the one map of slug → title, description, schema. Used by the registry route and the preview page.
-- `lib/parts.ts` — catalogue: the part's plain name (the one a developer would search for), summary, pattern, accent, status and `category` (drives the home filters). The old ship-themed codenames were dropped on 2026-09-27: nobody could tell what a "Binnacle" was.
+- `lib/parts.ts` — catalogue: the part's plain name (the one a developer would search for), summary, pattern, accent, status and `category` (drives the catalogue filters). The old ship-themed codenames were dropped on 2026-09-27: nobody could tell what a "Binnacle" was.
 - `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
 - `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
 - Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
+- Site pages beyond the home page and the part pages: `/parts` (the whole catalogue, search and filter in the address bar), `/in-use` (three screens composed from real parts, with an X-ray that names each one), `/tested` (the test regime, plus a tab-order tracer and the contrast correction running), `/start` (how to take a part). `e2e/site-pages.spec.ts` covers all four.
 - `app/r/[name]/route.ts` — shadcn registry item for every slug in `lib/registry.ts`.
 - Tests:
   - `e2e/generate.ts` holds the `components` map (schema, variants, optional `renderHtml`). Writes React output to `app/(bare)/harness/<slug>-<variant>` and vanilla output to `e2e/.generated/<slug>/<variant>`. Both gitignored.
@@ -84,3 +85,15 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - A count spaced with a margin reads as "To do(2)". Put the space in the text.
 - Under a full test run the dev server occasionally answers one page with a truncated payload (`Uncaught SyntaxError: Unexpected end of JSON input`, empty frame). It is dev-only: the same suites pass against `next build && next start`. Rerun before believing it.
 - Data attributes a vanilla script reads must not collide with attributes on other elements: `root.querySelector("[data-title]")` will happily find a list item before the heading (this bit the wizard). Prefix them.
+- A `display` declaration beats `[hidden]`. `.thing { display: flex }` wins over the UA stylesheet's `[hidden] { display: none }`, so a hidden element stays on screen. Tailwind's preflight says `[hidden] { display: none !important }`, so **only the plain-CSS output is affected** — every stylesheet that sets a display now repeats `.x [hidden] { display: none; }`. This has now bitten three components (upload, command menu, hover card).
+- Same trap on `<dialog>`: any `display` on the dialog element beats `dialog:not([open]) { display: none }`, and a closed dialog sits on the page. Put the flex or grid on a wrapper **inside** the dialog.
+- With `box-sizing: border-box`, padding and `min-height` win over `width: 1px`. A "visually hidden" element that keeps its padding is a 32×44 box. The hidden state has to zero the padding and the min-height too.
+- A sticky header that changes its own size produces scroll events that look like scrolling up: shrinking shortens the content above, so the browser nudges `scrollTop` to keep the view still. Require a real move (8px) before reading an event as direction, and measure from the last decisive position, not the last event.
+- Never gate a document-level `keydown` listener on component state if anything else in the same component moves focus. Attach it once and check the state inside; two effects racing is how Escape stopped working on the iPhone.
+- `requestAnimationFrame` is not "after React has rendered". To focus something that appears with a state change, put the request in a ref and move focus in an effect with no dependency array — it runs after every commit. rAF cost half an hour of WebKit failures in the menu bar.
+- `parseConfig` reads an empty list (`[]`) as "not specified" and falls back to the default, so **a list cannot be emptied from a URL**. Use a boolean to hide an optional block (`showTrail`, `showLine2`, `showDetails`).
+- A hard-coded element id in a React component breaks the moment two of that part share a page. Use `useId()`. About twenty of the older parts still hard-code theirs — see PROGRESS.
+- Playwright cannot click a visually hidden radio or checkbox: its own label covers it. Use `check({ force: true })`, or click the label.
+- `aria-hidden` does not excuse an axe colour-contrast failure — contrast is a visual requirement, and axe is right. To show text that deliberately fails, draw it as SVG `<text>`.
+- An `animation.finished` promise **rejects** with an AbortError when the animation is replaced or interrupted, which failed the whole wait in `expectNoAxeViolations`. It catches per-animation now: a cancelled animation has settled, which is all the helper wants.
+- `role="listbox"` may only own `option` and `group`. A group heading or an empty-state paragraph inside it fails `aria-required-children`, and `aria-label` on a div with no role fails `aria-prohibited-attr`.
