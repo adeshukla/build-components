@@ -229,9 +229,13 @@ export function InUse() {
                   move(screens.length - 1);
                 }
               }}
+              /*
+               * The chosen one is gold, not ink: on the dark theme the board colour is within a shade of
+               * the page behind it, so "selected" was a difference you had to look for.
+               */
               className={`inline-flex min-h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board ${
                 index === at
-                  ? "border-board bg-board text-silk"
+                  ? "border-pad bg-pad font-semibold text-board"
                   : "border-rule-strong text-ink-muted hover:text-ink"
               }`}
             >

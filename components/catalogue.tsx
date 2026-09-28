@@ -149,7 +149,7 @@ export function Catalogue({
                   onChange={() => setFilter(choice.name)}
                   className="peer sr-only"
                 />
-                <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-rule-strong px-3.5 text-sm font-medium text-ink-muted transition-colors peer-checked:border-board peer-checked:bg-board peer-checked:text-silk peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-board hover:text-ink peer-checked:hover:text-silk">
+                <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-rule-strong px-3.5 text-sm font-medium text-ink-muted transition-colors peer-checked:border-pad peer-checked:bg-pad peer-checked:font-semibold peer-checked:text-board peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-board hover:text-ink peer-checked:hover:text-board">
                   {choice.name}
                   <span className="font-mono text-xs opacity-80">{choice.count}</span>
                 </span>
