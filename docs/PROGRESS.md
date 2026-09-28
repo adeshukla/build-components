@@ -57,11 +57,20 @@ written-down figure.
   the checklists.
 - Run the sweep against a production build (`next build && next start`), not only `next dev`.
 
+### Shipped (2026-09-28)
+Adesh said ship. Thirteen commits pushed to `main`; Vercel built and the site is live at
+https://build-components.devstash.me with all 125 parts and the five pages.
+- `next build` is green locally (no errors, every route accounted for).
+- **The one deployment unknown is now answered:** `/r/<name>.json` works on the real Vercel deploy —
+  `outputFileTracingIncludes` does ship `registry/`, and the route reads it at request time and
+  returns the file with its content. Checked on two parts.
+- Checked live on a 375px viewport: `/start` does not scroll sideways, its install command takes
+  focus, the header menu is 44px, and the bench's width switcher offers 320 / 375 / 768 / full.
+
 ### Needs Adesh
-1. **A licence for the exported code.** `/start` still says `[TODO: no licence has been chosen]`.
-2. **Deploy.** Nothing has been pushed. The live site is still on session 10 — 88 parts and the old
-   home page. Everything since then is local commits on `main`.
-3. **Manual checks:** the checklists with NVDA and on a real iPhone. Emulation is not a device, and
+1. **A licence for the exported code.** `/start` is live saying `[TODO: no licence has been chosen]`.
+   That is honest but unhelpful to anyone who reads it; MIT is the usual choice, and it is your call.
+2. **Manual checks:** the checklists with NVDA and on a real iPhone. Emulation is not a device, and
    this session was entirely about the things emulation nearly hid.
 
 ## Previous status (session 11)

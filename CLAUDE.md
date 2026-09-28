@@ -59,7 +59,7 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Turbopack has crashed on Adesh's machine before. If `next dev` crashes, use `next dev --webpack` (and the same in `playwright.config.ts`).
 - Tailwind v4: design tokens go in `@theme` in CSS; there is no `tailwind.config`. The exported React file uses v4-only syntax (`bg-(--dp-accent)`), so users need Tailwind v4.
 - Tailwind skips gitignored paths when scanning for classes; harness files work because the same classes exist in `registry/`.
-- Part pages and the registry route read `registry/` with `fs` at request time. `outputFileTracingIncludes` in `next.config.ts` ships it; not yet verified on a real Vercel deploy.
+- Part pages and the registry route read `registry/` with `fs` at request time. `outputFileTracingIncludes` in `next.config.ts` ships it — verified on the real Vercel deploy on 2026-09-28: `/r/<name>.json` returns the file with its content.
 - The HTML/CSS/JS preview is a sandboxed srcdoc frame (`allow-scripts allow-forms`, no shared origin): storage throws there, so parts must fall back to memory. `e2e/editor.spec.ts` runs every part in the real editor frames; component specs alone never see sandbox problems.
 - Every HTML/CSS/JS stylesheet sets `line-height: 1.5` and a system font on its root, to match what Tailwind's reset gives the React output.
 - An error that disappears on blur can move the submit button out from under the pointer mid-click. Once an error shows, re-check the field as the user types.
