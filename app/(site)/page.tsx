@@ -6,6 +6,13 @@ import { MountedPart } from "@/components/mounted-part";
 import { PartReel } from "@/components/part-reel";
 import { inStock, parts } from "@/lib/parts";
 import { DatePicker } from "@/registry/date-picker/react/date-picker";
+import type { Metadata } from "next";
+
+// Every other page sets its own canonical; the home page did not, so a
+// trailing-slash or query-string variant could be indexed separately.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const tests = [
   ["axe accessibility rules", "WCAG 2.0, 2.1 and 2.2, levels A and AA, with the component closed and open."],
