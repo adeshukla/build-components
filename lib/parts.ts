@@ -13,15 +13,31 @@ export type Part = {
   status: "in-stock" | "coming";
   /** Groups the catalogue so it can be filtered instead of scrolled. */
   category: Category;
+  /** A narrower group inside the category: one of `groups[category]`. */
+  group: string;
+  /** Other words people search for it by ("calendar" for the date picker). Search reads these too. */
+  aka: string[];
 };
 
 export const categories = ["Inputs", "Navigation", "Overlays", "Feedback", "Content", "Page sections"] as const;
 export type Category = (typeof categories)[number];
 
+/** The groups inside each type, in the order they are offered. */
+export const groups: Record<Category, readonly string[]> = {
+  Inputs: ["Text", "Choice", "Numbers", "Date & time", "Forms", "Drag, drop & draw"],
+  Navigation: ["Site navigation", "Menus & commands", "Within a page", "Steps & pages"],
+  Overlays: ["Dialogs", "Popups", "Panels"],
+  Feedback: ["Messages", "Loading & progress", "States & guards"],
+  Content: ["Data & apps", "Media", "Articles & text", "Shop", "People & status"],
+  "Page sections": ["Headers & footers", "Heroes & features", "Conversion"],
+};
+
 export const parts: Part[] = [
   {
     slug: "date-picker",
     category: "Inputs",
+    group: "Date & time",
+    aka: ["calendar", "datepicker", "day picker", "date input"],
     name: "Date picker",
     summary: "One date or a range, typed in your format, with month and year views and earliest/latest dates.",
     pattern: "APG Date Picker Dialog",
@@ -31,6 +47,8 @@ export const parts: Part[] = [
   {
     slug: "modal",
     category: "Overlays",
+    group: "Dialogs",
+    aka: ["popup", "dialog", "overlay", "window"],
     name: "Modal dialog",
     summary: "Centred dialog or bottom sheet. Focus stays inside, Escape closes, motion respects reduced-motion settings.",
     pattern: "APG Dialog (Modal)",
@@ -40,6 +58,8 @@ export const parts: Part[] = [
   {
     slug: "searchable-select",
     category: "Inputs",
+    group: "Choice",
+    aka: ["combobox", "autocomplete", "typeahead", "dropdown", "choices"],
     name: "Searchable select",
     summary: "Type to filter a long list, pick with the keyboard or the mouse, with matches highlighted.",
     pattern: "APG Combobox",
@@ -49,6 +69,8 @@ export const parts: Part[] = [
   {
     slug: "form",
     category: "Inputs",
+    group: "Forms",
+    aka: ["validation", "form errors", "required fields"],
     name: "Form validation",
     summary: "Your rules, and error messages that say what went wrong and how to fix it.",
     pattern: "Native form + error summary",
@@ -58,6 +80,8 @@ export const parts: Part[] = [
   {
     slug: "header",
     category: "Page sections",
+    group: "Headers & footers",
+    aka: ["navbar", "nav bar", "top bar", "navigation bar", "menu"],
     name: "Site header",
     summary: "Logo, links, call to action and a mobile menu that behaves.",
     pattern: "APG Disclosure navigation",
@@ -67,6 +91,8 @@ export const parts: Part[] = [
   {
     slug: "tabs",
     category: "Navigation",
+    group: "Within a page",
+    aka: ["tabbed panels", "tab bar", "switcher"],
     name: "Tabs",
     summary: "One area, several panels. Arrow keys move between tabs, in a row or down the side.",
     pattern: "APG Tabs",
@@ -76,6 +102,8 @@ export const parts: Part[] = [
   {
     slug: "cart",
     category: "Content",
+    group: "Shop",
+    aka: ["basket", "shopping bag", "checkout"],
     name: "Shopping cart",
     summary: "Lines, quantities, removing, delivery and totals, as a panel or a drawer.",
     pattern: "Native dialog + live totals",
@@ -85,6 +113,8 @@ export const parts: Part[] = [
   {
     slug: "carousel",
     category: "Content",
+    group: "Media",
+    aka: ["slider", "slideshow", "gallery", "swiper"],
     name: "Carousel",
     summary: "A row of slides that scrolls, swipes and steps, with dots, a counter and optional rotation.",
     pattern: "APG Carousel",
@@ -94,6 +124,8 @@ export const parts: Part[] = [
   {
     slug: "mega-menu",
     category: "Navigation",
+    group: "Site navigation",
+    aka: ["navigation menu", "large dropdown", "nav dropdown"],
     name: "Mega menu",
     summary: "Several columns of links under one heading, opened by click or hover, closed by Escape.",
     pattern: "APG Disclosure navigation",
@@ -103,6 +135,8 @@ export const parts: Part[] = [
   {
     slug: "footer",
     category: "Page sections",
+    group: "Headers & footers",
+    aka: ["site footer", "bottom links"],
     name: "Site footer",
     summary: "Brand, links, social profiles and the legal line. Plain HTML, no JavaScript.",
     pattern: "Landmark contentinfo",
@@ -112,6 +146,8 @@ export const parts: Part[] = [
   {
     slug: "cta",
     category: "Page sections",
+    group: "Conversion",
+    aka: ["call to action", "banner", "signup section"],
     name: "Call to action section",
     summary: "Heading, supporting text and actions. Plain HTML, no JavaScript.",
     pattern: "Landmark section",
@@ -121,6 +157,8 @@ export const parts: Part[] = [
   {
     slug: "accordion",
     category: "Content",
+    group: "Articles & text",
+    aka: ["collapse", "expand", "collapsible", "disclosure"],
     name: "Accordion",
     summary: "Sections that open one at a time, or all at once, with the content in the page from the start.",
     pattern: "APG Accordion",
@@ -130,6 +168,8 @@ export const parts: Part[] = [
   {
     slug: "tooltip",
     category: "Overlays",
+    group: "Popups",
+    aka: ["hint", "title", "info on hover"],
     name: "Tooltip",
     summary: "A short note on a control, opened by hover and by keyboard focus, closed by Escape.",
     pattern: "APG Tooltip",
@@ -139,6 +179,8 @@ export const parts: Part[] = [
   {
     slug: "menu",
     category: "Navigation",
+    group: "Menus & commands",
+    aka: ["dropdown", "context menu", "actions menu", "kebab", "more menu"],
     name: "Dropdown menu",
     summary: "A button that opens a list of actions: arrow keys, type to jump, Escape to close.",
     pattern: "APG Menu Button",
@@ -148,6 +190,8 @@ export const parts: Part[] = [
   {
     slug: "popover",
     category: "Overlays",
+    group: "Popups",
+    aka: ["popup", "flyout", "dropdown panel", "popper"],
     name: "Popover",
     summary: "An anchored panel you can use: focus moves in, Escape closes it and comes back out.",
     pattern: "Anchored dialog",
@@ -157,6 +201,8 @@ export const parts: Part[] = [
   {
     slug: "toast",
     category: "Overlays",
+    group: "Popups",
+    aka: ["snackbar", "notification", "alert", "popup message", "flash message"],
     name: "Toast notifications",
     summary: "Messages that appear, announce themselves, pause while you read and clear themselves.",
     pattern: "ARIA live region",
@@ -166,6 +212,8 @@ export const parts: Part[] = [
   {
     slug: "table",
     category: "Content",
+    group: "Data & apps",
+    aka: ["sortable table", "grid", "rows", "datatable"],
     name: "Data table",
     summary: "Rows that sort by value, select by row and stack into cards on a phone.",
     pattern: "HTML table + aria-sort",
@@ -175,6 +223,8 @@ export const parts: Part[] = [
   {
     slug: "pagination",
     category: "Navigation",
+    group: "Steps & pages",
+    aka: ["pager", "page numbers", "next previous"],
     name: "Pagination",
     summary: "Numbered pages with gaps, previous and next, as links or as buttons.",
     pattern: "Navigation + aria-current",
@@ -184,6 +234,8 @@ export const parts: Part[] = [
   {
     slug: "breadcrumbs",
     category: "Navigation",
+    group: "Steps & pages",
+    aka: ["breadcrumb", "trail", "path"],
     name: "Breadcrumbs",
     summary: "The trail back up the site, collapsing to first and current on a phone. No JavaScript.",
     pattern: "Navigation + aria-current",
@@ -193,6 +245,8 @@ export const parts: Part[] = [
   {
     slug: "stepper",
     category: "Navigation",
+    group: "Steps & pages",
+    aka: ["steps", "progress steps", "checkout steps"],
     name: "Stepper",
     summary: "Where you are in a multi-step flow, with each state said in words. No JavaScript.",
     pattern: "Navigation + aria-current=step",
@@ -202,6 +256,8 @@ export const parts: Part[] = [
   {
     slug: "sidebar",
     category: "Navigation",
+    group: "Site navigation",
+    aka: ["side nav", "sidenav", "left nav", "vertical navigation"],
     name: "Sidebar navigation",
     summary: "Sections of links with the current page marked, folding into a drawer on a phone.",
     pattern: "Navigation + disclosure",
@@ -211,6 +267,8 @@ export const parts: Part[] = [
   {
     slug: "upload",
     category: "Inputs",
+    group: "Drag, drop & draw",
+    aka: ["dropzone", "file input", "attachment", "uploader"],
     name: "File upload",
     summary: "Choose or drop files, with the kind and size checked and every change announced.",
     pattern: "File input + drop area",
@@ -220,6 +278,8 @@ export const parts: Part[] = [
   {
     slug: "multi-select",
     category: "Inputs",
+    group: "Choice",
+    aka: ["multiselect", "tags select", "chips", "listbox"],
     name: "Multi-select",
     summary: "Pick several from a long list, with each choice removable and every change announced.",
     pattern: "APG Combobox, multi-select",
@@ -229,6 +289,8 @@ export const parts: Part[] = [
   {
     slug: "password",
     category: "Inputs",
+    group: "Text",
+    aka: ["show password", "password strength", "reveal"],
     name: "Password field",
     summary: "Rules read with the field, strength said in words, and a show button that says its state.",
     pattern: "Labelled input + live rules",
@@ -238,6 +300,8 @@ export const parts: Part[] = [
   {
     slug: "otp",
     category: "Inputs",
+    group: "Text",
+    aka: ["one-time code", "2fa", "verification code", "pin code", "mfa"],
     name: "OTP input",
     summary: "Boxes that fill as you type, take a pasted code whole, and say when the code is complete.",
     pattern: "Grouped inputs + one-time-code",
@@ -247,6 +311,8 @@ export const parts: Part[] = [
   {
     slug: "slider",
     category: "Inputs",
+    group: "Numbers",
+    aka: ["range", "range input"],
     name: "Range slider",
     summary: "One value or a range, on native range inputs that keep their keyboard and announce their unit.",
     pattern: "Native range inputs",
@@ -256,6 +322,8 @@ export const parts: Part[] = [
   {
     slug: "search",
     category: "Navigation",
+    group: "Menus & commands",
+    aka: ["autocomplete", "search box", "typeahead", "suggestions"],
     name: "Search with suggestions",
     summary: "Point it at any data, nested or flat, and search it from anywhere with ⌘K.",
     pattern: "APG Combobox in a dialog",
@@ -265,6 +333,8 @@ export const parts: Part[] = [
   {
     slug: "time-picker",
     category: "Inputs",
+    group: "Date & time",
+    aka: ["clock", "time input", "hours and minutes"],
     name: "Time picker",
     summary: "Type a time any common way or pick from a list, in 12- or 24-hour, with earliest and latest times.",
     pattern: "APG Combobox (editable)",
@@ -274,6 +344,8 @@ export const parts: Part[] = [
   {
     slug: "tree-view",
     category: "Navigation",
+    group: "Within a page",
+    aka: ["tree", "file tree", "nested list", "folders"],
     name: "Tree view",
     summary: "Folders and items as deep as you like, with the full arrow-key model, type-ahead and one Tab stop.",
     pattern: "APG Tree View",
@@ -283,6 +355,8 @@ export const parts: Part[] = [
   {
     slug: "sortable-list",
     category: "Inputs",
+    group: "Drag, drop & draw",
+    aka: ["reorder", "sortable", "drag and drop", "dnd"],
     name: "Drag-and-drop list",
     summary: "Reorder by dragging, by keyboard or with move buttons, with every move announced.",
     pattern: "Toggle-button handles + live region",
@@ -292,6 +366,8 @@ export const parts: Part[] = [
   {
     slug: "drawer",
     category: "Overlays",
+    group: "Panels",
+    aka: ["side panel", "off-canvas", "slide-over", "sidebar"],
     name: "Drawer",
     summary: "A panel that slides in from a side or the bottom, keeps focus inside and closes with a swipe.",
     pattern: "APG Dialog (Modal)",
@@ -301,6 +377,8 @@ export const parts: Part[] = [
   {
     slug: "cookie-consent",
     category: "Overlays",
+    group: "Dialogs",
+    aka: ["cookie banner", "gdpr", "privacy consent"],
     name: "Cookie consent",
     summary: "Accept and reject side by side, nothing ticked in advance, and a way back to change your mind.",
     pattern: "Landmark region + dialog",
@@ -310,6 +388,8 @@ export const parts: Part[] = [
   {
     slug: "card-fields",
     category: "Inputs",
+    group: "Forms",
+    aka: ["credit card", "payment form", "checkout"],
     name: "Card payment fields",
     summary: "Number, expiry and code that format as you type, name the card type and catch typos before paying.",
     pattern: "Native form + autocomplete cc-*",
@@ -319,6 +399,8 @@ export const parts: Part[] = [
   {
     slug: "tour",
     category: "Overlays",
+    group: "Popups",
+    aka: ["onboarding", "walkthrough", "coach marks", "guided tour"],
     name: "Product tour",
     summary: "Steps that point at parts of your page, move focus with them, and can be skipped at any moment.",
     pattern: "Non-modal dialog steps",
@@ -328,6 +410,8 @@ export const parts: Part[] = [
   {
     slug: "feed",
     category: "Content",
+    group: "People & status",
+    aka: ["infinite scroll", "stream", "posts"],
     name: "Infinite feed",
     summary: "A list that loads more on request or as you scroll, keeps your place and says when it has ended.",
     pattern: "APG Feed",
@@ -337,6 +421,8 @@ export const parts: Part[] = [
   {
     slug: "lightbox",
     category: "Content",
+    group: "Media",
+    aka: ["image viewer", "zoom image", "gallery popup"],
     name: "Lightbox",
     summary: "Thumbnails that open a full-screen viewer with arrow keys, swipe, captions and focus kept inside.",
     pattern: "APG Dialog (Modal) gallery",
@@ -346,6 +432,8 @@ export const parts: Part[] = [
   {
     slug: "resizable-panels",
     category: "Content",
+    group: "Data & apps",
+    aka: ["split view", "resizable", "panes", "splitter"],
     name: "Split panes",
     summary: "Two panels and a divider you can drag, move with the arrow keys or collapse with Enter.",
     pattern: "APG Window Splitter",
@@ -355,6 +443,8 @@ export const parts: Part[] = [
   {
     slug: "switch",
     category: "Inputs",
+    group: "Choice",
+    aka: ["toggle", "on off", "toggle switch"],
     name: "Switch",
     summary: "An on/off control that says which it is in words, on a real checkbox so the keyboard comes free.",
     pattern: "Checkbox with role=switch",
@@ -364,6 +454,8 @@ export const parts: Part[] = [
   {
     slug: "rating",
     category: "Inputs",
+    group: "Choice",
+    aka: ["stars", "star rating", "review", "score"],
     name: "Rating",
     summary: "Stars to pick a rating, in whole or half stars, or an average shown as one figure a screen reader reads in full.",
     pattern: "Radio group / image",
@@ -373,6 +465,8 @@ export const parts: Part[] = [
   {
     slug: "segmented",
     category: "Inputs",
+    group: "Choice",
+    aka: ["button group", "toggle buttons", "pill tabs"],
     name: "Segmented control",
     summary: "A handful of choices side by side, on radios, so arrow keys and forms work without script.",
     pattern: "Radio group",
@@ -382,6 +476,8 @@ export const parts: Part[] = [
   {
     slug: "alert-banner",
     category: "Feedback",
+    group: "Messages",
+    aka: ["alert", "notice", "callout", "message bar"],
     name: "Alert banner",
     summary: "Inline messages that say their tone in words first, and only interrupt when it is an error.",
     pattern: "role=alert / role=status",
@@ -391,6 +487,8 @@ export const parts: Part[] = [
   {
     slug: "skeleton",
     category: "Feedback",
+    group: "Loading & progress",
+    aka: ["loader", "loading placeholder", "shimmer", "spinner", "loading"],
     name: "Skeleton",
     summary: "Placeholder shapes while content loads, announced once in words instead of as empty boxes.",
     pattern: "role=status + hidden shapes",
@@ -400,6 +498,8 @@ export const parts: Part[] = [
   {
     slug: "empty-state",
     category: "Feedback",
+    group: "States & guards",
+    aka: ["no results", "nothing here", "zero state", "blank slate"],
     name: "Empty state",
     summary: "A calm screen for nothing-to-show, saying what happened and exactly what to do next.",
     pattern: "Heading + actions",
@@ -409,6 +509,8 @@ export const parts: Part[] = [
   {
     slug: "avatar-group",
     category: "Content",
+    group: "People & status",
+    aka: ["avatars", "profile pictures", "users", "faces"],
     name: "Avatar group",
     summary: "Overlapping faces or initials, with the extra people named rather than hidden behind a number.",
     pattern: "Labelled list of images",
@@ -418,6 +520,8 @@ export const parts: Part[] = [
   {
     slug: "badge",
     category: "Content",
+    group: "People & status",
+    aka: ["label", "tag", "chip", "status pill"],
     name: "Badge",
     summary: "Status pills whose words carry the meaning, so colour is never doing the work alone.",
     pattern: "List of labelled pills",
@@ -427,6 +531,8 @@ export const parts: Part[] = [
   {
     slug: "tag-input",
     category: "Inputs",
+    group: "Text",
+    aka: ["tags", "chips", "token input", "keywords"],
     name: "Tag input",
     summary: "Type and press Enter to add a tag; each one is removable and every change is announced.",
     pattern: "Field + labelled chip list",
@@ -436,6 +542,8 @@ export const parts: Part[] = [
   {
     slug: "quantity",
     category: "Inputs",
+    group: "Numbers",
+    aka: ["number input", "plus minus", "counter", "spinbutton"],
     name: "Quantity input",
     summary: "Minus, a real number field and plus, with the new amount and its limits said in words.",
     pattern: "Number input + buttons",
@@ -445,6 +553,8 @@ export const parts: Part[] = [
   {
     slug: "currency-input",
     category: "Inputs",
+    group: "Numbers",
+    aka: ["money", "price input", "amount"],
     name: "Currency input",
     summary: "Type an amount freely; it is tidied on leaving and sent to your server as a plain number.",
     pattern: "Text input + hidden value",
@@ -454,6 +564,8 @@ export const parts: Part[] = [
   {
     slug: "phone-input",
     category: "Inputs",
+    group: "Text",
+    aka: ["telephone", "phone number", "country code", "tel"],
     name: "Phone input",
     summary: "Country code beside the number, digits grouped the local way, one value for your server.",
     pattern: "Select + tel input",
@@ -463,6 +575,8 @@ export const parts: Part[] = [
   {
     slug: "inline-edit",
     category: "Inputs",
+    group: "Text",
+    aka: ["editable text", "click to edit", "edit in place"],
     name: "Inline edit",
     summary: "A value that turns into a field on click, with Enter to save, Escape to cancel, and focus kept.",
     pattern: "Button to field, with focus moves",
@@ -472,6 +586,8 @@ export const parts: Part[] = [
   {
     slug: "color-picker",
     category: "Inputs",
+    group: "Choice",
+    aka: ["color", "colour", "swatch", "hex"],
     name: "Colour picker",
     summary: "Named swatches as one radio group, plus the browser's own picker for anything else.",
     pattern: "Radio group + native colour input",
@@ -481,6 +597,8 @@ export const parts: Part[] = [
   {
     slug: "back-to-top",
     category: "Navigation",
+    group: "Within a page",
+    aka: ["scroll to top", "go to top"],
     name: "Back to top button",
     summary: "Appears once you have scrolled, and moves focus to the top as well as the page.",
     pattern: "Button + focus move",
@@ -490,6 +608,8 @@ export const parts: Part[] = [
   {
     slug: "reading-progress",
     category: "Navigation",
+    group: "Within a page",
+    aka: ["progress bar", "scroll progress", "reading indicator"],
     name: "Reading progress bar",
     summary: "A progress bar for how far you have read, and a contents list that marks the section you are in.",
     pattern: "role=progressbar + aria-current",
@@ -499,6 +619,8 @@ export const parts: Part[] = [
   {
     slug: "language-switcher",
     category: "Navigation",
+    group: "Site navigation",
+    aka: ["locale", "i18n", "language picker", "translation"],
     name: "Language switcher",
     summary: "Languages written in their own language, as real links carrying lang and hreflang.",
     pattern: "Disclosure + links",
@@ -508,6 +630,8 @@ export const parts: Part[] = [
   {
     slug: "filter-bar",
     category: "Inputs",
+    group: "Forms",
+    aka: ["filters", "facets", "faceted search"],
     name: "Filter bar",
     summary: "Chips that are real toggles, removable pills for what is on, and one status line that sums it up.",
     pattern: "Toggle buttons + status",
@@ -517,6 +641,8 @@ export const parts: Part[] = [
   {
     slug: "data-grid",
     category: "Content",
+    group: "Data & apps",
+    aka: ["spreadsheet", "editable table", "grid"],
     name: "Data grid",
     summary: "A table with a header that stays put, sortable columns reporting aria-sort, and columns you can resize by arrow key.",
     pattern: "Table + sort + resize",
@@ -526,6 +652,8 @@ export const parts: Part[] = [
   {
     slug: "kanban",
     category: "Content",
+    group: "Data & apps",
+    aka: ["board", "trello", "columns", "cards"],
     name: "Kanban board",
     summary: "Cards that move by button as well as by drag, with focus and announcements following them.",
     pattern: "Board + move buttons",
@@ -535,6 +663,8 @@ export const parts: Part[] = [
   {
     slug: "confirm-dialog",
     category: "Overlays",
+    group: "Dialogs",
+    aka: ["are you sure", "alert dialog", "confirmation", "delete confirm"],
     name: "Confirm dialog",
     summary: "The dangerous button stays off until the words are typed exactly, with the reason said out loud.",
     pattern: "Modal dialog + guard",
@@ -544,6 +674,8 @@ export const parts: Part[] = [
   {
     slug: "session-timeout",
     category: "Overlays",
+    group: "Dialogs",
+    aka: ["idle timeout", "auto logout", "inactivity warning"],
     name: "Session timeout",
     summary: "An idle warning that counts down, speaks at the marks worth hearing, and treats Escape as staying.",
     pattern: "Timed modal dialog",
@@ -553,6 +685,8 @@ export const parts: Part[] = [
   {
     slug: "unsaved-changes",
     category: "Feedback",
+    group: "States & guards",
+    aka: ["leave page warning", "beforeunload", "dirty form"],
     name: "Unsaved changes guard",
     summary: "Asks before leaving only while there is something to lose, in the page and on closing the tab.",
     pattern: "Dirty state + dialog",
@@ -562,6 +696,8 @@ export const parts: Part[] = [
   {
     slug: "offline-banner",
     category: "Feedback",
+    group: "Messages",
+    aka: ["no connection", "offline", "network status"],
     name: "Offline banner",
     summary: "Says the connection went and what is being kept, politely, with a retry that actually re-checks.",
     pattern: "Network status region",
@@ -571,6 +707,8 @@ export const parts: Part[] = [
   {
     slug: "shortcut-help",
     category: "Overlays",
+    group: "Dialogs",
+    aka: ["hotkeys", "keyboard shortcuts", "cheat sheet"],
     name: "Keyboard shortcuts dialog",
     summary: "One key brings up the shortcut sheet — unless you are typing, where ? is just a question mark.",
     pattern: "Modal dialog + hotkey",
@@ -580,6 +718,8 @@ export const parts: Part[] = [
   {
     slug: "pricing-table",
     category: "Page sections",
+    group: "Conversion",
+    aka: ["plans", "tiers", "subscription", "pricing"],
     name: "Pricing table",
     summary: "Plans with a monthly/yearly radio group, a badge in words on the highlighted plan, and prices exactly as you write them.",
     pattern: "Radio group + cards",
@@ -589,6 +729,8 @@ export const parts: Part[] = [
   {
     slug: "stats-tiles",
     category: "Content",
+    group: "Data & apps",
+    aka: ["kpi", "metrics", "dashboard numbers", "stat tiles"],
     name: "Stat cards",
     summary: "KPI tiles as a description list, with the change written in words so colour is never the only clue.",
     pattern: "Description list",
@@ -598,6 +740,8 @@ export const parts: Part[] = [
   {
     slug: "timeline",
     category: "Content",
+    group: "Articles & text",
+    aka: ["history", "activity log", "events"],
     name: "Activity timeline",
     summary: "An ordered list of what happened, with real time elements and the older entries behind one button.",
     pattern: "Ordered list + reveal",
@@ -607,6 +751,8 @@ export const parts: Part[] = [
   {
     slug: "comment-thread",
     category: "Content",
+    group: "People & status",
+    aka: ["comments", "replies", "discussion"],
     name: "Comment thread",
     summary: "Comments and replies as nested lists, a box that cannot post nothing, and a count that follows along.",
     pattern: "List + form",
@@ -616,6 +762,8 @@ export const parts: Part[] = [
   {
     slug: "product-card",
     category: "Content",
+    group: "Shop",
+    aka: ["product tile", "shop item"],
     name: "Product card",
     summary: "Variant options as real radio groups, out-of-stock said in words, and an add button that waits for every choice.",
     pattern: "Fieldsets + guarded action",
@@ -625,6 +773,8 @@ export const parts: Part[] = [
   {
     slug: "signature-pad",
     category: "Inputs",
+    group: "Drag, drop & draw",
+    aka: ["signature", "sign", "draw", "canvas"],
     name: "Signature pad",
     summary: "Draw a signature with a pointer, or type the name instead — the alternative is the whole point.",
     pattern: "Canvas + typed alternative",
@@ -634,6 +784,8 @@ export const parts: Part[] = [
   {
     slug: "code-block",
     category: "Content",
+    group: "Articles & text",
+    aka: ["code snippet", "copy button", "syntax"],
     name: "Code block with copy",
     summary: "Copy to clipboard with a real fallback when the clipboard is refused, plus line numbers that never get copied.",
     pattern: "Clipboard + status",
@@ -643,6 +795,8 @@ export const parts: Part[] = [
   {
     slug: "toolbar",
     category: "Navigation",
+    group: "Menus & commands",
+    aka: ["action bar", "button bar", "formatting bar"],
     name: "Toolbar",
     summary: "One tab stop for the whole bar, arrow keys inside it, and toggles that report their state.",
     pattern: "APG toolbar",
@@ -652,6 +806,8 @@ export const parts: Part[] = [
   {
     slug: "countdown",
     category: "Feedback",
+    group: "Loading & progress",
+    aka: ["timer", "count down", "deadline"],
     name: "Countdown",
     summary: "Digits that tick every second without being read out every second — the announcement follows the coarse reading.",
     pattern: "Timer + polite status",
@@ -661,6 +817,8 @@ export const parts: Part[] = [
   {
     slug: "slot-picker",
     category: "Inputs",
+    group: "Date & time",
+    aka: ["booking", "appointment", "availability", "scheduler"],
     name: "Time slot picker",
     summary: "One radio group across every day, taken slots said in words, and announcements that carry the day as well as the time.",
     pattern: "Grouped radio group",
@@ -670,6 +828,8 @@ export const parts: Part[] = [
   {
     slug: "wizard",
     category: "Navigation",
+    group: "Steps & pages",
+    aka: ["multi step form", "steps form", "onboarding flow"],
     name: "Multi-step wizard",
     summary: "One step at a time, focus moved to each step's heading, and a needed field you cannot walk past.",
     pattern: "Steps + per-step validation",
@@ -679,6 +839,8 @@ export const parts: Part[] = [
   {
     slug: "checkbox-group",
     category: "Inputs",
+    group: "Choice",
+    aka: ["checkboxes", "check all", "multiple choice"],
     name: "Checkbox group",
     summary: "Boxes under one question, an everything box that shows the mixed state, and a count said politely.",
     pattern: "Fieldset + checkboxes",
@@ -688,6 +850,8 @@ export const parts: Part[] = [
   {
     slug: "radio-cards",
     category: "Inputs",
+    group: "Choice",
+    aka: ["radio buttons", "radio group", "option cards", "plan picker"],
     name: "Radio cards",
     summary: "Choices as cards that are still real radios: one tab stop, arrow keys, and unavailable said in words.",
     pattern: "Fieldset + radio cards",
@@ -697,6 +861,8 @@ export const parts: Part[] = [
   {
     slug: "textarea-counter",
     category: "Inputs",
+    group: "Text",
+    aka: ["character count", "textarea", "max length", "word count"],
     name: "Textarea with counter",
     summary: "A character count that is read out at the marks that matter, not on every keystroke.",
     pattern: "Textarea + polite counter",
@@ -706,6 +872,8 @@ export const parts: Part[] = [
   {
     slug: "select-field",
     category: "Inputs",
+    group: "Choice",
+    aka: ["select", "dropdown", "native select", "picker"],
     name: "Select field",
     summary: "The humble native select done properly: real label, optgroups, and an error that takes focus back.",
     pattern: "Native select + validation",
@@ -715,6 +883,8 @@ export const parts: Part[] = [
   {
     slug: "faq",
     category: "Content",
+    group: "Articles & text",
+    aka: ["questions", "frequently asked questions", "q and a"],
     name: "FAQ",
     summary: "Questions and answers on native details and summary, so opening, the keyboard and find-on-page all come free.",
     pattern: "details / summary",
@@ -724,6 +894,8 @@ export const parts: Part[] = [
   {
     slug: "details-list",
     category: "Content",
+    group: "Data & apps",
+    aka: ["description list", "key value", "definition list", "properties"],
     name: "Details list",
     summary: "Label and value pairs that stay paired on a phone, with change links that name their row.",
     pattern: "Description list",
@@ -733,6 +905,8 @@ export const parts: Part[] = [
   {
     slug: "comparison-table",
     category: "Content",
+    group: "Data & apps",
+    aka: ["compare", "feature comparison", "versus"],
     name: "Comparison table",
     summary: "Plans across, features down, and yes or no printed as words rather than a bare tick.",
     pattern: "Table + row headers",
@@ -742,6 +916,8 @@ export const parts: Part[] = [
   {
     slug: "hero",
     category: "Page sections",
+    group: "Heroes & features",
+    aka: ["banner", "landing", "above the fold", "jumbotron"],
     name: "Hero section",
     summary: "A page opening whose heading level is yours to set, with a drawn picture panel and no image requests.",
     pattern: "Landmark section",
@@ -751,6 +927,8 @@ export const parts: Part[] = [
   {
     slug: "feature-grid",
     category: "Page sections",
+    group: "Heroes & features",
+    aka: ["features", "benefits", "icon grid"],
     name: "Feature grid",
     summary: "Features as a real list with real headings, glyphs hidden from screen readers and links that name themselves.",
     pattern: "List + headings",
@@ -760,6 +938,8 @@ export const parts: Part[] = [
   {
     slug: "how-it-works",
     category: "Page sections",
+    group: "Heroes & features",
+    aka: ["steps", "process"],
     name: "How it works",
     summary: "Numbered steps as an ordered list, so the sequence survives without the drawn circles.",
     pattern: "Ordered list",
@@ -769,6 +949,8 @@ export const parts: Part[] = [
   {
     slug: "newsletter",
     category: "Page sections",
+    group: "Conversion",
+    aka: ["email signup", "subscribe", "mailing list"],
     name: "Newsletter signup",
     summary: "An email form that writes its own errors, keeps focus on what needs fixing and never pre-ticks consent.",
     pattern: "Form + status",
@@ -778,6 +960,8 @@ export const parts: Part[] = [
   {
     slug: "toggle-group",
     category: "Inputs",
+    group: "Choice",
+    aka: ["toggle buttons", "button group", "formatting"],
     name: "Toggle group",
     summary: "Several answers to one question as checkboxes drawn like buttons, with the last one refusing to turn off.",
     pattern: "Fieldset + checkboxes",
@@ -787,6 +971,8 @@ export const parts: Part[] = [
   {
     slug: "unit-input",
     category: "Inputs",
+    group: "Numbers",
+    aka: ["units", "measurement", "number with unit"],
     name: "Value with unit",
     summary: "A number and its unit as two labelled fields and one answer, read back together.",
     pattern: "Number + select",
@@ -796,6 +982,8 @@ export const parts: Part[] = [
   {
     slug: "masked-input",
     category: "Inputs",
+    group: "Text",
+    aka: ["input mask", "formatted input", "pattern input"],
     name: "Masked input",
     summary: "Punctuation filled in as you type, nothing refused outright, and the shape said before you start.",
     pattern: "Pattern mask",
@@ -805,6 +993,8 @@ export const parts: Part[] = [
   {
     slug: "date-range",
     category: "Inputs",
+    group: "Date & time",
+    aka: ["date range picker", "from to", "start and end date", "calendar"],
     name: "Date range",
     summary: "Two native date fields that narrow each other, refuse a backwards range and say the span in words.",
     pattern: "Paired date inputs",
@@ -814,6 +1004,8 @@ export const parts: Part[] = [
   {
     slug: "time-range",
     category: "Inputs",
+    group: "Date & time",
+    aka: ["opening hours", "from to", "start and end time"],
     name: "Time range",
     summary: "Opening hours or a shift: two time fields, one step, and how long it is said in words.",
     pattern: "Paired time inputs",
@@ -823,6 +1015,8 @@ export const parts: Part[] = [
   {
     slug: "dual-slider",
     category: "Inputs",
+    group: "Numbers",
+    aka: ["min max", "price range", "two handles"],
     name: "Dual range slider",
     summary: "A low and a high end as two real sliders that clamp each other, each announcing its formatted value.",
     pattern: "Paired range inputs",
@@ -832,6 +1026,8 @@ export const parts: Part[] = [
   {
     slug: "pin-pad",
     category: "Inputs",
+    group: "Numbers",
+    aka: ["keypad", "numpad", "pin entry", "passcode"],
     name: "PIN pad",
     summary: "An on-screen keypad that also answers the keyboard, announcing the count and never the digits.",
     pattern: "Buttons + hidden field",
@@ -841,6 +1037,8 @@ export const parts: Part[] = [
   {
     slug: "autosave-field",
     category: "Inputs",
+    group: "Text",
+    aka: ["autosave", "saving", "draft"],
     name: "Autosaving field",
     summary: "Saves after a rest in the typing, says which of four states it is in, and never loses the draft.",
     pattern: "Debounced save + polite status",
@@ -850,6 +1048,8 @@ export const parts: Part[] = [
   {
     slug: "error-summary",
     category: "Inputs",
+    group: "Forms",
+    aka: ["error list", "form errors", "validation summary"],
     name: "Form error summary",
     summary: "Every problem listed once at the top, focus moved to the list, each line a link to the answer.",
     pattern: "Focusable summary region",
@@ -859,6 +1059,8 @@ export const parts: Part[] = [
   {
     slug: "address-fields",
     category: "Inputs",
+    group: "Forms",
+    aka: ["address form", "postcode", "zip code", "shipping address"],
     name: "Address fields",
     summary: "A postcode field called what that country calls it, a region field only where one exists, and autofill tokens throughout.",
     pattern: "Autocomplete tokens + country rules",
@@ -868,6 +1070,8 @@ export const parts: Part[] = [
   {
     slug: "skip-links",
     category: "Navigation",
+    group: "Site navigation",
+    aka: ["skip to content", "skip navigation"],
     name: "Skip links",
     summary: "Hidden by size rather than removed, so they stay in the tab order, and each one moves focus as well as the scroll.",
     pattern: "Bypass blocks",
@@ -877,6 +1081,8 @@ export const parts: Part[] = [
   {
     slug: "anchor-nav",
     category: "Navigation",
+    group: "Within a page",
+    aka: ["table of contents", "toc", "scrollspy", "on this page"],
     name: "Anchor navigation",
     summary: "An on-this-page list that marks the section being read with aria-current, and moves focus when you follow it.",
     pattern: "Table of contents + aria-current",
@@ -886,6 +1092,8 @@ export const parts: Part[] = [
   {
     slug: "command-menu",
     category: "Navigation",
+    group: "Menus & commands",
+    aka: ["cmdk", "command palette", "ctrl k", "spotlight", "launcher"],
     name: "Command menu",
     summary: "Ctrl K over a grouped list of actions, with the field keeping focus and aria-activedescendant doing the moving.",
     pattern: "APG Combobox in a dialog",
@@ -895,6 +1103,8 @@ export const parts: Part[] = [
   {
     slug: "menu-bar",
     category: "Navigation",
+    group: "Menus & commands",
+    aka: ["menubar", "app menu", "file menu"],
     name: "Menu bar",
     summary: "One tab stop for the whole bar, arrows inside it, sideways from a menu opening the next one, and type-ahead.",
     pattern: "APG Menubar",
@@ -904,6 +1114,8 @@ export const parts: Part[] = [
   {
     slug: "cursor-pagination",
     category: "Navigation",
+    group: "Steps & pages",
+    aka: ["load more", "next page"],
     name: "Cursor pagination",
     summary: "Newer and older with no page numbers, ends that say why they are stuck, and focus that follows the new rows.",
     pattern: "Cursor + aria-disabled ends",
@@ -913,6 +1125,8 @@ export const parts: Part[] = [
   {
     slug: "nav-progress",
     category: "Navigation",
+    group: "Steps & pages",
+    aka: ["route progress", "loading bar", "nprogress", "page loading"],
     name: "Navigation progress",
     summary: "A load indicator whose real work is the words: a route change tells a screen reader nothing by itself.",
     pattern: "Delayed bar + polite status",
@@ -922,6 +1136,8 @@ export const parts: Part[] = [
   {
     slug: "sticky-header",
     category: "Navigation",
+    group: "Site navigation",
+    aka: ["sticky nav", "shrinking header", "fixed header", "navbar"],
     name: "Shrinking sticky header",
     summary: "Shrinks past a threshold, steps aside going down, and comes back the moment anything inside takes focus.",
     pattern: "Sticky + scroll direction",
@@ -931,6 +1147,8 @@ export const parts: Part[] = [
   {
     slug: "hover-card",
     category: "Overlays",
+    group: "Popups",
+    aka: ["profile preview", "preview card", "popover on hover"],
     name: "Hover card",
     summary: "A preview that opens on focus as well as hover, can be dismissed with Escape, and holds nothing you have to click.",
     pattern: "APG Tooltip, WCAG 1.4.13",
@@ -940,6 +1158,8 @@ export const parts: Part[] = [
   {
     slug: "bottom-sheet",
     category: "Overlays",
+    group: "Panels",
+    aka: ["action sheet", "sheet", "mobile drawer"],
     name: "Bottom sheet",
     summary: "Three heights on a native modal dialog, with a handle that is a real button so the heights work without dragging.",
     pattern: "APG Dialog (Modal) + detents",
@@ -949,6 +1169,8 @@ export const parts: Part[] = [
   {
     slug: "loading-button",
     category: "Feedback",
+    group: "Loading & progress",
+    aka: ["spinner", "submit loading", "busy button"],
     name: "Loading button",
     summary: "aria-busy and aria-disabled rather than the disabled attribute, so the focus and the state survive the wait.",
     pattern: "aria-busy + polite outcome",
@@ -958,6 +1180,8 @@ export const parts: Part[] = [
   {
     slug: "undo-snackbar",
     category: "Feedback",
+    group: "Messages",
+    aka: ["undo", "snackbar", "toast with undo"],
     name: "Undo snackbar",
     summary: "A way back from an action, with a clock that stops while you are using it and can be turned off entirely.",
     pattern: "Polite status + timing adjustable",
@@ -967,6 +1191,8 @@ export const parts: Part[] = [
   {
     slug: "inline-confirm",
     category: "Feedback",
+    group: "States & guards",
+    aka: ["are you sure", "confirm delete", "two step delete"],
     name: "Inline confirm",
     summary: "The question replaces the button in its own row, with focus on the safe answer and Escape as the way out.",
     pattern: "In-place group + focus move",
@@ -976,6 +1202,8 @@ export const parts: Part[] = [
   {
     slug: "circular-progress",
     category: "Feedback",
+    group: "Loading & progress",
+    aka: ["progress ring", "spinner", "percentage", "loader"],
     name: "Circular progress",
     summary: "A ring that reads back its value with a unit, prints the number, and carries no value at all when it does not know one.",
     pattern: "role=progressbar",
@@ -985,6 +1213,8 @@ export const parts: Part[] = [
   {
     slug: "error-state",
     category: "Feedback",
+    group: "States & guards",
+    aka: ["error message", "try again", "retry", "failed to load"],
     name: "Error state with retry",
     summary: "Names what failed, says whether anything changed, offers a retry, and hides the technical line behind a disclosure.",
     pattern: "Focusable region + retry",
@@ -994,6 +1224,8 @@ export const parts: Part[] = [
   {
     slug: "maintenance-notice",
     category: "Feedback",
+    group: "Messages",
+    aka: ["downtime", "scheduled maintenance", "status notice"],
     name: "Maintenance notice",
     summary: "A real time window, what will and will not work, and a dismissal remembered even where storage throws.",
     pattern: "Region landmark + time",
@@ -1003,6 +1235,8 @@ export const parts: Part[] = [
   {
     slug: "help-hint",
     category: "Inputs",
+    group: "Forms",
+    aka: ["info icon", "help text", "hint", "explanation"],
     name: "Help hint",
     summary: "Long help behind a named button that stays open, and joins the field's description while it is.",
     pattern: "APG Disclosure + aria-describedby",
@@ -1012,6 +1246,8 @@ export const parts: Part[] = [
   {
     slug: "changelog",
     category: "Content",
+    group: "Articles & text",
+    aka: ["release notes", "updates", "what's new"],
     name: "Changelog",
     summary: "Releases as an ordered list, each kind named in words, with real dates and nothing behind a disclosure.",
     pattern: "Ordered list + time",
@@ -1021,6 +1257,8 @@ export const parts: Part[] = [
   {
     slug: "notification-list",
     category: "Feedback",
+    group: "Messages",
+    aka: ["notifications", "inbox", "bell", "alerts"],
     name: "Notification list",
     summary: "Every mark-as-read button named with its own item, unread said in words, and a count that stays in step.",
     pattern: "List + per-item action names",
@@ -1030,6 +1268,8 @@ export const parts: Part[] = [
   {
     slug: "row-actions",
     category: "Content",
+    group: "Data & apps",
+    aka: ["list actions", "item actions", "actions per row"],
     name: "List with row actions",
     summary: "A table whose per-row buttons are each named with their row, so nine buttons have nine names.",
     pattern: "Table + scoped action names",
@@ -1039,6 +1279,8 @@ export const parts: Part[] = [
   {
     slug: "order-tracker",
     category: "Content",
+    group: "Shop",
+    aka: ["delivery status", "shipping", "tracking"],
     name: "Order tracker",
     summary: "Where it has got to, said in one sentence first, then a list of stages each with its state in words.",
     pattern: "Ordered list + aria-current=step",
@@ -1048,6 +1290,8 @@ export const parts: Part[] = [
   {
     slug: "invoice-summary",
     category: "Content",
+    group: "Shop",
+    aka: ["receipt", "bill", "order summary", "totals"],
     name: "Invoice summary",
     summary: "Lines, subtotal, tax and total worked out in whole pennies, in a table whose footer is a real tfoot.",
     pattern: "Table + tfoot totals",
@@ -1057,6 +1301,8 @@ export const parts: Part[] = [
   {
     slug: "article-card",
     category: "Content",
+    group: "Articles & text",
+    aka: ["blog card", "post card", "news card"],
     name: "Article card",
     summary: "One link per card and it is the title, with the whole card clickable through that link rather than a second one.",
     pattern: "Card with one link",
@@ -1066,6 +1312,8 @@ export const parts: Part[] = [
   {
     slug: "author-byline",
     category: "Content",
+    group: "Articles & text",
+    aka: ["author", "byline", "written by"],
     name: "Author byline",
     summary: "Who wrote it and when, with both dates said, rel=author on the link, and no misused address element.",
     pattern: "Byline + rel=author",
@@ -1075,6 +1323,8 @@ export const parts: Part[] = [
   {
     slug: "image-gallery",
     category: "Content",
+    group: "Media",
+    aka: ["photos", "grid of images", "thumbnails"],
     name: "Image gallery",
     summary: "Figures in a list, with empty and described alt treated as the different things they are, and space reserved before loading.",
     pattern: "Figure list + reserved ratio",
@@ -1084,6 +1334,8 @@ export const parts: Part[] = [
   {
     slug: "video-embed",
     category: "Content",
+    group: "Media",
+    aka: ["youtube", "video", "lazy video", "facade"],
     name: "Click-to-load video",
     summary: "No request to the video host until you press play, a button named with the video, and a titled frame.",
     pattern: "Deferred iframe",
@@ -1093,6 +1345,8 @@ export const parts: Part[] = [
   {
     slug: "pull-quote",
     category: "Content",
+    group: "Articles & text",
+    aka: ["quote", "blockquote", "testimonial"],
     name: "Pull quote",
     summary: "The attribution in a figcaption rather than inside the quotation, and cite used for the work, not the person.",
     pattern: "Figure + blockquote",
@@ -1102,6 +1356,8 @@ export const parts: Part[] = [
   {
     slug: "team-grid",
     category: "Page sections",
+    group: "Heroes & features",
+    aka: ["people", "staff", "about us", "profiles"],
     name: "Team grid",
     summary: "People as a list rather than a stack of headings, with initials instead of photographs and nobody invented.",
     pattern: "Labelled list of people",
@@ -1111,6 +1367,8 @@ export const parts: Part[] = [
   {
     slug: "logo-wall",
     category: "Page sections",
+    group: "Heroes & features",
+    aka: ["clients", "customers", "trusted by", "logos"],
     name: "Logo wall",
     summary: "Names as text when there is no image, alt that is the name rather than the word logo, and no borrowed endorsements.",
     pattern: "Labelled list of marks",
@@ -1120,6 +1378,8 @@ export const parts: Part[] = [
   {
     slug: "page-header",
     category: "Page sections",
+    group: "Headers & footers",
+    aka: ["title bar", "page title", "heading"],
     name: "Page header",
     summary: "The page's one h1 in a header landmark, with a named trail whose last step is not a link.",
     pattern: "Landmark + breadcrumb",
@@ -1129,6 +1389,8 @@ export const parts: Part[] = [
   {
     slug: "split-feature",
     category: "Page sections",
+    group: "Heroes & features",
+    aka: ["image and text", "media object", "side by side"],
     name: "Split feature",
     summary: "Words beside a picture, with the words first in the source whichever side the picture is on.",
     pattern: "Two-column section",
@@ -1138,6 +1400,8 @@ export const parts: Part[] = [
   {
     slug: "stat-comparison",
     category: "Page sections",
+    group: "Conversion",
+    aka: ["before and after", "metrics", "numbers"],
     name: "Stat comparison",
     summary: "Two options compared row by row, with the better one said in words and rows allowed to have no winner.",
     pattern: "Comparison table",
