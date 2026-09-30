@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { demos } from "../lib/demos";
 import { drawnSlugs } from "../components/part-drawing";
 import { groups, inStock, parts } from "../lib/parts";
 import { expectNoAxeViolations } from "./helpers";
@@ -7,44 +6,21 @@ import { expectNoAxeViolations } from "./helpers";
 /** Chromium only: the catalogue is plain layout, and hover is the same everywhere. */
 test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only");
 
-test("every part in stock says how it works", () => {
-  const missing = inStock.filter((part) => !demos[part.slug]?.how).map((part) => part.slug);
-  expect(missing).toEqual([]);
-});
-
-test("hovering a card previews the real component and explains it", async ({ page }) => {
-  const errors: string[] = [];
-  page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
-  });
+test("pointing at a card plays its drawing, and focusing it does too; no frame opens", async ({ page }) => {
   await page.goto("/");
-  const card = page.locator("#catalogue-list li").filter({ hasText: "Date picker" }).first();
+  const card = page.locator("#catalogue-list li").filter({ hasText: "Tabs" }).first();
+  // The tab indicator slides one tab along while the card is pointed at.
+  const indicator = card.locator(".dw-mv").first();
+  const offset = () => indicator.evaluate((node) => getComputedStyle(node).translate);
+  expect(await offset()).toBe("none");
   await card.hover();
-
-  const panel = card.locator("[inert]");
-  await expect(panel).toBeVisible();
-  await expect(panel.getByText(demos["date-picker"].how)).toBeVisible();
-  // The real exported component, not a picture: the preview page for this part.
-  const preview = panel.locator("iframe");
-  await expect(preview).toHaveAttribute("src", "/preview/date-picker?demo=1");
-  await expect(panel.frameLocator("iframe").getByRole("textbox", { name: /Date/ })).toBeVisible();
-
+  await expect.poll(offset).toBe("36px");
   await page.mouse.move(2, 2);
-  await expect(panel).toBeHidden();
-  expect(errors).toEqual([]);
-});
-
-test("the preview opens on keyboard focus as well as hover", async ({ page }) => {
-  await page.goto("/");
-  const card = page.locator("#catalogue-list li").filter({ hasText: "Modal dialog" }).first();
-  await card.getByRole("link", { name: "Modal dialog" }).focus();
-  await expect(card.locator("[inert]")).toBeVisible();
-  // Inert: Tab goes on to the next card, never into the frame inside the panel.
-  await page.keyboard.press("Tab");
-  await expect(page.locator("#catalogue-list li a:focus")).toBeVisible();
-  await expect(page.locator("iframe:focus")).toHaveCount(0);
-  // And the card being left closes its own preview.
-  await expect(card.locator("[inert]")).toHaveCount(0);
+  await expect.poll(offset).toBe("none");
+  await card.getByRole("link", { name: "Tabs" }).focus();
+  await expect.poll(offset).toBe("36px");
+  // The drawing is the preview now: nothing loads a live component into the catalogue.
+  await expect(page.locator("#catalogue-list iframe")).toHaveCount(0);
 });
 
 test("searching the catalogue narrows it, and says how many are left", async ({ page }) => {

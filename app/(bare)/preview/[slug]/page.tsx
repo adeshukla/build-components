@@ -17,7 +17,6 @@ export default async function PreviewPage({ params, searchParams }: PageProps<"/
   }
 
   const config = parseConfig(registry[slug].schema, query);
-  const demo = query.get("demo") === "1";
 
   /*
    * ?twice=1 puts two of the part on one page. Nothing links to it: it is how e2e/unique-ids.spec.ts
@@ -32,5 +31,5 @@ export default async function PreviewPage({ params, searchParams }: PageProps<"/
     );
   }
 
-  return <PreviewClient slug={slug} initialConfig={config} demo={demo} />;
+  return <PreviewClient slug={slug} initialConfig={config} />;
 }

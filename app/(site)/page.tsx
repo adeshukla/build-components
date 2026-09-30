@@ -50,7 +50,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(3rem,8vw,6rem)] pb-[clamp(3.5rem,7vw,6rem)] sm:px-6">
           <div className="mx-auto max-w-3xl text-center">
             {/* Counted from the catalogue, not typed in, so it cannot go stale. */}
-            <p className="glass-flat inline-flex flex-wrap items-center justify-center gap-x-2 rounded-full px-3.5 py-1.5 font-mono text-xs text-ink-muted">
+            <p className="glass inline-flex flex-wrap items-center justify-center gap-x-2 rounded-full px-3.5 py-1.5 font-mono text-xs text-ink-muted">
               <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
               {`${inStock.length} parts · 2 outputs each · 0 runtime dependencies`}
             </p>

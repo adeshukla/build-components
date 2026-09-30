@@ -5,11 +5,7 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       {/* The glow the glass sits over. */}
-      <div aria-hidden="true" className="site-glow">
-        <i />
-        <i />
-        <i />
-      </div>
+      <div aria-hidden="true" className="site-glow" />
       <a href="#main" className="skip-link">
         Skip to content
       </a>

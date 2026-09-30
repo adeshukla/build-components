@@ -27,6 +27,15 @@ until Adesh says ship.
   play on hover and focus. The live preview now waits 450ms so the drawing plays first.
 - Preview and harness pages keep a plain white page (`.bare-page`): parts are tested as before.
 
+### Later the same day (D72)
+- The live preview on hover is gone (Adesh): the drawings play instead. `lib/demos.ts` and the
+  preview script runner are deleted.
+- Scrolling was slow: measured, the blurred drifting glow made nearly every frame 100ms. Now static
+  gradients, no backdrop blur, grain drawn once: home and /parts scroll with no frame over 33ms. Typing
+  in search 72ms to 24ms per key (deferred query, memoised cards). 318 Chromium tests pass.
+- Adesh asked about offering more than components (ready-to-use templates) and trimming pages: see
+  the suggestion in the session transcript; nothing built yet.
+
 ### Found on the way
 - /in-use scrolled sideways at 375px because of the stat-comparison table (from 35f594b, not this
   session): a grid item would not shrink. `min-w-0` on the X-ray wrapper.

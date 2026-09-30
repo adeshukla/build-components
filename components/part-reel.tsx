@@ -135,7 +135,7 @@ export function PartReel() {
                 tabIndex={on ? 0 : -1}
                 onClick={() => setAt(index)}
                 className={`group relative grid min-h-14 cursor-pointer grid-cols-[auto_1fr] items-center gap-4 rounded-md px-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-                  on ? "glass-flat" : "border border-transparent hover:bg-wash"
+                  on ? "glass" : "border border-transparent hover:bg-wash"
                 }`}
               >
                 {/* The pad is the one that is live: filled, hollow when waiting. */}

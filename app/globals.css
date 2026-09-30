@@ -164,82 +164,40 @@
   }
 }
 
-/* Frosted glass: translucent, grained, blurred, with a lit top edge. */
+/*
+ * Frosted glass: translucent, with a lit top edge; the grain comes from the page behind it. No
+ * backdrop-filter and no grain of its own: all that sits behind the glass is the glow, which is soft
+ * already, so a blur looked the same and cost most of every scrolled frame, and a grain on each of 125
+ * cards was redrawn as each one scrolled in (measured: scratchpad/perf.mjs).
+ */
 @utility glass {
-  background: var(--grain), var(--color-glass);
+  background: var(--color-glass);
   border: 1px solid var(--color-glass-edge);
   box-shadow:
     inset 0 1px 0 var(--color-glass-lip),
     0 1px 2px var(--color-shadow),
     0 10px 30px -18px var(--color-shadow);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  backdrop-filter: blur(18px) saturate(1.5);
-
-  @media (prefers-reduced-transparency: reduce) {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
 }
 
 /*
- * The same glass without the blur, for surfaces that come in dozens (catalogue cards). What sits
- * behind them is the glow, which is already blurred, so the blur would cost frames and change nothing.
+ * The faint glow the glass sits over, fixed behind every page. Gradients, not blurred shapes: a 110px
+ * blur over the whole screen, with shapes drifting under it, was redone on every frame and made
+ * scrolling stutter. Painted once, it costs nothing.
+ * At most 14% at the centre: muted text must still reach 4.5:1 over the brightest part.
  */
-@utility glass-flat {
-  background: var(--grain), var(--color-glass);
-  border: 1px solid var(--color-glass-edge);
-  box-shadow:
-    inset 0 1px 0 var(--color-glass-lip),
-    0 1px 2px var(--color-shadow),
-    0 10px 30px -18px var(--color-shadow);
-}
-
-/* The faint glow the glass sits over: fixed behind every page, drifting slowly. */
 @utility site-glow {
   position: fixed;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
   pointer-events: none;
-  filter: blur(110px);
-
-  & i {
-    position: absolute;
-    width: 46vw;
-    height: 46vw;
-    border-radius: 50%;
-    /* No higher: axe judges text against the glow as if it were not blurred, and muted text must
-       still reach 4.5:1 there. */
-    opacity: 0.14;
-    animation: drift 44s ease-in-out infinite alternate;
-  }
-  & i:nth-child(1) {
-    left: -8%;
-    top: -12%;
-    background: var(--glow-1);
-  }
-  & i:nth-child(2) {
-    right: -10%;
-    top: 30%;
-    background: var(--glow-3);
-    animation-duration: 52s;
-  }
-  & i:nth-child(3) {
-    left: 22%;
-    top: 62%;
-    background: var(--glow-2);
-    animation-duration: 60s;
-  }
+  background:
+    var(--grain),
+    radial-gradient(circle 38vw at 8% 4%, color-mix(in srgb, var(--glow-1) 14%, transparent), transparent),
+    radial-gradient(circle 36vw at 96% 48%, color-mix(in srgb, var(--glow-3) 12%, transparent), transparent),
+    radial-gradient(circle 40vw at 40% 96%, color-mix(in srgb, var(--glow-2) 12%, transparent), transparent);
 
   @media (prefers-reduced-transparency: reduce) {
     display: none;
-  }
-}
-
-@keyframes drift {
-  to {
-    translate: 8vw 60px;
-    scale: 1.2;
   }
 }
 
@@ -407,13 +365,11 @@
   gap: 0.5rem;
   min-height: 2.75rem;
   border-radius: 999px;
-  background: var(--grain), var(--color-glass);
+  background: var(--color-glass);
   border: 1px solid var(--color-glass-edge);
   box-shadow:
     inset 0 1px 0 var(--color-glass-lip),
     0 1px 2px var(--color-shadow);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  backdrop-filter: blur(18px) saturate(1.5);
   color: var(--color-ink);
   padding: 0.625rem 1.25rem;
   font-weight: 600;
@@ -491,12 +447,10 @@
   from {
     opacity: 0;
     transform: translateY(1.5rem);
-    filter: blur(4px);
   }
   to {
     opacity: 1;
     transform: none;
-    filter: none;
   }
 }
 
@@ -588,9 +542,8 @@
     animation: none !important;
   }
 
-  /* Nothing loops, nothing drifts, nothing is clipped into view. */
-  .pad-live,
-  .site-glow i {
+  /* Nothing loops, nothing is clipped into view. */
+  .pad-live {
     animation: none !important;
   }
 

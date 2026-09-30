@@ -31,7 +31,7 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.
 - `lib/registry.ts` — the one map of slug → title, description, schema. Used by the registry route and the preview page.
 - `lib/parts.ts` — catalogue: the part's plain name (the one a developer would search for), summary, pattern, accent, status, `category` and `group` (the type tiles and the groups under them) and `aka` (other words search reads: "calendar" finds the date picker). The old ship-themed codenames were dropped on 2026-09-27: nobody could tell what a "Binnacle" was.
-- Look: the frosted shelf (D71, `DESIGN.md`). Warm paper, one orange accent, `glass` / `glass-flat` surfaces over a fixed faint glow (`.site-glow` in `app/(site)/layout.tsx`), Instrument Serif for display. Every catalogue card shows a drawing of its part.
+- Look: the frosted shelf (D71, `DESIGN.md`). Warm paper, one orange accent, `glass` surfaces over a fixed faint glow (`.site-glow` in `app/(site)/layout.tsx`), Instrument Serif for display. Every catalogue card shows a drawing of its part, which plays on hover and focus (no live preview, D72).
 - `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
 - `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
 - Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
@@ -98,7 +98,8 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - `aria-hidden` does not excuse an axe colour-contrast failure — contrast is a visual requirement, and axe is right. To show text that deliberately fails, draw it as SVG `<text>`.
 - An `animation.finished` promise **rejects** with an AbortError when the animation is replaced or interrupted, which failed the whole wait in `expectNoAxeViolations`. It catches per-animation now: a cancelled animation has settled, which is all the helper wants.
 - `role="listbox"` may only own `option` and `group`. A group heading or an empty-state paragraph inside it fails `aria-required-children`, and `aria-label` on a div with no role fails `aria-prohibited-attr`.
-- axe judges text against the site glow as if it were not blurred. That is what caps the glow at 0.14 opacity and darkened muted ink to #56514a; raise either and re-run axe on every page.
+- The site glow is static gradients, which axe cannot see through, so it does not check text over them. The glow is capped at 14% at its centre and muted ink is #56514a so text passes over its brightest part; raising either means checking contrast by hand.
+- Never put `filter: blur()`, `backdrop-filter` or an animation on anything that stays on screen while scrolling (a fixed layer, a sticky bar). A blurred full-screen glow made every scrolled frame 100ms (D72). Measure with `scratchpad/perf.mjs` before adding one.
 - Preview and harness pages (`app/(bare)`) have their own plain background (`.bare-page`, white or #141020), not the site paper: parts are tested on the page they will live on. Keep it that way when the site look changes.
 - A grid item will not shrink below its content: a part that scrolls inside itself (a wide table) still stretches a grid cell around it. Put `min-w-0` on the wrapper.
 - Styles written outside a Tailwind layer beat every utility. Component CSS that utilities should override goes in `@layer components`.

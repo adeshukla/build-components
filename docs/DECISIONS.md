@@ -480,3 +480,20 @@ Session 4 (Adesh: cursor bug, React preview escaping its box, nav/footer, light/
 **Motion:** quiet on purpose. Small spring lifts, View Transitions when filtering, a soft focus ring on the search box, a spotlight on card borders under the cursor, and drawings that play on hover or focus. Everything stops under reduced motion; the glass turns solid under reduced transparency.
 **Findability, whatever the look:** every part gets synonyms that search reads, and search shows which word matched ("also called 'popup'"). Parts also get a sub-group. Ctrl K focuses search from anywhere.
 **Risks to hold the build to:** `backdrop-filter` on 125 cards may drop frames on cheap phones (measure, and keep the blur on search, tiles and header if it does). The drawings must stay true to the parts they stand for. Text on glass must still pass contrast over the brightest part of the glow.
+
+## 2026-10-01 — D72. No live preview on hover; the drawings do that job, and the site scrolls at 60fps
+**Decision:** the catalogue cards no longer open a live preview frame on hover or focus (reverses D48).
+Pointing at or focusing a card plays its drawing instead. The demo scripts (`lib/demos.ts`), the script
+runner in the preview page and `?demo=1` went with it; git has them.
+**Why:** Adesh asked for it: the drawings read well, and a frame loading over the card hid the drawing
+it was meant to sit beside.
+**Performance, measured** (`scratchpad/perf.mjs`, headless Chromium, so absolute numbers are
+pessimistic): scrolling the home page ran at a median 100ms a frame, with 154 of 155 frames over 33ms.
+The cause was the D71 glow: a full-screen layer blurred by 110px with shapes drifting under it, redone
+every frame. Backdrop blur on glass surfaces and a grain texture on each of 125 cards cost the rest.
+Now the glow is static gradients with the grain drawn once on it, and glass has no backdrop-filter
+(what sits behind it is the glow, so the blur looked the same). Home and /parts: median 16.7ms, 0 frames
+over 33ms. Typing in the catalogue search: median 72ms to 24ms per key, by deferring the query and
+memoising the card list.
+**Contrast:** axe cannot judge text over a gradient, so the glow keeps its 14% ceiling from D71 and
+muted ink stays #56514a.

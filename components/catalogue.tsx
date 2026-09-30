@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { memo, type ReactNode, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { PartDrawing } from "@/components/part-drawing";
-import { demos } from "@/lib/demos";
 import { categories, groups, type Part } from "@/lib/parts";
 
 const ALL = "All";
@@ -87,25 +86,33 @@ export function Catalogue({
     startFilter !== ALL && groups[startFilter as Part["category"]].includes(initialGroup) ? initialGroup : ALL,
   );
   const [query, setQuery] = useState(initialQuery);
-  // Only the card being pointed at or tabbed to runs a preview, so one frame exists at a time.
-  const [showing, setShowing] = useState<string | null>(null);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const searchRef = useRef<HTMLInputElement>(null);
   const root = useRef<HTMLDivElement>(null);
 
-  const searching = query.trim() !== "";
-  const hits = parts
-    .map((part) => ({ part, ...match(part, query) }))
-    .filter((entry) => entry.hit)
-    // Parts found by their own words first; those found by another name for them after.
-    .sort((a, b) => Number(a.via !== undefined) - Number(b.via !== undefined));
-  const inFilter = hits.filter((entry) => filter === ALL || entry.part.category === filter);
-  const matching = inFilter.filter((entry) => group === ALL || entry.part.group === group);
+  /*
+   * The box shows every keystroke at once; the list follows a moment behind, and only re-renders when
+   * what it shows has changed. Filtering 125 cards with their drawings on every key made typing lag.
+   */
+  const deferredQuery = useDeferredValue(query);
+  const searching = deferredQuery.trim() !== "";
+  const { hits, inFilter, matching } = useMemo(() => {
+    const hits = parts
+      .map((part) => ({ part, ...match(part, deferredQuery) }))
+      .filter((entry) => entry.hit)
+      // Parts found by their own words first; those found by another name for them after.
+      .sort((a, b) => Number(a.via !== undefined) - Number(b.via !== undefined));
+    const inFilter = hits.filter((entry) => filter === ALL || entry.part.category === filter);
+    const matching = inFilter.filter((entry) => group === ALL || entry.part.group === group);
+    return { hits, inFilter, matching };
+  }, [parts, deferredQuery, filter, group]);
   /*
    * The teaser on the home page shows the first few and then sends you to the catalogue page. While
    * searching it shows every match: hiding results behind a button would be odd.
    */
-  const shown = showAll || searching || filter !== ALL ? matching : matching.slice(0, PREVIEW);
+  const shown = useMemo(
+    () => (showAll || searching || filter !== ALL ? matching : matching.slice(0, PREVIEW)),
+    [showAll, searching, filter, matching],
+  );
   const choices = [ALL, ...categories].map((name) => ({
     name,
     count: hits.filter((entry) => name === ALL || entry.part.category === name).length,
@@ -161,8 +168,6 @@ export function Catalogue({
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
-
-  useEffect(() => () => clearTimeout(hoverTimer.current), []);
 
   function chooseFilter(name: string) {
     withTransition(() => {
@@ -222,7 +227,7 @@ export function Catalogue({
               setQuery(word);
               searchRef.current?.focus();
             }}
-            className="glass-flat inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 font-mono text-xs text-ink transition-colors hover:border-accent"
+            className="glass inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 font-mono text-xs text-ink transition-colors hover:border-accent"
           >
             {word}
           </button>
@@ -236,7 +241,7 @@ export function Catalogue({
           {choices.map((choice) => (
             <label
               key={choice.name}
-              className={`drawing-host glass-flat flex min-h-11 flex-col rounded-2xl px-3.5 py-2.5 transition-[translate,border-color,box-shadow] duration-500 ease-spring has-checked:border-accent has-checked:shadow-[inset_0_0_0_1px_var(--color-accent)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
+              className={`drawing-host glass flex min-h-11 flex-col rounded-2xl px-3.5 py-2.5 transition-[translate,border-color,box-shadow] duration-500 ease-spring has-checked:border-accent has-checked:shadow-[inset_0_0_0_1px_var(--color-accent)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
                 choice.count === 0 && filter !== choice.name
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer hover:-translate-y-0.5"
@@ -296,7 +301,7 @@ export function Catalogue({
                   onChange={() => withTransition(() => setGroup(choice.name))}
                   className="peer sr-only"
                 />
-                <span className="glass-flat inline-flex min-h-9 items-center gap-2 rounded-full px-3.5 text-sm font-medium text-ink-muted transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent hover:text-ink peer-checked:hover:text-paper">
+                <span className="glass inline-flex min-h-9 items-center gap-2 rounded-full px-3.5 text-sm font-medium text-ink-muted transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent hover:text-ink peer-checked:hover:text-paper">
                   {choice.name === ALL ? `All ${filter.toLowerCase()}` : choice.name}{" "}
                   <span className="font-mono text-xs opacity-80">{choice.count}</span>
                 </span>
@@ -314,7 +319,7 @@ export function Catalogue({
       </p>
 
       {matching.length === 0 ? (
-        <div className="glass-flat mt-4 rounded-2xl p-8 text-center">
+        <div className="glass mt-4 rounded-2xl p-8 text-center">
           <p className="font-medium">No part by that name yet</p>
           <p className="mt-1 text-sm text-ink-muted">
             Every part is listed above, so a word from its name or its job will find it.
@@ -324,89 +329,51 @@ export function Catalogue({
           </button>
         </div>
       ) : (
-        <ul id="catalogue-list" className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {shown.map(({ part, via }) => {
-            const inStock = part.status === "in-stock";
-            const how = demos[part.slug]?.how;
-            return (
-              <li
-                key={part.slug}
-                style={{ ["--part-accent" as string]: part.accent, viewTransitionName: `part-${part.slug}` }}
-                onPointerEnter={(event) => {
-                  // Touch has no hover: a tap should open the part, not park a preview over it. The
-                  // short wait lets the drawing play first, and keeps a pointer crossing the grid from
-                  // opening a frame on every card it passes.
-                  if (event.pointerType !== "mouse" || !inStock) return;
-                  clearTimeout(hoverTimer.current);
-                  hoverTimer.current = setTimeout(() => setShowing(part.slug), 450);
-                }}
-                onPointerLeave={() => {
-                  clearTimeout(hoverTimer.current);
-                  setShowing((current) => (current === part.slug ? null : current));
-                }}
-                onFocus={() => inStock && setShowing(part.slug)}
-                onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                    setShowing((current) => (current === part.slug ? null : current));
-                  }
-                }}
-                className={`drawing-host glass-flat group relative flex flex-col rounded-2xl p-2 outline-offset-3 outline-accent has-[a:focus-visible]:outline-2 ${inStock ? "transition-[translate,box-shadow] duration-500 ease-spring hover:-translate-y-1" : "opacity-70"}`}
-              >
-                <div className="rounded-xl bg-[color-mix(in_oklab,var(--part-accent)_22%,transparent)] px-4 py-3 text-ink">
-                  <PartDrawing slug={part.slug} accent={part.accent} className="mx-auto h-28 w-auto" />
-                </div>
-                <div className="flex flex-1 flex-col px-2 pt-3 pb-1.5">
-                  <h3 className="text-base leading-snug font-semibold">
-                    {inStock ? (
-                      <Link
-                        href={`/${part.slug}`}
-                        className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none"
-                      >
-                        {highlight(part.name, query)}
-                      </Link>
-                    ) : (
-                      part.name
-                    )}
-                  </h3>
-                  <p className="mt-0.5 font-mono text-xs text-ink-muted">
-                    {part.category} · {part.group}
-                  </p>
-                  {via && <p className="mt-1 font-mono text-xs text-link">{`also called “${via}”`}</p>}
-                  <p className="mt-2 line-clamp-2 text-sm text-pretty text-ink-muted">{part.summary}</p>
-                </div>
-                {/* The preview is a picture-in-words for anyone not using a pointer: the panel itself is
-                    inert, so the frame inside it is never a focus trap. */}
-                {how && <p className="sr-only">{how}</p>}
-                {!inStock && <p className="mt-2 px-2 font-mono text-xs text-ink-muted uppercase">Coming soon</p>}
-
-                {showing === part.slug && (
-                  <div
-                    inert
-                    className="glass absolute -inset-x-2 -top-2 z-30 flex flex-col overflow-hidden rounded-2xl border-(--part-accent) shadow-2xl"
-                  >
-                    <p className="flex items-baseline justify-between gap-2 px-4 pt-3 text-base leading-tight font-semibold">
-                      {part.name}
-                      <span className="font-mono text-[0.6875rem] font-normal text-ink-muted">Live preview</span>
-                    </p>
-                    <div className="mt-3 h-52 overflow-hidden border-y border-rule bg-white">
-                      {/* Scaled down so a full-size component fits the card; it is the real exported
-                          React output, running its own demo. */}
-                      <iframe
-                        src={`/preview/${part.slug}?demo=1`}
-                        title={`${part.name} preview`}
-                        loading="lazy"
-                        tabIndex={-1}
-                        className="h-[130%] w-[130%] origin-top-left scale-[0.77] border-0"
-                      />
-                    </div>
-                    <p className="px-4 py-3 text-sm text-pretty text-ink-muted">{how ?? part.summary}</p>
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <CardList shown={shown} query={deferredQuery} />
       )}
     </div>
   );
 }
+
+/** The cards. Memoised, so a keystroke that has not changed the results does not redraw 125 of them. */
+const CardList = memo(function CardList({ shown, query }: { shown: { part: Part; via?: string }[]; query: string }) {
+  return (
+    <ul id="catalogue-list" className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {shown.map(({ part, via }) => {
+        const inStock = part.status === "in-stock";
+        return (
+          <li
+            key={part.slug}
+            style={{ ["--part-accent" as string]: part.accent, viewTransitionName: `part-${part.slug}` }}
+            className={`drawing-host glass group relative flex flex-col rounded-2xl p-2 outline-offset-3 outline-accent has-[a:focus-visible]:outline-2 ${inStock ? "transition-[translate,box-shadow] duration-500 ease-spring hover:-translate-y-1" : "opacity-70"}`}
+          >
+            {/* The drawing plays while the card is pointed at or focused. */}
+            <div className="rounded-xl bg-[color-mix(in_oklab,var(--part-accent)_22%,transparent)] px-4 py-3 text-ink">
+              <PartDrawing slug={part.slug} accent={part.accent} className="mx-auto h-28 w-auto" />
+            </div>
+            <div className="flex flex-1 flex-col px-2 pt-3 pb-1.5">
+              <h3 className="text-base leading-snug font-semibold">
+                {inStock ? (
+                  <Link
+                    href={`/${part.slug}`}
+                    className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none"
+                  >
+                    {highlight(part.name, query)}
+                  </Link>
+                ) : (
+                  part.name
+                )}
+              </h3>
+              <p className="mt-0.5 font-mono text-xs text-ink-muted">
+                {part.category} · {part.group}
+              </p>
+              {via && <p className="mt-1 font-mono text-xs text-link">{`also called “${via}”`}</p>}
+              <p className="mt-2 line-clamp-2 text-sm text-pretty text-ink-muted">{part.summary}</p>
+            </div>
+            {!inStock && <p className="mt-2 px-2 font-mono text-xs text-ink-muted uppercase">Coming soon</p>}
+          </li>
+        );
+      })}
+    </ul>
+  );
+});
