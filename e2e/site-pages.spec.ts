@@ -82,6 +82,17 @@ test.describe("the catalogue page", () => {
     await byLabel(page, 'input[value="All"]').click();
     await expect.poll(() => new URL(page.url()).searchParams.get("type")).toBeNull();
   });
+
+  test("a type opens its groups, and a group narrows the list and goes into the address bar", async ({ page }) => {
+    await ready(page, "/parts?type=Inputs");
+    await byLabel(page, 'input[value="group: Date & time"]').click();
+    await expect(page.getByRole("status").first()).toHaveText("5 parts in date & time");
+    await expect(page.locator("#catalogue-list li h3")).toContainText(["Date picker"]);
+    await expect.poll(() => new URL(page.url()).searchParams.get("group")).toBe("Date & time");
+    // Choosing another type starts its groups from the top.
+    await byLabel(page, 'input[value="Overlays"]').click();
+    await expect.poll(() => new URL(page.url()).searchParams.get("group")).toBeNull();
+  });
 });
 
 const screenTabs = ["A product page", "A checkout", "An admin screen"];

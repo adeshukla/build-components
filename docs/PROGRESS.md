@@ -1,20 +1,54 @@
 # Progress
 
-Last updated: 2026-09-28 (session 12)
+Last updated: 2026-10-01 (session 13)
 
-## Session 13 (2026-10-01): findability audit and design directions — waiting on Adesh's pick
-- Audit: search misses everyday words ("calendar", "popup", "spinner", "loader", "navbar" find
-  nothing — it only reads name/summary/pattern/category/slug); cards are text-only and the live
-  preview is hover/focus only, so a phone never sees one; Inputs (38) and Content (28) are too broad;
-  the hero stats read "parts in stock, 125 parts in stock" to a screen reader.
-- Demo: `scratchpad/design-directions.html` (gitignored) — A as shipped, B specimen shelf, C command
-  deck, D A–Z index. B–D share synonyms, sub-groups and Ctrl K. Nothing in `app/` has changed.
-- Adesh liked B and C; **E (B + C)** was added and opens by default: B's warm paper, drawings,
-  type tiles and springs with C's search as the hero. Preview it with the `design-demo` entry in
-  `.claude/launch.json` (port 3401), or open the file directly.
-- **Picked (D71):** E, made quieter and frosted, orange kept. Next: build it, starting with search synonyms.
+## Current status (session 13, 2026-10-01): the frosted shelf is built, on `dev`
 
-## Current status (session 12)
+**This session was findability and a new look.** An audit, a demo of four directions
+(`scratchpad/design-directions.html`, gitignored; `design-demo` in `.claude/launch.json` serves it),
+Adesh picked a mix of two (D71), and it is built on the real site. Not pushed, not deployed: on `dev`
+until Adesh says ship.
+
+### The audit (why parts were hard to find)
+- Search missed everyday words: "calendar", "popup", "spinner", "loader", "navbar" found nothing.
+- Cards were text-only and alike; the live preview is hover/focus only, so a phone never saw one.
+- Inputs (38) and Content (28) were too broad to browse.
+
+### What is built
+- **Look (D71, `DESIGN.md`):** warm paper, burnt-orange accent, Instrument Serif display, frosted
+  glass (`glass` / `glass-flat`) over a fixed faint glow. Header, footer, logo, favicon and share
+  image redrawn. The Datasheet tokens (board, silk, pad) are gone; paper/ink/rule kept their names.
+- **Search is the home hero:** the catalogue sits under the headline. Search reads each part's new
+  `aka` words and says "also called 'popup'" when that is why a card is there; matches are marked in
+  the name. `/` and Ctrl K (⌘K) focus it. Suggested words under the box.
+- **Types and groups:** type tiles (radios) with counts and two drawings; a chosen type offers its
+  groups (`groups` in `lib/parts.ts`; every part has one). `?group=` goes in the address bar.
+- **A drawing of every part** (`components/part-drawing.tsx`, 125 SVG sketches) on every card; they
+  play on hover and focus. The live preview now waits 450ms so the drawing plays first.
+- Preview and harness pages keep a plain white page (`.bare-page`): parts are tested as before.
+
+### Found on the way
+- /in-use scrolled sideways at 375px because of the stat-comparison table (from 35f594b, not this
+  session): a grid item would not shrink. `min-w-0` on the X-ray wrapper.
+- The home reel scrolled sideways at 320px (it did in the old design too). Fixed.
+- axe measures text against the glow as if unblurred: glow opacity capped at 0.14, muted ink darkened.
+
+### Tests
+- New: every part has a valid group, aka words and a drawing; a part is found by another word and says
+  so; Ctrl K; a group narrows the list and goes in the URL.
+- `home`, `site-pages`, `site-layout` and `editor` across chromium, webkit and iphone: **317 passed,
+  278 skipped (Chromium-only specs), 2 failed**. Both failures were the dev server answering two font
+  files with 400 while it recompiled the new font at the start of the run; they pass on a rerun.
+- Earlier in the session, `date-picker` and `modal` component suites passed with the new site CSS.
+- Not run this session: the other component suites. Only the site CSS changed under them, and the
+  harness page keeps its old plain background, but the full sweep is worth a run before shipping.
+
+### Needs Adesh
+1. Look at it on `dev` (`pnpm dev`), in both themes and on a phone. Say "ship" when happy.
+2. `.impeccable/design.json` still describes the Datasheet: regenerate it from DESIGN.md or delete it.
+3. The licence question from session 12 is still open.
+
+## Previous status (session 12)
 
 **This session was the phone, and the id collisions.** Adesh said features were not working on a
 phone and that some of it lacked what the desktop had. Both were true.

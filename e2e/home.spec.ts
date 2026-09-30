@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { demos } from "../lib/demos";
-import { inStock } from "../lib/parts";
+import { drawnSlugs } from "../components/part-drawing";
+import { groups, inStock, parts } from "../lib/parts";
 import { expectNoAxeViolations } from "./helpers";
 
 /** Chromium only: the catalogue is plain layout, and hover is the same everywhere. */
@@ -59,6 +60,41 @@ test("searching the catalogue narrows it, and says how many are left", async ({ 
   // It matches what a part does and its URL too, not only its name.
   await search.fill("color");
   await expect(page.locator("#catalogue-list li h3")).toHaveText(["Colour picker"]);
+});
+
+test("every part has a group from its own type, other words to be found by, and a drawing", () => {
+  const wrong = parts.filter((part) => !groups[part.category].includes(part.group)).map((part) => part.slug);
+  expect(wrong).toEqual([]);
+  expect(parts.filter((part) => part.aka.length === 0).map((part) => part.slug)).toEqual([]);
+  expect(inStock.map((part) => part.slug).filter((slug) => !drawnSlugs.includes(slug))).toEqual([]);
+});
+
+test("a part is found by the word people use for it, and the card says why it is there", async ({ page }) => {
+  await page.goto("/");
+  const search = page.getByRole("searchbox", { name: "Search the catalogue" });
+  // None of these words is in the part's own name or description.
+  for (const [word, name] of [
+    ["calendar", "Date picker"],
+    ["navbar", "Site header"],
+    ["snackbar", "Toast notifications"],
+  ]) {
+    await search.fill(word);
+    const card = page.locator("#catalogue-list li").filter({ hasText: name });
+    await expect(card).toBeVisible();
+    await expect(card.getByText(/^also called “/)).toBeVisible();
+  }
+  // A part found by its own words says nothing extra.
+  await search.fill("date picker");
+  await expect(page.locator("#catalogue-list li").first().getByText(/^also called/)).toHaveCount(0);
+});
+
+test("Ctrl K jumps to the search box from anywhere on the page", async ({ page }) => {
+  await page.goto("/");
+  const search = page.getByRole("searchbox", { name: "Search the catalogue" });
+  await expect(search).toBeVisible();
+  await page.getByRole("link", { name: "Catalogue" }).first().focus();
+  await page.keyboard.press("Control+k");
+  await expect(search).toBeFocused();
 });
 
 test("a search with no hits offers a way out instead of an empty page", async ({ page }) => {
