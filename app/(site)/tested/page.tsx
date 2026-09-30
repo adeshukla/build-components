@@ -48,14 +48,14 @@ export default function TestedPage() {
     <main className="flex-1">
       <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,5vw,4rem)] sm:px-6">
         <p className="font-mono text-xs tracking-wide text-ink-muted uppercase">
-          <Link href="/" className="underline-offset-2 hover:underline">
+          <Link href="/" className="underline underline-offset-2 hover:text-ink">
             Home
           </Link>
           <span aria-hidden="true"> / </span>
           <span>How it is tested</span>
         </p>
 
-        <h1 className="mt-3 max-w-4xl font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[0.92] font-bold uppercase">
+        <h1 className="mt-3 max-w-4xl font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[1]">
           Tested, not asserted
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-pretty text-ink-muted">
@@ -66,7 +66,7 @@ export default function TestedPage() {
         <section aria-labelledby="checks-heading" className="mt-14">
           <h2
             id="checks-heading"
-            className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl"
+            className="font-display text-4xl leading-[1.05] sm:text-5xl"
           >
             What runs
           </h2>
@@ -77,7 +77,7 @@ export default function TestedPage() {
           <dl className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">
             {checks.map(([term, detail]) => (
               <div key={term} className="border-t border-rule pt-4">
-                <dt className="font-display text-xl font-semibold uppercase">{term}</dt>
+                <dt className="font-display text-xl">{term}</dt>
                 <dd className="mt-2 max-w-prose text-pretty text-ink-muted">{detail}</dd>
               </div>
             ))}
@@ -85,7 +85,7 @@ export default function TestedPage() {
         </section>
 
         <section aria-labelledby="trace-heading" className="mt-16">
-          <h2 id="trace-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+          <h2 id="trace-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl">
             Count the tab stops yourself
           </h2>
           <p className="mt-3 max-w-2xl text-pretty text-ink-muted">
@@ -98,7 +98,7 @@ export default function TestedPage() {
         </section>
 
         <section aria-labelledby="contrast-heading" className="mt-16">
-          <h2 id="contrast-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+          <h2 id="contrast-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl">
             Pick a colour that fails
           </h2>
           <p className="mt-3 max-w-2xl text-pretty text-ink-muted">
@@ -112,7 +112,7 @@ export default function TestedPage() {
         </section>
 
         <section aria-labelledby="not-heading" className="mt-16 max-w-2xl">
-          <h2 id="not-heading" className="font-display text-3xl leading-none font-bold uppercase">
+          <h2 id="not-heading" className="font-display text-3xl leading-[1.05]">
             What is not tested here
           </h2>
           <p className="mt-3 text-pretty text-ink-muted">

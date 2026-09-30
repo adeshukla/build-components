@@ -15,14 +15,14 @@ export default function InUsePage() {
     <main className="flex-1">
       <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,5vw,4rem)] sm:px-6">
         <p className="font-mono text-xs tracking-wide text-ink-muted uppercase">
-          <Link href="/" className="underline-offset-2 hover:underline">
+          <Link href="/" className="underline underline-offset-2 hover:text-ink">
             Home
           </Link>
           <span aria-hidden="true"> / </span>
           <span>In use</span>
         </p>
 
-        <h1 className="mt-3 max-w-4xl font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[0.92] font-bold uppercase">
+        <h1 className="mt-3 max-w-4xl font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[1]">
           What they look like together
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-pretty text-ink-muted">
@@ -47,8 +47,8 @@ export default function InUsePage() {
           <InUse />
         </section>
 
-        <aside className="mt-14 max-w-2xl rounded-xl border-l-4 border-pad bg-paper-sunk p-5">
-          <h2 className="font-display text-xl font-semibold uppercase">What this page is for</h2>
+        <aside className="mt-14 max-w-2xl rounded-xl border-l-4 border-accent bg-paper-sunk p-5">
+          <h2 className="font-display text-xl">What this page is for</h2>
           <p className="mt-2 text-pretty text-ink-muted">
             Two things are easy to get wrong when you take parts from anywhere: they fight each other, and
             they turn out to be pictures rather than working components. Turn the X-ray on, tab through a

@@ -68,7 +68,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
   return (
     <div className="flex flex-col overflow-hidden rounded-lg border border-rule bg-paper lg:max-h-[calc(100svh-2rem)]">
       <div className="border-b border-rule p-4">
-        <h2 className="font-display text-2xl leading-none font-semibold uppercase">Configure</h2>
+        <h2 className="font-display text-2xl leading-[1.05]">Configure</h2>
         <label htmlFor={`${idBase}-search`} className="sr-only">
           Find an option
         </label>
@@ -116,7 +116,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
                     <>
                       <span
                         aria-hidden="true"
-                        className="grid size-4.5 place-items-center rounded-full bg-pad text-[0.6875rem] font-bold text-board"
+                        className="grid size-4.5 place-items-center rounded-full bg-accent text-[0.6875rem] font-bold text-on-accent"
                       >
                         {changed}
                       </span>
@@ -204,7 +204,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
       {changed && (
         <>
           <span className="inline-flex items-center gap-1.5 text-ink-muted">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-pad ring-2 ring-pad/30" />
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-accent ring-2 ring-accent/30" />
             Changed
           </span>
           <button type="button" onClick={onReset} className="cursor-pointer font-semibold text-link hover:underline">
@@ -328,9 +328,9 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             aria-labelledby={`${id}-label`}
             aria-describedby={descriptionId}
             onClick={() => onChange(!value)}
-            className="group relative mt-0.5 h-6 w-11 shrink-0 cursor-pointer rounded-full border border-rule-strong bg-paper-sunk transition-colors duration-300 aria-checked:border-board aria-checked:bg-board"
+            className="group relative mt-0.5 h-6 w-11 shrink-0 cursor-pointer rounded-full border border-rule-strong bg-paper-sunk transition-colors duration-300 aria-checked:border-ink aria-checked:bg-ink"
           >
-            <span className="absolute top-0.5 left-0.5 size-[1.125rem] rounded-full bg-rule-strong transition-[translate,background-color] duration-300 ease-out-expo group-aria-checked:translate-x-5 group-aria-checked:bg-pad" />
+            <span className="absolute top-0.5 left-0.5 size-[1.125rem] rounded-full bg-rule-strong transition-[translate,background-color] duration-300 ease-out-expo group-aria-checked:translate-x-5 group-aria-checked:bg-accent" />
           </button>
         </div>
         {status}
@@ -425,7 +425,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             value={value as number}
             aria-describedby={descriptionId}
             onChange={(event) => onChange(Number(event.target.value))}
-            className="h-2 flex-1 cursor-pointer accent-board"
+            className="h-2 flex-1 cursor-pointer accent-(--color-accent)"
           />
           <output htmlFor={id} className="w-14 text-right font-mono text-sm">
             {String(value)}

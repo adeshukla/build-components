@@ -7,7 +7,7 @@ import { isRegistrySlug, registry } from "@/lib/registry";
 import { parseConfig } from "@/lib/schema";
 import { readComponentSources } from "@/lib/sources";
 
-/** One page for every part in the catalogue: the datasheet header, then the editor. */
+/** One page for every part in the catalogue: the part header, then the editor. */
 export function generateStaticParams() {
   return inStock.map((part) => ({ slug: part.slug }));
 }

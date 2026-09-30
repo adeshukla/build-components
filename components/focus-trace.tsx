@@ -101,7 +101,7 @@ export function FocusTrace() {
                 }}
                 className="peer sr-only"
               />
-              <span className="inline-flex min-h-11 items-center rounded-full border border-rule-strong px-4 text-sm font-medium text-ink-muted transition-colors peer-checked:border-pad peer-checked:bg-pad peer-checked:font-semibold peer-checked:text-board peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-board hover:text-ink peer-checked:hover:text-board">
+              <span className="inline-flex min-h-11 items-center rounded-full border border-rule-strong px-4 text-sm font-medium text-ink-muted transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:font-semibold peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent hover:text-ink peer-checked:hover:text-paper">
                 {one.name}
               </span>
             </label>
@@ -112,14 +112,14 @@ export function FocusTrace() {
       <p className="mt-3 max-w-prose text-sm text-pretty text-ink-muted">{subject.claim}</p>
 
       <div className="mt-5 flex flex-wrap gap-3">
-        <button type="button" onClick={measure} className="btn-pad">
+        <button type="button" onClick={measure} className="btn-accent">
           {stops === null ? "Number the tab stops" : "Measure them again"}
         </button>
         {stops !== null && (
           <button
             type="button"
             onClick={() => setStops(null)}
-            className="inline-flex min-h-11 cursor-pointer items-center rounded-full border border-rule-strong px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
+            className="inline-flex min-h-11 cursor-pointer items-center rounded-full border border-rule-strong px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Clear the numbers
           </button>
@@ -140,7 +140,7 @@ export function FocusTrace() {
             key={`${stop.label}-${index}`}
             aria-hidden="true"
             style={{ left: `${stop.left}px`, top: `${stop.top}px` }}
-            className="pointer-events-none absolute z-20 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-board font-mono text-xs font-bold text-pad ring-2 ring-paper"
+            className="pointer-events-none absolute z-20 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-ink font-mono text-xs font-bold text-paper ring-2 ring-paper"
           >
             {index + 1}
           </span>

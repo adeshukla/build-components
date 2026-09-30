@@ -48,7 +48,7 @@ export function Segmented({
               onChange={() => onChange(choice.value)}
               className="peer sr-only"
             />
-            <span className="block truncate rounded px-2.5 py-1.5 text-center text-sm text-ink-muted transition-colors duration-200 peer-checked:bg-board peer-checked:text-silk peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-board hover:text-ink peer-checked:hover:text-silk">
+            <span className="block truncate rounded px-2.5 py-1.5 text-center text-sm text-ink-muted transition-colors duration-200 peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-accent hover:text-ink peer-checked:hover:text-paper">
               {choice.label}
             </span>
           </label>

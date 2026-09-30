@@ -21,7 +21,7 @@ function Command({ children }: { children: string }) {
     <pre
       tabIndex={0}
       aria-label="Command, scrollable"
-      className="mt-3 overflow-x-auto rounded-lg border border-rule bg-board px-4 py-3 font-mono text-sm text-silk focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad"
+      className="mt-3 overflow-x-auto rounded-xl border border-rule bg-paper-sunk px-4 py-3 font-mono text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <code>{children}</code>
     </pre>
@@ -33,14 +33,14 @@ export default function StartPage() {
     <main className="flex-1">
       <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,5vw,4rem)] sm:px-6">
         <p className="font-mono text-xs tracking-wide text-ink-muted uppercase">
-          <Link href="/" className="underline-offset-2 hover:underline">
+          <Link href="/" className="underline underline-offset-2 hover:text-ink">
             Home
           </Link>
           <span aria-hidden="true"> / </span>
           <span>Get started</span>
         </p>
 
-        <h1 className="mt-3 max-w-4xl font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[0.92] font-bold uppercase">
+        <h1 className="mt-3 max-w-4xl font-display text-[clamp(2.5rem,7vw,4.5rem)] leading-[1]">
           Take a part
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-pretty text-ink-muted">
@@ -51,18 +51,18 @@ export default function StartPage() {
         <div className="mt-14 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 [&>*]:min-w-0">
           <div className="grid gap-12 [&>*]:min-w-0">
             <section aria-labelledby="two-ways">
-              <h2 id="two-ways" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+              <h2 id="two-ways" className="font-display text-4xl leading-[1.05] sm:text-5xl">
                 Two ways in
               </h2>
 
-              <h3 className="mt-8 font-display text-2xl font-semibold uppercase">1. Copy the files</h3>
+              <h3 className="mt-8 font-display text-2xl">1. Copy the files</h3>
               <p className="mt-2 max-w-prose text-pretty text-ink-muted">
                 Open a part, set it up, and copy what the Code tab shows. For React that is one file. For
                 the plain output it is an HTML fragment, a stylesheet and — only when the part needs one — a
                 script. The code you copy is the code the tests ran against.
               </p>
 
-              <h3 className="mt-8 font-display text-2xl font-semibold uppercase">2. Install it by URL</h3>
+              <h3 className="mt-8 font-display text-2xl">2. Install it by URL</h3>
               <p className="mt-2 max-w-prose text-pretty text-ink-muted">
                 Every part is also a shadcn registry item, so the CLI can fetch it. Your options travel in
                 the query string, which means the command you copy sets the part up exactly as you left it.
@@ -76,7 +76,7 @@ export default function StartPage() {
             </section>
 
             <section aria-labelledby="needs">
-              <h2 id="needs" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+              <h2 id="needs" className="font-display text-4xl leading-[1.05] sm:text-5xl">
                 What your project needs
               </h2>
               <dl className="mt-6 grid gap-6">
@@ -95,7 +95,7 @@ export default function StartPage() {
                   ],
                 ].map(([term, detail]) => (
                   <div key={term} className="border-t border-rule pt-4">
-                    <dt className="font-display text-xl font-semibold uppercase">{term}</dt>
+                    <dt className="font-display text-xl">{term}</dt>
                     <dd className="mt-2 max-w-prose text-pretty text-ink-muted">{detail}</dd>
                   </div>
                 ))}
@@ -103,7 +103,7 @@ export default function StartPage() {
             </section>
 
             <section aria-labelledby="theming">
-              <h2 id="theming" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+              <h2 id="theming" className="font-display text-4xl leading-[1.05] sm:text-5xl">
                 Making it yours
               </h2>
               <p className="mt-3 max-w-prose text-pretty text-ink-muted">
@@ -136,7 +136,7 @@ export default function StartPage() {
             </section>
 
             <section aria-labelledby="licence">
-              <h2 id="licence" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+              <h2 id="licence" className="font-display text-4xl leading-[1.05] sm:text-5xl">
                 What you may do with it
               </h2>
               {/*
@@ -157,7 +157,7 @@ export default function StartPage() {
 
           <aside className="grid content-start gap-8 rounded-xl border border-rule bg-paper-sunk p-6">
             <div>
-              <h2 className="font-display text-xl font-semibold uppercase">Start with one of these</h2>
+              <h2 className="font-display text-xl">Start with one of these</h2>
               <p className="mt-2 text-sm text-pretty text-ink-muted">
                 Four parts that are hard to get right by hand, and where the difference shows quickly.
               </p>
@@ -171,7 +171,7 @@ export default function StartPage() {
                   <li key={slug}>
                     <Link
                       href={`/${slug}`}
-                      className="flex min-h-11 items-center justify-between gap-3 rounded-md border border-rule bg-paper px-3 font-medium hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
+                      className="flex min-h-11 items-center justify-between gap-3 rounded-md border border-rule bg-paper px-3 font-medium hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >
                       {name}
                       <span aria-hidden="true" className="font-mono text-xs text-ink-muted">
@@ -184,7 +184,7 @@ export default function StartPage() {
             </div>
 
             <div className="border-t border-rule pt-6">
-              <h2 className="font-display text-xl font-semibold uppercase">Or read the tests first</h2>
+              <h2 className="font-display text-xl">Or read the tests first</h2>
               <p className="mt-2 text-sm text-pretty text-ink-muted">
                 Every part page carries its keyboard map and a manual checklist. The checklist is the part
                 a machine cannot check for you.

@@ -70,7 +70,7 @@ function line(drawn: boolean, running: boolean, delay: number) {
   };
 }
 
-/** Option rows filling in, with one row marked gold, as the editor marks a changed option. */
+/** Option rows filling in, with one row marked in the accent, as the editor marks a changed option. */
 function Configure({ drawn, running }: Parts) {
   return (
     <g>

@@ -57,7 +57,7 @@ export function ThemeToggle() {
   return (
     <fieldset className="flex items-center">
       <legend className="sr-only">Colour theme</legend>
-      <div className="flex rounded-md border border-board-line bg-board-raised/60 p-0.5">
+      <div className="flex rounded-md border border-rule bg-wash p-0.5">
         {(["system", "light", "dark"] as const).map((value) => (
           <label key={value} className="relative cursor-pointer">
             <input
@@ -68,7 +68,7 @@ export function ThemeToggle() {
               onChange={() => writeTheme(value)}
               className="peer sr-only"
             />
-            <span className="block rounded px-2 py-1.5 text-silk-muted transition-colors peer-checked:bg-pad peer-checked:text-board peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-pad hover:text-silk">
+            <span className="block rounded px-2 py-1.5 text-ink-muted transition-colors peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-accent hover:text-ink">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="size-4">
                 {icons[value]}
               </svg>

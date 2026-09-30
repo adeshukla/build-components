@@ -1,70 +1,110 @@
 @import "tailwindcss";
 
-/* Parts Datasheet world: solder-mask purple board, gold contact pads, silkscreen labels,
-   white datasheet paper with ink rules. Tokens live here (Tailwind v4 has no config file). */
+/* The frosted shelf (D71): warm paper, a burnt-orange accent, and frosted glass over a faint glow.
+   Tokens live here (Tailwind v4 has no config file). Dark values are further down. */
 @theme {
-  --color-board: #25154d;
-  --color-board-raised: #33206a;
-  --color-board-line: #4f3a8f;
-  --color-silk: #f3efff;
-  --color-silk-muted: #c9bfe8;
-  --color-pad: #e6b24a;
-  --color-pad-strong: #f2c566;
-  --color-copper: #c98a4b;
-  --color-paper: #ffffff;
-  --color-paper-sunk: #f5f3fa;
-  --color-ink: #16121f;
-  --color-ink-muted: #534c63;
-  --color-rule: #dcd6ea;
-  --color-rule-strong: #8c83a3;
+  --color-paper: #f5f2ec;
+  --color-paper-sunk: #ece7de;
+  --color-ink: #1c1a17;
+  /* 4.5:1 even where the glow is brightest behind it, as axe measures it (without the blur). */
+  --color-ink-muted: #56514a;
+  --color-rule: #e2ddd3;
+  /* 3:1 against paper and paper-sunk: it outlines fields, so it has to be seen. */
+  --color-rule-strong: #8a8378;
+  /* Fills, focus rings and large text. Small text in the accent uses --color-link. */
+  --color-accent: #c2410c;
+  --color-accent-strong: #9a3412;
+  --color-on-accent: #ffffff;
+  --color-link: #9a3412;
+  --color-wash: #1c1a170d;
+  --color-glass: #ffffff85;
+  --color-glass-edge: #ffffffbf;
+  --color-glass-lip: #ffffffe6;
+  --color-shadow: #3c28141a;
   --color-pass: #13744a;
   --color-pass-bg: #e3f4ea;
-  /* Interactive text on paper: purple on light, gold on dark. */
-  --color-link: #25154d;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(
+    0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159,
+    1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%,
+    0.997 69.8%, 1.003 76.9%, 1.004 83.8%, 1
+  );
 }
 
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-display: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  --font-display: var(--font-instrument-serif), Georgia, serif;
 }
 
 @layer base {
-  /* Dark theme: the board stays purple; the datasheet paper turns to ink.
-     An explicit choice wins; otherwise the system setting decides. */
+  :root {
+    --glow-1: #c2410c;
+    --glow-2: #b45309;
+    --glow-3: #be185d;
+    /* Fine grain, so glass reads as frosted rather than as a flat tint. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* An explicit choice wins; otherwise the system setting decides. */
   :root[data-theme="dark"],
   :root:not([data-theme="light"]) {
     @media (prefers-color-scheme: dark) {
-      --color-board: #1b1233;
-      --color-board-raised: #2a1d4d;
-      --color-paper: #141020;
-      --color-paper-sunk: #1c1730;
-      --color-ink: #f5f2ff;
-      --color-ink-muted: #b9b1d0;
-      --color-rule: #2e2745;
-      --color-rule-strong: #7a6fa3;
+      --color-paper: #0f0d0b;
+      --color-paper-sunk: #171411;
+      --color-ink: #f1ede6;
+      --color-ink-muted: #b3ada3;
+      --color-rule: #34302b;
+      --color-rule-strong: #7d766c;
+      --color-accent: #fb923c;
+      --color-accent-strong: #fdba74;
+      --color-on-accent: #1c1a17;
+      --color-link: #fdba74;
+      --color-wash: #f1ede612;
+      --color-glass: #1c181580;
+      --color-glass-edge: #ffffff17;
+      --color-glass-lip: #ffffff12;
+      --color-shadow: #00000073;
       --color-pass: #4ade80;
       --color-pass-bg: #12351f;
-      --color-link: #f2c566;
+      --glow-1: #fb923c;
+      --glow-2: #fbbf24;
+      --glow-3: #f472b6;
       color-scheme: dark;
     }
   }
 
   :root[data-theme="dark"] {
-    --color-board: #1b1233;
-    --color-board-raised: #2a1d4d;
-    --color-paper: #141020;
-    --color-paper-sunk: #1c1730;
-    --color-ink: #f5f2ff;
-    --color-ink-muted: #b9b1d0;
-    --color-rule: #2e2745;
-    --color-rule-strong: #7a6fa3;
+    --color-paper: #0f0d0b;
+    --color-paper-sunk: #171411;
+    --color-ink: #f1ede6;
+    --color-ink-muted: #b3ada3;
+    --color-rule: #34302b;
+    --color-rule-strong: #7d766c;
+    --color-accent: #fb923c;
+    --color-accent-strong: #fdba74;
+    --color-on-accent: #1c1a17;
+    --color-link: #fdba74;
+    --color-wash: #f1ede612;
+    --color-glass: #1c181580;
+    --color-glass-edge: #ffffff17;
+    --color-glass-lip: #ffffff12;
+    --color-shadow: #00000073;
     --color-pass: #4ade80;
     --color-pass-bg: #12351f;
-    --color-link: #f2c566;
+    --glow-1: #fb923c;
+    --glow-2: #fbbf24;
+    --glow-3: #f472b6;
     color-scheme: dark;
+  }
+
+  /* Glass turns solid when the system asks for less transparency. */
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --color-glass: var(--color-paper);
+      --grain: none;
+    }
   }
 
   html {
@@ -77,26 +117,43 @@
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    caret-color: var(--color-board);
+    caret-color: var(--color-accent);
   }
 
   ::selection {
-    background: var(--color-pad);
-    color: var(--color-board);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   a {
     text-underline-offset: 0.2em;
   }
 
-  /* Zero specificity, so exported components keep their own focus rings. */
-  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-    outline: 2px solid var(--color-board);
-    outline-offset: 2px;
+  /* Preview and test-harness pages (app/(bare)): a plain page, white or near-black. */
+  .bare-page {
+    background: #ffffff;
+    color: #16121f;
+  }
+  :root[data-theme="dark"] .bare-page {
+    background: #141020;
+    color: #f5f2ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .bare-page {
+      background: #141020;
+      color: #f5f2ff;
+    }
   }
 
-  :where(.on-board) :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-    outline-color: var(--color-pad);
+  /* The display face has one weight; a bold class must not smear it into a fake one. */
+  .font-display {
+    font-synthesis-weight: none;
+  }
+
+  /* Zero specificity, so exported components keep their own focus rings. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 
   table,
@@ -107,16 +164,202 @@
   }
 }
 
-@utility board-grid {
-  background-image: radial-gradient(circle at 1px 1px, var(--color-board-line) 1px, transparent 1.6px);
-  background-size: 24px 24px;
+/* Frosted glass: translucent, grained, blurred, with a lit top edge. */
+@utility glass {
+  background: var(--grain), var(--color-glass);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--color-glass-lip),
+    0 1px 2px var(--color-shadow),
+    0 10px 30px -18px var(--color-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+
+  @media (prefers-reduced-transparency: reduce) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
-@utility paper-grid {
-  background-image:
-    linear-gradient(var(--color-paper-sunk) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-paper-sunk) 1px, transparent 1px);
-  background-size: 16px 16px;
+/*
+ * The same glass without the blur, for surfaces that come in dozens (catalogue cards). What sits
+ * behind them is the glow, which is already blurred, so the blur would cost frames and change nothing.
+ */
+@utility glass-flat {
+  background: var(--grain), var(--color-glass);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--color-glass-lip),
+    0 1px 2px var(--color-shadow),
+    0 10px 30px -18px var(--color-shadow);
+}
+
+/* The faint glow the glass sits over: fixed behind every page, drifting slowly. */
+@utility site-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  filter: blur(110px);
+
+  & i {
+    position: absolute;
+    width: 46vw;
+    height: 46vw;
+    border-radius: 50%;
+    /* No higher: axe judges text against the glow as if it were not blurred, and muted text must
+       still reach 4.5:1 there. */
+    opacity: 0.14;
+    animation: drift 44s ease-in-out infinite alternate;
+  }
+  & i:nth-child(1) {
+    left: -8%;
+    top: -12%;
+    background: var(--glow-1);
+  }
+  & i:nth-child(2) {
+    right: -10%;
+    top: 30%;
+    background: var(--glow-3);
+    animation-duration: 52s;
+  }
+  & i:nth-child(3) {
+    left: 22%;
+    top: 62%;
+    background: var(--glow-2);
+    animation-duration: 60s;
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    display: none;
+  }
+}
+
+@keyframes drift {
+  to {
+    translate: 8vw 60px;
+    scale: 1.2;
+  }
+}
+
+/* Part drawings (components/part-drawing.tsx). In a layer, so utilities on the svg win. */
+@layer components {
+  .part-drawing {
+    --dw-accent: color-mix(in oklab, var(--part-accent) 72%, var(--color-ink));
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+  .dw-l {
+    fill: color-mix(in oklab, currentColor 20%, transparent);
+  }
+  .dw-a {
+    fill: var(--dw-accent);
+  }
+  .dw-k {
+    fill: color-mix(in oklab, currentColor 80%, transparent);
+  }
+  .dw-s {
+    fill: var(--color-paper);
+    stroke: color-mix(in oklab, currentColor 14%, transparent);
+    stroke-width: 1;
+  }
+  .dw-f,
+  .dw-fa,
+  .dw-sl,
+  .dw-sa {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .dw-f,
+  .dw-sl {
+    stroke: color-mix(in oklab, currentColor 35%, transparent);
+  }
+  .dw-fa,
+  .dw-sa {
+    stroke: var(--dw-accent);
+    stroke-width: 2;
+  }
+  path.dw-s {
+    fill: none;
+    stroke: var(--color-paper);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  path.dw-k,
+  path.dw-a {
+    stroke: none;
+  }
+  .dw-mv {
+    transition: translate 0.6s var(--ease-spring);
+  }
+  .dw-sh {
+    opacity: 0;
+    transition: opacity 0.3s var(--d, 0ms);
+  }
+  .dw-hd {
+    transition: opacity 0.3s;
+  }
+  .dw-lt {
+    transition:
+      fill 0.3s var(--d, 0ms),
+      stroke 0.3s var(--d, 0ms);
+  }
+  .dw-dr {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0.55;
+    transition: stroke-dashoffset 1s var(--ease-out-expo);
+  }
+  .dw-spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: dw-spin 1s linear infinite;
+  }
+  .dw-pulse {
+    animation: dw-pulse 1.6s ease-in-out infinite;
+  }
+  /* Anything marked drawing-host plays the drawings inside it while pointed at or focused. */
+  .drawing-host:is(:hover, :focus-within) {
+    & .dw-mv {
+      translate: var(--dx) var(--dy);
+    }
+    & .dw-sh {
+      opacity: 1;
+    }
+    & .dw-hd {
+      opacity: 0;
+    }
+    & .dw-lt.dw-l {
+      fill: var(--dw-accent);
+    }
+    & .dw-lt:is(.dw-f, .dw-fa, .dw-sl) {
+      fill: none;
+      stroke: var(--dw-accent);
+    }
+    & .dw-lt.dw-k {
+      fill: var(--dw-accent);
+    }
+    & .dw-dr {
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+@keyframes dw-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes dw-pulse {
+  50% {
+    opacity: 0.45;
+  }
 }
 
 @utility skip-link {
@@ -125,9 +368,9 @@
   top: -4rem;
   z-index: 50;
   padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  background: var(--color-pad);
-  color: var(--color-board);
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   font-weight: 600;
 
   &:focus {
@@ -135,23 +378,78 @@
   }
 }
 
-/* Motion: one orchestrated moment per surface, all switched off for reduced motion. */
-@keyframes trace-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
+@utility btn-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    0 10px 24px -14px var(--color-accent);
+  transition:
+    background-color 0.2s,
+    translate 0.5s var(--ease-spring);
+
+  &:hover {
+    background: var(--color-accent-strong);
+    translate: 0 -2px;
   }
 }
 
-@keyframes signal {
-  from {
-    offset-distance: 0%;
+@utility btn-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 999px;
+  background: var(--grain), var(--color-glass);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--color-glass-lip),
+    0 1px 2px var(--color-shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  color: var(--color-ink);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  transition:
+    border-color 0.2s,
+    translate 0.5s var(--ease-spring);
+
+  &:hover {
+    border-color: var(--color-rule-strong);
+    translate: 0 -2px;
   }
-  to {
-    offset-distance: 100%;
+}
+
+@utility btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85;
   }
+}
+
+/* The editor's bench: a faint grid so a component's edges can be seen. */
+@utility paper-grid {
+  background-image:
+    linear-gradient(var(--color-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 @keyframes slab-in {
@@ -160,96 +458,8 @@
     transform: translateY(0.35em);
   }
   to {
-    clip-path: inset(0 0 -0.1em 0);
+    clip-path: inset(0 0 -0.2em 0);
     transform: none;
-  }
-}
-
-@keyframes pin-light {
-  from {
-    background-color: var(--color-board-line);
-  }
-  to {
-    background-color: var(--color-pad);
-  }
-}
-
-@utility pin {
-  animation: pin-light 0.5s var(--ease-out-expo) both;
-}
-
-@utility btn-pad {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 0.375rem;
-  background: var(--color-pad);
-  color: var(--color-board);
-  padding: 0.75rem 1.25rem;
-  font-weight: 600;
-  box-shadow: 0 10px 24px -12px rgb(230 178 74 / 0.75);
-  transition:
-    background-color 0.2s,
-    transform 0.4s var(--ease-out-expo);
-
-  &:hover {
-    background: var(--color-pad-strong);
-    transform: translateY(-2px);
-  }
-}
-
-@utility btn-outline-board {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: 1px solid var(--color-silk-muted);
-  border-radius: 0.375rem;
-  color: var(--color-silk);
-  padding: 0.75rem 1.25rem;
-  font-weight: 600;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s;
-
-  &:hover {
-    background: var(--color-board-raised);
-    border-color: var(--color-silk);
-  }
-}
-
-@utility btn-ink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 0.375rem;
-  background: var(--color-board);
-  color: var(--color-silk);
-  padding: 0.625rem 1rem;
-  font-weight: 600;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background: var(--color-board-raised);
-  }
-}
-
-/* The outline button for paper, as btn-outline-board is for the board. */
-@utility btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: 1px solid var(--color-rule-strong);
-  border-radius: 0.375rem;
-  color: var(--color-ink);
-  padding: 0.75rem 1.25rem;
-  font-weight: 600;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s;
-
-  &:hover {
-    background: var(--color-paper-sunk);
-    border-color: var(--color-ink);
   }
 }
 
@@ -270,7 +480,7 @@
 
 @keyframes line-flash {
   from {
-    background-color: color-mix(in srgb, var(--color-pad) 60%, transparent);
+    background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
   }
   to {
     background-color: transparent;
@@ -290,28 +500,15 @@
   }
 }
 
-/* The part arriving on the board: it is uncovered from the top edge, the way a chip is set down. */
-@keyframes mount-in {
-  from {
-    clip-path: inset(0 0 100% 0);
-    transform: translateY(-0.75rem) scale(0.985);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    transform: none;
-  }
-}
-
-/* A contact pad taking current: it warms, brightens, then settles. The live colour is the one that
-   reads on either paper — purple on white, gold on ink. */
+/* A step in a diagram taking its turn: it warms, brightens, then settles. */
 @keyframes pad-live {
   0% {
     fill: var(--color-rule-strong);
     filter: none;
   }
   55% {
-    fill: var(--color-link);
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-link) 70%, transparent));
+    fill: var(--color-accent);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 60%, transparent));
   }
   100% {
     fill: var(--color-rule-strong);
@@ -319,7 +516,7 @@
   }
 }
 
-/* Swapping one part for another in the same socket. */
+/* Swapping one part for another in the same place. */
 @keyframes swap-in {
   from {
     opacity: 0;
@@ -341,18 +538,9 @@
   }
 }
 
-@utility trace-path {
-  stroke-dasharray: 1;
-  animation: trace-draw 1.4s var(--ease-out-expo) both;
-}
-
 @utility slab-line {
   display: block;
   animation: slab-in 0.9s var(--ease-out-expo) both;
-}
-
-@utility mount-in {
-  animation: mount-in 0.62s var(--ease-out-expo) both;
 }
 
 @utility pad-live {
@@ -367,13 +555,6 @@
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: draw-in 1.1s var(--ease-out-expo) both;
-}
-
-/* Drawn diagrams wait until they are on screen, and the class is only added there. */
-@utility diagram-live {
-  & .draw-in {
-    animation-play-state: running;
-  }
 }
 
 @utility stamp-in {
@@ -407,13 +588,12 @@
     animation: none !important;
   }
 
-  /* Nothing loops, nothing travels, nothing is clipped into view: the arrival is a plain fade. */
+  /* Nothing loops, nothing drifts, nothing is clipped into view. */
   .pad-live,
-  .trace-signal {
+  .site-glow i {
     animation: none !important;
   }
 
-  .mount-in,
   .swap-in {
     clip-path: none !important;
     transform: none !important;

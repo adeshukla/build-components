@@ -4,13 +4,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader() {
   return (
-    <header className="on-board relative z-20 border-b border-board-line bg-board text-silk">
+    <header className="glass relative z-20 border-x-0 border-t-0">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:gap-x-6 sm:px-6 sm:py-3">
         <Link href="/" className="group flex items-center gap-2.5 rounded-sm sm:gap-3">
-          <ChipMark className="size-7 sm:size-9" />
-          <span className="font-display text-xl leading-none font-semibold tracking-wide uppercase sm:text-2xl">
-            Build Components
-          </span>
+          <LogoMark className="size-8 sm:size-9" />
+          <span className="font-display text-2xl leading-none sm:text-[1.75rem]">Build Components</span>
         </Link>
         <HeaderNav />
         <div className="hidden sm:flex">
@@ -21,22 +19,26 @@ export function SiteHeader() {
   );
 }
 
-/** Logo mark: an IC package with gold pins. The pins light up on hover. */
-export function ChipMark({ className = "size-9" }: { className?: string }) {
+/** Logo mark: three parts on a shelf. They shuffle along on hover. */
+export function LogoMark({ className = "size-9" }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 40 40" className={className}>
-      <rect x="9" y="6" width="22" height="28" rx="3" className="fill-board-raised stroke-silk" strokeWidth="2" />
-      <path d="M17 6a3 3 0 0 0 6 0" className="fill-none stroke-silk" strokeWidth="2" />
-      <circle cx="14.5" cy="12" r="1.6" className="fill-pad" />
-      {[12, 20, 28].map((y, i) => (
-        <g
+      <rect x="1" y="1" width="38" height="38" rx="11" className="fill-accent" />
+      {[
+        [9, 10, 22],
+        [9, 18, 14],
+        [9, 26, 18],
+      ].map(([x, y, width], i) => (
+        <rect
           key={y}
-          className="fill-pad transition-[fill] duration-300 group-hover:fill-pad-strong"
-          style={{ transitionDelay: `${i * 60}ms` }}
-        >
-          <rect x="2" y={y - 1.5} width="7" height="3" rx="1" />
-          <rect x="31" y={y - 1.5} width="7" height="3" rx="1" />
-        </g>
+          x={x}
+          y={y}
+          width={width}
+          height="4.5"
+          rx="2.25"
+          className="fill-on-accent transition-transform duration-500 ease-spring group-hover:translate-x-[3px]"
+          style={{ transitionDelay: `${i * 60}ms`, opacity: 1 - i * 0.2 }}
+        />
       ))}
     </svg>
   );

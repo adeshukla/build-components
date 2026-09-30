@@ -97,7 +97,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
         <section aria-labelledby={`${idBase}-bench-heading`} className="overflow-hidden rounded-lg border border-rule bg-paper">
           <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 border-b border-rule p-4">
             <div>
-              <h2 id={`${idBase}-bench-heading`} className="font-display text-2xl leading-none font-semibold uppercase">
+              <h2 id={`${idBase}-bench-heading`} className="font-display text-2xl leading-[1.05]">
                 Test bench
               </h2>
               <p className="mt-1 text-sm text-ink-muted">Runs the exported code, not a mock-up.</p>
@@ -183,7 +183,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
         <section aria-labelledby={`${idBase}-code-heading`} className="overflow-hidden rounded-lg border border-rule bg-paper">
           <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 p-4">
             <div>
-              <h2 id={`${idBase}-code-heading`} className="font-display text-2xl leading-none font-semibold uppercase">
+              <h2 id={`${idBase}-code-heading`} className="font-display text-2xl leading-[1.05]">
                 Take it home
               </h2>
               <p className="mt-1 text-sm text-pretty text-ink-muted">
@@ -333,9 +333,9 @@ function vanillaDocument(html: string, css: string, js: string, dark: boolean, b
 function InstallPanel({ slug, command }: { slug: string; command: string }) {
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <div className="on-board flex flex-col items-stretch gap-3 rounded-md bg-board p-3 text-silk sm:flex-row sm:items-center sm:pl-4">
+      <div className="glass flex flex-col items-stretch gap-3 rounded-2xl p-3 text-ink sm:flex-row sm:items-center sm:pl-4">
         <code className="min-w-0 flex-1 font-mono text-sm break-words">{command}</code>
-        <CopyButton text={() => command} label="Copy install command" doneLabel="Command copied" tone="board" />
+        <CopyButton text={() => command} label="Copy install command" doneLabel="Command copied" tone="accent" />
       </div>
       <p className="text-sm text-pretty text-ink-muted">
         Run it in your project root. It writes <code className="font-mono text-ink">components/{slug}.tsx</code> with
@@ -352,7 +352,7 @@ function CodeView({ name, code, flash }: { name: string; code: string; flash: { 
     <div>
       <div className="flex items-center justify-between gap-3 border-b border-rule bg-paper-sunk px-4 py-2">
         <span className="font-mono text-xs text-ink-muted">
-          {lines.length} lines · changed options flash gold
+          {lines.length} lines · changed options flash orange
         </span>
         <CopyButton text={() => code} label={`Copy ${name}`} doneLabel={`${name} copied`} />
       </div>
@@ -389,7 +389,7 @@ function CopyButton({
   text: () => string;
   label: string;
   doneLabel: string;
-  tone?: "paper" | "board";
+  tone?: "paper" | "accent";
 }) {
   const [said, setSaid] = useState<"" | "done" | "failed">("");
 
@@ -415,9 +415,9 @@ function CopyButton({
         type="button"
         onClick={copy}
         className={
-          tone === "board"
-            ? "inline-flex shrink-0 cursor-pointer items-center gap-2 rounded bg-pad px-3 py-1.5 text-sm font-semibold text-board hover:bg-pad-strong"
-            : "inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md border border-rule-strong bg-paper px-3 py-1.5 text-sm font-semibold text-ink hover:bg-paper-sunk"
+          tone === "accent"
+            ? "inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-sm font-semibold text-on-accent hover:bg-accent-strong"
+            : "inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full border border-rule-strong bg-paper px-3 py-1.5 text-sm font-semibold text-ink hover:bg-paper-sunk"
         }
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
@@ -511,13 +511,13 @@ function Checklist({ items, checked, onToggle }: { items: string[]; checked: num
                   type="checkbox"
                   checked={done}
                   onChange={() => onToggle(index)}
-                  className="mt-0.5 size-4 shrink-0 accent-board"
+                  className="mt-0.5 size-4 shrink-0 accent-(--color-accent)"
                 />
                 <span className="flex-1 text-pretty">{item}</span>
                 {done && (
                   <span
                     aria-hidden="true"
-                    className="stamp-in shrink-0 rounded border-2 border-pass px-1.5 font-display text-sm font-bold tracking-wider text-pass uppercase"
+                    className="stamp-in shrink-0 rounded border-2 border-pass px-1.5 font-mono text-xs font-bold tracking-wider text-pass uppercase"
                   >
                     Pass
                   </span>

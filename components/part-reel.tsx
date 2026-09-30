@@ -50,7 +50,7 @@ const slides: Slide[] = [
 ];
 
 /**
- * The socket: four real components, one at a time, with the gold pad travelling to whichever is in it.
+ * The socket: four real components, one at a time, with the marker travelling to whichever is in it.
  * The reel advances on its own, and stops the moment anyone is using it, it leaves the screen, or the
  * visitor asks for less motion. The tabs are the WAI-ARIA tabs pattern, so it works with the keyboard
  * whether or not it is moving.
@@ -114,7 +114,7 @@ export function PartReel() {
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node)) setPaused(false);
       }}
-      className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16"
+      className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16"
     >
       <div>
         {/* Automatic activation: arrowing along the strip swaps the part, as in the APG tabs pattern. */}
@@ -134,31 +134,31 @@ export function PartReel() {
                 aria-controls={`${id}-panel`}
                 tabIndex={on ? 0 : -1}
                 onClick={() => setAt(index)}
-                className={`group relative grid min-h-14 cursor-pointer grid-cols-[auto_1fr] items-center gap-4 rounded-md px-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad ${
-                  on ? "bg-board-raised" : "hover:bg-board-raised/60"
+                className={`group relative grid min-h-14 cursor-pointer grid-cols-[auto_1fr] items-center gap-4 rounded-md px-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                  on ? "glass-flat" : "border border-transparent hover:bg-wash"
                 }`}
               >
-                {/* The pad is the one that is live: filled gold in the socket, hollow when waiting. */}
+                {/* The pad is the one that is live: filled, hollow when waiting. */}
                 <span
                   aria-hidden="true"
-                  className={`size-2.5 shrink-0 rounded-full border-2 transition-colors ${on ? "border-pad bg-pad" : "border-silk-muted bg-transparent"}`}
+                  className={`size-2.5 shrink-0 rounded-full border-2 transition-colors ${on ? "border-accent bg-accent" : "border-rule-strong bg-transparent"}`}
                 />
                 <span>
-                  <span className={`block font-display text-xl leading-none font-semibold uppercase ${on ? "text-silk" : "text-silk-muted"}`}>
+                  <span className={`block font-display text-xl leading-[1.05] ${on ? "text-ink" : "text-ink-muted"}`}>
                     {slide.name}
                   </span>
-                  {on && <span className="mt-1 block max-w-sm text-sm text-pretty text-silk-muted">{slide.line}</span>}
+                  {on && <span className="mt-1 block max-w-sm text-sm text-pretty text-ink-muted">{slide.line}</span>}
                 </span>
               </button>
             );
           })}
         </div>
 
-        <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-silk-muted">
+        <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-ink-muted">
           <span>{running ? "Moving on its own — touch it, hover it or focus it to hold" : "Held. Arrow keys move between parts"}</span>
           <Link
             href={`/${current.slug}`}
-            className="inline-flex min-h-6 items-center rounded text-silk underline decoration-pad decoration-2 underline-offset-4 hover:text-pad focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pad"
+            className="inline-flex min-h-6 items-center rounded text-ink underline decoration-accent decoration-2 underline-offset-4 hover:text-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {`Open ${current.name.toLowerCase()}`}
           </Link>

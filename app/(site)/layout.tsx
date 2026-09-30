@@ -4,6 +4,12 @@ import { SiteHeader } from "@/components/site-header";
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
+      {/* The glow the glass sits over. */}
+      <div aria-hidden="true" className="site-glow">
+        <i />
+        <i />
+        <i />
+      </div>
       <a href="#main" className="skip-link">
         Skip to content
       </a>

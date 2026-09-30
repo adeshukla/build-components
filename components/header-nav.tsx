@@ -49,7 +49,7 @@ export function HeaderNav() {
             href={link.href}
             onClick={() => setOpen(false)}
             aria-current={pathname === link.href ? "page" : undefined}
-            className="flex min-h-11 items-center rounded px-3 text-silk-muted transition-colors hover:bg-board-raised hover:text-silk"
+            className="flex min-h-11 items-center rounded px-3 text-ink-muted transition-colors hover:bg-wash hover:text-ink"
           >
             {link.label}
           </Link>
@@ -66,7 +66,7 @@ export function HeaderNav() {
         aria-expanded={open}
         aria-controls="site-menu"
         onClick={() => setOpen(!open)}
-        className="ml-auto flex min-h-11 items-center gap-2 rounded-md border border-board-line px-3 text-sm text-silk transition-colors hover:bg-board-raised sm:hidden"
+        className="ml-auto flex min-h-11 items-center gap-2 rounded-md border border-rule px-3 text-sm text-ink transition-colors hover:bg-wash sm:hidden"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
           {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -80,7 +80,7 @@ export function HeaderNav() {
       {/* On a phone the theme control lives in here, so the header itself stays one row. */}
       <div id="site-menu" hidden={!open} className="w-full pb-2 sm:hidden">
         <nav aria-label="Main">{list}</nav>
-        <div className="mt-2 border-t border-board-line pt-2">
+        <div className="mt-2 border-t border-rule pt-2">
           <ThemeToggle />
         </div>
       </div>

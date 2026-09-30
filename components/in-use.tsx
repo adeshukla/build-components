@@ -33,11 +33,11 @@ import { StatsTiles } from "@/registry/stats-tiles/react/stats-tiles";
 function Wrapped({ slug, xray, children }: { slug: string; xray: boolean; children: ReactNode }) {
   const part = partBySlug(slug);
   return (
-    <div data-part={slug} className={`relative ${xray ? "outline-2 outline-offset-2 outline-dashed outline-board" : ""}`}>
+    <div data-part={slug} className={`relative min-w-0 ${xray ? "outline-2 outline-offset-2 outline-dashed outline-accent" : ""}`}>
       {xray && (
         <Link
           href={`/${slug}`}
-          className="absolute -top-3 left-2 z-20 inline-flex min-h-6 items-center gap-1.5 rounded-full bg-board px-2.5 py-0.5 font-mono text-[0.6875rem] text-silk no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
+          className="absolute -top-3 left-2 z-20 inline-flex min-h-6 items-center gap-1.5 rounded-full bg-ink px-2.5 py-0.5 font-mono text-[0.6875rem] text-paper no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span aria-hidden="true" className="size-1.5 rounded-full" style={{ background: part.accent }} />
           {part.name}
@@ -230,12 +230,12 @@ export function InUse() {
                 }
               }}
               /*
-               * The chosen one is gold, not ink: on the dark theme the board colour is within a shade of
-               * the page behind it, so "selected" was a difference you had to look for.
+               * The chosen one is filled with the accent, so "selected" is not a difference you have to
+               * look for.
                */
-              className={`inline-flex min-h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board ${
+              className={`inline-flex min-h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                 index === at
-                  ? "border-pad bg-pad font-semibold text-board"
+                  ? "border-accent bg-accent font-semibold text-on-accent"
                   : "border-rule-strong text-ink-muted hover:text-ink"
               }`}
             >
@@ -258,7 +258,7 @@ export function InUse() {
           />
           <span
             aria-hidden="true"
-            className="relative h-6 w-11 shrink-0 rounded-full border border-rule-strong bg-paper-sunk transition-colors peer-checked:border-board peer-checked:bg-board peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-board after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-ink after:transition-transform peer-checked:after:translate-x-5 peer-checked:after:bg-pad"
+            className="relative h-6 w-11 shrink-0 rounded-full border border-rule-strong bg-paper-sunk transition-colors peer-checked:border-ink peer-checked:bg-ink peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-ink after:transition-transform peer-checked:after:translate-x-5 peer-checked:after:bg-accent"
           />
           X-ray: name every part
         </label>
@@ -273,12 +273,12 @@ export function InUse() {
           hidden={index !== at}
           // A tabpanel takes focus so Tab from the tabs lands inside it rather than back in the page.
           tabIndex={0}
-          className="mt-8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
+          className="mt-8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           {index === at && (
             <>
               <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-4">
-                <h3 className="font-display text-2xl leading-tight font-bold uppercase sm:text-3xl">{screen.heading}</h3>
+                <h3 className="font-display text-2xl leading-tight sm:text-3xl">{screen.heading}</h3>
                 <p className="max-w-lg text-sm text-pretty text-ink-muted">{screen.blurb}</p>
               </div>
 

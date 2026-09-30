@@ -1,11 +1,8 @@
 import Link from "next/link";
-import { BoardTraces } from "@/components/board-traces";
 import { Catalogue } from "@/components/catalogue";
 import { StepDiagram } from "@/components/how-graphics";
-import { MountedPart } from "@/components/mounted-part";
 import { PartReel } from "@/components/part-reel";
 import { inStock, parts } from "@/lib/parts";
-import { DatePicker } from "@/registry/date-picker/react/date-picker";
 import type { Metadata } from "next";
 
 // Every other page sets its own canonical; the home page did not, so a
@@ -27,7 +24,7 @@ const steps = [
   {
     step: "configure" as const,
     title: "Configure",
-    text: "Content, behaviour, add-ons and style, each in its own tab, with a search across every option and a gold dot on whatever you changed.",
+    text: "Content, behaviour, add-ons and style, each in its own tab, with a search across every option and an orange dot on whatever you changed.",
   },
   {
     step: "test" as const,
@@ -44,70 +41,58 @@ const steps = [
 export default function Home() {
   return (
     <main>
-      {/* Hero: the board wires itself up and sets a real part down on it. */}
-      <section aria-labelledby="hero-heading" className="on-board relative isolate overflow-hidden bg-board text-silk">
-        <div aria-hidden="true" className="board-grid absolute inset-0 -z-20 opacity-50" />
-        <BoardTraces />
-        <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-[clamp(3.5rem,8vw,7rem)] sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
-          <div>
-            <h1
-              id="hero-heading"
-              className="font-display text-[clamp(3rem,10vw,6rem)] leading-[0.88] font-bold tracking-[-0.02em] uppercase"
-            >
-              <span className="slab-line">Accessible parts.</span>
-              <span className="slab-line text-pad" style={{ animationDelay: "140ms" }}>
-                Plain code.
-              </span>
+      {/*
+        The hero is the search (D71): the headline, then the box, then the parts. A taste of the
+        catalogue, not the whole thing; the catalogue has its own page, with the search in the address
+        bar so a list can be shared.
+      */}
+      <section aria-labelledby="hero-heading">
+        <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(3rem,8vw,6rem)] pb-[clamp(3.5rem,7vw,6rem)] sm:px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            {/* Counted from the catalogue, not typed in, so it cannot go stale. */}
+            <p className="glass-flat inline-flex flex-wrap items-center justify-center gap-x-2 rounded-full px-3.5 py-1.5 font-mono text-xs text-ink-muted">
+              <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
+              {`${inStock.length} parts · 2 outputs each · 0 runtime dependencies`}
+            </p>
+            <h1 id="hero-heading" className="mt-6 font-display text-[clamp(2.75rem,7.5vw,5.25rem)] leading-[1.02] text-balance">
+              <span className="slab-line">{`${inStock.length} accessible parts.`}</span>
+              <em className="slab-line text-accent" style={{ animationDelay: "140ms" }}>
+                Find yours by looking.
+              </em>
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-pretty text-silk-muted sm:mt-8 sm:text-xl">
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-pretty text-ink-muted">
               Set a component up without writing code, test the exact files you will export, then take them into your
               project as React + Tailwind or HTML/CSS/JS. No library to install.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="#catalogue" className="btn-pad">
-                Open the catalogue
-                <Arrow />
-              </Link>
-              <Link href="#try" className="btn-outline-board">
-                Try four of them
-              </Link>
-            </div>
-            {/* Counted from the catalogue, not typed in, so it cannot go stale. */}
-            <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4 border-t border-board-line pt-6 font-mono text-xs tracking-wide text-silk-muted">
-              {[
-                [inStock.length, "parts in stock"],
-                [2, "outputs each"],
-                [0, "runtime dependencies"],
-              ].map(([value, term]) => (
-                <div key={term as string}>
-                  <dt className="sr-only">{term}</dt>
-                  <dd>
-                    <span className="mr-2 font-display text-3xl leading-none font-bold text-pad">{value}</span>
-                    {term}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
-          {/* One part, set down once: the arrival is the page's authored moment. */}
-          <div className="mount-in" style={{ animationDelay: "280ms" }}>
-            <MountedPart caption="Date picker · live, try it">
-              <DatePicker />
-            </MountedPart>
+          <div id="catalogue" className="mt-10 scroll-mt-4">
+            <h2 id="catalogue-heading" className="sr-only">
+              Parts catalogue
+            </h2>
+            <Catalogue parts={parts} centered />
+            <p className="mt-10 flex flex-wrap justify-center gap-3">
+              <Link href="/parts" className="btn-accent">
+                {`All ${inStock.length} parts`}
+                <Arrow />
+              </Link>
+              <Link href="#try" className="btn-glass">
+                Try four of them
+              </Link>
+            </p>
           </div>
         </div>
       </section>
 
-      {/* The socket: four real parts, one at a time */}
-      <section id="try" aria-labelledby="try-heading" className="on-board relative isolate scroll-mt-4 overflow-hidden bg-board-raised text-silk">
-        <div aria-hidden="true" className="board-grid absolute inset-0 -z-20 opacity-30" />
-        <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
-          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-board-line pb-6">
-            <h2 id="try-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
+      {/* Four real parts, one at a time */}
+      <section id="try" aria-labelledby="try-heading" className="scroll-mt-4 sm:px-6">
+        {/* Edge to edge on a phone: the reel needs the width. */}
+        <div className="glass mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,6vw,4.5rem)] max-sm:border-x-0 sm:rounded-[2rem] sm:px-10">
+          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-6">
+            <h2 id="try-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
               Try them here first
             </h2>
-            <p className="max-w-md text-pretty text-silk-muted">
+            <p className="max-w-md text-pretty text-ink-muted">
               These are the exported components, running. Use the keyboard on them — that is the part most libraries get
               wrong, and the part you can check before you commit to anything.
             </p>
@@ -118,40 +103,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/*
-        A taste of the catalogue, not the whole thing: 126 cards is a page nobody scrolls, and the
-        catalogue has its own page now, with the search in the address bar so a list can be shared.
-      */}
-      <section id="catalogue" aria-labelledby="catalogue-heading" className="scroll-mt-4">
-        <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
-          <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-5">
-            <h2 id="catalogue-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
-              Parts catalogue
-            </h2>
-            <p className="max-w-md text-pretty text-ink-muted">
-              Every part is in stock and tested on both outputs. Search here, or open the full catalogue to
-              filter it by type.
-            </p>
-          </div>
-
-          <Catalogue parts={parts} />
-
-          <p className="mt-8">
-            <Link href="/parts" className="btn-pad">
-              {`All ${inStock.length} parts`}
-              <Arrow />
-            </Link>
-          </p>
-        </div>
-      </section>
-
       {/* The parts composed into whole screens: the thing a catalogue of cards cannot show. */}
       <section aria-labelledby="in-use-heading" className="border-y border-rule bg-paper-sunk">
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-16">
           <div>
             <h2
               id="in-use-heading"
-              className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl"
+              className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl"
             >
               See them together
             </h2>
@@ -161,11 +119,11 @@ export default function Home() {
               round every part and names it.
             </p>
             <p className="mt-6 flex flex-wrap gap-3">
-              <Link href="/in-use" className="btn-pad">
+              <Link href="/in-use" className="btn-accent">
                 Open the screens
                 <Arrow />
               </Link>
-              <Link href="/tested" className="btn-outline">
+              <Link href="/tested" className="btn-glass">
                 Count the tab stops
               </Link>
             </p>
@@ -182,7 +140,7 @@ export default function Home() {
                 className="reveal flex items-center justify-between gap-4 rounded-lg border border-rule bg-paper px-4 py-3.5"
                 style={{ animationDelay: `${index * 90}ms` }}
               >
-                <span className="font-display text-xl font-semibold uppercase">{name}</span>
+                <span className="font-display text-xl">{name}</span>
                 <span className="font-mono text-xs text-ink-muted">{count}</span>
               </li>
             ))}
@@ -194,7 +152,7 @@ export default function Home() {
       <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 border-y border-rule bg-paper-sunk">
         <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-5">
-            <h2 id="how-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
+            <h2 id="how-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
               From this page to your project
             </h2>
             <p className="max-w-md text-pretty text-ink-muted">
@@ -207,7 +165,7 @@ export default function Home() {
                 <div className="rounded-lg border border-rule bg-paper p-4">
                   <StepDiagram step={step.step} />
                 </div>
-                <h3 className="mt-5 font-display text-3xl font-semibold uppercase">{step.title}</h3>
+                <h3 className="mt-5 font-display text-3xl">{step.title}</h3>
                 <p className="mt-2 max-w-prose text-pretty text-ink-muted">{step.text}</p>
               </li>
             ))}
@@ -219,7 +177,7 @@ export default function Home() {
       <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4">
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
           <div>
-            <h2 id="report-heading" className="font-display text-4xl leading-none font-bold uppercase sm:text-5xl lg:text-6xl">
+            <h2 id="report-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
               Test report
             </h2>
             <p className="mt-6 max-w-md text-pretty text-ink-muted">
@@ -252,7 +210,7 @@ export default function Home() {
                     </th>
                     <td className="hidden py-4 pr-4 text-pretty text-ink-muted sm:table-cell">{proves}</td>
                     <td className="py-4 text-right">
-                      <span className="inline-block -rotate-6 rounded border-2 border-pass px-2 font-display text-lg font-bold tracking-wider text-pass uppercase">
+                      <span className="inline-block -rotate-6 rounded border-2 border-pass px-2 font-mono text-sm font-bold tracking-wider text-pass uppercase">
                         Pass
                       </span>
                     </td>
@@ -265,24 +223,20 @@ export default function Home() {
       </section>
 
       {/* Close */}
-      <section
-        aria-labelledby="close-heading"
-        className="on-board relative isolate overflow-hidden bg-board-raised text-silk"
-      >
-        <div aria-hidden="true" className="board-grid absolute inset-0 -z-10 opacity-40" />
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-8 px-4 py-[clamp(3rem,6vw,5rem)] sm:px-6">
-          <h2 id="close-heading" className="max-w-2xl font-display text-4xl leading-none font-bold uppercase sm:text-5xl">
+      <section aria-labelledby="close-heading" className="pb-[clamp(3rem,6vw,5rem)] sm:px-6">
+        <div className="glass mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-8 px-4 py-[clamp(2.5rem,5vw,4rem)] max-sm:border-x-0 sm:rounded-[2rem] sm:px-10">
+          <h2 id="close-heading" className="max-w-2xl font-display text-4xl leading-[1.05] sm:text-5xl">
             Pick a part and try it
           </h2>
           <div className="flex flex-wrap gap-3">
-            <Link href="/date-picker" className="btn-pad">
+            <Link href="/date-picker" className="btn-accent">
               Date picker
               <Arrow />
             </Link>
-            <Link href="/searchable-select" className="btn-outline-board">
+            <Link href="/searchable-select" className="btn-glass">
               Searchable select
             </Link>
-            <Link href="/modal" className="btn-outline-board">
+            <Link href="/modal" className="btn-glass">
               Modal dialog
             </Link>
           </div>

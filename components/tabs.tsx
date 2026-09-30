@@ -67,7 +67,7 @@ export function TabList({
       ))}
       <span
         aria-hidden="true"
-        className="absolute bottom-0 left-0 h-0.5 bg-board transition-transform duration-500 ease-out-expo"
+        className="absolute bottom-0 left-0 h-0.5 bg-accent transition-transform duration-500 ease-out-expo"
         style={{ width: `${100 / tabs.length}%`, transform: `translateX(${index * 100}%)` }}
       />
     </div>

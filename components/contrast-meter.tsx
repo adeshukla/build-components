@@ -66,7 +66,7 @@ export function ContrastMeter() {
             type="color"
             value={accent}
             onChange={(event) => setAccent(event.target.value)}
-            className="mt-1.5 h-11 w-20 cursor-pointer rounded-md border border-rule-strong bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-board"
+            className="mt-1.5 h-11 w-20 cursor-pointer rounded-md border border-rule-strong bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           />
         </div>
         <p className="max-w-md text-sm text-pretty text-ink-muted">
