@@ -497,3 +497,15 @@ over 33ms. Typing in the catalogue search: median 72ms to 24ms per key, by defer
 memoising the card list.
 **Contrast:** axe cannot judge text over a gradient, so the glow keeps its 14% ceiling from D71 and
 muted ink stays #56514a.
+
+## 2026-10-01 — D73. The glow moves again, cards press and morph; a demo for the hero and templates
+**Decision:** the glow drifts again, as three soft gradient shapes moved by `transform` only (no
+filter), so the compositor moves them without repainting. Measured with the GPU on: median 16.7ms a
+frame, at most a handful of frames over 33ms, against 154 of 155 for the blurred version (D72). Cards,
+type tiles and buttons press in on a spring; opening a card morphs its drawing into the part page header
+through React `<ViewTransition>` (the Next 16 App Router supports it with no config).
+**Why:** Adesh found the still glow and the missing click feedback made the page feel flat.
+**Not decided yet:** a video hero, and a Templates product. Both are in `scratchpad/expansion.html`
+(served by `design-demo` on port 3401 at /expansion.html): three hero directions using real recordings of
+the parts (`scratchpad/record-reels.mjs` films them from their preview pages, keyboard only), and a working
+mock of Templates. Waiting on Adesh's pick.

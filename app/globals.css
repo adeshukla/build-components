@@ -180,25 +180,66 @@
 }
 
 /*
- * The faint glow the glass sits over, fixed behind every page. Gradients, not blurred shapes: a 110px
- * blur over the whole screen, with shapes drifting under it, was redone on every frame and made
- * scrolling stutter. Painted once, it costs nothing.
- * At most 14% at the centre: muted text must still reach 4.5:1 over the brightest part.
+ * The glow the glass sits over, fixed behind every page. Three soft gradient shapes that drift by
+ * transform only, so the compositor moves them and nothing is repainted. The first version blurred
+ * the whole layer by 110px and moved shapes under the blur, which redid the blur every frame and made
+ * scrolling stutter (D72). Never put a filter on this layer.
+ * The colours peak at 20% (16% for the second and third): muted and link text still reach 4.5:1 there.
  */
 @utility site-glow {
   position: fixed;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
-  background:
-    var(--grain),
-    radial-gradient(circle 38vw at 8% 4%, color-mix(in srgb, var(--glow-1) 14%, transparent), transparent),
-    radial-gradient(circle 36vw at 96% 48%, color-mix(in srgb, var(--glow-3) 12%, transparent), transparent),
-    radial-gradient(circle 40vw at 40% 96%, color-mix(in srgb, var(--glow-2) 12%, transparent), transparent);
+  background: var(--grain);
+
+  & i {
+    position: absolute;
+    width: 72vmax;
+    height: 72vmax;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--glow), color-mix(in srgb, var(--glow) 45%, transparent) 50%, transparent);
+    will-change: transform;
+    animation: glow-drift 38s ease-in-out infinite alternate;
+  }
+  & i:nth-child(1) {
+    --glow: color-mix(in srgb, var(--glow-1) 20%, transparent);
+    left: -28vmax;
+    top: -34vmax;
+  }
+  & i:nth-child(2) {
+    --glow: color-mix(in srgb, var(--glow-3) 16%, transparent);
+    right: -34vmax;
+    top: 12vh;
+    animation-duration: 47s;
+    animation-direction: alternate-reverse;
+  }
+  & i:nth-child(3) {
+    --glow: color-mix(in srgb, var(--glow-2) 16%, transparent);
+    left: 12vw;
+    bottom: -44vmax;
+    animation-duration: 55s;
+  }
 
   @media (prefers-reduced-transparency: reduce) {
     display: none;
   }
+}
+
+@keyframes glow-drift {
+  to {
+    transform: translate3d(7vw, 5vh, 0) scale(1.18);
+  }
+}
+
+/* Clicking a card morphs its drawing into the part page (components/part-header.tsx). */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(.morph) {
+  animation-duration: 450ms;
+  animation-timing-function: var(--ease-out-expo);
 }
 
 /* Part drawings (components/part-drawing.tsx). In a layer, so utilities on the svg win. */
@@ -351,11 +392,15 @@
     0 10px 24px -14px var(--color-accent);
   transition:
     background-color 0.2s,
-    translate 0.5s var(--ease-spring);
+    translate 0.5s var(--ease-spring),
+    scale 0.4s var(--ease-spring);
 
   &:hover {
     background: var(--color-accent-strong);
     translate: 0 -2px;
+  }
+  &:active {
+    scale: 0.95;
   }
 }
 
@@ -375,11 +420,15 @@
   font-weight: 600;
   transition:
     border-color 0.2s,
-    translate 0.5s var(--ease-spring);
+    translate 0.5s var(--ease-spring),
+    scale 0.4s var(--ease-spring);
 
   &:hover {
     border-color: var(--color-rule-strong);
     translate: 0 -2px;
+  }
+  &:active {
+    scale: 0.95;
   }
 }
 
@@ -543,8 +592,15 @@
   }
 
   /* Nothing loops, nothing is clipped into view. */
-  .pad-live {
+  .pad-live,
+  .site-glow i {
     animation: none !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
   }
 
   .swap-in {

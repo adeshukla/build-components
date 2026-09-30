@@ -103,7 +103,8 @@ tested on the kind of page they will live on, not on the site's paper.
   cards. **No `backdrop-filter`**, and the grain lives once on the fixed glow layer, not on each surface.
   Measured (`scratchpad/perf.mjs`): the full-screen blurred glow with drifting shapes made nearly every
   scrolled frame 100ms; backdrop blur and per-card grain cost the rest. The glow is now static
-  gradients, and all that sits behind the glass is that glow, so a blur looked the same anyway.
+  gradients that drift by transform only, and all that sits behind the glass is that glow, so a blur
+  looked the same anyway.
 - On phones the glass bands run edge to edge: the parts inside need the width.
 
 ## Components
@@ -124,7 +125,9 @@ tested on the kind of page they will live on, not on the site's paper.
 ## Motion
 
 Springs (`--ease-spring`, a `linear()` curve) for lifts and drawings; View Transitions when a filter
-changes the grid; scroll-driven reveals where supported. The glow does not move. Everything stops
+changes the grid; scroll-driven reveals where supported. The glow drifts by `transform` only (no filter,
+so the compositor moves it without repainting). Cards, tiles and buttons press in on a spring, and opening
+a card morphs its drawing into the part page header (React `<ViewTransition>`). Everything stops
 under `prefers-reduced-motion`.
 
 ## Do's and Don'ts

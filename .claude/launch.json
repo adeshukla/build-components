@@ -4,13 +4,20 @@
     {
       "name": "dev",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev", "--port", "3300"],
+      "runtimeArgs": [
+        "dev",
+        "--port",
+        "3300"
+      ],
       "port": 3300
     },
     {
       "name": "design-demo",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["-e", "require('http').createServer((q,s)=>require('fs').readFile('scratchpad/design-directions.html',(e,b)=>{s.writeHead(e?404:200,{'content-type':'text/html; charset=utf-8'});s.end(b)})).listen(3401)"],
+      "runtimeArgs": [
+        "-e",
+        "const fs=require(\"fs\"),p=require(\"path\");const root=p.resolve(\"scratchpad\");const T={\".html\":\"text/html; charset=utf-8\",\".webm\":\"video/webm\",\".json\":\"application/json\",\".png\":\"image/png\"};require(\"http\").createServer((q,s)=>{let u=decodeURIComponent(q.url.split(\"?\")[0]);if(u===\"/\")u=\"/design-directions.html\";const f=p.resolve(root,\".\"+u);if(!f.startsWith(root)){s.writeHead(403);return s.end()}fs.readFile(f,(e,b)=>{s.writeHead(e?404:200,{\"content-type\":T[p.extname(f)]||\"application/octet-stream\"});s.end(e?\"not found\":b)})}).listen(3401)"
+      ],
       "port": 3401
     }
   ]
