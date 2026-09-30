@@ -2,6 +2,18 @@
 
 Last updated: 2026-09-28 (session 12)
 
+## Session 13 (2026-10-01): findability audit and design directions — waiting on Adesh's pick
+- Audit: search misses everyday words ("calendar", "popup", "spinner", "loader", "navbar" find
+  nothing — it only reads name/summary/pattern/category/slug); cards are text-only and the live
+  preview is hover/focus only, so a phone never sees one; Inputs (38) and Content (28) are too broad;
+  the hero stats read "parts in stock, 125 parts in stock" to a screen reader.
+- Demo: `scratchpad/design-directions.html` (gitignored) — A as shipped, B specimen shelf, C command
+  deck, D A–Z index. B–D share synonyms, sub-groups and Ctrl K. Nothing in `app/` has changed.
+- Adesh liked B and C; **E (B + C)** was added and opens by default: B's warm paper, drawings,
+  type tiles and springs with C's search as the hero. Preview it with the `design-demo` entry in
+  `.claude/launch.json` (port 3401), or open the file directly.
+- **Picked (D71):** E, made quieter and frosted, orange kept. Next: build it, starting with search synonyms.
+
 ## Current status (session 12)
 
 **This session was the phone, and the id collisions.** Adesh said features were not working on a
