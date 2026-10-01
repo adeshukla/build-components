@@ -19,7 +19,7 @@ const words = (query: string) => query.toLowerCase().split(/\s+/).filter(Boolean
  * group, its URL, or another word for it. When only another word matched, `via` says which, so the
  * card can say why it is there ("also called 'popup'").
  */
-function match(part: Part, query: string): { hit: boolean; via?: string } {
+export function match(part: Part, query: string): { hit: boolean; via?: string } {
   const own = `${part.name} ${part.summary} ${part.pattern} ${part.category} ${part.group} ${part.slug}`.toLowerCase();
   let via: string | undefined;
   for (const word of words(query)) {

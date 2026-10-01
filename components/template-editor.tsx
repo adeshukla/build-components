@@ -3,11 +3,12 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { Segmented } from "@/components/segmented";
 import { luminance } from "@/lib/html";
+import { encodePage, fromTemplate } from "@/lib/page-builder";
 import { partBySlug } from "@/lib/parts";
 import { templateHtml, templateInstallCommand, templateReactSource } from "@/lib/template-output";
 import { defaultOptions, optionsToParams, templateById, type TemplateOptions } from "@/lib/templates";
 
-type Check = { ok: boolean; text: string };
+export type Check = { ok: boolean; text: string };
 
 const ratio = (a: string, b: string) => {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
@@ -18,7 +19,7 @@ const ratio = (a: string, b: string) => {
  * Checks the page in the frame as a whole: what a part on its own cannot get wrong, but a page can. The
  * full axe and keyboard tests run on every template in e2e/templates.spec.ts; these run live, here.
  */
-function checkPage(doc: Document, options: TemplateOptions): Check[] {
+export function checkPage(doc: Document, options: Pick<TemplateOptions, "brand" | "theme">): Check[] {
   const h1 = doc.querySelectorAll("h1").length;
   const levels = [...doc.querySelectorAll("h1, h2, h3, h4, h5, h6")].map((heading) => Number(heading.tagName[1]));
   const jump = levels.find((level, index) => index > 0 && level - levels[index - 1] > 1);
@@ -65,6 +66,52 @@ function checkPage(doc: Document, options: TemplateOptions): Check[] {
  */
 const reportHeight = `<script>new ResizeObserver(function(){parent.postMessage({type:"template-height",height:Math.ceil(document.documentElement.scrollHeight)},"*")}).observe(document.body)</script>`;
 
+type PageFieldValues = Pick<TemplateOptions, "name" | "brand" | "theme">;
+
+/** What every part on a page shares: the name, a brand colour and a theme. The template editor and the page builder both ask. */
+export function PageFields({ options, onChange }: { options: PageFieldValues; onChange: (patch: Partial<PageFieldValues>) => void }) {
+  const uid = useId();
+  return (
+    <>
+      <label className="grid gap-1.5 text-sm font-medium">
+        Product name
+        <input
+          value={options.name}
+          maxLength={40}
+          onChange={(event) => onChange({ name: event.target.value })}
+          className="min-h-11 rounded-lg border border-rule-strong bg-paper px-3 text-base font-normal"
+        />
+      </label>
+      <div className="grid gap-1.5 text-sm font-medium">
+        <label htmlFor={`${uid}-brand`}>Brand colour</label>
+        <div className="flex items-center gap-2">
+          <input
+            id={`${uid}-brand`}
+            type="color"
+            value={options.brand}
+            onChange={(event) => onChange({ brand: event.target.value })}
+            className="h-11 w-16 cursor-pointer rounded-lg border border-rule-strong bg-paper p-1"
+          />
+          <span className="font-mono text-sm font-normal text-ink-muted">{options.brand}</span>
+        </div>
+        <p className="text-xs font-normal text-ink-muted">Every part takes it as its accent.</p>
+      </div>
+      <Segmented
+        name={`${uid}-theme`}
+        legend="Theme"
+        value={options.theme}
+        columns={3}
+        choices={[
+          { value: "light", label: "Light" },
+          { value: "dark", label: "Dark" },
+          { value: "system", label: "System" },
+        ]}
+        onChange={(theme) => onChange({ theme: theme as TemplateOptions["theme"] })}
+      />
+    </>
+  );
+}
+
 const subscribeNever = () => () => {};
 
 export function TemplateEditor({
@@ -102,7 +149,7 @@ export function TemplateEditor({
   // The React frame takes new options by message; it says when it is ready for the first lot.
   useEffect(() => {
     const send = () =>
-      frameRef.current?.contentWindow?.postMessage({ type: "template-options", options, xray }, window.location.origin);
+      frameRef.current?.contentWindow?.postMessage({ type: "template-options", state: options, xray }, window.location.origin);
     send();
     function onMessage(event: MessageEvent) {
       if (event.source !== frameRef.current?.contentWindow) return;
@@ -147,41 +194,7 @@ export function TemplateEditor({
       <div className="grid content-start gap-6 self-start lg:sticky lg:top-4">
       <form onSubmit={(event) => event.preventDefault()} className="glass grid content-start gap-6 rounded-2xl p-6">
         <h2 className="font-display text-3xl leading-none">Set it up</h2>
-        <label className="grid gap-1.5 text-sm font-medium">
-          Product name
-          <input
-            value={options.name}
-            maxLength={40}
-            onChange={(event) => set({ name: event.target.value })}
-            className="min-h-11 rounded-lg border border-rule-strong bg-paper px-3 text-base font-normal"
-          />
-        </label>
-        <div className="grid gap-1.5 text-sm font-medium">
-          <label htmlFor={`${uid}-brand`}>Brand colour</label>
-          <div className="flex items-center gap-2">
-            <input
-              id={`${uid}-brand`}
-              type="color"
-              value={options.brand}
-              onChange={(event) => set({ brand: event.target.value })}
-              className="h-11 w-16 cursor-pointer rounded-lg border border-rule-strong bg-paper p-1"
-            />
-            <span className="font-mono text-sm font-normal text-ink-muted">{options.brand}</span>
-          </div>
-          <p className="text-xs font-normal text-ink-muted">Every part takes it as its accent.</p>
-        </div>
-        <Segmented
-          name={`${uid}-theme`}
-          legend="Theme"
-          value={options.theme}
-          columns={3}
-          choices={[
-            { value: "light", label: "Light" },
-            { value: "dark", label: "Dark" },
-            { value: "system", label: "System" },
-          ]}
-          onChange={(theme) => set({ theme: theme as TemplateOptions["theme"] })}
-        />
+        <PageFields options={options} onChange={set} />
         {optional.length > 0 && (
           <fieldset className="grid gap-2">
             <legend className="mb-1 text-sm font-medium">Sections</legend>
@@ -311,6 +324,9 @@ export function TemplateEditor({
               <button type="button" onClick={download} className="btn-glass cursor-pointer text-sm">
                 Download the HTML page
               </button>
+              <a href={`/build#p=${encodePage(fromTemplate(template, options))}`} className="btn-glass text-sm">
+                Keep building it
+              </a>
               <span role="status" className="text-sm text-ink-muted">
                 {copied}
               </span>

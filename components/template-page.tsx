@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Part } from "@/components/preview-client";
 import { partBySlug } from "@/lib/parts";
+import { pageTemplate, type BuiltPage } from "@/lib/page-builder";
 import { resolve, templateById, type Template, type TemplateOptions } from "@/lib/templates";
 
 const surfaces = { light: { background: "#ffffff", color: "#16121f" }, dark: { background: "#141019", color: "#f6f5fa" } };
@@ -70,27 +71,25 @@ export function TemplatePage({ template, options, xray = false }: { template: Te
 }
 
 /**
- * The preview page inside the template editor's frame. It opens with the options in its address, then
- * takes new ones from the editor by postMessage, and reports its height so the frame fits it.
+ * The frame side of an editor's preview: says when it is ready, takes new state by postMessage, and
+ * reports its height so the frame fits it. Shared by the template editor and the page builder.
  */
-export function TemplatePreview({ id, initialOptions }: { id: string; initialOptions: TemplateOptions }) {
-  // By id: a template holds functions, which cannot cross from the server page to this component.
-  const template = templateById(id)!;
-  const [options, setOptions] = useState(initialOptions);
+function useFrameState<T>(type: string, initial: T) {
+  const [state, setState] = useState(initial);
   const [xray, setXray] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
-      if (event.origin !== window.location.origin || event.data?.type !== "template-options") return;
-      setOptions(event.data.options);
+      if (event.origin !== window.location.origin || event.data?.type !== type) return;
+      setState(event.data.state);
       setXray(Boolean(event.data.xray));
     }
     window.addEventListener("message", onMessage);
     boxRef.current?.setAttribute("data-ready", "true");
     window.parent?.postMessage({ type: "template-ready" }, window.location.origin);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -105,9 +104,34 @@ export function TemplatePreview({ id, initialOptions }: { id: string; initialOpt
     return () => observer.disconnect();
   }, []);
 
+  return { state, xray, boxRef };
+}
+
+/** The preview page inside the template editor's frame. It opens with the options in its address. */
+export function TemplatePreview({ id, initialOptions }: { id: string; initialOptions: TemplateOptions }) {
+  // By id: a template holds functions, which cannot cross from the server page to this component.
+  const template = templateById(id)!;
+  const { state: options, xray, boxRef } = useFrameState("template-options", initialOptions);
   return (
     <div ref={boxRef}>
       <TemplatePage template={template} options={options} xray={xray} />
+    </div>
+  );
+}
+
+/** The preview page inside the page builder's frame (D80). It opens empty and waits for the page. */
+export function BuiltPagePreview() {
+  const { state: page, xray, boxRef } = useFrameState<BuiltPage | null>("built-page", null);
+  const built = page && pageTemplate(page);
+  return (
+    <div ref={boxRef}>
+      {built && built.template.sections.length > 0 ? (
+        <TemplatePage template={built.template} options={built.options} xray={xray} />
+      ) : (
+        <p className="grid min-h-[480px] place-items-center p-8 text-center text-[#56514a]">
+          Your page shows here. Add a part to start.
+        </p>
+      )}
     </div>
   );
 }

@@ -25,15 +25,15 @@ export function readComponentSources(slug: string) {
 }
 
 /**
- * What a template's outputs need from each of its parts: the CSS and JS of the HTML output, and the name
- * the React file exports (the page imports it by that name).
+ * What a template's outputs need from each of its parts: the CSS, JS and (for parts driven by their script)
+ * the fixed markup of the HTML output, and the name the React file exports (the page imports it by it).
  */
 export function readTemplateSources(slugs: string[]) {
-  const sources: Record<string, { css: string; js: string }> = {};
+  const sources: Record<string, { css: string; js: string; html: string }> = {};
   const exportNames: Record<string, string> = {};
   for (const slug of new Set(slugs)) {
-    const { react, css, js } = readComponentSources(slug);
-    sources[slug] = { css, js };
+    const { react, html, css, js } = readComponentSources(slug);
+    sources[slug] = { css, js, html };
     // The component, not a helper some parts also export (sayDate, fieldName): only it is capitalised.
     exportNames[slug] = /export function ([A-Z]\w*)\(/.exec(react)?.[1] ?? slug;
   }

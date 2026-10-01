@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-/** Three, so the header has room to breathe (D76). In use, How it is tested and Get started are in the footer. */
+/** Few, so the header has room to breathe (D76). In use, How it is tested and Get started are in the footer. */
 const links = [
   { href: "/parts", label: "Catalogue" },
   { href: "/templates", label: "Templates" },
+  { href: "/build", label: "Builder" },
   { href: "/about", label: "About" },
 ];
 

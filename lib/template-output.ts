@@ -94,12 +94,16 @@ function bodyOf(page: string) {
 export function templateHtml(
   template: Template,
   options: TemplateOptions,
-  sources: Record<string, { css: string; js: string }>,
+  sources: Record<string, { css: string; js: string; html?: string }>,
 ) {
   const sections = resolve(template, options);
   const markup = (section: (typeof sections)[number]) => {
     const render = registry[section.slug as RegistrySlug];
-    const html = "renderHtml" in render && render.renderHtml ? bodyOf(render.renderHtml(section.config)) : "";
+    // Parts driven by their script ship fixed markup instead; its <main> is the demo page's, not ours.
+    const html =
+      "renderHtml" in render && render.renderHtml
+        ? bodyOf(render.renderHtml(section.config))
+        : bodyOf(sources[section.slug]?.html ?? "").replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
     if (section.bleed) return html;
     return `<div class="tpl-pad">${section.narrow ? `<div class="tpl-narrow">${html}</div>` : html}</div>`;
   };
