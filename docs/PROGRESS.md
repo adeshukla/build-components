@@ -1,8 +1,19 @@
 # Progress
 
-Last updated: 2026-10-01 (session 13)
+Last updated: 2026-10-02 (session 13, shipped)
 
-## Latest (session 13, later): a video hero and Templates, on `dev`
+## Shipped (2026-10-01)
+Adesh said ship. `main` was fast-forwarded to `dev` (572e8b2) and pushed; Vercel deployed it in under a
+minute and https://build-components.devstash.me serves all of session 13 (D71–D76).
+- Before pushing: typecheck, lint and `next build` green; home, site-pages, site-layout and templates
+  suites passed against `next start` in all three browsers (267 passed, 24 skipped, 0 failed).
+- On the live site: every page, both registry endpoints, the clips and the CSP header answer; in a real
+  browser the hero clip plays (it starts about two seconds in, once the page has loaded), search finds
+  "calendar", the checkout template's page checks all pass in both outputs, no console errors.
+- Not run before shipping: the full component sweep. Only site CSS changed under the parts, and their
+  test pages keep their old plain background, but it is the next thing worth running.
+
+## Session 13, later: a video hero and Templates
 - **Hero (D74):** headline and search beside a screen playing six real parts, filmed by
   `scripts/record-reels.mjs`. Pause button, stills under reduced motion, paused off screen.
 - **Templates (D75):** `/templates` and `/templates/<id>`: four pages made from the parts (landing,
