@@ -32,6 +32,12 @@ export function HeroReel() {
   const [at, setAt] = useState(0);
   const [choice, setChoice] = useState<"auto" | "play" | "pause">("auto");
   const [seen, setSeen] = useState(true);
+  /*
+   * The page arrives with the still, and the clip is put in once the page has loaded. A <video> in the
+   * first HTML holds up the load event while it fetches (WebKit waited for ever), and the still is the
+   * faster first paint anyway.
+   */
+  const [mounted, setMounted] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const barRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -60,6 +66,16 @@ export function HeroReel() {
   }, []);
 
   useEffect(() => {
+    const mount = () => setMounted(true);
+    if (document.readyState === "complete") {
+      const timer = window.setTimeout(mount, 0);
+      return () => window.clearTimeout(timer);
+    }
+    window.addEventListener("load", mount, { once: true });
+    return () => window.removeEventListener("load", mount);
+  }, []);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     if (playing && seen) video.play().catch(() => {});
@@ -75,7 +91,7 @@ export function HeroReel() {
     <div ref={rootRef}>
       <figure className="glass m-0 rounded-[1.75rem] p-2.5">
         <div className="relative aspect-[16/10] overflow-hidden rounded-[1.25rem] bg-white">
-          {playing ? (
+          {playing && mounted ? (
             <video
               key={reel.slug}
               ref={videoRef}
@@ -104,38 +120,37 @@ export function HeroReel() {
             // eslint-disable-next-line @next/next/no-img-element -- a fixed-size still beside a video, not a layout image
             <img src={`/reels/${reel.slug}.jpg`} alt={label} className="size-full object-cover" />
           )}
-          <span className="absolute bottom-3 left-3 rounded-full bg-[#1c1a17e0] px-3 py-1 text-xs font-semibold text-white">
-            {part.name} · keyboard only
-          </span>
+          {/* On the clip itself, so nothing else crowds the hero: the way into the part, and the pause. */}
+          <Link
+            href={`/${reel.slug}`}
+            className="absolute bottom-3 left-3 inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[#1c1a17e6] px-3.5 text-sm font-semibold text-white transition-[scale] duration-300 ease-spring hover:bg-[#1c1a17] active:scale-95"
+          >
+            {`Open the ${part.name.toLowerCase()}`}
+            <span aria-hidden="true">→</span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setChoice(playing ? "pause" : "play")}
+            aria-label={playing ? "Pause the clips" : "Play the clips"}
+            className="absolute top-3 right-3 grid size-10 cursor-pointer place-items-center rounded-full bg-[#1c1a17e6] text-white transition-[scale] duration-300 ease-spring hover:bg-[#1c1a17] active:scale-90"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-4">
+              {playing ? <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /> : <path d="M8 5.5v13l11-6.5z" />}
+            </svg>
+          </button>
         </div>
-        <figcaption className="flex flex-wrap items-center justify-between gap-2 px-1.5 pt-2.5 pb-0.5">
-          <span className="font-mono text-xs text-ink-muted">{`Keys: ${reel.keys}`}</span>
-          <span className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setChoice(playing ? "pause" : "play")}
-              className="btn-glass min-h-9 cursor-pointer px-3.5 py-1 text-sm"
-            >
-              {playing ? "Pause the clips" : "Play the clips"}
-            </button>
-            <Link href={`/${reel.slug}`} className="btn-accent min-h-9 px-3.5 py-1 text-sm">
-              {`Open the ${part.name.toLowerCase()}`}
-            </Link>
-          </span>
-        </figcaption>
       </figure>
 
-      <div role="group" aria-label="Choose a part to watch" className="mt-2.5 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+      <div role="group" aria-label="Choose a part to watch" className="mt-4 flex flex-wrap gap-1.5">
         {reels.map((item, index) => (
           <button
             key={item.slug}
             type="button"
             aria-pressed={index === at}
             onClick={() => choose(index)}
-            className="glass relative min-h-11 cursor-pointer overflow-hidden rounded-xl px-3 py-2 text-left text-sm font-semibold transition-[scale,border-color] duration-300 ease-spring active:scale-[0.97] aria-pressed:border-accent"
+            className="relative min-h-9 cursor-pointer overflow-hidden rounded-full px-3.5 text-sm text-ink-muted transition-[scale,color,background-color] duration-300 ease-spring hover:text-ink active:scale-95 aria-pressed:bg-ink aria-pressed:text-paper"
           >
             {partBySlug(item.slug).name}
-            <span className="block font-mono text-[0.6875rem] font-normal text-ink-muted">{item.keys}</span>
             <span
               aria-hidden="true"
               ref={(node) => {
@@ -164,14 +179,9 @@ export function HeroIntro({ count }: { count: number }) {
           Watch them work.
         </em>
       </h1>
-      <p className="mt-5 max-w-xl text-lg text-pretty text-ink-muted">
-        Every clip is the real exported component, used with the keyboard only. Set one up without writing code,
-        test the files you will export, then take them home as React + Tailwind or HTML/CSS/JS. No library to
-        install.
+      <p className="mt-6 max-w-md text-lg text-pretty text-ink-muted">
+        Real components, filmed using only the keyboard. Set one up, test it, take the code.
       </p>
-      <h2 id="catalogue-heading" className="sr-only">
-        Parts catalogue
-      </h2>
     </div>
   );
 }

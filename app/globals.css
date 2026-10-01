@@ -519,18 +519,6 @@
   }
 }
 
-/* Swapping one part for another in the same place. */
-@keyframes swap-in {
-  from {
-    opacity: 0;
-    clip-path: inset(0 0 0 100%);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-  }
-}
-
 /* A drawn diagram filling itself in when it comes into view. */
 @keyframes draw-in {
   from {
@@ -548,10 +536,6 @@
 
 @utility pad-live {
   animation: pad-live 2.6s ease-in-out infinite;
-}
-
-@utility swap-in {
-  animation: swap-in 0.34s var(--ease-out-expo) both;
 }
 
 @utility draw-in {
@@ -603,8 +587,4 @@
     animation-duration: 0s !important;
   }
 
-  .swap-in {
-    clip-path: none !important;
-    transform: none !important;
-  }
 }

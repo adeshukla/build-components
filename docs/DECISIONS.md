@@ -550,3 +550,20 @@ axe runs on every template in the tests instead, and the panel says so.
 **Alternatives rejected:** templates as hand-drawn page HTML (the demo did that; it would be a second set of
 components to keep tested), and live React previews inside the site page (nested landmarks and two h1s;
 the preview is a frame, `/preview-template/<id>`).
+
+## 2026-10-01 — D76. Room to breathe: a shorter menu, four home sections, a calmer hero
+**Decision:** Adesh found the site cluttered. The header keeps Catalogue, Templates and About; In use, How it
+is tested and Get started are still pages, linked from the footer and the sitemap. The home page is the hero,
+the catalogue (after a clear break, under a visible "Browse the parts"), Templates, how it works and the test
+report. The "try" reel, "See them together" and the closing call to action are gone: the video hero shows
+parts working, Templates says what "See them together" said, and three calls to action were one too many.
+The reel's components (`part-reel.tsx`, `mounted-part.tsx`) were deleted; git has them.
+**The hero:** a one-line lede, the pause button and the way into the part on the clip itself, and chapters
+as a single row of names.
+**Template editor:** options and page checks together in the left column; the preview is a window of fixed
+height that scrolls inside, so the install command sits right under it.
+**Spacing:** sections are 80–144px apart (`py-[clamp(5rem,10vw,9rem)]`), up from 56–96px.
+**Found on the way:** a `<video>` in the first HTML held up the page's load event in WebKit for good. The
+hero now arrives with the still and puts the clip in after the page has loaded, which is also the faster
+first paint. It does not wait for an IntersectionObserver either: in headless Chromium here one sometimes
+never fired.

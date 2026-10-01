@@ -68,6 +68,7 @@ export function Catalogue({
   initialGroup = ALL,
   intro,
   aside,
+  browse,
 }: {
   parts: Part[];
   /** On its own page every match is listed; on the home page only the first few are. */
@@ -81,6 +82,8 @@ export function Catalogue({
   intro?: ReactNode;
   /** Shown beside the headline and search, from wide screens up: the home page hero reel. */
   aside?: ReactNode;
+  /** Between the hero and the type tiles on the home page: the heading of the catalogue part. */
+  browse?: ReactNode;
 }) {
   const id = useId();
   const startFilter = (categories as readonly string[]).includes(initialFilter) ? initialFilter : ALL;
@@ -241,10 +244,10 @@ export function Catalogue({
   return (
     <div ref={root}>
       {aside ? (
-        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
+        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
           <div>
             {intro}
-            <div className="mt-8">{search}</div>
+            <div className="mt-10">{search}</div>
           </div>
           {aside}
         </div>
@@ -255,7 +258,9 @@ export function Catalogue({
         </>
       )}
 
-      <fieldset className="mt-10">
+      {browse}
+
+      <fieldset className={browse ? "mt-8" : "mt-10"}>
         <legend className="sr-only">Show parts of type</legend>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))]">
           {choices.map((choice) => (

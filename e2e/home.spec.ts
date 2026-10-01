@@ -97,36 +97,8 @@ test("slash jumps to the search box, but not while typing in it", async ({ page 
 
 test("the home page itself has no axe violations", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("tab", { name: /Date picker/ })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Choose a part to watch" })).toBeVisible();
   await expectNoAxeViolations(page);
-});
-
-test("the reel is a real tablist: arrows move it and the part changes with it", async ({ page }) => {
-  await page.goto("/");
-  const reel = page.getByRole("tablist", { name: "Parts you can try here" });
-  await expect(reel.getByRole("tab", { name: /Date picker/ })).toHaveAttribute("aria-selected", "true");
-  await reel.getByRole("tab", { name: /Date picker/ }).focus();
-  await page.keyboard.press("ArrowDown");
-  await expect(reel.getByRole("tab", { name: /Searchable select/ })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel")).toContainText("Country");
-  await page.keyboard.press("End");
-  await expect(reel.getByRole("tab", { name: /Rating/ })).toHaveAttribute("aria-selected", "true");
-});
-
-test("the reel holds still while it is being used", async ({ page }) => {
-  await page.goto("/");
-  const reel = page.getByRole("tablist", { name: "Parts you can try here" });
-  await reel.getByRole("tab", { name: /Switch/ }).click();
-  /*
-   * And it stays held with the pointer nowhere near it: a phone cannot hover, and Safari does not
-   * focus a button when it is tapped, so a hold that depends on either leaves a phone with a reel
-   * that swaps the part out from under whoever is trying it.
-   */
-  await page.mouse.move(0, 0);
-  await expect(page.getByText(/Held\./)).toBeVisible();
-  // Nine seconds is the hold; it must not move on.
-  await page.waitForTimeout(3000);
-  await expect(reel.getByRole("tab", { name: /Switch/ })).toHaveAttribute("aria-selected", "true");
 });
 
 test("the hero plays a real part, can be paused, and its chapters change the part", async ({ page }) => {

@@ -14,8 +14,10 @@ Last updated: 2026-10-01 (session 13)
 - The demo of the hero options and Templates is `scratchpad/expansion.html` (served by `design-demo`).
 - **Next for templates:** sign in, account settings, a blog article and a 404. Sign in needs the form
   part set up as a sign-in form; check its options first.
-- **Not decided:** whether to fold "How it is tested" and "Get started" into other pages so the menu is
-  shorter. Templates was added to the menu beside them for now.
+- **Decluttered (D76):** the menu is Catalogue, Templates, About; the home page has four sections; the
+  hero and the template editor have more room. In use, How it is tested and Get started are in the footer.
+- Under a full parallel WebKit + iPhone run against `pnpm dev`, the deferred catalogue search can take over
+  five seconds to show; alone it takes 0.6s. Rerun before believing a failure there.
 
 ## Earlier in session 13: the frosted shelf is built, on `dev`
 

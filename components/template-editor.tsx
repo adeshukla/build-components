@@ -143,8 +143,9 @@ export function TemplateEditor({
   const set = (patch: Partial<TemplateOptions>) => setOptions((current) => ({ ...current, ...patch }));
 
   return (
-    <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[19rem_1fr]">
-      <form onSubmit={(event) => event.preventDefault()} className="glass grid content-start gap-5 self-start rounded-2xl p-5 lg:sticky lg:top-4">
+    <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 pt-10 pb-[clamp(4rem,9vw,8rem)] sm:px-6 lg:grid-cols-[20rem_1fr] lg:gap-12">
+      <div className="grid content-start gap-6 self-start lg:sticky lg:top-4">
+      <form onSubmit={(event) => event.preventDefault()} className="glass grid content-start gap-6 rounded-2xl p-6">
         <h2 className="font-display text-3xl leading-none">Set it up</h2>
         <label className="grid gap-1.5 text-sm font-medium">
           Product name
@@ -204,6 +205,28 @@ export function TemplateEditor({
           </fieldset>
         )}
       </form>
+        <section aria-labelledby={`${uid}-checks`} className="glass rounded-2xl p-6">
+          <h2 id={`${uid}-checks`} className="font-display text-3xl leading-none">
+            Page checks
+          </h2>
+          <ul className="mt-4 grid gap-2.5 text-sm">
+            {checks.map((check) => (
+              <li key={check.text} className="flex gap-2.5">
+                <span
+                  className={`shrink-0 self-start rounded border-2 px-1.5 font-mono text-[0.6875rem] font-bold tracking-wider uppercase ${check.ok ? "border-pass text-pass" : "border-accent text-link"}`}
+                >
+                  {check.ok ? "Pass" : "Look"}
+                </span>
+                {check.text}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-xs text-ink-muted">
+            Run here on the page above, as you change it. Every template is also tested with axe and the
+            keyboard, as React and as HTML, in Chromium, WebKit and an emulated iPhone.
+          </p>
+        </section>
+      </div>
 
       <div className="min-w-0">
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -245,35 +268,14 @@ export function TemplateEditor({
             title={`${template.name} preview, ${output === "react" ? "React" : "HTML"} output`}
             src={output === "react" ? `/preview-template/${template.id}?${initialQuery}` : undefined}
             srcDoc={output === "html" ? html.replace("</body>", `${reportHeight}</body>`) : undefined}
-            style={{ width, height, maxWidth: "100%" }}
+            style={{ width, height: `min(78vh, ${height}px)`, maxWidth: "100%" }}
             className="mx-auto block border-0 transition-[width] duration-500 ease-spring"
           />
         </div>
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <section aria-labelledby={`${uid}-checks`} className="glass rounded-2xl p-5">
-            <h2 id={`${uid}-checks`} className="font-display text-3xl leading-none">
-              Page checks
-            </h2>
-            <ul className="mt-4 grid gap-2.5 text-sm">
-              {checks.map((check) => (
-                <li key={check.text} className="flex gap-2.5">
-                  <span
-                    className={`shrink-0 self-start rounded border-2 px-1.5 font-mono text-[0.6875rem] font-bold tracking-wider uppercase ${check.ok ? "border-pass text-pass" : "border-accent text-link"}`}
-                  >
-                    {check.ok ? "Pass" : "Look"}
-                  </span>
-                  {check.text}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs text-ink-muted">
-              Run here on the page above, as you change it. Every template is also tested with axe and the
-              keyboard, as React and as HTML, in Chromium, WebKit and an emulated iPhone.
-            </p>
-          </section>
+        <div className="mt-8">
 
-          <section aria-labelledby={`${uid}-take`} className="glass min-w-0 rounded-2xl p-5">
+          <section aria-labelledby={`${uid}-take`} className="glass min-w-0 rounded-2xl p-6">
             <h2 id={`${uid}-take`} className="font-display text-3xl leading-none">
               Take it home
             </h2>

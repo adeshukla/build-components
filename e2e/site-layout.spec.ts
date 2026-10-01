@@ -110,7 +110,8 @@ test("every link in the phone menu is a comfortable target", async ({ page }) =>
   await page.getByRole("button", { name: "Menu", exact: true }).click();
   const links = page.locator("#site-menu").getByRole("link");
   const count = await links.count();
-  expect(count).toBeGreaterThan(3);
+  // Three since D76: Catalogue, Templates, About.
+  expect(count).toBeGreaterThanOrEqual(3);
   for (let index = 0; index < count; index++) {
     const box = await links.nth(index).boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);

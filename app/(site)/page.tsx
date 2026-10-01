@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Catalogue } from "@/components/catalogue";
 import { HeroIntro, HeroReel } from "@/components/hero-reel";
 import { StepDiagram } from "@/components/how-graphics";
-import { PartReel } from "@/components/part-reel";
 import { inStock, parts } from "@/lib/parts";
 import { templates } from "@/lib/templates";
 import type { Metadata } from "next";
@@ -44,123 +43,67 @@ export default function Home() {
   return (
     <main>
       {/*
-        The hero (D74): the headline and the search on one side, the parts at work on the other, and
-        then the catalogue itself. A taste of it, not the whole thing; the catalogue has its own page,
-        with the search in the address bar so a list can be shared.
+        The hero (D74): the headline and the search on one side, the parts at work on the other. Then,
+        after a clear break, the catalogue: a taste of it, not the whole thing. Four sections in all,
+        each with room around it (D76).
       */}
       <section aria-labelledby="hero-heading">
-        <div id="catalogue" className="mx-auto w-full max-w-7xl scroll-mt-4 px-4 pt-[clamp(2.5rem,6vw,5rem)] pb-[clamp(3.5rem,7vw,6rem)] sm:px-6">
+        <div id="catalogue" className="mx-auto w-full max-w-7xl scroll-mt-4 px-4 pt-[clamp(3rem,8vw,7rem)] pb-[clamp(4rem,9vw,8rem)] sm:px-6">
           <Catalogue
             parts={parts}
             // Keyed: the catalogue (a client component) places these among its own children, and an element
             // made here on the server needs a key there, or React warns.
             intro={<HeroIntro key="intro" count={inStock.length} />}
             aside={<HeroReel key="reel" />}
+            browse={
+              <div key="browse" className="mt-[clamp(5rem,11vw,9rem)] flex flex-wrap items-end justify-between gap-4">
+                <h2 id="catalogue-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl">
+                  Browse the parts
+                </h2>
+                <Link href="/parts" className="inline-flex min-h-11 items-center text-sm font-medium text-link underline underline-offset-4 hover:text-ink">
+                  {`See all ${inStock.length}`}
+                </Link>
+              </div>
+            }
           />
-          <p className="mt-10 flex flex-wrap justify-center gap-3">
+          <p className="mt-12 flex justify-center">
             <Link href="/parts" className="btn-accent">
               {`All ${inStock.length} parts`}
               <Arrow />
-            </Link>
-            <Link href="#try" className="btn-glass">
-              Try four of them
             </Link>
           </p>
         </div>
       </section>
 
-      {/* Four real parts, one at a time */}
-      <section id="try" aria-labelledby="try-heading" className="scroll-mt-4 sm:px-6">
-        {/* Edge to edge on a phone: the reel needs the width. */}
-        <div className="glass mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,6vw,4.5rem)] max-sm:border-x-0 sm:rounded-[2rem] sm:px-10">
-          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-6">
-            <h2 id="try-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
-              Try them here first
-            </h2>
-            <p className="max-w-md text-pretty text-ink-muted">
-              These are the exported components, running. Use the keyboard on them — that is the part most libraries get
-              wrong, and the part you can check before you commit to anything.
-            </p>
-          </div>
-          <div className="mt-12">
-            <PartReel />
-          </div>
-        </div>
-      </section>
-
       {/* Templates: the parts as whole pages, set up and taken home in one go (D75). */}
-      <section aria-labelledby="templates-heading" className="px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
-        <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
+      <section aria-labelledby="templates-heading" className="border-y border-rule bg-paper-sunk/60 px-4 py-[clamp(5rem,10vw,9rem)] sm:px-6">
+        <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
           <div>
-            <h2 id="templates-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+            <h2 id="templates-heading" className="font-display text-4xl leading-[1.05] text-balance sm:text-5xl lg:text-6xl">
               Whole pages, <em className="text-accent">ready to use</em>
             </h2>
-            <p className="mt-5 max-w-xl text-lg text-pretty text-ink-muted">
-              Templates put the parts together into pages. Set your name, colour and theme, check the page as a
-              whole, and take it home with one command or as one HTML file.
+            <p className="mt-6 max-w-md text-lg text-pretty text-ink-muted">
+              Templates put the parts together into pages. Set your name, colour and theme, then take it home.
             </p>
-            <p className="mt-6">
+            <p className="mt-8">
               <Link href="/templates" className="btn-accent">
                 Browse the templates
                 <Arrow />
               </Link>
             </p>
           </div>
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid gap-4 sm:grid-cols-2">
             {templates.map((template) => (
-              <li key={template.id} className="glass relative rounded-2xl p-4 transition-[translate,scale] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]">
+              <li
+                key={template.id}
+                className="glass relative rounded-2xl p-6 transition-[translate,scale] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]"
+              >
                 <h3 className="font-semibold">
                   <Link href={`/templates/${template.id}`} className="after:absolute after:inset-0 after:rounded-2xl">
                     {template.name}
                   </Link>
                 </h3>
-                <p className="mt-0.5 font-mono text-xs text-ink-muted">{`${template.type} · ${new Set(template.sections.map((section) => section.slug)).size} parts`}</p>
-                <p className="mt-2 text-sm text-pretty text-ink-muted">{template.summary}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* The parts composed into whole screens: the thing a catalogue of cards cannot show. */}
-      <section aria-labelledby="in-use-heading" className="border-y border-rule bg-paper-sunk">
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-16">
-          <div>
-            <h2
-              id="in-use-heading"
-              className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl"
-            >
-              See them together
-            </h2>
-            <p className="mt-5 max-w-xl text-lg text-pretty text-ink-muted">
-              A part on its own page is easy to like. Three whole screens — a product page, a checkout, an
-              admin screen — are made out of the catalogue and running, with a switch that draws a line
-              round every part and names it.
-            </p>
-            <p className="mt-6 flex flex-wrap gap-3">
-              <Link href="/in-use" className="btn-accent">
-                Open the screens
-                <Arrow />
-              </Link>
-              <Link href="/tested" className="btn-glass">
-                Count the tab stops
-              </Link>
-            </p>
-          </div>
-          {/* Three labelled slabs: a picture of the idea, not a screenshot of it. */}
-          <ul aria-hidden="true" className="grid gap-3">
-            {[
-              ["A product page", "7 parts"],
-              ["A checkout", "5 parts"],
-              ["An admin screen", "6 parts"],
-            ].map(([name, count], index) => (
-              <li
-                key={name}
-                className="reveal flex items-center justify-between gap-4 rounded-lg border border-rule bg-paper px-4 py-3.5"
-                style={{ animationDelay: `${index * 90}ms` }}
-              >
-                <span className="font-display text-xl">{name}</span>
-                <span className="font-mono text-xs text-ink-muted">{count}</span>
+                <p className="mt-1 font-mono text-xs text-ink-muted">{`${template.type} · ${new Set(template.sections.map((section) => section.slug)).size} parts`}</p>
               </li>
             ))}
           </ul>
@@ -168,17 +111,13 @@ export default function Home() {
       </section>
 
       {/* How it works: three drawn diagrams, each one the step it stands for */}
-      <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 border-y border-rule bg-paper-sunk">
-        <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
-          <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-ink pb-5">
-            <h2 id="how-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
-              From this page to your project
-            </h2>
-            <p className="max-w-md text-pretty text-ink-muted">
-              Three stops, and you leave with files rather than a dependency.
-            </p>
-          </div>
-          <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+      <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 px-4 py-[clamp(5rem,10vw,9rem)] sm:px-6">
+        <div className="mx-auto w-full max-w-7xl">
+          <h2 id="how-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+            From this page to your project
+          </h2>
+          <p className="mt-5 max-w-md text-lg text-pretty text-ink-muted">Three stops, and you leave with files, not a dependency.</p>
+          <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-10">
             {steps.map((step) => (
               <li key={step.title} className="reveal">
                 <div className="rounded-lg border border-rule bg-paper p-4">
@@ -193,15 +132,15 @@ export default function Home() {
       </section>
 
       {/* Test report */}
-      <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4">
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
+      <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4 border-t border-rule px-4 py-[clamp(5rem,10vw,9rem)] sm:px-6">
+        <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <div>
             <h2 id="report-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
               Test report
             </h2>
             <p className="mt-6 max-w-md text-pretty text-ink-muted">
-              What every part in stock is checked against, on every exported output. Automated tests cannot judge what a
-              screen reader says, so each part has a manual checklist on its own page.
+              What every part is checked against, on every exported output. A screen reader cannot be judged by a
+              test, so each part also has a manual checklist on its own page.
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -237,27 +176,6 @@ export default function Home() {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
-      </section>
-
-      {/* Close */}
-      <section aria-labelledby="close-heading" className="pb-[clamp(3rem,6vw,5rem)] sm:px-6">
-        <div className="glass mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-8 px-4 py-[clamp(2.5rem,5vw,4rem)] max-sm:border-x-0 sm:rounded-[2rem] sm:px-10">
-          <h2 id="close-heading" className="max-w-2xl font-display text-4xl leading-[1.05] sm:text-5xl">
-            Pick a part and try it
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/date-picker" className="btn-accent">
-              Date picker
-              <Arrow />
-            </Link>
-            <Link href="/searchable-select" className="btn-glass">
-              Searchable select
-            </Link>
-            <Link href="/modal" className="btn-glass">
-              Modal dialog
-            </Link>
           </div>
         </div>
       </section>

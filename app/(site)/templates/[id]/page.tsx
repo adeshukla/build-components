@@ -29,7 +29,7 @@ export default async function TemplatePage({ params }: PageProps<"/templates/[id
 
   return (
     <main className="flex-1">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(2.5rem,6vw,4.5rem)] sm:px-6">
         <p className="font-mono text-xs tracking-wide text-ink-muted uppercase">
           <Link href="/templates" className="underline underline-offset-2 hover:text-ink">
             Templates
@@ -39,12 +39,15 @@ export default async function TemplatePage({ params }: PageProps<"/templates/[id
         </p>
         <h1 className="mt-3 font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1]">{template.name}</h1>
         <p className="mt-3 max-w-2xl text-lg text-pretty text-ink-muted">{template.summary}</p>
-        <p className="mt-3 flex flex-wrap gap-1.5">
-          <span className="sr-only">Made of these parts:</span>
-          {[...new Set(template.sections.map((section) => section.slug))].map((slug) => (
-            <Link key={slug} href={`/${slug}`} className="glass inline-flex min-h-8 items-center rounded-full px-3 font-mono text-xs hover:border-accent">
-              {partBySlug(slug).name}
-            </Link>
+        <p className="mt-4 text-sm text-ink-muted">
+          Made of{" "}
+          {[...new Set(template.sections.map((section) => section.slug))].map((slug, index, all) => (
+            <span key={slug}>
+              <Link href={`/${slug}`} className="text-link underline underline-offset-2 hover:text-ink">
+                {partBySlug(slug).name}
+              </Link>
+              {index < all.length - 2 ? ", " : index === all.length - 2 ? " and " : "."}
+            </span>
           ))}
         </p>
       </div>

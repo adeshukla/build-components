@@ -30,13 +30,17 @@ for (const [path, heading] of pages) {
       await expectNoAxeViolations(page);
     });
 
-    test("is reachable from the header on every other page", async ({ page }) => {
+    test("is reachable from every other page", async ({ page }) => {
       await page.goto("/");
-      // On a phone the links live behind the Menu button, which is the only way to reach them there.
-      const menu = page.getByRole("button", { name: "Menu", exact: true });
-      if (await menu.isVisible()) await menu.click();
-      const link = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: nameFor(path) });
-      await expect(link.first()).toHaveAttribute("href", path);
+      // The header keeps three links (D76); the rest are in the footer, which every page has.
+      const inHeader = path === "/parts";
+      if (inHeader) {
+        // On a phone the header links live behind the Menu button, the only way to reach them there.
+        const menu = page.getByRole("button", { name: "Menu", exact: true });
+        if (await menu.isVisible()) await menu.click();
+      }
+      const nav = page.getByRole("navigation", { name: inHeader ? "Main" : "Footer" });
+      await expect(nav.getByRole("link", { name: nameFor(path) }).first()).toHaveAttribute("href", path);
     });
   });
 }

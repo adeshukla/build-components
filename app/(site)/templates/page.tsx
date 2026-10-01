@@ -21,29 +21,24 @@ const promises = [
 export default function TemplatesPage() {
   return (
     <main className="flex-1">
-      <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,5vw,4rem)] sm:px-6">
-        <div className="grid items-end gap-8 lg:grid-cols-[1.15fr_1fr]">
-          <div>
-            <h1 className="font-display text-[clamp(2.75rem,6.5vw,5rem)] leading-[1.02] text-balance">
-              Templates. <em className="text-accent">Whole pages, ready to use.</em>
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg text-pretty text-ink-muted">
-              Each template is a page put together from parts in the catalogue: nothing on it is drawn by hand. Set
-              it up, check the page as a whole, and take it home.
-            </p>
-          </div>
-          <ul className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-            {promises.map(([title, text]) => (
-              <li key={title} className="glass rounded-2xl p-4">
-                <h2 className="font-display text-2xl leading-tight">{title}</h2>
-                <p className="mt-1 text-sm text-pretty text-ink-muted">{text}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(3rem,8vw,7rem)] pb-[clamp(4rem,9vw,8rem)] sm:px-6">
+        <h1 className="max-w-4xl font-display text-[clamp(2.75rem,6.5vw,5rem)] leading-[1.02] text-balance">
+          Templates. <em className="text-accent">Whole pages, ready to use.</em>
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg text-pretty text-ink-muted">
+          Each template is a page put together from parts in the catalogue: nothing on it is drawn by hand.
+        </p>
+        <ul className="mt-12 grid gap-8 border-t border-rule pt-8 sm:grid-cols-3">
+          {promises.map(([title, text]) => (
+            <li key={title}>
+              <h2 className="font-display text-2xl leading-tight">{title}</h2>
+              <p className="mt-2 max-w-xs text-sm text-pretty text-ink-muted">{text}</p>
+            </li>
+          ))}
+        </ul>
 
         <h2 className="sr-only">Every template</h2>
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <ul className="mt-[clamp(4rem,8vw,6rem)] grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {templates.map((template) => {
             const slugs = [...new Set(template.sections.map((section) => section.slug))];
             return (
