@@ -619,3 +619,12 @@ it too), and a shadcn `registry:block` (`/r/pages/<name>.json`).
 outputs. Only the countdown overflowed (by 4px); its boxes wrap now.
 **Later:** accounts (save pages server-side, a page list); two of the same part on a page; other
 frameworks (needs D6's spike first).
+
+## 2026-10-03 — D81. The clean look, 1600px wide
+**Decision:** Adesh picked Clean from the D77 trial and asked for a 1600px container. `--page-max` is 100rem,
+with Clean's gutter, section and grid spacing. Surfaces are flat paper with one hairline in both themes
+(`--color-glass` is the paper, its edge the rule); `glass` and `btn-glass` no longer cast a shadow.
+`--color-shadow` itself is kept for things that are not surfaces (the preview frames). The look switcher,
+the other looks and the `look` line in the root layout's script are gone.
+**Open:** a hover glow and a moving, interactive home background. Three directions are in
+`scratchpad/glow-demo.html` (A Spotlight, B Living grid, C Aurora), waiting on Adesh's pick.

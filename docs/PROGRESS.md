@@ -1,6 +1,12 @@
 # Progress
 
-Last updated: 2026-10-02 (session 14, on dev, not shipped)
+Last updated: 2026-10-03 (session 15, on dev, not shipped)
+
+## Session 15
+- **Look (D81):** Clean at 1600px is the site's look; the switcher is gone.
+- **Waiting on Adesh:** pick a hover glow and home background from `scratchpad/glow-demo.html`
+  (A Spotlight, B Living grid, C Aurora, or a mix). Then build it on the home page and the cards.
+
 
 ## Session 14: wider layout to try, live reel, more templates, page builder
 Adesh asked for: more room and a wider page on big screens; a hero that feels like a launch film; more
