@@ -509,3 +509,16 @@ through React `<ViewTransition>` (the Next 16 App Router supports it with no con
 (served by `design-demo` on port 3401 at /expansion.html): three hero directions using real recordings of
 the parts (`scratchpad/record-reels.mjs` films them from their preview pages, keyboard only), and a working
 mock of Templates. Waiting on Adesh's pick.
+
+## 2026-10-01 — D74. The home hero shows the parts at work (direction A, "Cinema")
+**Decision:** the home hero is the headline and search on one side and a screen on the other that plays
+real parts one at a time, with chapters to pick one, a pause button and a link into each part. The
+catalogue's type tiles and cards follow underneath.
+**The footage is real:** `scripts/record-reels.mjs` films six parts on their own preview pages, driven
+by the keyboard with the keys shown on screen, and writes `public/reels/<slug>.webm`, a still for each, and
+`lib/reels.json`. Re-run it (with the dev server up) whenever one of those parts changes. About 850KB in
+all; only the clip on screen loads.
+**Accessibility:** a pause button (WCAG 2.2.2), stills and no autoplay under reduced motion, paused when
+off screen or in a hidden tab, each clip labelled with what it shows.
+**Known limit:** the clips are WebM (Playwright records VP8). Safari plays WebM from 14.1 on the Mac and
+17.4 on iOS; older Safari shows the still. An MP4 copy would need ffmpeg, which is not on this machine.

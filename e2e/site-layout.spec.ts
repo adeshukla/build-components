@@ -98,7 +98,7 @@ for (const path of pages) {
 test("the header's own menu is a comfortable target on a phone", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
-  const menu = page.getByRole("button", { name: "Menu" });
+  const menu = page.getByRole("button", { name: "Menu", exact: true });
   const box = await menu.boundingBox();
   // The parts in this catalogue are all 44px. The site that ships them should not be smaller.
   expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
@@ -107,7 +107,7 @@ test("the header's own menu is a comfortable target on a phone", async ({ page }
 test("every link in the phone menu is a comfortable target", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Menu" }).click();
+  await page.getByRole("button", { name: "Menu", exact: true }).click();
   const links = page.locator("#site-menu").getByRole("link");
   const count = await links.count();
   expect(count).toBeGreaterThan(3);

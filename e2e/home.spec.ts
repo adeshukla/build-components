@@ -128,3 +128,28 @@ test("the reel holds still while it is being used", async ({ page }) => {
   await page.waitForTimeout(3000);
   await expect(reel.getByRole("tab", { name: /Switch/ })).toHaveAttribute("aria-selected", "true");
 });
+
+test("the hero plays a real part, can be paused, and its chapters change the part", async ({ page }) => {
+  await page.goto("/");
+  const video = page.locator("figure video");
+  await expect(video).toHaveAttribute("src", "/reels/command-menu.webm");
+  await expect.poll(() => video.evaluate((node: HTMLVideoElement) => !node.paused)).toBe(true);
+
+  // Anything that moves on its own for more than five seconds can be paused (WCAG 2.2.2).
+  await page.getByRole("button", { name: "Pause the clips" }).click();
+  await expect(page.getByRole("button", { name: "Play the clips" })).toBeVisible();
+  await expect(page.locator("figure img")).toHaveAttribute("src", "/reels/command-menu.jpg");
+
+  await page.getByRole("group", { name: "Choose a part to watch" }).getByRole("button", { name: /^Date picker/ }).click();
+  await expect(page.getByRole("link", { name: "Open the date picker" })).toHaveAttribute("href", "/date-picker");
+  await expect(page.locator("figure img")).toHaveAttribute("alt", /^Date picker, used with the keyboard only/);
+});
+
+test("with reduced motion the hero shows stills and plays nothing until asked", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.locator("figure img")).toHaveAttribute("src", "/reels/command-menu.jpg");
+  await expect(page.locator("figure video")).toHaveCount(0);
+  await page.getByRole("button", { name: "Play the clips" }).click();
+  await expect(page.locator("figure video")).toHaveCount(1);
+});

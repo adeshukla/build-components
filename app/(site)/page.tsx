@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Catalogue } from "@/components/catalogue";
+import { HeroIntro, HeroReel } from "@/components/hero-reel";
 import { StepDiagram } from "@/components/how-graphics";
 import { PartReel } from "@/components/part-reel";
 import { inStock, parts } from "@/lib/parts";
@@ -42,45 +43,28 @@ export default function Home() {
   return (
     <main>
       {/*
-        The hero is the search (D71): the headline, then the box, then the parts. A taste of the
-        catalogue, not the whole thing; the catalogue has its own page, with the search in the address
-        bar so a list can be shared.
+        The hero (D74): the headline and the search on one side, the parts at work on the other, and
+        then the catalogue itself. A taste of it, not the whole thing; the catalogue has its own page,
+        with the search in the address bar so a list can be shared.
       */}
       <section aria-labelledby="hero-heading">
-        <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(3rem,8vw,6rem)] pb-[clamp(3.5rem,7vw,6rem)] sm:px-6">
-          <div className="mx-auto max-w-3xl text-center">
-            {/* Counted from the catalogue, not typed in, so it cannot go stale. */}
-            <p className="glass inline-flex flex-wrap items-center justify-center gap-x-2 rounded-full px-3.5 py-1.5 font-mono text-xs text-ink-muted">
-              <span aria-hidden="true" className="size-2 rounded-full bg-accent" />
-              {`${inStock.length} parts · 2 outputs each · 0 runtime dependencies`}
-            </p>
-            <h1 id="hero-heading" className="mt-6 font-display text-[clamp(2.75rem,7.5vw,5.25rem)] leading-[1.02] text-balance">
-              <span className="slab-line">{`${inStock.length} accessible parts.`}</span>
-              <em className="slab-line text-accent" style={{ animationDelay: "140ms" }}>
-                Find yours by looking.
-              </em>
-            </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-pretty text-ink-muted">
-              Set a component up without writing code, test the exact files you will export, then take them into your
-              project as React + Tailwind or HTML/CSS/JS. No library to install.
-            </p>
-          </div>
-
-          <div id="catalogue" className="mt-10 scroll-mt-4">
-            <h2 id="catalogue-heading" className="sr-only">
-              Parts catalogue
-            </h2>
-            <Catalogue parts={parts} centered />
-            <p className="mt-10 flex flex-wrap justify-center gap-3">
-              <Link href="/parts" className="btn-accent">
-                {`All ${inStock.length} parts`}
-                <Arrow />
-              </Link>
-              <Link href="#try" className="btn-glass">
-                Try four of them
-              </Link>
-            </p>
-          </div>
+        <div id="catalogue" className="mx-auto w-full max-w-7xl scroll-mt-4 px-4 pt-[clamp(2.5rem,6vw,5rem)] pb-[clamp(3.5rem,7vw,6rem)] sm:px-6">
+          <Catalogue
+            parts={parts}
+            // Keyed: the catalogue (a client component) places these among its own children, and an element
+            // made here on the server needs a key there, or React warns.
+            intro={<HeroIntro key="intro" count={inStock.length} />}
+            aside={<HeroReel key="reel" />}
+          />
+          <p className="mt-10 flex flex-wrap justify-center gap-3">
+            <Link href="/parts" className="btn-accent">
+              {`All ${inStock.length} parts`}
+              <Arrow />
+            </Link>
+            <Link href="#try" className="btn-glass">
+              Try four of them
+            </Link>
+          </p>
         </div>
       </section>
 

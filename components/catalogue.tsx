@@ -66,7 +66,8 @@ export function Catalogue({
   initialQuery = "",
   initialFilter = ALL,
   initialGroup = ALL,
-  centered = false,
+  intro,
+  aside,
 }: {
   parts: Part[];
   /** On its own page every match is listed; on the home page only the first few are. */
@@ -76,8 +77,10 @@ export function Catalogue({
   initialQuery?: string;
   initialFilter?: string;
   initialGroup?: string;
-  /** The home page puts the search box in the middle, under its headline. */
-  centered?: boolean;
+  /** Shown above the search box: the home page puts its headline here. */
+  intro?: ReactNode;
+  /** Shown beside the headline and search, from wide screens up: the home page hero reel. */
+  aside?: ReactNode;
 }) {
   const id = useId();
   const startFilter = (categories as readonly string[]).includes(initialFilter) ? initialFilter : ALL;
@@ -183,59 +186,76 @@ export function Catalogue({
     searchRef.current?.focus();
   }
 
+  const search = (
+    <div className="max-w-3xl">
+    <div className="glass relative flex items-center gap-3 rounded-[1.25rem] px-5 transition-shadow focus-within:shadow-[0_0_0_6px_color-mix(in_oklab,var(--color-accent)_14%,transparent)]">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        className="size-5 shrink-0 text-ink-muted"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+      <label htmlFor={`${id}-search`} className="sr-only">
+        Search the catalogue
+      </label>
+      <input
+        ref={searchRef}
+        id={`${id}-search`}
+        type="search"
+        value={query}
+        autoComplete="off"
+        placeholder={`Search ${parts.length} parts by name or what it does`}
+        aria-describedby={`${id}-hint`}
+        onChange={(event) => setQuery(event.target.value)}
+        className="min-h-15 w-full min-w-0 bg-transparent text-lg placeholder:text-ink-muted focus-visible:outline-none sm:text-xl"
+      />
+      <kbd className="hidden shrink-0 rounded-md border border-rule-strong px-2 py-0.5 font-mono text-xs text-ink-muted sm:block">
+        /
+      </kbd>
+    </div>
+    <p id={`${id}-hint`} className={`mt-3 flex flex-wrap items-center gap-2 text-sm text-ink-muted`}>
+      <span className="sr-only">Search by name, by what it does, or by another word for it. Press slash or Control K to jump here.</span>
+      <span aria-hidden="true">Try</span>
+      {SUGGESTIONS.map((word) => (
+        <button
+          key={word}
+          type="button"
+          onClick={() => {
+            setQuery(word);
+            searchRef.current?.focus();
+          }}
+          className="glass inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 font-mono text-xs text-ink transition-colors hover:border-accent"
+        >
+          {word}
+        </button>
+      ))}
+    </p>
+    </div>
+  );
+
   return (
     <div ref={root}>
-      <div className={centered ? "mx-auto max-w-3xl" : "max-w-3xl"}>
-      <div className="glass relative flex items-center gap-3 rounded-[1.25rem] px-5 transition-shadow focus-within:shadow-[0_0_0_6px_color-mix(in_oklab,var(--color-accent)_14%,transparent)]">
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          className="size-5 shrink-0 text-ink-muted"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
-        <label htmlFor={`${id}-search`} className="sr-only">
-          Search the catalogue
-        </label>
-        <input
-          ref={searchRef}
-          id={`${id}-search`}
-          type="search"
-          value={query}
-          autoComplete="off"
-          placeholder={`Search ${parts.length} parts by name or what it does`}
-          aria-describedby={`${id}-hint`}
-          onChange={(event) => setQuery(event.target.value)}
-          className="min-h-15 w-full min-w-0 bg-transparent text-lg placeholder:text-ink-muted focus-visible:outline-none sm:text-xl"
-        />
-        <kbd className="hidden shrink-0 rounded-md border border-rule-strong px-2 py-0.5 font-mono text-xs text-ink-muted sm:block">
-          /
-        </kbd>
-      </div>
-      <p id={`${id}-hint`} className={`mt-3 flex flex-wrap items-center gap-2 text-sm text-ink-muted ${centered ? "justify-center" : ""}`}>
-        <span className="sr-only">Search by name, by what it does, or by another word for it. Press slash or Control K to jump here.</span>
-        <span aria-hidden="true">Try</span>
-        {SUGGESTIONS.map((word) => (
-          <button
-            key={word}
-            type="button"
-            onClick={() => {
-              setQuery(word);
-              searchRef.current?.focus();
-            }}
-            className="glass inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 font-mono text-xs text-ink transition-colors hover:border-accent"
-          >
-            {word}
-          </button>
-        ))}
-      </p>
-      </div>
+      {aside ? (
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
+          <div>
+            {intro}
+            <div className="mt-8">{search}</div>
+          </div>
+          {aside}
+        </div>
+      ) : (
+        <>
+          {intro}
+          {search}
+        </>
+      )}
 
-      <fieldset className="mt-8">
+      <fieldset className="mt-10">
         <legend className="sr-only">Show parts of type</legend>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))]">
           {choices.map((choice) => (

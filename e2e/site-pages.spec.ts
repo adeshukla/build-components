@@ -33,7 +33,7 @@ for (const [path, heading] of pages) {
     test("is reachable from the header on every other page", async ({ page }) => {
       await page.goto("/");
       // On a phone the links live behind the Menu button, which is the only way to reach them there.
-      const menu = page.getByRole("button", { name: "Menu" });
+      const menu = page.getByRole("button", { name: "Menu", exact: true });
       if (await menu.isVisible()) await menu.click();
       const link = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: nameFor(path) });
       await expect(link.first()).toHaveAttribute("href", path);
