@@ -104,7 +104,8 @@ test("the home page itself has no axe violations", async ({ page }) => {
 test("the hero plays a real part, can be paused, and its chapters change the part", async ({ page }) => {
   await page.goto("/");
   const video = page.locator("figure video");
-  await expect(video).toHaveAttribute("src", "/reels/command-menu.webm");
+  // The clip is put in once the page has loaded (D76).
+  await expect(video).toHaveAttribute("src", "/reels/command-menu.webm", { timeout: 15_000 });
   await expect.poll(() => video.evaluate((node: HTMLVideoElement) => !node.paused)).toBe(true);
 
   // Anything that moves on its own for more than five seconds can be paused (WCAG 2.2.2).

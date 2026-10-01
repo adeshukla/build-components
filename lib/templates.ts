@@ -34,7 +34,7 @@ type Section = {
 export type Template = {
   id: string;
   name: string;
-  type: "Marketing" | "Shop" | "App";
+  type: "Marketing" | "Shop" | "App" | "Company";
   summary: string;
   sections: Section[];
 };
@@ -210,6 +210,163 @@ export const templates: Template[] = [
       { slug: "stats-tiles", region: "main" },
       { slug: "table", region: "main" },
       { slug: "notification-list", region: "main", optional: true },
+    ],
+  },
+  {
+    id: "contact",
+    name: "Contact page",
+    type: "Company",
+    summary: "A form that says what went wrong and how to fix it, and the answers people look for first.",
+    sections: [
+      header(),
+      pageHeader("Contact us", "Questions, problems or ideas: we reply to every message within two working days."),
+      { slug: "form", region: "main", narrow: true, config: () => ({ title: "Send us a message", intro: "" }) },
+      {
+        slug: "faq",
+        region: "main",
+        optional: true,
+        narrow: true,
+        config: () => ({
+          heading: "Before you write",
+          intro: "",
+          items: [
+            { question: "Where do I report a bug?", answer: "Here is fine. Say what you did, what you expected and what happened instead." },
+            { question: "Can I change my plan by email?", answer: "Yes, or from the billing page, which takes effect straight away." },
+          ],
+        }),
+      },
+      footer,
+    ],
+  },
+  {
+    id: "help-centre",
+    name: "Help centre",
+    type: "Company",
+    summary: "Search the answers first, the common questions next, and a person when neither helps.",
+    sections: [
+      header(),
+      pageHeader("Help centre", "Search the answers, or browse the questions people ask most."),
+      {
+        slug: "search",
+        region: "main",
+        narrow: true,
+        config: () => ({
+          label: "Search the help centre",
+          placeholder: "Billing, invites, exporting…",
+          data: JSON.stringify({
+            title: "Help",
+            children: [
+              { title: "Getting started", children: [{ title: "Create your first project" }, { title: "Invite your team" }] },
+              { title: "Billing", children: [{ title: "Change your plan" }, { title: "Download an invoice" }] },
+              { title: "Your data", children: [{ title: "Export a project" }, { title: "Close your account" }] },
+            ],
+          }),
+        }),
+      },
+      {
+        slug: "faq",
+        region: "main",
+        narrow: true,
+        config: () => ({
+          heading: "Common questions",
+          intro: "",
+          items: [
+            { question: "How do I invite someone?", answer: "Open the project, choose Invite and type their email address." },
+            { question: "Can I undo a deleted task?", answer: "Yes, for thirty days: it waits in the bin at the foot of the project." },
+            { question: "Does it work offline?", answer: "You can read everything offline; changes are saved when you reconnect." },
+          ],
+        }),
+      },
+      {
+        slug: "cta",
+        region: "main",
+        optional: true,
+        config: () => ({
+          headingLevel: "h2",
+          eyebrow: "",
+          heading: "Still stuck? Ask a person",
+          body: "Write to us and someone who works here will reply within two working days.",
+          primaryText: "Contact us",
+          primaryHref: "/contact",
+          secondaryButton: false,
+          note: false,
+        }),
+      },
+      footer,
+    ],
+  },
+  {
+    id: "changelog",
+    name: "Changelog",
+    type: "Company",
+    summary: "What changed in each release, grouped by kind, and a way to hear about the next one.",
+    sections: [
+      header(),
+      pageHeader("What's new", "Every change worth knowing about, newest first."),
+      { slug: "changelog", region: "main", narrow: true, config: () => ({ heading: "Releases", headingLevel: "h2" }) },
+      { slug: "newsletter", region: "main", optional: true, narrow: true, config: () => ({ heading: "Hear about the next release" }) },
+      footer,
+    ],
+  },
+  {
+    id: "about",
+    name: "About page",
+    type: "Company",
+    summary: "Why the product exists, who makes it and a way to get in touch.",
+    sections: [
+      header(),
+      pageHeader("About", "Why we make this, and who we are."),
+      {
+        slug: "split-feature",
+        region: "main",
+        config: (o) => ({
+          heading: `Why ${o.name} exists`,
+          headingLevel: "h2",
+          body: "Small teams lose hours asking where things are. We make one place for the work, the files and the decisions, so they don't have to.",
+        }),
+      },
+      { slug: "team-grid", region: "main", optional: true, config: () => ({ heading: "The people behind it", intro: "" }) },
+      {
+        slug: "cta",
+        region: "main",
+        optional: true,
+        config: () => ({
+          headingLevel: "h2",
+          eyebrow: "",
+          heading: "Want to work with us?",
+          body: "Tell us about yourself. We read everything.",
+          primaryText: "Get in touch",
+          primaryHref: "/contact",
+          secondaryButton: false,
+          note: false,
+        }),
+      },
+      footer,
+    ],
+  },
+  {
+    id: "not-found",
+    name: "Page not found",
+    type: "Company",
+    summary: "A 404 that says what happened in plain words and offers the way back.",
+    sections: [
+      header(),
+      {
+        slug: "empty-state",
+        region: "main",
+        narrow: true,
+        config: () => ({
+          headingLevel: "h1",
+          icon: "search",
+          title: "We can't find that page",
+          body: "It may have moved, or the link may be mistyped. Try the home page, or tell us what you were looking for.",
+          actionText: "Go to the home page",
+          actionUrl: "/",
+          secondaryText: "Contact us",
+          secondaryUrl: "/contact",
+        }),
+      },
+      footer,
     ],
   },
 ];

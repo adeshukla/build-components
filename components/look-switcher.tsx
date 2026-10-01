@@ -63,7 +63,7 @@ export function LookSwitcher() {
           />
           <span className="flex min-h-9 flex-col justify-center rounded-full px-3.5 leading-tight text-ink-muted peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent">
             <span className="font-medium">{option.label}</span>
-            <span className="text-[0.625rem] opacity-80">{option.note}</span>
+            <span className="text-[0.625rem]">{option.note}</span>
           </span>
         </label>
       ))}

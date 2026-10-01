@@ -52,12 +52,19 @@ for (const template of templates) {
       });
     }
 
-    test("fits a phone without scrolling sideways", async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 800 });
-      await page.goto(`/preview-template/${template.id}`);
-      await page.locator("[data-ready]").waitFor({ state: "attached", timeout: 20_000 });
-      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
-    });
+    // Down to 300px, the narrowest screen still in use, in both outputs.
+    for (const width of [375, 300]) {
+      test(`fits ${width}px without scrolling sideways, as React and as HTML`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 800 });
+        await page.goto(`/preview-template/${template.id}`);
+        await page.locator("[data-ready]").waitFor({ state: "attached", timeout: 20_000 });
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+
+        const { sources } = readTemplateSources(template.sections.map((section) => section.slug));
+        await page.setContent(templateHtml(template, defaultOptions(template), sources));
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      });
+    }
 
     test("installs as one block: every part by URL with the options in it, and the page", async ({ request }) => {
       const response = await request.get(`/r/templates/${template.id}.json?name=Tidewater&brand=%237c2d12&theme=dark`);
