@@ -266,7 +266,7 @@ export function Catalogue({
           {choices.map((choice) => (
             <label
               key={choice.name}
-              className={`drawing-host glass flex min-h-11 flex-col rounded-2xl px-3.5 py-2.5 transition-[translate,scale,border-color,box-shadow] duration-500 ease-spring has-checked:border-accent has-checked:shadow-[inset_0_0_0_1px_var(--color-accent)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
+              className={`drawing-host glass spot flex min-h-11 flex-col rounded-2xl px-3.5 py-2.5 transition-[translate,scale,border-color,box-shadow] duration-500 ease-spring has-checked:border-accent has-checked:shadow-[inset_0_0_0_1px_var(--color-accent)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
                 choice.count === 0 && filter !== choice.name
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer hover:-translate-y-0.5 active:scale-[0.96]"
@@ -370,7 +370,7 @@ const CardList = memo(function CardList({ shown, query }: { shown: { part: Part;
           <li
             key={part.slug}
             style={{ ["--part-accent" as string]: part.accent, viewTransitionName: `part-${part.slug}` }}
-            className={`drawing-host glass group relative flex flex-col rounded-2xl p-2 outline-offset-3 outline-accent has-[a:focus-visible]:outline-2 ${inStock ? "transition-[translate,scale,box-shadow] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]" : "opacity-70"}`}
+            className={`drawing-host glass spot group relative flex flex-col rounded-2xl p-2 outline-offset-3 outline-accent has-[a:focus-visible]:outline-2 ${inStock ? "transition-[translate,scale,box-shadow] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]" : "opacity-70"}`}
           >
             {/* The drawing plays while the card is pointed at or focused, and morphs into the part page when
                 the card is opened (the same name is on the drawing in components/part-header.tsx). */}

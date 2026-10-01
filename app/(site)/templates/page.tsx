@@ -44,7 +44,7 @@ export default function TemplatesPage() {
             return (
               <li
                 key={template.id}
-                className="drawing-host glass group relative flex flex-col rounded-2xl p-2 outline-offset-3 outline-accent transition-[translate,scale] duration-500 ease-spring has-[a:focus-visible]:outline-2 hover:-translate-y-1 active:scale-[0.97]"
+                className="drawing-host glass spot group relative flex flex-col rounded-2xl p-2 outline-offset-3 outline-accent transition-[translate,scale] duration-500 ease-spring has-[a:focus-visible]:outline-2 hover:-translate-y-1 active:scale-[0.97]"
               >
                 {/* The page in miniature: each of its parts, drawn in order from the top. */}
                 <div aria-hidden="true" className="grid gap-1 rounded-xl bg-paper-sunk p-3">

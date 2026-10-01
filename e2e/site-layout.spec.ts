@@ -17,6 +17,9 @@ const pages = [
   "/in-use",
   "/tested",
   "/start",
+  "/templates",
+  "/templates/landing-page",
+  "/build",
   "/about",
   "/accessibility",
   "/date-picker",
@@ -25,7 +28,8 @@ const pages = [
   "/form",
   "/footer",
 ];
-const widths = [375, 768, 1280];
+// 300px is the narrowest screen promised; 1920px is past the 1600px page width (D81).
+const widths = [300, 375, 768, 1280, 1920];
 
 async function problemsOn(page: Page, viewport: number) {
   return page.evaluate((width) => {

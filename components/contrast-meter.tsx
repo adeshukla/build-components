@@ -75,60 +75,63 @@ export function ContrastMeter() {
         </p>
       </div>
 
-      <table className="mt-6 w-full border-collapse text-left text-sm">
-        <caption className="sr-only">The accent, before and after correction, on both surfaces</caption>
-        <thead>
-          <tr className="border-b-2 border-ink">
-            <th scope="col" className="py-2 font-medium">
-              Where
-            </th>
-            <th scope="col" className="py-2 font-medium">
-              Sample
-            </th>
-            <th scope="col" className="py-2 text-right font-medium">
-              Contrast
-            </th>
-            <th scope="col" className="py-2 text-right font-medium">
-              4.5:1
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const passes = row.value >= 4.5;
-            return (
-              <tr key={row.label} className="border-b border-rule">
-                <th scope="row" className="py-3 pr-3 font-normal text-ink-muted">
-                  {row.label}
-                </th>
-                <td className="py-3 pr-3">
-                  {/*
-                    Drawn, not set: two of these four rows are meant to fail contrast — that is the whole
-                    demonstration — and aria-hidden does not excuse a contrast failure, because contrast is
-                    a visual requirement. So the sample is a picture of text, and the ratio and the verdict
-                    beside it carry the meaning in words.
-                  */}
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 132 32"
-                    className="h-8 w-33 rounded"
-                    style={{ background: row.against }}
-                  >
-                    <text x="8" y="21" fill={row.colour} fontSize="14" fontWeight="600" fontFamily="inherit">
-                      Sample text
-                    </text>
-                  </svg>
-                </td>
-                <td className="py-3 pr-3 text-right font-mono tabular-nums">{say(row.value)}</td>
-                {/* Pass or fail in words, never a green or red dot on its own. */}
-                <td className={`py-3 text-right font-semibold ${passes ? "text-ink" : "text-ink-muted"}`}>
-                  {passes ? "Passes" : "Fails"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {/* Scrolls inside itself on the narrowest screens; focusable so a keyboard can scroll it too. */}
+      <div tabIndex={0} role="region" aria-label="Contrast before and after correction" className="mt-6 overflow-x-auto">
+        <table className="w-full border-collapse text-left text-sm">
+          <caption className="sr-only">The accent, before and after correction, on both surfaces</caption>
+          <thead>
+            <tr className="border-b-2 border-ink">
+              <th scope="col" className="py-2 font-medium">
+                Where
+              </th>
+              <th scope="col" className="py-2 font-medium">
+                Sample
+              </th>
+              <th scope="col" className="py-2 text-right font-medium">
+                Contrast
+              </th>
+              <th scope="col" className="py-2 text-right font-medium">
+                4.5:1
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => {
+              const passes = row.value >= 4.5;
+              return (
+                <tr key={row.label} className="border-b border-rule">
+                  <th scope="row" className="py-3 pr-3 font-normal text-ink-muted">
+                    {row.label}
+                  </th>
+                  <td className="py-3 pr-3">
+                    {/*
+                      Drawn, not set: two of these four rows are meant to fail contrast — that is the whole
+                      demonstration — and aria-hidden does not excuse a contrast failure, because contrast is
+                      a visual requirement. So the sample is a picture of text, and the ratio and the verdict
+                      beside it carry the meaning in words.
+                    */}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 132 32"
+                      className="h-8 w-33 rounded"
+                      style={{ background: row.against }}
+                    >
+                      <text x="8" y="21" fill={row.colour} fontSize="14" fontWeight="600" fontFamily="inherit">
+                        Sample text
+                      </text>
+                    </svg>
+                  </td>
+                  <td className="py-3 pr-3 text-right font-mono tabular-nums">{say(row.value)}</td>
+                  {/* Pass or fail in words, never a green or red dot on its own. */}
+                  <td className={`py-3 text-right font-semibold ${passes ? "text-ink" : "text-ink-muted"}`}>
+                    {passes ? "Passes" : "Fails"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <p role="status" className="mt-4 text-sm text-pretty text-ink-muted">
         {onLight >= 4.5 && onDark >= 4.5

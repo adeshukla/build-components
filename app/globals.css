@@ -48,6 +48,7 @@
   }
 
   :root {
+    --follow-peak: 8%;
     --glow-1: #c2410c;
     --glow-2: #b45309;
     --glow-3: #be185d;
@@ -76,6 +77,7 @@
       --glow-1: #fb923c;
       --glow-2: #fbbf24;
       --glow-3: #f472b6;
+      --follow-peak: 10%;
       color-scheme: dark;
     }
   }
@@ -98,6 +100,7 @@
     --glow-1: #fb923c;
     --glow-2: #fbbf24;
     --glow-3: #f472b6;
+    --follow-peak: 10%;
     color-scheme: dark;
   }
 
@@ -234,8 +237,49 @@
     animation-duration: 55s;
   }
 
+  /*
+   * The spotlight (D82): a light that follows the pointer, or the finger on a touch screen, moved by
+   * transform (components/spotlight.tsx). With no pointer to follow it also wanders on its own, so a phone
+   * sees it too. Its peak (8% light, 10% dark) keeps muted and link text at 4.5:1 even where it crosses
+   * the brightest glow above. 36vmax and no will-change: a bigger, always-promoted layer cost scrolled
+   * frames without a GPU (scratchpad/perf.mjs, V=spot).
+   */
+  & .site-follow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 36vmax;
+    height: 36vmax;
+    margin: -18vmax 0 0 -18vmax;
+    transform: translate3d(50vw, 35vh, 0);
+  }
+  & .site-follow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--glow-2) var(--follow-peak), transparent), transparent);
+  }
+  @media (hover: none) {
+    & .site-follow::before {
+      animation: follow-wander 26s ease-in-out infinite alternate;
+    }
+  }
+
   @media (prefers-reduced-transparency: reduce) {
     display: none;
+  }
+}
+
+@keyframes follow-wander {
+  33% {
+    transform: translate3d(-24vw, 18vh, 0);
+  }
+  66% {
+    transform: translate3d(22vw, 34vh, 0);
+  }
+  to {
+    transform: translate3d(-8vw, -14vh, 0);
   }
 }
 
@@ -256,6 +300,53 @@
 
 /* Part drawings (components/part-drawing.tsx). In a layer, so utilities on the svg win. */
 @layer components {
+  /*
+   * A spotlit card (D82): its border lights where the pointer is, with a faint wash inside. --cx and --cy
+   * come from components/spotlight.tsx. A touch screen has no hover: a card lights while a finger is on it,
+   * and as it crosses the middle of the screen while scrolling (.is-lit).
+   */
+  .spot {
+    position: relative;
+    isolation: isolate;
+  }
+  .spot::before,
+  .spot::after {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.45s var(--ease-out-expo);
+  }
+  .spot::before {
+    inset: -1px;
+    z-index: 1;
+    padding: 1.5px;
+    background: radial-gradient(18rem circle at var(--cx, 50%) var(--cy, 0%), var(--color-accent), transparent 65%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+  .spot::after {
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(24rem circle at var(--cx, 50%) var(--cy, 0%), color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 65%);
+  }
+  .spot:is(:focus-within, .is-lit)::before,
+  .spot:is(:focus-within, .is-lit)::after {
+    opacity: 1;
+  }
+  @media (hover: hover) {
+    .spot:hover::before,
+    .spot:hover::after {
+      opacity: 1;
+    }
+  }
+
   .part-drawing {
     --dw-accent: color-mix(in oklab, var(--part-accent) 72%, var(--color-ink));
     display: block;
@@ -404,12 +495,19 @@
     0 10px 24px -14px var(--color-accent);
   transition:
     background-color 0.2s,
+    box-shadow 0.4s var(--ease-out-expo),
     translate 0.5s var(--ease-spring),
     scale 0.4s var(--ease-spring);
 
   &:hover {
     background: var(--color-accent-strong);
     translate: 0 -2px;
+  }
+  /* The spotlight's glow (D82): on hover with a pointer, while pressed on a touch screen. */
+  &:is(:hover, :active) {
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--color-accent) 16%, transparent),
+      0 12px 28px -10px var(--color-accent);
   }
   &:active {
     scale: 0.95;
@@ -429,12 +527,17 @@
   font-weight: 600;
   transition:
     border-color 0.2s,
+    box-shadow 0.4s var(--ease-out-expo),
     translate 0.5s var(--ease-spring),
     scale 0.4s var(--ease-spring);
 
   &:hover {
     border-color: var(--color-rule-strong);
     translate: 0 -2px;
+  }
+  &:is(:hover, :active) {
+    border-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-rule));
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
   &:active {
     scale: 0.95;
@@ -586,7 +689,8 @@
 
   /* Nothing loops, nothing is clipped into view. */
   .pad-live,
-  .site-glow i {
+  .site-glow i,
+  .site-follow::before {
     animation: none !important;
   }
 

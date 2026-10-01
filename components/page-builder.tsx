@@ -242,16 +242,16 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const chosen = selected ? sections.find((section) => section.slug === selected) : undefined;
 
   return (
-    <div className="page-wrap grid gap-8 pt-8 pb-[clamp(4rem,9vw,8rem)] lg:grid-cols-[21rem_minmax(0,1fr)] lg:gap-10">
+    <div className="page-wrap grid grid-cols-[minmax(0,1fr)] gap-8 pt-8 pb-[clamp(4rem,9vw,8rem)] lg:grid-cols-[21rem_minmax(0,1fr)] lg:gap-10">
       <p role="status" className="sr-only">
         {said}
       </p>
 
-      <div className="grid content-start gap-6 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-auto lg:pb-1">
-        <form onSubmit={(event) => event.preventDefault()} className="glass grid content-start gap-5 rounded-2xl p-6">
+      <div className="grid grid-cols-[minmax(0,1fr)] content-start gap-6 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-auto lg:pb-1">
+        <form onSubmit={(event) => event.preventDefault()} className="glass grid grid-cols-[minmax(0,1fr)] content-start gap-5 rounded-2xl p-6">
           <h2 className="font-display text-3xl leading-none">The page</h2>
           <PageFields options={page} onChange={(patch) => setPage({ ...page, ...patch })} />
-          <div className="grid gap-1.5 text-sm font-medium">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-1.5 text-sm font-medium">
             <label htmlFor={`${uid}-start`}>Start from</label>
             <div className="flex gap-2">
               <select

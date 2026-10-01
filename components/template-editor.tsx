@@ -79,7 +79,7 @@ export function PageFields({ options, onChange }: { options: PageFieldValues; on
           value={options.name}
           maxLength={40}
           onChange={(event) => onChange({ name: event.target.value })}
-          className="min-h-11 rounded-lg border border-rule-strong bg-paper px-3 text-base font-normal"
+          className="min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 text-base font-normal"
         />
       </label>
       <div className="grid gap-1.5 text-sm font-medium">
@@ -190,9 +190,9 @@ export function TemplateEditor({
   const set = (patch: Partial<TemplateOptions>) => setOptions((current) => ({ ...current, ...patch }));
 
   return (
-    <div className="page-wrap grid gap-10 pt-10 pb-[clamp(4rem,9vw,8rem)] lg:grid-cols-[20rem_1fr] lg:gap-12">
-      <div className="grid content-start gap-6 self-start lg:sticky lg:top-4">
-      <form onSubmit={(event) => event.preventDefault()} className="glass grid content-start gap-6 rounded-2xl p-6">
+    <div className="page-wrap grid grid-cols-[minmax(0,1fr)] gap-10 pt-10 pb-[clamp(4rem,9vw,8rem)] lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-12">
+      <div className="grid grid-cols-[minmax(0,1fr)] content-start gap-6 self-start lg:sticky lg:top-4">
+      <form onSubmit={(event) => event.preventDefault()} className="glass grid grid-cols-[minmax(0,1fr)] content-start gap-6 rounded-2xl p-6">
         <h2 className="font-display text-3xl leading-none">Set it up</h2>
         <PageFields options={options} onChange={set} />
         {optional.length > 0 && (

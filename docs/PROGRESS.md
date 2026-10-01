@@ -4,8 +4,10 @@ Last updated: 2026-10-03 (session 15, on dev, not shipped)
 
 ## Session 15
 - **Look (D81):** Clean at 1600px is the site's look; the switcher is gone.
-- **Waiting on Adesh:** pick a hover glow and home background from `scratchpad/glow-demo.html`
-  (A Spotlight, B Living grid, C Aurora, or a mix). Then build it on the home page and the cards.
+- **Spotlight (D82):** Adesh picked A. A light follows the pointer or finger (and wanders on phones);
+  cards light where you point, on focus, under a finger and as they scroll through the middle of a phone
+  screen; buttons glow. `e2e/spotlight.spec.ts`.
+- **Responsive:** every site page tested at 300–1920px in three browsers; three 300px overflows fixed.
 
 
 ## Session 14: wider layout to try, live reel, more templates, page builder

@@ -96,7 +96,7 @@ export default function Home() {
             {templates.map((template) => (
               <li
                 key={template.id}
-                className="glass relative rounded-2xl p-6 transition-[translate,scale] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]"
+                className="glass spot relative rounded-2xl p-6 transition-[translate,scale] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]"
               >
                 <h3 className="font-semibold">
                   <Link href={`/templates/${template.id}`} className="after:absolute after:inset-0 after:rounded-2xl">

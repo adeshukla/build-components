@@ -628,3 +628,21 @@ with Clean's gutter, section and grid spacing. Surfaces are flat paper with one 
 the other looks and the `look` line in the root layout's script are gone.
 **Open:** a hover glow and a moving, interactive home background. Three directions are in
 `scratchpad/glow-demo.html` (A Spotlight, B Living grid, C Aurora), waiting on Adesh's pick.
+
+## 2026-10-03 — D82. The spotlight: a light that follows you, and cards that light where you point
+**Decision:** Adesh picked A (Spotlight) from `scratchpad/glow-demo.html`, and asked that phones see it too.
+- **Behind every site page:** a soft light (`.site-follow` in the site glow) eases toward the pointer, or the
+  finger on a touch screen, by transform (`components/spotlight.tsx`). On a touch screen it also wanders by
+  itself (CSS), so it is seen without touching. Reduced motion: it stays put; the wander stops.
+- **Cards** (`.spot`: catalogue cards, type tiles, template cards on the home page and the gallery): the
+  border lights where the pointer is, with a faint wash inside. With a keyboard: on focus. On a touch screen:
+  while a finger is on a card, and as cards cross the middle of the screen while scrolling (`.is-lit`).
+- **Buttons** (`btn-accent`, `btn-glass`): an orange ring on hover, and while pressed on a touch screen.
+**Contrast:** the light peaks at 8% (10% in dark), the most that keeps muted and link text at 4.5:1 where it
+crosses the brightest glow (worked out by hand; axe cannot see gradients).
+**Performance:** a 56vmax light with `will-change` cost scrolled frames without a GPU (43 over 33ms of 224
+against 1); at 36vmax without `will-change`, 1 of 243, and 0–1 with the GPU on (`scratchpad/perf.mjs`,
+V=spot).
+**Responsive:** `e2e/site-layout.spec.ts` now runs every site page at 300, 375, 768, 1280 and 1920px, plus
+templates and the builder. It found three pages that scrolled sideways at 300px (the contrast table on
+/tested, the template editor and the builder, whose grid columns sized to their widest control); fixed.
