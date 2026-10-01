@@ -634,3 +634,61 @@
   }
 
 }
+
+/* The home page reel (components/motion-reel.tsx): one scene hands over to the next like a cut in a film. */
+.reel-enter {
+  animation: reel-enter 760ms var(--ease-out-expo) both;
+}
+.reel-leave {
+  animation: reel-leave 450ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes reel-enter {
+  from {
+    opacity: 0;
+    scale: 1.04;
+    filter: blur(10px);
+  }
+}
+@keyframes reel-leave {
+  to {
+    opacity: 0;
+    scale: 0.96;
+    filter: blur(10px);
+  }
+}
+/* Nothing in the reel really takes focus (see motion-reel.tsx), so it draws the focus and the modal backdrop. */
+.reel-stage [data-reel-focus] {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+.reel-stage dialog[open] {
+  position: fixed;
+  z-index: 50;
+  outline: 100vmax solid rgb(28 26 23 / 0.25);
+}
+/* The reel's title card is a lower third: in, held while the scene starts, then out of the way. */
+.reel-title {
+  animation: reel-title 3.6s var(--ease-out-expo) both;
+}
+@keyframes reel-title {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+    filter: blur(6px);
+  }
+  12%,
+  82% {
+    opacity: 1;
+    translate: 0;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel-title {
+    animation: none;
+  }
+}
