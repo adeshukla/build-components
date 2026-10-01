@@ -44,6 +44,7 @@ export function SiteFooter() {
             <ul className="flex flex-wrap gap-x-4">
               {[
                 ["/parts", "Catalogue"],
+                ["/templates", "Templates"],
                 ["/in-use", "In use"],
                 ["/tested", "How it is tested"],
                 ["/start", "Get started"],

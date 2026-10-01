@@ -2,7 +2,22 @@
 
 Last updated: 2026-10-01 (session 13)
 
-## Current status (session 13, 2026-10-01): the frosted shelf is built, on `dev`
+## Latest (session 13, later): a video hero and Templates, on `dev`
+- **Hero (D74):** headline and search beside a screen playing six real parts, filmed by
+  `scripts/record-reels.mjs`. Pause button, stills under reduced motion, paused off screen.
+- **Templates (D75):** `/templates` and `/templates/<id>`: four pages made from the parts (landing,
+  pricing, checkout, dashboard), set up by name, colour, theme and sections, checked live as a page, and
+  taken home by one install command, a page.tsx, or one HTML file. `e2e/templates.spec.ts` tests both
+  outputs as pages. Linked from the menu, the footer, the sitemap and a band on the home page.
+- **Glow and press (D73):** the glow drifts again by transform only; cards, tiles and buttons press in;
+  opening a card morphs its drawing into the part page.
+- The demo of the hero options and Templates is `scratchpad/expansion.html` (served by `design-demo`).
+- **Next for templates:** sign in, account settings, a blog article and a 404. Sign in needs the form
+  part set up as a sign-in form; check its options first.
+- **Not decided:** whether to fold "How it is tested" and "Get started" into other pages so the menu is
+  shorter. Templates was added to the menu beside them for now.
+
+## Earlier in session 13: the frosted shelf is built, on `dev`
 
 **This session was findability and a new look.** An audit, a demo of four directions
 (`scratchpad/design-directions.html`, gitignored; `design-demo` in `.claude/launch.json` serves it),

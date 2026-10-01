@@ -4,6 +4,7 @@ import { HeroIntro, HeroReel } from "@/components/hero-reel";
 import { StepDiagram } from "@/components/how-graphics";
 import { PartReel } from "@/components/part-reel";
 import { inStock, parts } from "@/lib/parts";
+import { templates } from "@/lib/templates";
 import type { Metadata } from "next";
 
 // Every other page sets its own canonical; the home page did not, so a
@@ -84,6 +85,40 @@ export default function Home() {
           <div className="mt-12">
             <PartReel />
           </div>
+        </div>
+      </section>
+
+      {/* Templates: the parts as whole pages, set up and taken home in one go (D75). */}
+      <section aria-labelledby="templates-heading" className="px-4 py-[clamp(3.5rem,7vw,6rem)] sm:px-6">
+        <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
+          <div>
+            <h2 id="templates-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+              Whole pages, <em className="text-accent">ready to use</em>
+            </h2>
+            <p className="mt-5 max-w-xl text-lg text-pretty text-ink-muted">
+              Templates put the parts together into pages. Set your name, colour and theme, check the page as a
+              whole, and take it home with one command or as one HTML file.
+            </p>
+            <p className="mt-6">
+              <Link href="/templates" className="btn-accent">
+                Browse the templates
+                <Arrow />
+              </Link>
+            </p>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {templates.map((template) => (
+              <li key={template.id} className="glass relative rounded-2xl p-4 transition-[translate,scale] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]">
+                <h3 className="font-semibold">
+                  <Link href={`/templates/${template.id}`} className="after:absolute after:inset-0 after:rounded-2xl">
+                    {template.name}
+                  </Link>
+                </h3>
+                <p className="mt-0.5 font-mono text-xs text-ink-muted">{`${template.type} · ${new Set(template.sections.map((section) => section.slug)).size} parts`}</p>
+                <p className="mt-2 text-sm text-pretty text-ink-muted">{template.summary}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

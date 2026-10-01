@@ -522,3 +522,31 @@ all; only the clip on screen loads.
 off screen or in a hidden tab, each clip labelled with what it shows.
 **Known limit:** the clips are WebM (Playwright records VP8). Safari plays WebM from 14.1 on the Mac and
 17.4 on iOS; older Safari shows the still. An MP4 copy would need ffmpeg, which is not on this machine.
+
+## 2026-10-01 — D75. Templates: whole pages made from the parts
+**Decision:** a second product beside the catalogue. A template is a page made only of catalogue parts
+(`lib/templates.ts`): Landing page, Pricing page, Checkout, Dashboard to start. The person sets a product
+name, a brand colour and a theme (given to every part as `accentColor` and `theme`, which all parts take)
+and which optional sections to keep. `/templates` lists them; `/templates/<id>` is the editor: preview at
+three widths in both outputs, an X-ray that names each part, live page checks, and take-home.
+**Outputs, all from one module** (`lib/template-output.ts`, so the editor, the registry and the tests
+cannot disagree):
+- Install: `/r/templates/<id>.json` is a shadcn `registry:block` whose `registryDependencies` are the
+  parts' own registry URLs with the template's options in their query, plus `app/<id>/page.tsx`, which
+  only arranges them. Parts are installed configured, so the page passes no props.
+- React: that page.tsx.
+- One HTML file: every part's generated markup in header, main and footer, their CSS and their scripts
+  inlined. All template parts are HTML-first (`render.ts`); the header's demo `<main>` is dropped.
+**Tested as pages** (`e2e/templates.spec.ts`): both outputs, as they come and dark with a pale colour and
+every optional section off: one h1, one main, the skip link first, no axe violations, no sideways scroll
+on a phone; the registry block names every part with the options applied; the editor's changes reach the
+page and its checks pass.
+**Copy:** every template tells one story (Northwind, a tool that keeps a small team's projects in one
+place) in placeholder words, with no invented customers, figures or quotes. The landing page has no logo
+wall for that reason: a "trusted by" wall needs real names.
+**Live checks, not live axe:** the editor checks structure (h1, heading order, landmarks, skip link,
+labels, tab stops, colour contrast) itself. Running axe in the browser would add axe-core to the site;
+axe runs on every template in the tests instead, and the panel says so.
+**Alternatives rejected:** templates as hand-drawn page HTML (the demo did that; it would be a second set of
+components to keep tested), and live React previews inside the site page (nested landmarks and two h1s;
+the preview is a frame, `/preview-template/<id>`).

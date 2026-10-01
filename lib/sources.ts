@@ -23,3 +23,18 @@ export function readComponentSources(slug: string) {
     js: readOptional(`${slug}/vanilla/${slug}.js`),
   };
 }
+
+/**
+ * What a template's outputs need from each of its parts: the CSS and JS of the HTML output, and the name
+ * the React file exports (the page imports it by that name).
+ */
+export function readTemplateSources(slugs: string[]) {
+  const sources: Record<string, { css: string; js: string }> = {};
+  const exportNames: Record<string, string> = {};
+  for (const slug of new Set(slugs)) {
+    const { react, css, js } = readComponentSources(slug);
+    sources[slug] = { css, js };
+    exportNames[slug] = /export function (\w+)\(/.exec(react)?.[1] ?? slug;
+  }
+  return { sources, exportNames };
+}

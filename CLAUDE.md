@@ -35,6 +35,8 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - `components/editor.tsx` — shared editor: test bench, keyboard map, manual checklist, install + code tabs. The React preview runs in a frame pointing at `/preview/<slug>`; options reach it by postMessage.
 - `components/preview-client.tsx` — renders the React component for that frame. Add new components here.
 - Routes: `app/(site)/…` has the header/footer chrome; `app/(bare)/…` (preview + generated harness) has none, so component dialogs stay inside the frame.
+- Templates (D75): `lib/templates.ts` (each template is a list of parts with the options the page sets), `lib/template-output.ts` (React page.tsx, one HTML file, install URLs; the only place outputs are built), `components/template-page.tsx` (the React page from `Part` in `components/preview-client.tsx`), `components/template-editor.tsx`, routes `/templates`, `/templates/<id>`, `/preview-template/<id>` (bare) and `/r/templates/<id>.json`. Adding a template: add it to `lib/templates.ts` and run `e2e/templates.spec.ts`; a part it uses must be HTML-first (`render.ts`) for the one-file output.
+- The home hero films real parts (`scripts/record-reels.mjs`, D74). Re-run it with the dev server up when one of those six parts changes.
 - Site pages beyond the home page and the part pages: `/parts` (the whole catalogue, search and filter in the address bar), `/in-use` (three screens composed from real parts, with an X-ray that names each one), `/tested` (the test regime, plus a tab-order tracer and the contrast correction running), `/start` (how to take a part). `e2e/site-pages.spec.ts` covers all four.
 - `app/r/[name]/route.ts` — shadcn registry item for every slug in `lib/registry.ts`.
 - Tests:
