@@ -17,9 +17,9 @@
   --color-on-accent: #ffffff;
   --color-link: #9a3412;
   --color-wash: #1c1a170d;
-  --color-glass: #ffffff85;
-  --color-glass-edge: #ffffffbf;
-  --color-glass-lip: #ffffffe6;
+  /* The clean look (D81): surfaces are paper with one hairline, flat, in both themes. */
+  --color-glass: var(--color-paper);
+  --color-glass-edge: var(--color-rule);
   --color-shadow: #3c28141a;
   --color-pass: #13744a;
   --color-pass-bg: #e3f4ea;
@@ -39,24 +39,9 @@
 }
 
 @layer base {
-  /*
-   * Layout: one width, one side margin and one section rhythm for every page (D77). The look switcher
-   * (components/look-switcher.tsx, development only) tries other values before one is chosen.
-   */
+  /* Layout: one width, one side margin and one section rhythm for every page. 1600px wide (D81). */
   :root {
-    --page-max: 80rem;
-    --gutter: clamp(1rem, 3vw, 1.5rem);
-    --section-y: clamp(5rem, 10vw, 9rem);
-    --grid-gap: clamp(1rem, 1.6vw, 1.5rem);
-  }
-  :root[data-look="wide"] {
-    --page-max: 96rem;
-    --gutter: clamp(1.25rem, 5vw, 4rem);
-    --section-y: clamp(6rem, 12vw, 11rem);
-    --grid-gap: clamp(1.25rem, 2vw, 2rem);
-  }
-  :root[data-look="clean"] {
-    --page-max: 90rem;
+    --page-max: 100rem;
     --gutter: clamp(1.25rem, 5vw, 3.5rem);
     --section-y: clamp(6rem, 12vw, 10rem);
     --grid-gap: clamp(1.5rem, 2.2vw, 2.25rem);
@@ -85,9 +70,6 @@
       --color-on-accent: #1c1a17;
       --color-link: #fdba74;
       --color-wash: #f1ede612;
-      --color-glass: #1c181580;
-      --color-glass-edge: #ffffff17;
-      --color-glass-lip: #ffffff12;
       --color-shadow: #00000073;
       --color-pass: #4ade80;
       --color-pass-bg: #12351f;
@@ -110,9 +92,6 @@
     --color-on-accent: #1c1a17;
     --color-link: #fdba74;
     --color-wash: #f1ede612;
-    --color-glass: #1c181580;
-    --color-glass-edge: #ffffff17;
-    --color-glass-lip: #ffffff12;
     --color-shadow: #00000073;
     --color-pass: #4ade80;
     --color-pass-bg: #12351f;
@@ -122,10 +101,9 @@
     color-scheme: dark;
   }
 
-  /* Glass turns solid when the system asks for less transparency. */
+  /* No grain when the system asks for less transparency. */
   @media (prefers-reduced-transparency: reduce) {
     :root {
-      --color-glass: var(--color-paper);
       --grain: none;
     }
   }
@@ -187,14 +165,6 @@
   }
 }
 
-/* The clean look: flat paper surfaces with one hairline, no lit edge, no shadow. */
-:root[data-look="clean"] {
-  --color-glass: var(--color-paper);
-  --color-glass-edge: var(--color-rule);
-  --color-glass-lip: transparent;
-  --color-shadow: transparent;
-}
-
 @utility page-wrap {
   width: 100%;
   max-width: var(--page-max);
@@ -219,10 +189,6 @@
 @utility glass {
   background: var(--color-glass);
   border: 1px solid var(--color-glass-edge);
-  box-shadow:
-    inset 0 1px 0 var(--color-glass-lip),
-    0 1px 2px var(--color-shadow),
-    0 10px 30px -18px var(--color-shadow);
 }
 
 /*
@@ -458,9 +424,6 @@
   border-radius: 999px;
   background: var(--color-glass);
   border: 1px solid var(--color-glass-edge);
-  box-shadow:
-    inset 0 1px 0 var(--color-glass-lip),
-    0 1px 2px var(--color-shadow);
   color: var(--color-ink);
   padding: 0.625rem 1.25rem;
   font-weight: 600;
