@@ -137,7 +137,7 @@ export function Countdown({ config = defaultConfig }: { config?: CountdownConfig
         <p className="mt-1 text-xl font-semibold">{config.finishedText}</p>
       ) : (
         // The digits tick every second, so they are hidden from the reading order and said separately.
-        <ol aria-hidden="true" className="mt-1 flex list-none gap-2 p-0">
+        <ol aria-hidden="true" className="mt-1 flex list-none flex-wrap gap-2 p-0">
           {boxes.map((box) => (
             <li key={box.name} className="min-w-16 rounded-lg border border-(--cn-line) bg-(--cn-sunk) px-3 py-2 text-center">
               <span className="block text-2xl font-semibold tabular-nums">{box.value}</span>
