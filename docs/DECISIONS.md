@@ -567,3 +567,55 @@ height that scrolls inside, so the install command sits right under it.
 hero now arrives with the still and puts the clip in after the page has loaded, which is also the faster
 first paint. It does not wait for an IntersectionObserver either: in headless Chromium here one sometimes
 never fired.
+
+## 2026-10-02 — D77. One page width, gutter and rhythm; three looks to try
+**Decision:** every page container is `page-wrap` (width, max-width and gutter from tokens: `--page-max`,
+`--gutter`, `--section-y`, `--grid-gap` in `app/globals.css`) instead of sixteen copies of
+`mx-auto max-w-7xl px-4 sm:px-6`. Adesh asked for a wider, cleaner page on large screens; rather than
+guess, `html[data-look]` offers three sets of values: **now** (1280px), **wide** (1536px, more gutter and
+section space) and **clean** (1440px, flat surfaces instead of frosted glass). A switcher in the corner,
+development builds only (`components/look-switcher.tsx`), keeps the choice across pages.
+**Pending:** Adesh picks one; its values become the base tokens and the switcher, the `look` line in the
+root layout's inline script and the other looks are deleted.
+
+## 2026-10-02 — D78. Five more templates, and 300px is tested
+**Decision:** contact, help centre, changelog, about and a 404 page join landing, pricing, checkout and
+dashboard (nine in all), in the same Northwind story with no invented claims. Every template is tested at
+375px and at 300px in both outputs: no sideways scroll (`e2e/templates.spec.ts`).
+
+## 2026-10-02 — D79. The hero is a live reel, not video
+**Decision:** Adesh wanted the hero to feel like a launch film. The webm clips are gone; the hero plays six
+real parts live in a frame (`/reel`, `components/motion-reel.tsx`) driven by a script: a cursor that
+glides with easing, click ripples, typing, key presses. The page around it (`components/hero-reel.tsx`)
+runs a camera (a transform on the frame, eased, clamped so the frame's edge never shows, pushed further
+in on phones), lower-third titles that fade out of the way, and a key caption. Chapters jump to a scene;
+pause, off screen and a hidden tab freeze it; reduced motion shows stills (`scripts/reel-stills.mjs`
+photographs the reel itself) until Play.
+**Focus:** a script moving focus inside a frame takes it from the page around it in every browser, even
+when the frame is `inert` (spike: `scratchpad/focus-spike*.mjs`). A sandboxed frame with an opaque origin
+stops that, but Next's dev server refuses its script requests (no Referer, and allowing the `null` origin
+would reopen the dev-server hole Next closed on purpose). So in the reel nothing takes real focus:
+`focus()` only marks the element (drawn as a ring) and `showModal()` only sets `open` (the backdrop is
+drawn by CSS). `e2e/reel.spec.ts` types in the page while the reel opens a dialog, in Chromium and WebKit.
+**Alternatives rejected:** a better-edited video (still a film of the parts, heavier, and stale when a part
+changes), and Lottie or After Effects exports (drawings, not the parts).
+
+## 2026-10-02 — D80. A page builder, no accounts
+**Decision:** `/build`: parts from the catalogue dragged onto a page (or added with a button), reordered by
+drag or by Move up/down, each set up with its own options panel (the part editor's, without colour and
+theme, which are the page's), the page given a name, a colour and a theme, started empty or from any
+template ("Keep building it" in the template editor carries its edits over). The header stays first and
+the footer last wherever they are dropped, so the page keeps its landmarks.
+**How:** a built page is turned into a template (`lib/page-builder.ts`, `pageTemplate`), so the preview,
+the live checks and every output are the ones templates already have and test.
+**Kept:** in this browser (localStorage) and as a link: the page as JSON with each part's options as its
+query string, in URL-safe base64, read with the same validation as a part's own address (`parseConfig`).
+One of each part per page (two would install over each other), 30 parts at most.
+**Outputs:** a Next.js project that runs as it is (`/download/<name>.zip`: package.json on the versions
+this site is tested with, app/page.tsx, one file per part with its options set, README; zipped with Node's
+zlib, no dependency), one HTML file (`/download/<name>.html`; the three parts with fixed markup now work in
+it too), and a shadcn `registry:block` (`/r/pages/<name>.json`).
+**300px:** `e2e/builder.spec.ts` puts every part in the catalogue on pages, 30 at a time, at 300px, in both
+outputs. Only the countdown overflowed (by 4px); its boxes wrap now.
+**Later:** accounts (save pages server-side, a page list); two of the same part on a page; other
+frameworks (needs D6's spike first).

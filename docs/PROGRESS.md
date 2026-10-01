@@ -1,6 +1,24 @@
 # Progress
 
-Last updated: 2026-10-02 (session 13, shipped)
+Last updated: 2026-10-02 (session 14, on dev, not shipped)
+
+## Session 14: wider layout to try, live reel, more templates, page builder
+Adesh asked for: more room and a wider page on big screens; a hero that feels like a launch film; more
+templates and a drag-and-drop page builder; built pages that hold at 300px; outputs beyond React.
+- **Layout (D77):** one set of tokens for page width, gutter and spacing. **Waiting on Adesh:** try Now /
+  Wide / Clean with the switcher at the bottom left of any page on `pnpm dev`, and pick one. Then bake its
+  values in and delete the switcher.
+- **Templates (D78):** nine now (contact, help centre, changelog, about, 404 added); all tested at 300px.
+- **Fix:** template page.tsx imported a helper (`money`, `sayDate`) instead of the part for five parts; the
+  checkout template on production has this bug until the next ship.
+- **Hero (D79):** a live reel of six real parts with a camera, titles and key captions. Videos deleted.
+- **Builder (D80):** `/build`, in the menu. Drag or add parts, reorder, set options, preview at 300 / phone
+  / tablet / full with live checks, keep in the browser or as a link, download a Next.js project or one HTML
+  file, or install with shadcn. The downloaded project was installed and built (`next build --webpack`;
+  Turbopack hit this machine's os error 1450).
+- **Every part fits a 300px page** in both outputs (`e2e/builder.spec.ts`); the countdown needed a wrap.
+- **Next:** Adesh's look choice; then ship when he says so. Not run this session: the full component sweep.
+
 
 ## Shipped (2026-10-01)
 Adesh said ship. `main` was fast-forwarded to `dev` (572e8b2) and pushed; Vercel deployed it in under a
