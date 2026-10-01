@@ -34,7 +34,8 @@ export function readTemplateSources(slugs: string[]) {
   for (const slug of new Set(slugs)) {
     const { react, css, js } = readComponentSources(slug);
     sources[slug] = { css, js };
-    exportNames[slug] = /export function (\w+)\(/.exec(react)?.[1] ?? slug;
+    // The component, not a helper some parts also export (sayDate, fieldName): only it is capitalised.
+    exportNames[slug] = /export function ([A-Z]\w*)\(/.exec(react)?.[1] ?? slug;
   }
   return { sources, exportNames };
 }

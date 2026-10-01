@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { readTemplateSources } from "../lib/sources";
-import { templateHtml } from "../lib/template-output";
+import { readComponentSources, readTemplateSources } from "../lib/sources";
+import { templateHtml, templateReactSource } from "../lib/template-output";
 import { defaultOptions, templates, type TemplateOptions } from "../lib/templates";
 import { expectNoAxeViolations } from "./helpers";
 
@@ -85,6 +85,18 @@ for (const template of templates) {
     });
   });
 }
+
+test("every template's page.tsx imports each part's component by the name its file exports", () => {
+  for (const template of templates) {
+    const { exportNames } = readTemplateSources(template.sections.map((section) => section.slug));
+    const source = templateReactSource(template, defaultOptions(template), exportNames);
+    for (const [, name, slug] of source.matchAll(/import \{ (\w+) \} from "@\/components\/([\w-]+)";/g)) {
+      // A component, not one of the helpers some parts export too (sayDate, fieldName).
+      expect(name, `${template.id}: ${slug}`).toMatch(/^[A-Z]/);
+      expect(readComponentSources(slug).react, `${template.id}: ${slug}`).toContain(`export function ${name}(`);
+    }
+  }
+});
 
 test("the templates page lists every template, and each one opens", async ({ page }) => {
   await page.goto("/templates");
