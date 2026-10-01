@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/parts",
     "/templates",
+    "/build",
     "/in-use",
     "/tested",
     "/start",
