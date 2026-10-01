@@ -1,6 +1,17 @@
 # Progress
 
-Last updated: 2026-10-03 (session 15, on dev, not shipped)
+Last updated: 2026-10-03 (session 15, shipped)
+
+## Shipped (2026-10-03)
+Adesh said ship. `main` was fast-forwarded to `dev` (7a5d67e) and pushed; Vercel served it in about
+100 seconds. This carries sessions 14 and 15 (D77–D82).
+- Before pushing: typecheck, lint and `next build` green; home, reel, site-pages, site-layout, templates,
+  builder, spotlight and countdown suites against `next start` in all three browsers: 577 passed, 0 failed.
+- On the live site: the page is 1600px wide at 1920; the reel plays and its camera moves; a card lights
+  under the pointer; on an iPhone a card lights while scrolling, with no sideways scroll; the Next.js zip
+  (13 files) and the HTML download come back from Vercel; the checkout template's page.tsx now imports
+  `InvoiceSummary`; no console errors.
+- Not run before shipping: the full component sweep (only the countdown changed among the parts).
 
 ## Session 15
 - **Look (D81):** Clean at 1600px is the site's look; the switcher is gone.
