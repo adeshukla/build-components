@@ -363,7 +363,7 @@ export function Catalogue({
 /** The cards. Memoised, so a keystroke that has not changed the results does not redraw 125 of them. */
 const CardList = memo(function CardList({ shown, query }: { shown: { part: Part; via?: string }[]; query: string }) {
   return (
-    <ul id="catalogue-list" className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <ul id="catalogue-list" className="grid-gap mt-4 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {shown.map(({ part, via }) => {
         const inStock = part.status === "in-stock";
         return (

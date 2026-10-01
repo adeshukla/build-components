@@ -18,7 +18,7 @@ export function PartHeader({ slug }: { slug: string }) {
       style={{ ["--part-accent" as string]: part.accent }}
     >
       <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-(--part-accent)" />
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-end justify-between gap-x-10 gap-y-5 px-4 py-6 sm:px-6 sm:py-8">
+      <div className="page-wrap flex flex-wrap items-end justify-between gap-x-10 gap-y-5 py-6 sm:py-8">
         <div className="flex items-center gap-4 sm:gap-6">
           {/* The catalogue card's drawing, morphed here when the card is opened. */}
           <ViewTransition name={`drawing-${slug}`} share="morph" default="none">

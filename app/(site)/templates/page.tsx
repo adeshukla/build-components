@@ -21,7 +21,7 @@ const promises = [
 export default function TemplatesPage() {
   return (
     <main className="flex-1">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(3rem,8vw,7rem)] pb-[clamp(4rem,9vw,8rem)] sm:px-6">
+      <div className="page-wrap pt-[clamp(3rem,8vw,7rem)] pb-[clamp(4rem,9vw,8rem)]">
         <h1 className="max-w-4xl font-display text-[clamp(2.75rem,6.5vw,5rem)] leading-[1.02] text-balance">
           Templates. <em className="text-accent">Whole pages, ready to use.</em>
         </h1>
@@ -38,7 +38,7 @@ export default function TemplatesPage() {
         </ul>
 
         <h2 className="sr-only">Every template</h2>
-        <ul className="mt-[clamp(4rem,8vw,6rem)] grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <ul className="grid-gap mt-[clamp(4rem,8vw,6rem)] grid sm:grid-cols-2 xl:grid-cols-4">
           {templates.map((template) => {
             const slugs = [...new Set(template.sections.map((section) => section.slug))];
             return (

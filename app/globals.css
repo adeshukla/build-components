@@ -39,6 +39,29 @@
 }
 
 @layer base {
+  /*
+   * Layout: one width, one side margin and one section rhythm for every page (D77). The look switcher
+   * (components/look-switcher.tsx, development only) tries other values before one is chosen.
+   */
+  :root {
+    --page-max: 80rem;
+    --gutter: clamp(1rem, 3vw, 1.5rem);
+    --section-y: clamp(5rem, 10vw, 9rem);
+    --grid-gap: clamp(1rem, 1.6vw, 1.5rem);
+  }
+  :root[data-look="wide"] {
+    --page-max: 96rem;
+    --gutter: clamp(1.25rem, 5vw, 4rem);
+    --section-y: clamp(6rem, 12vw, 11rem);
+    --grid-gap: clamp(1.25rem, 2vw, 2rem);
+  }
+  :root[data-look="clean"] {
+    --page-max: 90rem;
+    --gutter: clamp(1.25rem, 5vw, 3.5rem);
+    --section-y: clamp(6rem, 12vw, 10rem);
+    --grid-gap: clamp(1.5rem, 2.2vw, 2.25rem);
+  }
+
   :root {
     --glow-1: #c2410c;
     --glow-2: #b45309;
@@ -162,6 +185,29 @@
   input {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* The clean look: flat paper surfaces with one hairline, no lit edge, no shadow. */
+:root[data-look="clean"] {
+  --color-glass: var(--color-paper);
+  --color-glass-edge: var(--color-rule);
+  --color-glass-lip: transparent;
+  --color-shadow: transparent;
+}
+
+@utility page-wrap {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility section-y {
+  padding-block: var(--section-y);
+}
+
+@utility grid-gap {
+  gap: var(--grid-gap);
 }
 
 /*

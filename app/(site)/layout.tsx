@@ -1,3 +1,4 @@
+import { LookSwitcher } from "@/components/look-switcher";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -18,6 +19,8 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
         {children}
       </div>
       <SiteFooter />
+      {/* Development only: trying the layouts before one is chosen (D77). */}
+      {process.env.NODE_ENV === "development" && <LookSwitcher />}
     </>
   );
 }

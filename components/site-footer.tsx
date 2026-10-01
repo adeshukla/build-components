@@ -5,7 +5,7 @@ import { author } from "@/lib/site";
 export function SiteFooter() {
   return (
     <footer className="glass border-x-0 border-b-0">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.6fr_1fr]">
+      <div className="page-wrap grid gap-10 py-14 md:grid-cols-[1.6fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
             <LogoMark className="size-11" />
@@ -33,7 +33,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-rule">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3 font-mono text-xs text-ink-muted sm:px-6">
+        <div className="page-wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3 font-mono text-xs text-ink-muted">
           <p>
             Built by {author.name} ·{" "}
             <a href={author.url} className="inline-block py-1.5 underline underline-offset-2 hover:text-ink">

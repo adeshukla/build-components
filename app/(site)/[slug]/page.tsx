@@ -37,7 +37,7 @@ export default async function PartPage({ params, searchParams }: PageProps<"/[sl
   return (
     <main className="flex-1">
       <PartHeader slug={slug} />
-      <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+      <div className="page-wrap py-4 sm:py-6">
         <PartEditor
           slug={slug}
           initialConfig={parseConfig(registry[slug].schema, query)}

@@ -48,7 +48,7 @@ export default function Home() {
         each with room around it (D76).
       */}
       <section aria-labelledby="hero-heading">
-        <div id="catalogue" className="mx-auto w-full max-w-7xl scroll-mt-4 px-4 pt-[clamp(3rem,8vw,7rem)] pb-[clamp(4rem,9vw,8rem)] sm:px-6">
+        <div id="catalogue" className="page-wrap scroll-mt-4 pt-[clamp(3rem,8vw,7rem)] pb-[clamp(4rem,9vw,8rem)]">
           <Catalogue
             parts={parts}
             // Keyed: the catalogue (a client component) places these among its own children, and an element
@@ -76,8 +76,8 @@ export default function Home() {
       </section>
 
       {/* Templates: the parts as whole pages, set up and taken home in one go (D75). */}
-      <section aria-labelledby="templates-heading" className="border-y border-rule bg-paper-sunk/60 px-4 py-[clamp(5rem,10vw,9rem)] sm:px-6">
-        <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
+      <section aria-labelledby="templates-heading" className="border-y border-rule bg-paper-sunk/60 section-y">
+        <div className="page-wrap grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-20">
           <div>
             <h2 id="templates-heading" className="font-display text-4xl leading-[1.05] text-balance sm:text-5xl lg:text-6xl">
               Whole pages, <em className="text-accent">ready to use</em>
@@ -111,8 +111,8 @@ export default function Home() {
       </section>
 
       {/* How it works: three drawn diagrams, each one the step it stands for */}
-      <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 px-4 py-[clamp(5rem,10vw,9rem)] sm:px-6">
-        <div className="mx-auto w-full max-w-7xl">
+      <section id="how" aria-labelledby="how-heading" className="scroll-mt-4 section-y">
+        <div className="page-wrap">
           <h2 id="how-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
             From this page to your project
           </h2>
@@ -132,8 +132,8 @@ export default function Home() {
       </section>
 
       {/* Test report */}
-      <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4 border-t border-rule px-4 py-[clamp(5rem,10vw,9rem)] sm:px-6">
-        <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <section id="tests" aria-labelledby="report-heading" className="scroll-mt-4 border-t border-rule section-y">
+        <div className="page-wrap grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <div>
             <h2 id="report-heading" className="font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
               Test report

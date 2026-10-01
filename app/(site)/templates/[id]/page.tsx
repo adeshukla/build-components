@@ -29,7 +29,7 @@ export default async function TemplatePage({ params }: PageProps<"/templates/[id
 
   return (
     <main className="flex-1">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-[clamp(2.5rem,6vw,4.5rem)] sm:px-6">
+      <div className="page-wrap pt-[clamp(2.5rem,6vw,4.5rem)]">
         <p className="font-mono text-xs tracking-wide text-ink-muted uppercase">
           <Link href="/templates" className="underline underline-offset-2 hover:text-ink">
             Templates

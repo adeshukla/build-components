@@ -143,7 +143,7 @@ export function TemplateEditor({
   const set = (patch: Partial<TemplateOptions>) => setOptions((current) => ({ ...current, ...patch }));
 
   return (
-    <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 pt-10 pb-[clamp(4rem,9vw,8rem)] sm:px-6 lg:grid-cols-[20rem_1fr] lg:gap-12">
+    <div className="page-wrap grid gap-10 pt-10 pb-[clamp(4rem,9vw,8rem)] lg:grid-cols-[20rem_1fr] lg:gap-12">
       <div className="grid content-start gap-6 self-start lg:sticky lg:top-4">
       <form onSubmit={(event) => event.preventDefault()} className="glass grid content-start gap-6 rounded-2xl p-6">
         <h2 className="font-display text-3xl leading-none">Set it up</h2>

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function InUsePage() {
   return (
     <main className="flex-1">
-      <div className="mx-auto w-full max-w-7xl px-4 py-[clamp(2.5rem,5vw,4rem)] sm:px-6">
+      <div className="page-wrap py-[clamp(2.5rem,5vw,4rem)]">
         <p className="font-mono text-xs tracking-wide text-ink-muted uppercase">
           <Link href="/" className="underline underline-offset-2 hover:text-ink">
             Home
