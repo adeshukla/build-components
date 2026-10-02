@@ -759,3 +759,13 @@
     animation: none;
   }
 }
+
+/* While a part is being dragged in the page builder (components/page-builder.tsx). */
+html.is-dragging,
+html.is-dragging * {
+  cursor: grabbing !important;
+  user-select: none;
+}
+html.is-dragging iframe {
+  pointer-events: none;
+}

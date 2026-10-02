@@ -1,6 +1,11 @@
 # Progress
 
-Last updated: 2026-10-03 (session 15, shipped)
+Last updated: 2026-10-04 (session 16, on dev, not shipped)
+
+## Session 16
+- **Builder reworked (D83):** drag onto the page itself (it did nothing before), by mouse or touch; click a
+  section on the page to choose it; templates as one-click starts; parts with drawings; one Get the code
+  dialog. On dev, waiting for Adesh to try it and say ship.
 
 ## Shipped (2026-10-03)
 Adesh said ship. `main` was fast-forwarded to `dev` (7a5d67e) and pushed; Vercel served it in about

@@ -646,3 +646,23 @@ V=spot).
 **Responsive:** `e2e/site-layout.spec.ts` now runs every site page at 300, 375, 768, 1280 and 1920px, plus
 templates and the builder. It found three pages that scrolled sideways at 300px (the contrast table on
 /tested, the template editor and the builder, whose grid columns sized to their widest control); fixed.
+
+## 2026-10-04 — D83. The builder is built around the page
+**Why:** Adesh found building a page hard, and drag and drop "not working". Reproduced: a part dropped on the
+page preview (the big, obvious target) did nothing, because the preview is a frame and HTML drag and drop
+never reaches into it; only the small "Your page" list took drops. The preview sat below the list and a long
+options panel, off the first screen; the parts were a plain list of 125 names; touch could not drag at all.
+**Decision:** three panes filling the screen. Left: the parts with a drawing of each, page sections first;
+click adds below the chosen section, or drag onto the page. Middle: the page itself; dragging over it shows a
+"Drop here" line where the part will land; clicking a section chooses it (outlined, with move, drag and
+remove beside it); "Uses the parts" switches clicks back to working the parts. Right: layers (reorder by
+handle, buttons or keyboard) and the chosen section's options, or the page's settings. An empty page offers
+the nine templates as one-click starts. Downloads, the link, the install and the page checks are in one
+"Get the code" dialog; the button says how many checks pass.
+**How:** dragging is pointer events with the pointer captured, so moves over the frame still reach the
+builder, and it works with a mouse, a pen and a finger (by the handle on each part, so the list still
+scrolls by touch). Near the frame's edge the page scrolls; near the screen's edge the window does. The
+frame stays a real window, so parts that open dialogs still work in it.
+**Tested:** `e2e/builder.spec.ts`: a template in one click; a drag onto the page lands where dropped; a drag
+in the layers list; keyboard moves keep focus; clicking a section on the page chooses it; a touch drag
+through CDP on an emulated phone; axe on the builder. `/build` fits from 300 to 1920px in three browsers.

@@ -1,11 +1,11 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { encodePage, MAX_SECTIONS, newSection, type BuiltPage } from "../lib/page-builder";
 import { inStock } from "../lib/parts";
 import { isRegistrySlug } from "../lib/registry";
 import { expectNoAxeViolations } from "./helpers";
 
 /*
- * The page builder (D80): building by drag and by keyboard, keeping the page, and what it gives back.
+ * The page builder (D80, D83): building by click, by drag (mouse and touch) and by keyboard, keeping the page, and what it gives back.
  * Then the promise that matters most: whatever parts someone puts on a page, it fits a 300px screen, in
  * both outputs.
  */
@@ -15,43 +15,72 @@ const rows = (page: Page) => pageList(page).locator("li");
 const add = (page: Page, name: string) => page.getByRole("button", { name: `Add ${name}`, exact: true }).click();
 
 test.describe("building", () => {
-  test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only: plain layout and HTML5 drag");
-  // Tall enough that a drag's start and end are on screen together.
-  test.use({ viewport: { width: 1280, height: 1400 } });
+  test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only: plain layout");
+  test.use({ viewport: { width: 1440, height: 1000 } });
 
-  test("parts go on by button and by drag, move by keyboard, and come off", async ({ page }) => {
+  /** Drags with the mouse, the way a person does: press, move in steps, let go. */
+  async function drag(page: Page, from: { x: number; y: number }, to: { x: number; y: number }) {
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 20 });
+    await page.mouse.up();
+  }
+  async function middle(locator: Locator, down = 0.5) {
+    const box = (await locator.boundingBox())!;
+    return { x: box.x + box.width / 2, y: box.y + box.height * down };
+  }
+
+  test("a template starts the page in one click", async ({ page }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Pricing page/ }).click();
+    await expect(rows(page).first()).toContainText("Site header");
+    await expect(page.frameLocator('iframe[title="Your page, React output"]').locator("[data-part]").first()).toBeVisible({ timeout: 15_000 });
+  });
+
+  test("parts go on by click and by drag onto the page, move by keyboard, and come off", async ({ page }) => {
     await page.goto("/build");
     await add(page, "Site header");
     await add(page, "FAQ");
     await add(page, "Site footer");
-    // The footer stays last whatever is added after it.
+    // A click adds below the chosen section; the footer stays last whatever is added after it.
     await add(page, "Page header");
     await expect(rows(page)).toHaveText([/Site header/, /FAQ/, /Page header/, /Site footer/]);
 
+    // Dragged onto the page itself: dropped on the top of the FAQ, it goes in above it.
     await page.getByLabel("Search the parts").fill("pricing");
-    // Clicking Add scrolled the window to each button; a drag needs both ends on screen from the start.
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.locator("li[draggable]").filter({ hasText: "Pricing table" }).dragTo(rows(page).nth(1), { targetPosition: { x: 40, y: 2 } });
+    const frame = page.frameLocator('iframe[title="Your page, React output"]');
+    const faq = frame.locator('[data-part="faq"]');
+    await faq.waitFor();
+    const frameBox = (await page.locator('iframe[title="Your page, React output"]').boundingBox())!;
+    const faqBox = (await faq.boundingBox())!;
+    await drag(page, await middle(page.getByRole("button", { name: "Add Pricing table", exact: true })), {
+      x: frameBox.x + frameBox.width / 2,
+      y: faqBox.y + 10,
+    });
     await expect(rows(page)).toHaveText([/Site header/, /Pricing table/, /FAQ/, /Page header/, /Site footer/]);
 
-    // Move up keeps focus on the button, so it can be pressed again.
-    await page.getByRole("button", { name: "Move Page header up" }).click();
-    await page.keyboard.press("Enter");
-    await page.keyboard.press("Enter");
+    // And in the layers list, by its handle: the page header to the top of main.
+    const handle = rows(page).filter({ hasText: "Page header" }).locator("span[aria-hidden]").first();
+    await drag(page, await middle(handle), await middle(rows(page).nth(1), 0.1));
     await expect(rows(page)).toHaveText([/Site header/, /Page header/, /Pricing table/, /FAQ/, /Site footer/]);
-    await expect(page.getByRole("button", { name: "Move Page header up" })).toBeFocused();
 
-    await page.getByRole("button", { name: "Remove Pricing table" }).click();
+    // Move down keeps focus on the button, so it can be pressed again.
+    await pageList(page).getByRole("button", { name: "Move Page header down" }).click();
+    await page.keyboard.press("Enter");
+    await expect(rows(page)).toHaveText([/Site header/, /Pricing table/, /FAQ/, /Page header/, /Site footer/]);
+    await expect(pageList(page).getByRole("button", { name: "Move Page header down" })).toBeFocused();
+
+    await pageList(page).getByRole("button", { name: "Remove Pricing table" }).click();
     await expect(rows(page)).toHaveCount(4);
-    await expect(page.getByRole("button", { name: "Remove FAQ" })).toBeFocused();
+    await expect(pageList(page).getByRole("button", { name: "Remove FAQ" })).toBeFocused();
 
-    // A part's options reach the page in the frame.
+    // Clicking a section on the page chooses it; its options reach the page.
+    await faq.click();
+    await expect(pageList(page).getByRole("button", { name: /Options for FAQ/ })).toHaveAttribute("aria-pressed", "true");
     await rows(page).filter({ hasText: "Page header" }).getByRole("button", { name: /Options for/ }).click();
-    const title = page.getByRole("textbox", { name: "Title", exact: true });
-    await title.fill("Everything about Northwind");
-    const frame = page.frameLocator('iframe[title="Your page, React output"]');
+    await page.getByRole("textbox", { name: "Title", exact: true }).fill("Everything about Northwind");
     await expect(frame.getByRole("heading", { level: 1 })).toHaveText("Everything about Northwind", { timeout: 15_000 });
-    await expect(page.getByRole("list", { name: "Page checks" })).toContainText("One h1 on the page");
+    await expect(page.getByRole("button", { name: /Get the code/ })).toContainText("checks pass");
     await expectNoAxeViolations(page);
   });
 
@@ -63,6 +92,7 @@ test.describe("building", () => {
     await expect(rows(page)).toHaveText([/FAQ/, /Newsletter/]);
 
     await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.getByRole("button", { name: /Get the code/ }).click();
     await page.getByRole("button", { name: "Copy a link to this page" }).click();
     const link = await page.evaluate(() => navigator.clipboard.readText());
     const other = await browser.newPage();
@@ -77,6 +107,26 @@ test.describe("building", () => {
     await expect(rows(page).first()).toContainText("Site header");
     await expect(rows(page).last()).toContainText("Site footer");
   });
+});
+
+test("on a touch screen, a part is dragged onto the page by its handle", async ({ page, browserName, isMobile }) => {
+  test.skip(browserName !== "chromium" || !isMobile, "Touch in Chromium: the touches are sent through CDP");
+  await page.goto("/build");
+  await page.getByRole("button", { name: /^Landing page/ }).tap();
+  await expect(rows(page)).toHaveCount(6);
+  const cdp = await page.context().newCDPSession(page);
+  const touch = (type: "touchStart" | "touchMove" | "touchEnd", x = 0, y = 0) =>
+    cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x, y }] });
+  const tile = page.locator("li").filter({ has: page.getByRole("button", { name: "Add FAQ", exact: true }) });
+  await tile.scrollIntoViewIfNeeded();
+  const grip = (await tile.locator("span[aria-hidden]").last().boundingBox())!;
+  const frame = (await page.locator('iframe[title="Your page, React output"]').boundingBox())!;
+  const from = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2 };
+  const to = { x: frame.x + frame.width / 2, y: Math.min(frame.y + 80, page.viewportSize()!.height - 60) };
+  await touch("touchStart", from.x, from.y);
+  for (let step = 1; step <= 20; step++) await touch("touchMove", from.x + ((to.x - from.x) * step) / 20, from.y + ((to.y - from.y) * step) / 20);
+  await touch("touchEnd");
+  await expect(rows(page)).toHaveCount(7);
 });
 
 /** A page of the given parts, as the builder would write it. */

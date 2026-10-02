@@ -14,11 +14,11 @@ export default function BuildPage() {
   const { exportNames } = readTemplateSources(Object.keys(registry));
   return (
     <main className="flex-1">
-      <div className="page-wrap pt-[clamp(2.5rem,6vw,4.5rem)]">
-        <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] leading-[1]">Build a page</h1>
-        <p className="mt-3 max-w-2xl text-lg text-pretty text-ink-muted">
-          Put parts from the catalogue in order, set each one up, and give the page your name, colour and theme. It
-          stays in this browser; no account needed.
+      {/* Short, so the builder below gets the screen. */}
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-4 pt-6 pb-4">
+        <h1 className="font-display text-4xl leading-none">Build a page</h1>
+        <p className="text-sm text-ink-muted">
+          Drag parts onto the page, click one to set it up. It stays in this browser; no account needed.
         </p>
       </div>
       <PageBuilder exportNames={exportNames} />
