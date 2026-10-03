@@ -687,3 +687,23 @@ through CDP on an emulated phone; axe on the builder. `/build` fits from 300 to 
   (it showed this site's 404); a note says where it goes on the real site. Links within the page still work.
 - **Preview:** full screen, with the widths, Escape to close (also from inside the page), and "Open in a new
   tab" (`/preview-page#p=…`).
+
+## 2026-10-03 — D85. Pictures and video in built pages
+**Asked:** pictures dragged into place, YouTube that works. **Adesh chose:** pictures live in the browser and
+go out in the downloads (no accounts yet).
+- **Kept pictures** (`lib/pictures.ts`): a picture dropped on a section, or chosen in its "Pictures" box, is
+  kept in IndexedDB and written into the page as `https://assets.invalid/<name>`. `.invalid` never resolves,
+  so the address passes every part's own address check and survives saving and links unchanged.
+- **Showing them** (`public/pictures-sw.js`): a service worker answers those addresses from IndexedDB, for the
+  builder's frame and for "Open in a new tab". No part had to change. Chromium does not hand a worker a
+  frame already open, so the builder loads its frame once the worker is in charge (a moment on a first
+  visit, at once after). Pictures this browser does not have (someone else's link) are left empty: placeholders.
+- **Downloads:** the Next.js project is zipped in the browser (`lib/zip-browser.ts`, stored, not compressed)
+  from the project's files (`/download/<name>.json`) plus `public/images/<name>`; the HTML file has them
+  inline as `data:` addresses. The install command and the link leave kept pictures out, and say so.
+- **Where pictures go:** any option or list field named `…src` or `…image`: hero (new `imageSrc`), split
+  feature, image gallery, logo wall, carousel, lightbox, avatar group, the video's poster.
+- **Video:** the video part takes a YouTube (watch, youtu.be, Shorts, live) or Vimeo link as it is copied,
+  and plays it from YouTube's no-cookie host. Its HTML output now refuses a non-http(s) address too.
+- **The site's CSP** now allows `img-src https:` (people's own images, wherever hosted) and `frame-src` the
+  two players. Scripts stay same-origin.

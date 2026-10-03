@@ -20,7 +20,10 @@ import {
 } from "@/lib/page-builder";
 import { inStock, partBySlug, type Category } from "@/lib/parts";
 import { registry, type RegistrySlug } from "@/lib/registry";
+import { ACCEPTED_PICTURES, loadPicture, pictureName, picturesIn, savePicture, swapPictures } from "@/lib/pictures";
+import type { Schema } from "@/lib/schema";
 import { templateReactSource } from "@/lib/template-output";
+import { zipInBrowser } from "@/lib/zip-browser";
 import { defaultOptions, sectionSpaces, sectionWidths, templateById, templates, type SectionSpace, type SectionWidth } from "@/lib/templates";
 
 /*
@@ -62,6 +65,29 @@ export function PageBuilder({ exportNames }: { exportNames: Record<string, strin
 }
 
 type Box = { slug: RegistrySlug; top: number; height: number };
+
+/** A place in a part's options that holds a picture: an option of its own, or a field of a list's items. */
+type PictureSlot = { key: string; label: string; field?: string };
+const picturey = /(src|image)$/i;
+function pictureSlots(schema: Schema): PictureSlot[] {
+  return schema.flatMap((option): PictureSlot[] => {
+    // By name: some parts mark their picture fields as addresses, some (the gallery, the logo wall) do not.
+    if (option.type === "text" && picturey.test(option.key)) return [{ key: option.key, label: option.label }];
+    if (option.type === "list") {
+      const field = option.fields.find((candidate) => picturey.test(candidate.key));
+      if (field) return [{ key: option.key, label: option.label, field: field.key }];
+    }
+    return [];
+  });
+}
+
+/** Reads a file into a data: address, for the one-file HTML download. */
+const asDataUrl = (blob: Blob) =>
+  new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(blob);
+  });
 type Drop = { where: "page" | "layers"; index: number; y: number };
 
 function Builder({ exportNames }: { exportNames: Record<string, string> }) {
@@ -76,6 +102,12 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const [mode, setMode] = useState<"edit" | "try">("edit");
   const [previewing, setPreviewing] = useState(false);
   const [note, setNote] = useState("");
+  // Pictures kept in this browser, by the address the page uses, as addresses the frame can load.
+  const [shownPictures, setShownPictures] = useState<Record<string, string>>({});
+  const [dropping, setDropping] = useState<RegistrySlug | null>(null);
+  // Whether public/pictures-sw.js is answering for this page and its frame yet.
+  const [served, setServed] = useState(false);
+  const [frameAllowed, setFrameAllowed] = useState(() => !navigator.serviceWorker || Boolean(navigator.serviceWorker.controller));
   // Bumped by a click on the page's text, so the field for it is focused even if the section was chosen already.
   const [, setClicked] = useState(0);
   const [boxes, setBoxes] = useState<Box[]>([]);
@@ -105,7 +137,12 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const name = (slug: string) => partBySlug(slug).name;
   const rowId = (slug: string, what: string) => `${uid}-${slug}-${what}`;
   const chosen = selected ? sections.find((section) => section.slug === selected) : undefined;
+  const chosenSlots = chosen ? pictureSlots(registry[chosen.slug].schema) : [];
   const passing = checks.filter((check) => check.ok).length;
+  const pictures = picturesIn(page);
+  // The page as the frame shows it: a kept picture's address is answered by the worker; one this browser
+  // does not have (a shared link), or any before the worker is answering, is left empty: a placeholder.
+  const shown = swapPictures(page, (address) => (served && shownPictures[address] ? address : ""));
   // In the full-screen preview, clicks always work the parts.
   const clicks = previewing ? "try" : mode;
 
@@ -172,9 +209,45 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     );
   }
 
+  /*
+   * The worker that answers kept pictures' addresses (public/pictures-sw.js). Chromium does not hand it a
+   * frame that is already open, so the page's frame is only loaded once the worker is in charge: at once
+   * on any visit after the first, a moment later on the first. Without workers (or if one never starts),
+   * the frame loads anyway and kept pictures show as placeholders.
+   */
+  useEffect(() => {
+    const workers = navigator.serviceWorker;
+    if (!workers) return;
+    const ready = () => workers.controller && setFrameAllowed(true);
+    const fallback = window.setTimeout(() => setFrameAllowed(true), 3000);
+    workers.addEventListener("controllerchange", ready);
+    workers.register("/pictures-sw.js").then(ready, () => setFrameAllowed(true));
+    return () => {
+      window.clearTimeout(fallback);
+      workers.removeEventListener("controllerchange", ready);
+    };
+  }, []);
+
+  // Pictures the page uses that are not loaded yet: read from this browser, once each.
+  const missing = pictures.filter((address) => !(address in shownPictures)).join(" ");
+  useEffect(() => {
+    if (!missing) return;
+    let current = true;
+    Promise.all(missing.split(" ").map(async (address) => [address, await loadPicture(address)] as const)).then((found) => {
+      if (!current) return;
+      setShownPictures((known) => ({
+        ...known,
+        ...Object.fromEntries(found.map(([address, blob]) => [address, blob ? URL.createObjectURL(blob) : ""])),
+      }));
+    });
+    return () => {
+      current = false;
+    };
+  }, [missing]);
+
   // The frame takes the page by message, says when it is ready, and tells us when it changes size.
   useEffect(() => {
-    const send = () => frameRef.current?.contentWindow?.postMessage({ type: "built-page", state: page }, window.location.origin);
+    const send = () => frameRef.current?.contentWindow?.postMessage({ type: "built-page", state: shown }, window.location.origin);
     send();
     const timer = window.setTimeout(measure, 120);
     function onMessage(event: MessageEvent) {
@@ -192,7 +265,9 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       window.removeEventListener("message", onMessage);
       window.removeEventListener("resize", measure);
     };
-  }, [page, width]);
+    // `shown` is new every render; the page and the pictures behind it are what change it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, width, shownPictures, served]);
 
   /*
    * Inside the frame: scrolling moves the outlines; pointing at a section outlines it; and, while editing,
@@ -233,6 +308,31 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
         window.setTimeout(() => setNote(""), 2600);
       }
     };
+    // A picture file dragged in from the computer: the section under it lights up, and takes it.
+    const carriesFiles = (event: DragEvent) => event.dataTransfer?.types.includes("Files");
+    const onFileOver = (event: DragEvent) => {
+      if (!carriesFiles(event)) return;
+      event.preventDefault();
+      setDropping(partAt(event.target) ?? null);
+    };
+    const onFileDrop = (event: DragEvent) => {
+      if (!carriesFiles(event)) return;
+      event.preventDefault();
+      setDropping(null);
+      const slug = partAt(event.target);
+      const file = event.dataTransfer?.files[0];
+      if (slug && file) dropPicture(slug, file);
+    };
+    const onFileLeave = () => setDropping(null);
+    // Pictures go into the page only once the worker answers for the frame itself: a picture asked for
+    // before then fails, and is not asked for again.
+    const workers = frameWindow.navigator.serviceWorker;
+    const answered = () => setServed(Boolean(workers?.controller));
+    answered();
+    workers?.addEventListener("controllerchange", answered);
+    doc.addEventListener("dragover", onFileOver);
+    doc.addEventListener("drop", onFileDrop);
+    doc.documentElement.addEventListener("dragleave", onFileLeave);
     frameWindow.addEventListener("scroll", onScroll, { passive: true });
     doc.addEventListener("pointerover", onOver);
     doc.documentElement.addEventListener("pointerleave", onLeave);
@@ -243,8 +343,25 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       doc.removeEventListener("pointerover", onOver);
       doc.documentElement.removeEventListener("pointerleave", onLeave);
       doc.removeEventListener("click", onClick, true);
+      workers?.removeEventListener("controllerchange", answered);
+      doc.removeEventListener("dragover", onFileOver);
+      doc.removeEventListener("drop", onFileDrop);
+      doc.documentElement.removeEventListener("dragleave", onFileLeave);
     };
-  }, [clicks, frameReady]);
+    // dropPicture reads the page as it is when the file lands; listeners are re-attached with every page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clicks, frameReady, page]);
+
+  // A picture dropped anywhere else in the builder is not opened by the browser in place of it.
+  useEffect(() => {
+    const stop = (event: DragEvent) => event.dataTransfer?.types.includes("Files") && event.preventDefault();
+    window.addEventListener("dragover", stop);
+    window.addEventListener("drop", stop);
+    return () => {
+      window.removeEventListener("dragover", stop);
+      window.removeEventListener("drop", stop);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -402,6 +519,80 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     window.addEventListener("keydown", onKey);
   }
 
+  /** Puts a picture into one slot of a section: an option of its own, or the item at `index` of a list. */
+  function setPicture(slug: RegistrySlug, slot: PictureSlot, address: string, index?: number) {
+    const section = sections.find((candidate) => candidate.slug === slug);
+    if (!section) return;
+    if (!slot.field) {
+      setOption(slug, { [slot.key]: address });
+      return;
+    }
+    const items = [...((section.config[slot.key] as Record<string, string>[]) ?? [])];
+    const at = index ?? items.findIndex((item) => !item[slot.field!]);
+    // A list with every picture filled grows by one: a copy of its last item, with the new picture.
+    if (at === -1 || at >= items.length) items.push({ ...(items.at(-1) ?? {}), [slot.field]: address });
+    else items[at] = { ...items[at], [slot.field]: address };
+    setOption(slug, { [slot.key]: items });
+  }
+
+  /** A picture file for a section: kept in this browser, and put in its first empty picture slot. */
+  async function dropPicture(slug: RegistrySlug, file: File) {
+    const slots = pictureSlots(registry[slug].schema);
+    if (slots.length === 0) {
+      setNote(`${name(slug)} has no place for a picture. Hero, Split feature, Image gallery, Logo wall and Carousel do.`);
+      window.setTimeout(() => setNote(""), 3500);
+      return;
+    }
+    try {
+      const address = await savePicture(file);
+      const section = sections.find((candidate) => candidate.slug === slug);
+      const empty = slots.find((slot) => !slot.field && !section?.config[slot.key]);
+      setPicture(slug, empty ?? slots[0], address);
+      setSelected(slug);
+      setSaid(`Picture added to ${name(slug)}`);
+    } catch (error) {
+      setNote((error as Error).message);
+      window.setTimeout(() => setNote(""), 4000);
+    }
+  }
+
+  /** The page with each kept picture swapped for what a download carries in its place. */
+  async function withPictures(to: (address: string, blob: Blob) => Promise<string> | string) {
+    const found: Record<string, string> = {};
+    for (const address of pictures) {
+      const blob = await loadPicture(address);
+      found[address] = blob ? await to(address, blob) : "";
+    }
+    return (text: string) => text.replaceAll(/https:\/\/assets\.invalid\/[a-z0-9]{16}\.\w+/g, (address) => found[address] ?? "");
+  }
+
+  function save(blob: Blob, file: string) {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = file;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+
+  /** The Next.js project with the pictures in public/images, zipped here: only this browser has them. */
+  async function downloadProject() {
+    const files: Record<string, string> = await (await fetch(`/download/${template.id}.json?p=${encoded}`)).json();
+    const blobs: Record<string, Uint8Array> = {};
+    const swap = await withPictures(async (address, blob) => {
+      blobs[`public/images/${pictureName(address)}`] = new Uint8Array(await blob.arrayBuffer());
+      return `/images/${pictureName(address)}`;
+    });
+    const all: Record<string, string | Uint8Array> = Object.fromEntries(Object.entries(files).map(([path, text]) => [path, swap(text)]));
+    save(zipInBrowser({ ...all, ...blobs }), `${template.id}.zip`);
+  }
+
+  /** One HTML file with the pictures inside it, so it still needs nothing else. */
+  async function downloadHtml() {
+    const html = await (await fetch(`/download/${template.id}.html?p=${encoded}`)).text();
+    const swap = await withPictures((_, blob) => asDataUrl(blob));
+    save(new Blob([swap(html)], { type: "text/html" }), `${template.id}.html`);
+  }
+
   function openPreview() {
     setPreviewing(true);
     focusNext.current = `${uid}-close-preview`;
@@ -425,7 +616,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     window.setTimeout(() => setCopied(""), 2500);
   }
 
-  const install = `npx shadcn@latest add "${origin}/r/pages/${template.id}.json?p=${encoded}"`;
+  const install = `npx shadcn@latest add "${origin}/r/pages/${template.id}.json?p=${pictures.length ? encodePage(swapPictures(page, () => "")) : encoded}"`;
   const code = codeTab === "install" ? install : templateReactSource(template, options, exportNames);
   const pinned = (slug: string) => regionOf(slug) !== "main";
   const outline = (slug: RegistrySlug) => boxes.find((box) => box.slug === slug);
@@ -610,10 +801,17 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
         )}
         <div className="relative h-[75vh] min-h-0 overflow-hidden rounded-2xl border border-rule bg-paper-sunk lg:h-auto lg:flex-1">
           <div className="relative mx-auto h-full max-w-full transition-[width] duration-500 ease-spring" style={{ width }}>
-            <iframe ref={frameRef} title="Your page, React output" src="/preview-page" className="block h-full w-full border-0 bg-white" />
+            <iframe ref={frameRef} title="Your page, React output" src={frameAllowed ? "/preview-page" : undefined} className="block h-full w-full border-0 bg-white" />
 
             {/* Drawn over the frame, never in the way: it only catches its own buttons. */}
             <div aria-hidden={!chosenBox || previewing} className={`pointer-events-none absolute inset-0 overflow-hidden ${previewing ? "hidden" : ""}`}>
+              {dropping && outline(dropping) && (
+                <div className="absolute inset-x-0 border-4 border-accent bg-accent/10" style={{ top: outline(dropping)!.top, height: outline(dropping)!.height }}>
+                  <span className="absolute top-2 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-0.5 text-xs font-semibold text-on-accent">
+                    {pictureSlots(registry[dropping].schema).length ? `Drop to add to ${name(dropping)}` : `${name(dropping)} takes no picture`}
+                  </span>
+                </div>
+              )}
               {clicks === "edit" && hoveredBox && (
                 <div
                   className="absolute inset-x-0 border-2 border-dashed border-accent/70"
@@ -794,6 +992,70 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
                 </select>
               </label>
             </div>
+            {chosenSlots.length > 0 && (
+              <div
+                className={`mt-3 rounded-lg border border-dashed p-2.5 ${dropping === chosen.slug ? "border-accent bg-wash" : "border-rule-strong"}`}
+                onDragOver={(event) => {
+                  if (!event.dataTransfer.types.includes("Files")) return;
+                  event.preventDefault();
+                  setDropping(chosen.slug);
+                }}
+                onDragLeave={() => setDropping(null)}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  setDropping(null);
+                  const file = event.dataTransfer.files[0];
+                  if (file) dropPicture(chosen.slug, file);
+                }}
+              >
+                <p className="text-sm font-medium">Pictures</p>
+                <p className="text-xs text-ink-muted">Drop a picture here or on the section, or choose one. It stays in this browser and goes into your downloads.</p>
+                <ul className="mt-2 grid gap-2">
+                  {chosenSlots.flatMap((slot) => {
+                    const items = slot.field ? ((chosen.config[slot.key] as Record<string, string>[]) ?? []) : [chosen.config];
+                    return items.map((item, index) => {
+                      const value = String(item[slot.field ?? slot.key] ?? "");
+                      const label = slot.field ? `${slot.label}, item ${index + 1}` : slot.label;
+                      const preview = value.startsWith("https://assets.invalid/") ? shownPictures[value] : value;
+                      return (
+                        <li key={`${slot.key}-${index}`} className="flex items-center gap-2">
+                          <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-md border border-rule bg-paper-sunk">
+                            {/* eslint-disable-next-line @next/next/no-img-element -- a thumbnail of the person's own picture */}
+                            {preview ? <img src={preview} alt="" className="size-full object-cover" /> : <span className="text-[0.625rem] text-ink-muted">None</span>}
+                          </span>
+                          <span className="min-w-0 flex-1 truncate text-xs">{label}</span>
+                          <label className="btn-glass min-h-9 cursor-pointer px-3 py-1 text-xs">
+                            Choose
+                            <input
+                              type="file"
+                              accept={ACCEPTED_PICTURES.join(",")}
+                              aria-label={`Choose a picture: ${label}`}
+                              className="sr-only"
+                              onChange={async (event) => {
+                                const file = event.target.files?.[0];
+                                event.target.value = "";
+                                if (!file) return;
+                                try {
+                                  setPicture(chosen.slug, slot, await savePicture(file), slot.field ? index : undefined);
+                                } catch (error) {
+                                  setNote((error as Error).message);
+                                  window.setTimeout(() => setNote(""), 4000);
+                                }
+                              }}
+                            />
+                          </label>
+                          {value && (
+                            <button type="button" onClick={() => setPicture(chosen.slug, slot, "", slot.field ? index : undefined)} aria-label={`Remove the picture: ${label}`} className={iconButton}>
+                              <Cross />
+                            </button>
+                          )}
+                        </li>
+                      );
+                    });
+                  })}
+                </ul>
+              </div>
+            )}
             <div ref={optionsRef} className="mt-3 flex min-h-0 flex-1 flex-col">
               <OptionsPanel
                 key={chosen.slug}
@@ -838,12 +1100,25 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
             </button>
           </div>
           <p className="flex flex-wrap gap-2">
-            <a href={`/download/${template.id}.zip?p=${encoded}`} download className="btn-accent text-sm">
-              Download a Next.js project
-            </a>
-            <a href={`/download/${template.id}.html?p=${encoded}`} download className="btn-glass text-sm">
-              Download one HTML file
-            </a>
+            {pictures.length === 0 ? (
+              <>
+                <a href={`/download/${template.id}.zip?p=${encoded}`} download className="btn-accent text-sm">
+                  Download a Next.js project
+                </a>
+                <a href={`/download/${template.id}.html?p=${encoded}`} download className="btn-glass text-sm">
+                  Download one HTML file
+                </a>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={downloadProject} className="btn-accent cursor-pointer text-sm">
+                  Download a Next.js project
+                </button>
+                <button type="button" onClick={downloadHtml} className="btn-glass cursor-pointer text-sm">
+                  Download one HTML file
+                </button>
+              </>
+            )}
             <button type="button" onClick={() => copy(`${origin}/build#p=${encoded}`, "Link copied")} className="btn-glass cursor-pointer text-sm">
               Copy a link to this page
             </button>
@@ -851,6 +1126,8 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
           <p className="-mt-2 text-xs text-ink-muted">
             The Next.js project runs as it is: npm install, then npm run dev. The link holds the whole page, so anyone with
             it can open it here.
+            {pictures.length > 0 &&
+              " Pictures you dropped in are in both downloads, but stay in this browser: the link and the install command leave them out."}
           </p>
           <div>
             <Segmented

@@ -173,6 +173,37 @@ test.describe("controlling the page", () => {
     expect(Math.round(htmlBottom)).toBeGreaterThanOrEqual(899);
   });
 
+  test("a picture, chosen or dropped, shows on the page and goes into both downloads", async ({ page }) => {
+    // A real one-pixel PNG.
+    const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==", "base64");
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Landing page/ }).click();
+    await page.getByLabel("Choose a picture: Picture").setInputFiles({ name: "yard.png", mimeType: "image/png", buffer: png });
+    const hero = frameOf(page).locator('[data-part="hero"] img');
+    await expect.poll(() => hero.evaluate((img: HTMLImageElement) => img.naturalWidth), { timeout: 15_000 }).toBe(1);
+
+    // Dropped onto a section from the computer: it goes in that section's first empty picture.
+    await add(page, "Image gallery");
+    await frameOf(page).locator('[data-part="image-gallery"]').waitFor();
+    await page.frames()[1].evaluate((bytes) => {
+      const data = new DataTransfer();
+      data.items.add(new File([new Uint8Array(bytes)], "drop.png", { type: "image/png" }));
+      const target = document.querySelector('[data-part="image-gallery"] *')!;
+      for (const type of ["dragenter", "dragover", "drop"]) target.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: data }));
+    }, [...png]);
+    await expect(frameOf(page).locator('[data-part="image-gallery"] img[src^="https://assets.invalid/"]')).toHaveCount(1, { timeout: 15_000 });
+
+    await page.getByRole("button", { name: /Get the code/ }).click();
+    const [project] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Download a Next.js project" }).click()]);
+    const zip = (await import("node:fs")).readFileSync((await project.path())!).toString("latin1");
+    expect(new Set(zip.match(/public\/images\/[a-z0-9]{16}\.png/g)).size).toBe(2);
+    expect(zip).not.toContain("assets.invalid");
+    const [file] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Download one HTML file" }).click()]);
+    const html = (await import("node:fs")).readFileSync((await file.path())!, "utf8");
+    expect(html.match(/data:image\/png;base64/g)).toHaveLength(2);
+    await expect(page.getByLabel("Code, scrollable")).not.toContainText("assets.invalid");
+  });
+
   test("clicking text on the page goes to the field that holds it", async ({ page }) => {
     await page.goto("/build");
     await page.getByRole("button", { name: /^Landing page/ }).click();
