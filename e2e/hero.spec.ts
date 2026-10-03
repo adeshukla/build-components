@@ -34,6 +34,13 @@ for (const target of targets("hero")) {
       await expect(page.locator("img")).toHaveCount(0);
     });
 
+    test("with a picture set, it shows the picture, described, in place of the panel", async ({ page }) => {
+      await open(page, target.url("picture"));
+      const picture = page.getByRole("img", { name: "The team at work in the yard" });
+      await expect(picture).toHaveAttribute("src", "/opengraph-image");
+      await expect(page.locator("[role=img]")).toHaveCount(0);
+    });
+
     test("centred variant: heading drops to level two and the panel goes", async ({ page }) => {
       await open(page, target.url("centred"));
       await expect(page.getByRole("heading", { level: 2 })).toBeVisible();

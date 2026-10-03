@@ -28,7 +28,8 @@ export const heroSchema = [
   { key: "note", label: "Note under the buttons", group: "Content", type: "text", default: "No deposit until the work is agreed.", maxLength: 120 },
   { key: "align", label: "Alignment", group: "Style", type: "select", default: "left", options: ["left", "centre"] },
   { key: "showPanel", label: "Picture panel", description: "A drawn placeholder beside the text. Swap it for your own image.", group: "Add-ons", type: "boolean", default: true },
-  { key: "panelLabel", label: "Panel description", description: "What the picture will show, for anyone who cannot see it.", group: "Content", type: "text", default: "Photograph of the yard goes here", maxLength: 120 },
+  { key: "panelLabel", label: "Picture description", description: "What the picture shows, for anyone who cannot see it.", group: "Content", type: "text", default: "Photograph of the yard goes here", maxLength: 120 },
+  { key: "imageSrc", label: "Picture", description: "Empty draws a placeholder instead. No image ships with this part.", group: "Content", type: "text", format: "url", default: "", maxLength: 300 },
   {
     key: "theme",
     label: "Theme",

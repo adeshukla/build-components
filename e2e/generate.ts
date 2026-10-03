@@ -1119,6 +1119,7 @@ export const components: Record<
     variants: {
       default: "",
       centred: "align=centre&showPanel=false&theme=dark&headingLevel=h2",
+      picture: "imageSrc=%2Fopengraph-image&panelLabel=The+team+at+work+in+the+yard",
     },
   },
   "feature-grid": {

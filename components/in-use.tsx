@@ -68,6 +68,7 @@ const heroInPage: HeroConfig = {
   align: "left",
   showPanel: true,
   panelLabel: "Photograph of the yard goes here",
+  imageSrc: "",
   theme: "light",
   accentColor: "#16303f",
 };

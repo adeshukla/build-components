@@ -15,6 +15,7 @@ export type HeroConfig = {
   align: "left" | "centre";
   showPanel: boolean;
   panelLabel: string;
+  imageSrc: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
 };
@@ -33,6 +34,7 @@ const defaultConfig: HeroConfig = {
   align: "left",
   showPanel: true,
   panelLabel: "Photograph of the yard goes here",
+  imageSrc: "",
   theme: "light",
   accentColor: "#16303f",
 };
@@ -79,6 +81,17 @@ function safeHref(value: string) {
   return /^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#";
 }
 
+/** Only http(s) and same-site paths are let through: a config value must never become a javascript: URL. */
+function safeSrc(value: string) {
+  if (value.startsWith("/")) return value;
+  try {
+    const url = new URL(value, "https://example.com");
+    return url.protocol === "http:" || url.protocol === "https:" ? value : "";
+  } catch {
+    return "";
+  }
+}
+
 export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
   const id = useId();
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -97,6 +110,7 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
 
   const Heading = config.headingLevel;
   const centred = config.align === "centre";
+  const picture = safeSrc(config.imageSrc);
 
   return (
     <section
@@ -137,14 +151,17 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
           {config.note.trim() !== "" && <p className="mt-3 text-sm text-(--hr-muted)">{config.note}</p>}
         </div>
 
-        {config.showPanel && !centred && (
+        {config.showPanel && !centred && (picture ? (
+          // eslint-disable-next-line @next/next/no-img-element -- a plain file: it must work in any React project
+          <img src={picture} alt={config.panelLabel} className="aspect-[4/3] w-full rounded-xl border border-(--hr-line) object-cover" />
+        ) : (
           // A place for a picture, drawn rather than loaded: the exported file carries no image of ours.
           <div
             role="img"
             aria-label={config.panelLabel}
             className="aspect-[4/3] rounded-xl border border-(--hr-line) bg-(--hr-sunk) bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgb(0_0_0/0.04)_18px_36px)]"
           />
-        )}
+        ))}
       </div>
     </section>
   );

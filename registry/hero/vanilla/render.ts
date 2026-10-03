@@ -20,6 +20,17 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Only http(s) and same-site paths are let through, the same rule the React output uses. */
+function safeSrc(value: string) {
+  if (value.startsWith("/")) return value;
+  try {
+    const url = new URL(value, "https://example.com");
+    return url.protocol === "http:" || url.protocol === "https:" ? value : "";
+  } catch {
+    return "";
+  }
+}
+
 export function renderHeroMarkup(config: HeroConfig) {
   const dark = config.theme === "dark";
   const palette = dark ? palettes.dark : palettes.light;
@@ -32,6 +43,7 @@ export function renderHeroMarkup(config: HeroConfig) {
 
   const centred = config.align === "centre";
   const panel = config.showPanel && !centred;
+  const picture = safeSrc(config.imageSrc ?? "");
   const tag = config.headingLevel;
 
   return `    <section class="hr hr--theme-${config.theme} hr--${config.align}${panel ? " hr--split" : ""}" style="${vars}" aria-labelledby="hero-heading" data-hero>
@@ -44,7 +56,7 @@ ${config.copy.trim() === "" ? "" : `          <p class="hr-copy">${escapeHtml(co
 ${config.primaryText.trim() === "" ? "" : `            <a class="hr-primary" href="${escapeHtml(safeHref(config.primaryHref))}">${escapeHtml(config.primaryText)}</a>\n`}${config.secondaryText.trim() === "" ? "" : `            <a class="hr-secondary" href="${escapeHtml(safeHref(config.secondaryHref))}">${escapeHtml(config.secondaryText)}</a>\n`}          </div>
 ${config.note.trim() === "" ? "" : `          <p class="hr-note">${escapeHtml(config.note)}</p>\n`}        </div>
 ${panel ? `        <!-- A place for a picture, drawn rather than loaded: the exported file carries no image of ours. -->
-        <div class="hr-panel" role="img" aria-label="${escapeHtml(config.panelLabel)}"></div>\n` : ""}      </div>
+        ${picture ? `<img class="hr-img" src="${escapeHtml(picture)}" alt="${escapeHtml(config.panelLabel)}">` : `<div class="hr-panel" role="img" aria-label="${escapeHtml(config.panelLabel)}"></div>`}\n` : ""}      </div>
     </section>`;
 }
 

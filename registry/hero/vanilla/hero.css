@@ -70,6 +70,14 @@
 .hr-note { margin: 0.75rem 0 0; color: var(--hr-muted); font-size: 0.875rem; }
 
 /* A place for a picture, drawn rather than loaded: the exported file carries no image of ours. */
+.hr-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--hr-line);
+  border-radius: 0.75rem;
+}
 .hr-panel {
   aspect-ratio: 4 / 3;
   border: 1px solid var(--hr-line);
