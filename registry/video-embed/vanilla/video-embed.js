@@ -30,7 +30,7 @@
         return "https://player.vimeo.com/video/" + url.pathname.split("/")[1];
       }
       return value;
-    } catch (error) {
+    } catch {
       return "";
     }
   }
