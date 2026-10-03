@@ -137,6 +137,65 @@ const built = (slugs: string[]): BuiltPage => ({
   sections: slugs.filter(isRegistrySlug).map(newSection),
 });
 
+test.describe("controlling the page", () => {
+  test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only: plain layout");
+  test.use({ viewport: { width: 1440, height: 1000 } });
+  const frameOf = (page: Page) => page.frameLocator('iframe[title="Your page, React output"]');
+
+  test("a section's width and spacing reach the page, the page.tsx and the HTML file", async ({ page, request }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Landing page/ }).click();
+    await pageList(page).getByRole("button", { name: /Options for Feature grid/ }).click();
+    await page.getByLabel("Width").selectOption("narrow");
+    await page.getByLabel("Space above and below").selectOption("large");
+    const grid = frameOf(page).locator('[data-part="feature-grid"] > div');
+    await expect(grid).toHaveClass(/py-20/);
+    await expect(grid.locator("> div")).toHaveClass(/max-w-2xl/);
+
+    // The same choice in what is taken home, through the page's link.
+    await page.getByRole("button", { name: /Get the code/ }).click();
+    await page.getByRole("radio", { name: "page.tsx" }).check({ force: true });
+    await expect(page.getByLabel("Code, scrollable")).toContainText('<div className="px-6 sm:px-8 py-20">');
+    const zipHref = await page.getByRole("link", { name: "Download one HTML file" }).getAttribute("href");
+    const html = await (await request.get(zipHref!)).text();
+    expect(html).toContain('<div class="tpl-px tpl-py-large"><div class="tpl-max-narrow">');
+  });
+
+  test("a short page keeps its footer at the bottom, in both outputs", async ({ page, request }) => {
+    const short = encodePage(built(["header", "badge", "footer"]));
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`/preview-page#p=${short}`);
+    await expect(page.locator('[data-part="footer"]')).toBeVisible();
+    const reactBottom = await page.locator('[data-part="footer"]').evaluate((el) => el.getBoundingClientRect().bottom);
+    expect(Math.round(reactBottom)).toBe(900);
+    await page.setContent(await (await request.get(`/download/page.html?p=${short}`)).text());
+    const htmlBottom = await page.locator("footer").last().evaluate((el) => el.getBoundingClientRect().bottom);
+    expect(Math.round(htmlBottom)).toBeGreaterThanOrEqual(899);
+  });
+
+  test("clicking text on the page goes to the field that holds it", async ({ page }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Landing page/ }).click();
+    await frameOf(page).getByRole("heading", { level: 1 }).click();
+    await expect(page.getByRole("textbox", { name: "Heading", exact: true })).toBeFocused();
+  });
+
+  test("the preview fills the screen, its links stay on the page, and Escape closes it", async ({ page }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Landing page/ }).click();
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    const preview = page.getByRole("dialog", { name: "Preview of your page" });
+    await expect(preview).toBeVisible();
+    await expect(page.getByRole("button", { name: "Close preview" })).toBeFocused();
+    await frameOf(page).getByRole("link", { name: "Pricing" }).first().click();
+    await expect(page.getByText("On your site, this goes to /pricing")).toBeVisible();
+    expect(page.frames()[1].url()).toContain("/preview-page");
+    await page.keyboard.press("Escape");
+    await expect(preview).toBeHidden();
+    await expect(page.getByRole("button", { name: "Preview", exact: true })).toBeFocused();
+  });
+});
+
 test.describe("what a page gives back", () => {
   test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only: server output");
 

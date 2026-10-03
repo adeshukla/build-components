@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 export default function BuildPage() {
   const { exportNames } = readTemplateSources(Object.keys(registry));
   return (
-    <main className="flex-1">
+    // On a large screen the builder takes exactly the screen below the site header, and its panes scroll.
+    <main className="flex-1 lg:flex lg:h-[calc(100dvh-4.5rem)] lg:flex-none lg:flex-col">
       {/* Short, so the builder below gets the screen. */}
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-4 pt-6 pb-4">
         <h1 className="font-display text-4xl leading-none">Build a page</h1>

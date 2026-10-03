@@ -1,7 +1,7 @@
 import { fullBleed, partBySlug } from "@/lib/parts";
 import { isRegistrySlug, registry, type RegistrySlug } from "@/lib/registry";
 import { parseConfig, toSearchParams } from "@/lib/schema";
-import { resolve, type Template, type TemplateOptions } from "@/lib/templates";
+import { isBleed, resolve, sectionSpaces, sectionWidths, type SectionSpace, type SectionWidth, type Template, type TemplateOptions } from "@/lib/templates";
 
 /*
  * The page builder (D80): a page someone puts together from the catalogue, part by part. It is turned
@@ -12,7 +12,8 @@ import { resolve, type Template, type TemplateOptions } from "@/lib/templates";
  * the way a part's own address does, so the server reads it with the same validation (parseConfig).
  */
 
-export type BuiltSection = { slug: RegistrySlug; config: Record<string, unknown> };
+/** A part on the page: its options, and (D84) how wide it sits and the room around it. Unset: as it comes. */
+export type BuiltSection = { slug: RegistrySlug; config: Record<string, unknown>; width?: SectionWidth; space?: SectionSpace };
 export type BuiltPage = Omit<TemplateOptions, "sections"> & { sections: BuiltSection[] };
 
 /** Enough for any real page; keeps a link, and the work a link asks of the server, bounded. */
@@ -66,6 +67,9 @@ export function pageTemplate(page: BuiltPage): { template: Template; options: Te
         slug: section.slug,
         region: regionOf(section.slug),
         narrow: isNarrow(section.slug) && !fullBleed.includes(section.slug),
+        // Automatic: content in one consistent wide column, banners edge to edge, forms in a reading column.
+        width: section.width ?? (isBleed(section.slug) || isNarrow(section.slug) ? undefined : "wide"),
+        space: section.space,
         config: () => section.config,
       })),
     },
@@ -82,7 +86,12 @@ export function encodePage(page: BuiltPage) {
     n: page.name,
     b: page.brand,
     t: page.theme,
-    s: page.sections.map((section) => [section.slug, toSearchParams(registry[section.slug].schema, section.config).toString()]),
+    // [slug, options, width, space]: the last two only when set, so most links stay as short as before.
+    s: page.sections.map((section) => {
+      const entry: string[] = [section.slug, toSearchParams(registry[section.slug].schema, section.config).toString()];
+      if (section.width || section.space) entry.push(section.width ?? "", section.space ?? "");
+      return entry;
+    }),
   };
   let binary = "";
   for (const byte of new TextEncoder().encode(JSON.stringify(data))) binary += String.fromCharCode(byte);
@@ -99,11 +108,16 @@ export function decodePage(text: string): BuiltPage | null {
     const seen = new Set<string>();
     const sections: BuiltSection[] = [];
     for (const entry of Array.isArray(data.s) ? data.s.slice(0, MAX_SECTIONS) : []) {
-      const [slug, query] = Array.isArray(entry) ? entry : [];
+      const [slug, query, width, space] = Array.isArray(entry) ? entry : [];
       // One of each part: two of one would install over each other.
       if (typeof slug !== "string" || !isRegistrySlug(slug) || seen.has(slug) || typeof query !== "string") continue;
       seen.add(slug);
-      sections.push({ slug, config: parseConfig(registry[slug].schema, new URLSearchParams(query)) as Record<string, unknown> });
+      sections.push({
+        slug,
+        config: parseConfig(registry[slug].schema, new URLSearchParams(query)) as Record<string, unknown>,
+        ...(sectionWidths.includes(width) ? { width } : {}),
+        ...(sectionSpaces.includes(space) ? { space } : {}),
+      });
     }
     return {
       name: typeof data.n === "string" && data.n.trim() ? data.n.trim().slice(0, 40) : fallback.name,

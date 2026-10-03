@@ -27,9 +27,35 @@ type Section = {
   optional?: boolean;
   /** Narrow sections (forms) sit in a reading-width column. */
   narrow?: boolean;
+  /** Set in the page builder (D84): how wide the section is, and the room above and below it. */
+  width?: SectionWidth;
+  space?: SectionSpace;
   /** Options the page sets on this part, besides the brand colour and theme. */
   config?: (options: TemplateOptions) => Record<string, unknown>;
 };
+
+/** Parts that run edge to edge with no room around them: banners, and the page header's band. */
+export const isBleed = (slug: string) => fullBleed.includes(slug) || slug === "page-header";
+
+export const sectionWidths = ["full", "wide", "medium", "narrow"] as const;
+export const sectionSpaces = ["none", "small", "medium", "large"] as const;
+export type SectionWidth = (typeof sectionWidths)[number];
+export type SectionSpace = (typeof sectionSpaces)[number];
+
+/**
+ * How a section sits on the page (D84), as Tailwind classes for the React outputs: `outer` pads it, `inner`
+ * (if any) caps its width and centres it. Left unset, a section keeps the frame it always had: full-bleed
+ * parts edge to edge with no room, forms in a reading column, everything else padded across the page.
+ * The HTML output turns the same choice into classes of its own (lib/template-output.ts).
+ */
+export function sectionFrame(section: { bleed: boolean; narrow?: boolean; width?: SectionWidth; space?: SectionSpace }) {
+  const width = section.width ?? (section.bleed ? "full" : section.narrow ? "narrow" : undefined);
+  const space = section.space ?? (section.bleed ? "none" : "medium");
+  const padX = width === "full" ? "" : "px-6 sm:px-8";
+  const padY = { none: "", small: "py-6", medium: "py-10", large: "py-20" }[space];
+  const cap = width && width !== "full" ? { wide: "max-w-6xl", medium: "max-w-4xl", narrow: "max-w-2xl" }[width] : "";
+  return { outer: [padX, padY].filter(Boolean).join(" "), inner: cap ? `mx-auto ${cap}` : "", width: width ?? "auto", space };
+}
 
 export type Template = {
   id: string;
@@ -386,7 +412,7 @@ export function resolve(template: Template, options: TemplateOptions) {
     .filter((section) => !section.optional || options.sections.includes(section.slug))
     .map((section) => ({
       ...section,
-      bleed: fullBleed.includes(section.slug) || section.slug === "page-header",
+      bleed: isBleed(section.slug),
       config: {
         ...parseConfig(registry[section.slug].schema, new URLSearchParams()),
         ...section.config?.(options),

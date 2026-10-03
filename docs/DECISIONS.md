@@ -666,3 +666,24 @@ frame stays a real window, so parts that open dialogs still work in it.
 **Tested:** `e2e/builder.spec.ts`: a template in one click; a drag onto the page lands where dropped; a drag
 in the layers list; keyboard moves keep focus; clicking a section on the page chooses it; a touch drag
 through CDP on an emulated phone; axe on the builder. `/build` fits from 300 to 1920px in three browsers.
+
+## 2026-10-03 — D84. Builder fixes: one scroll per pane, section width and spacing, preview, links, click to edit
+**From Adesh's list** (the defects; the larger items are planned separately):
+- **Scrollbars and the gap under the footer:** the builder now takes exactly the screen below the site header
+  on a large screen (its `main` is `lg:flex-none` with a fixed height: `flex-1` let it grow to its content),
+  and each pane scrolls on its own, thinly: parts, layers, options. The options panel no longer scrolls
+  inside a scrolling pane. The gap under the footer was screen-reader labels inside the scrolling panes,
+  positioned against the page because no ancestor was; every scroller is `relative` now.
+- **Containers:** every section has a width (Full, Wide, Medium, Narrow) and space above and below (None,
+  Small, Medium, Large), in the builder's options column. `sectionFrame` in `lib/templates.ts` turns them
+  into the same frame for the preview, page.tsx and the HTML file. Left at Automatic in the builder, content
+  sits in one consistent wide column, banners run edge to edge, forms in a reading column. Templates keep
+  exactly the frames they had.
+- **Footer at the bottom:** every page (preview, page.tsx, HTML) is a column at least the screen's height,
+  with `main` taking the slack, so a short page keeps its footer at the bottom.
+- **Click text to edit:** clicking a heading, a paragraph or a button on the page chooses its section and
+  focuses the field that holds that text.
+- **Links:** while trying the page or previewing it, a link to another page no longer takes the frame away
+  (it showed this site's 404); a note says where it goes on the real site. Links within the page still work.
+- **Preview:** full screen, with the widths, Escape to close (also from inside the page), and "Open in a new
+  tab" (`/preview-page#p=…`).

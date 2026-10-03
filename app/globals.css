@@ -769,3 +769,9 @@ html.is-dragging * {
 html.is-dragging iframe {
   pointer-events: none;
 }
+
+/* Panes that scroll inside a tool (the page builder): a thin bar, in the site's colours. */
+@utility thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rule-strong) transparent;
+}

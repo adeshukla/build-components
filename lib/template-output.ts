@@ -1,7 +1,7 @@
 import { applyConfig } from "@/lib/export";
 import { registry, type RegistrySlug } from "@/lib/registry";
 import { toSearchParams } from "@/lib/schema";
-import { resolve, type Template, type TemplateOptions } from "@/lib/templates";
+import { resolve, sectionFrame, type Template, type TemplateOptions } from "@/lib/templates";
 
 /*
  * What a template exports. Pure functions, used by the editor in the browser and by the registry route and
@@ -38,11 +38,13 @@ export function templateReactSource(template: Template, options: TemplateOptions
   const sections = resolve(template, options);
   const name = (slug: string) => exportNames[slug] ?? slug;
   const dark = options.theme === "dark";
-  const pad = (tag: string, narrow?: boolean) =>
-    narrow
-      ? `<div className="px-6 py-10 sm:px-8">\n          <div className="mx-auto max-w-2xl">\n            <${tag} />\n          </div>\n        </div>`
-      : `<div className="px-6 py-10 sm:px-8">\n          <${tag} />\n        </div>`;
-  const render = (section: (typeof sections)[number]) => (section.bleed ? `<${name(section.slug)} />` : pad(name(section.slug), section.narrow));
+  const render = (section: (typeof sections)[number]) => {
+    const tag = `<${name(section.slug)} />`;
+    const { outer, inner } = sectionFrame(section);
+    if (!outer && !inner) return tag;
+    const body = inner ? `<div className="${inner}">\n            ${tag}\n          </div>` : tag;
+    return `<div className="${outer}">\n          ${body}\n        </div>`;
+  };
   const top = sections.filter((s) => s.region === "top").map(render);
   const side = sections.filter((s) => s.region === "side").map(render);
   const main = sections.filter((s) => s.region === "main").map(render);
@@ -51,9 +53,9 @@ export function templateReactSource(template: Template, options: TemplateOptions
     .map((slug) => `import { ${name(slug)} } from "@/components/${slug}";`)
     .join("\n");
   const surface = options.theme === "system" ? "bg-white text-[#16121f] dark:bg-[#141019] dark:text-[#f6f5fa]" : dark ? "bg-[#141019] text-[#f6f5fa]" : "bg-white text-[#16121f]";
-  const mainBlock = `<main id="main" tabIndex={-1} className="outline-none">\n        ${main.join("\n        ")}\n      </main>`;
+  const mainBlock = `<main id="main" tabIndex={-1} className="flex-1 outline-none">\n        ${main.join("\n        ")}\n      </main>`;
   const body = side.length
-    ? `<div className="md:grid md:grid-cols-[auto_1fr]">\n        <div>\n          ${side.join("\n          ")}\n        </div>\n        ${mainBlock.replace(/\n/g, "\n  ")}\n      </div>`
+    ? `<div className="flex-1 md:grid md:grid-cols-[auto_1fr]">\n        <div>\n          ${side.join("\n          ")}\n        </div>\n        ${mainBlock.replace(/\n/g, "\n  ")}\n      </div>`
     : mainBlock;
   return `// ${template.name} for ${options.name}: ${sections.length} parts from Build Components.
 // Each part was installed with this page's options already set, so none of them needs props here.
@@ -61,7 +63,7 @@ ${imports}
 
 export default function ${componentName(template.name)}() {
   return (
-    <div className="min-h-dvh ${surface}">
+    <div className="flex min-h-dvh flex-col ${surface}">
       ${[...top, body, ...bottom].join("\n      ")}
     </div>
   );
@@ -104,8 +106,11 @@ export function templateHtml(
       "renderHtml" in render && render.renderHtml
         ? bodyOf(render.renderHtml(section.config))
         : bodyOf(sources[section.slug]?.html ?? "").replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
-    if (section.bleed) return html;
-    return `<div class="tpl-pad">${section.narrow ? `<div class="tpl-narrow">${html}</div>` : html}</div>`;
+    const { width, space } = sectionFrame(section);
+    const outer = [width !== "full" && "tpl-px", space !== "none" && `tpl-py-${space}`].filter(Boolean).join(" ");
+    const inner = width === "full" || width === "auto" ? "" : `tpl-max-${width}`;
+    if (!outer && !inner) return html;
+    return `<div class="${outer}">${inner ? `<div class="${inner}">${html}</div>` : html}</div>`;
   };
   const region = (name: string) => sections.filter((s) => s.region === name).map(markup).join("\n");
   const side = region("side");
@@ -130,14 +135,21 @@ export function templateHtml(
     <title>${template.name} | ${options.name.replace(/[<>&"]/g, "")}</title>
     <style>
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;min-height:100dvh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;${page}}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;${page}}
 ${system}
+main{flex:1}
 main:focus{outline:none}
-.tpl-pad{padding:40px 24px}
-@media (min-width:640px){.tpl-pad{padding:40px 32px}}
-.tpl-narrow{max-width:42rem;margin-inline:auto}
+.tpl-px{padding-inline:24px}
+@media (min-width:640px){.tpl-px{padding-inline:32px}}
+.tpl-py-small{padding-block:24px}
+.tpl-py-medium{padding-block:40px}
+.tpl-py-large{padding-block:80px}
+.tpl-max-wide,.tpl-max-medium,.tpl-max-narrow{margin-inline:auto}
+.tpl-max-wide{max-width:72rem}
+.tpl-max-medium{max-width:56rem}
+.tpl-max-narrow{max-width:42rem}
 .tpl-split{display:block}
-@media (min-width:768px){.tpl-split{display:grid;grid-template-columns:auto 1fr}}
+@media (min-width:768px){.tpl-split{display:grid;grid-template-columns:auto 1fr;flex:1}}
 ${css}
     </style>
   </head>

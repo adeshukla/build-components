@@ -10,6 +10,8 @@ type Props = {
   config: Record<string, unknown>;
   onChange: (key: string, value: unknown) => void;
   onResetAll: () => void;
+  /** Extra classes for the panel's box, so a host can let it fill a column instead of capping its height. */
+  className?: string;
 };
 
 const groupOrder = ["Content", "Behaviour", "Add-ons", "Style"] as const;
@@ -48,7 +50,7 @@ const choiceNames: Record<string, string> = {
 const choiceName = (value: string) => choiceNames[value] ?? value;
 
 /** Editor controls generated from a component's options schema: one tab per group, plus search across all. */
-export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
+export function OptionsPanel({ schema, config, onChange, onResetAll, className = "" }: Props) {
   const idBase = useId();
   const groups = groupOrder.filter((group) => schema.some((option) => option.group === group));
   const [group, setGroup] = useState<string>(groups[0]);
@@ -66,7 +68,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
   );
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-rule bg-paper lg:max-h-[calc(100svh-2rem)]">
+    <div className={`flex flex-col overflow-hidden rounded-lg border border-rule bg-paper ${className || "lg:max-h-[calc(100svh-2rem)]"}`}>
       <div className="border-b border-rule p-4">
         <h2 className="font-display text-2xl leading-[1.05]">Configure</h2>
         <label htmlFor={`${idBase}-search`} className="sr-only">
@@ -132,7 +134,7 @@ export function OptionsPanel({ schema, config, onChange, onResetAll }: Props) {
 
       <div
         {...(search ? { role: "region", "aria-label": "Matching options", tabIndex: 0 } : tabPanelProps(idBase, group))}
-        className="min-h-0 flex-1 overflow-y-auto"
+        className="thin-scroll relative min-h-0 flex-1 overflow-y-auto"
       >
         {shown.length === 0 ? (
           <p className="p-6 text-sm text-pretty text-ink-muted">

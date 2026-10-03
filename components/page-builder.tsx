@@ -21,7 +21,7 @@ import {
 import { inStock, partBySlug, type Category } from "@/lib/parts";
 import { registry, type RegistrySlug } from "@/lib/registry";
 import { templateReactSource } from "@/lib/template-output";
-import { defaultOptions, templateById, templates } from "@/lib/templates";
+import { defaultOptions, sectionSpaces, sectionWidths, templateById, templates, type SectionSpace, type SectionWidth } from "@/lib/templates";
 
 /*
  * The page builder (D80, reworked in D83). Three panes: the parts, with a drawing of each, on the left;
@@ -74,6 +74,10 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const [said, setSaid] = useState("");
   const [width, setWidth] = useState("100%");
   const [mode, setMode] = useState<"edit" | "try">("edit");
+  const [previewing, setPreviewing] = useState(false);
+  const [note, setNote] = useState("");
+  // Bumped by a click on the page's text, so the field for it is focused even if the section was chosen already.
+  const [, setClicked] = useState(0);
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [ghost, setGhost] = useState<{ slug: RegistrySlug; x: number; y: number } | null>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
@@ -88,6 +92,9 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const justDragged = useRef(false);
   // Where focus goes after a change moves or removes the control that had it; moved after the commit.
   const focusNext = useRef<string | null>(null);
+  // Text clicked on the page, whose field is focused once the section's options have rendered.
+  const editText = useRef<string | null>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
 
   const sections = page.sections;
   const onPage = new Set(sections.map((section) => section.slug));
@@ -99,6 +106,8 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const rowId = (slug: string, what: string) => `${uid}-${slug}-${what}`;
   const chosen = selected ? sections.find((section) => section.slug === selected) : undefined;
   const passing = checks.filter((check) => check.ok).length;
+  // In the full-screen preview, clicks always work the parts.
+  const clicks = previewing ? "try" : mode;
 
   // The address said where to start; from here on the page lives in this browser.
   useEffect(() => {
@@ -114,10 +123,42 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   }, [encoded]);
 
   useEffect(() => {
-    if (!focusNext.current) return;
-    document.getElementById(focusNext.current)?.focus();
-    focusNext.current = null;
+    if (focusNext.current) {
+      document.getElementById(focusNext.current)?.focus();
+      focusNext.current = null;
+    }
+    // Clicked text on the page: the field that holds it, if there is one, gets focus.
+    const text = editText.current;
+    if (text) {
+      editText.current = null;
+      const field = [...(optionsRef.current?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea") ?? [])].find(
+        (input) => input.value.trim() === text,
+      );
+      field?.focus();
+      field?.select();
+    }
   });
+
+  // The full-screen preview: Escape closes it, and nothing behind it can be reached meanwhile.
+  useEffect(() => {
+    if (!previewing) return;
+    const behind = [...document.querySelectorAll<HTMLElement>("body > header, body > footer, body > .skip-link")];
+    behind.forEach((el) => (el.inert = true));
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setPreviewing(false);
+      focusNext.current = `${uid}-preview-button`;
+    };
+    // Heard in the page's frame too: after a click in there, the keyboard is in there.
+    const frameDoc = frameRef.current?.contentDocument;
+    document.addEventListener("keydown", onKey);
+    frameDoc?.addEventListener("keydown", onKey);
+    return () => {
+      behind.forEach((el) => (el.inert = false));
+      document.removeEventListener("keydown", onKey);
+      frameDoc?.removeEventListener("keydown", onKey);
+    };
+  }, [previewing, uid]);
 
   /** Where each section sits in the frame's window, for the outlines and for working out a drop. */
   function measure() {
@@ -169,11 +210,28 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     const onOver = (event: Event) => setHovered(partAt(event.target) ?? null);
     const onLeave = () => setHovered(null);
     const onClick = (event: Event) => {
-      if (mode !== "edit") return;
-      const slug = partAt(event.target);
-      event.preventDefault();
-      event.stopPropagation();
-      if (slug) setSelected(slug);
+      const target = event.target as Element | null;
+      if (clicks === "edit") {
+        const slug = partAt(target);
+        event.preventDefault();
+        event.stopPropagation();
+        if (!slug) return;
+        setSelected(slug);
+        const text = target?.closest("h1, h2, h3, h4, h5, h6, p, a, button, li, span, label, dt, dd")?.textContent?.trim();
+        if (text && text.length <= 300) {
+          editText.current = text;
+          setClicked((count) => count + 1);
+        }
+        return;
+      }
+      // Trying the page: a link to another page of the site would take the frame away from it.
+      const link = target?.closest?.("a[href]");
+      const href = link?.getAttribute("href") ?? "";
+      if (link && !href.startsWith("#")) {
+        event.preventDefault();
+        setNote(`On your site, this goes to ${href}`);
+        window.setTimeout(() => setNote(""), 2600);
+      }
     };
     frameWindow.addEventListener("scroll", onScroll, { passive: true });
     doc.addEventListener("pointerover", onOver);
@@ -186,7 +244,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       doc.documentElement.removeEventListener("pointerleave", onLeave);
       doc.removeEventListener("click", onClick, true);
     };
-  }, [mode, frameReady]);
+  }, [clicks, frameReady]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -344,6 +402,19 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     window.addEventListener("keydown", onKey);
   }
 
+  function openPreview() {
+    setPreviewing(true);
+    focusNext.current = `${uid}-close-preview`;
+  }
+  function closePreview() {
+    setPreviewing(false);
+    focusNext.current = `${uid}-preview-button`;
+  }
+
+  function setLayout(slug: RegistrySlug, patch: { width?: SectionWidth; space?: SectionSpace }) {
+    setPage({ ...page, sections: sections.map((section) => (section.slug === slug ? { ...section, ...patch } : section)) });
+  }
+
   async function copy(text: string, what: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -363,7 +434,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   const iconButton = "grid size-9 shrink-0 cursor-pointer place-items-center rounded-lg text-ink-muted hover:bg-wash hover:text-ink";
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 px-4 pb-10 lg:h-[calc(100dvh-4.5rem)] lg:grid-cols-[17rem_minmax(0,1fr)_20rem] lg:grid-rows-[auto_minmax(0,1fr)] lg:pb-4">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 px-4 pb-10 lg:min-h-0 lg:flex-1 lg:grid-cols-[17rem_minmax(0,1fr)_20rem] lg:grid-rows-[auto_minmax(0,1fr)] lg:pb-4">
       <p role="status" className="sr-only">
         {said}
       </p>
@@ -415,10 +486,19 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
           </div>
         </div>
         <button
+          id={`${uid}-preview-button`}
+          type="button"
+          disabled={sections.length === 0}
+          onClick={openPreview}
+          className="btn-glass ml-auto cursor-pointer text-sm disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Preview
+        </button>
+        <button
           type="button"
           disabled={sections.length === 0}
           onClick={() => dialogRef.current?.showModal()}
-          className="btn-accent ml-auto cursor-pointer text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn-accent cursor-pointer text-sm disabled:cursor-not-allowed disabled:opacity-60"
         >
           Get the code
           {sections.length > 0 && checks.length > 0 && <span className="font-normal">{` · ${passing} of ${checks.length} checks pass`}</span>}
@@ -426,7 +506,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       </div>
 
       {/* The parts, page sections first, each with a drawing. Drag one onto the page, or click to add it. */}
-      <section aria-labelledby={`${uid}-parts`} className="glass flex min-h-0 flex-col rounded-2xl lg:row-start-2">
+      <section aria-labelledby={`${uid}-parts`} className="glass relative flex min-h-0 flex-col rounded-2xl lg:row-start-2">
         <div className="border-b border-rule p-4">
           <h2 id={`${uid}-parts`} className="font-display text-2xl leading-none">
             Add parts
@@ -446,7 +526,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
             className="mt-3 min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 text-base"
           />
         </div>
-        <div className="grid max-h-[50vh] min-h-0 gap-5 overflow-y-auto p-4 lg:max-h-none lg:flex-1">
+        <div className="thin-scroll relative grid max-h-[50vh] min-h-0 gap-5 overflow-y-auto p-4 lg:max-h-none lg:flex-1">
           {order.map((category) => {
             const inCategory = found.filter((part) => part.category === category);
             if (inCategory.length === 0) return null;
@@ -495,17 +575,46 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       </section>
 
       {/* The page itself, with the chosen section outlined and its tools beside it. */}
-      <section aria-labelledby={`${uid}-preview`} className="flex min-h-0 flex-col lg:row-start-2">
+      <section
+        aria-labelledby={`${uid}-preview`}
+        role={previewing ? "dialog" : undefined}
+        aria-modal={previewing || undefined}
+        className={previewing ? "fixed inset-0 z-[70] flex flex-col gap-3 bg-paper p-3" : "flex min-h-0 flex-col lg:row-start-2"}
+      >
         <h2 id={`${uid}-preview`} className="sr-only">
-          Your page
+          {previewing ? "Preview of your page" : "Your page"}
         </h2>
+        {previewing && (
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-display text-2xl leading-none">Preview</span>
+            <Segmented
+              name={`${uid}-preview-width`}
+              legend="Screen width"
+              hideLegend
+              value={width}
+              choices={[
+                { value: "300px", label: "300" },
+                { value: "375px", label: "Phone" },
+                { value: "768px", label: "Tablet" },
+                { value: "100%", label: "Full" },
+              ]}
+              onChange={setWidth}
+            />
+            <a href={`/preview-page#p=${encoded}`} target="_blank" rel="noopener" className="btn-glass ml-auto text-sm">
+              Open in a new tab
+            </a>
+            <button id={`${uid}-close-preview`} type="button" onClick={closePreview} className="btn-accent cursor-pointer text-sm">
+              Close preview
+            </button>
+          </div>
+        )}
         <div className="relative h-[75vh] min-h-0 overflow-hidden rounded-2xl border border-rule bg-paper-sunk lg:h-auto lg:flex-1">
           <div className="relative mx-auto h-full max-w-full transition-[width] duration-500 ease-spring" style={{ width }}>
             <iframe ref={frameRef} title="Your page, React output" src="/preview-page" className="block h-full w-full border-0 bg-white" />
 
             {/* Drawn over the frame, never in the way: it only catches its own buttons. */}
-            <div aria-hidden={!chosenBox} className="pointer-events-none absolute inset-0 overflow-hidden">
-              {mode === "edit" && hoveredBox && (
+            <div aria-hidden={!chosenBox || previewing} className={`pointer-events-none absolute inset-0 overflow-hidden ${previewing ? "hidden" : ""}`}>
+              {clicks === "edit" && hoveredBox && (
                 <div
                   className="absolute inset-x-0 border-2 border-dashed border-accent/70"
                   style={{ top: hoveredBox.top, height: hoveredBox.height }}
@@ -556,7 +665,13 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
               )}
             </div>
 
-            {sections.length === 0 && !drop && (
+            {note && (
+              <p role="status" className="absolute bottom-3 left-1/2 m-0 -translate-x-1/2 rounded-full bg-[#1c1a17] px-4 py-2 text-sm text-white shadow-lg">
+                {note}
+              </p>
+            )}
+
+            {sections.length === 0 && !drop && !previewing && (
               <div className="absolute inset-0 overflow-y-auto bg-paper p-6">
                 <h3 className="font-display text-3xl leading-none">Start with a template</h3>
                 <p className="mt-2 text-sm text-ink-muted">Or drag parts from the left onto this page.</p>
@@ -581,15 +696,15 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       </section>
 
       {/* Layers, then the chosen section's options, or the page's own settings. */}
-      <div className="grid min-h-0 grid-cols-[minmax(0,1fr)] content-start gap-4 lg:row-start-2 lg:overflow-y-auto">
-        <section aria-labelledby={`${uid}-layers`} className="glass rounded-2xl p-4">
+      <div className="relative flex min-h-0 min-w-0 flex-col gap-4 lg:row-start-2">
+        <section aria-labelledby={`${uid}-layers`} className="glass relative flex shrink-0 flex-col rounded-2xl p-4 lg:max-h-[40%]">
           <h2 id={`${uid}-layers`} className="font-display text-2xl leading-none">
             Layers
           </h2>
           {sections.length === 0 ? (
             <p className="mt-2 text-sm text-ink-muted">Nothing on the page yet.</p>
           ) : (
-            <ol ref={layersRef} aria-label="Parts on your page, in order" className="relative mt-3 grid gap-1">
+            <ol ref={layersRef} aria-label="Parts on your page, in order" className="thin-scroll relative mt-3 grid min-h-0 gap-1 overflow-y-auto">
               {sections.map((section) => {
                 const label = name(section.slug);
                 return (
@@ -637,7 +752,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
         </section>
 
         {chosen ? (
-          <section aria-labelledby={`${uid}-options`} className="glass min-w-0 rounded-2xl p-4">
+          <section aria-labelledby={`${uid}-options`} className="glass relative flex min-h-0 min-w-0 flex-1 flex-col rounded-2xl p-4">
             <div className="flex items-center justify-between gap-2">
               <h2 id={`${uid}-options`} className="font-display text-2xl leading-none">
                 {name(chosen.slug)}
@@ -646,9 +761,43 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
                 Page settings
               </button>
             </div>
-            <div className="mt-3">
+            {/* How the section sits on the page: the same for every part, so it is set here, not in its options. */}
+            <div className="mt-3 grid grid-cols-2 gap-2 text-sm font-medium">
+              <label className="grid min-w-0 gap-1">
+                Width
+                <select
+                  value={chosen.width ?? ""}
+                  onChange={(event) => setLayout(chosen.slug, { width: (event.target.value || undefined) as SectionWidth | undefined })}
+                  className="min-h-10 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-2 font-normal"
+                >
+                  <option value="">Automatic</option>
+                  {sectionWidths.map((value) => (
+                    <option key={value} value={value}>
+                      {{ full: "Full width", wide: "Wide", medium: "Medium", narrow: "Narrow" }[value]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid min-w-0 gap-1">
+                Space above and below
+                <select
+                  value={chosen.space ?? ""}
+                  onChange={(event) => setLayout(chosen.slug, { space: (event.target.value || undefined) as SectionSpace | undefined })}
+                  className="min-h-10 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-2 font-normal"
+                >
+                  <option value="">Automatic</option>
+                  {sectionSpaces.map((value) => (
+                    <option key={value} value={value}>
+                      {{ none: "None", small: "Small", medium: "Medium", large: "Large" }[value]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div ref={optionsRef} className="mt-3 flex min-h-0 flex-1 flex-col">
               <OptionsPanel
                 key={chosen.slug}
+                className="min-h-0 flex-1"
                 // The page's colour and theme are every part's, so they are set once, for the page.
                 schema={registry[chosen.slug].schema.filter((option) => option.key !== "accentColor" && option.key !== "theme")}
                 config={chosen.config}
@@ -658,7 +807,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
             </div>
           </section>
         ) : (
-          <form onSubmit={(event) => event.preventDefault()} className="glass grid grid-cols-[minmax(0,1fr)] content-start gap-5 rounded-2xl p-4">
+          <form onSubmit={(event) => event.preventDefault()} className="glass thin-scroll relative grid min-h-0 grid-cols-[minmax(0,1fr)] content-start gap-5 overflow-y-auto rounded-2xl p-4">
             <h2 className="font-display text-2xl leading-none">Page settings</h2>
             <PageFields options={page} onChange={(patch) => setPage({ ...page, ...patch })} />
             <p className="text-xs text-ink-muted">Choose a section on the page to set it up.</p>

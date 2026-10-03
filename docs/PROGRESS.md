@@ -6,6 +6,11 @@ Last updated: 2026-10-04 (session 16, on dev, not shipped)
 - **Builder reworked (D83):** drag onto the page itself (it did nothing before), by mouse or touch; click a
   section on the page to choose it; templates as one-click starts; parts with drawings; one Get the code
   dialog. On dev, waiting for Adesh to try it and say ship.
+- **Builder fixes (D84):** one thin scroll per pane, no gap under the footer, section width and spacing,
+  footers at the bottom of short pages in every output, click text to edit, links stay in the preview,
+  full-screen preview and open in a new tab. 466 tests pass against a production build.
+- **Next (Adesh's larger list):** multi-page websites, a theme builder (fonts, buttons, colours, radius, a
+  visitor dark/light toggle), images and embeds (YouTube), more sections. Plan and questions sent.
 
 ## Shipped (2026-10-03)
 Adesh said ship. `main` was fast-forwarded to `dev` (7a5d67e) and pushed; Vercel served it in about
