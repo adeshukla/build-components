@@ -17,9 +17,9 @@ Last updated: 2026-10-04 (session 16, on dev, not shipped)
 - **Websites (D86):** pages sharing one header and footer, a menu that lists them, links between them in the
   preview, a route per page in the Next.js project, an HTML file per page. 272 tests pass against a
   production build; the downloaded three-page project builds.
-- **Waiting on Adesh:** pick a theme builder direction in `scratchpad/theme-demo.html` (A Presets first,
-  B Token sheet, C Style by example, or a mix). Then: shared theme settings (fonts, colours, radius, buttons,
-  spacing, a visitor light/dark switch) read by all 125 parts in both outputs, then more sections.
+- **Theme (D87):** Adesh picked A, Presets first. Six themes plus Fine-tune, read by all 125 parts in both
+  outputs; a visitors' light and dark switch in the header; in the preview and every download.
+- **Next:** more sections (Adesh's item 10), then ship when he says so.
 - **Not shipped:** everything since D83 is on dev, waiting for "ship".
 
 ## Shipped (2026-10-03)

@@ -26,6 +26,7 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
   - `react/<slug>.tsx` — one `// @config-start … // @config-end` block.
   - `vanilla/<slug>.{css,js}` — plain output. JS-driven parts also ship `<slug>.html`; HTML-first parts (cta, form, header, footer, tabs, mega-menu, carousel, cart) generate markup from the options in `vanilla/render.ts` instead.
 - Every component supports `theme` (light / dark / system, detected at runtime) and, where it matters, `iosOnPhone` (Apple system font, iOS blue, 44px targets, bottom sheets on iPhone/iPad).
+- The theme contract (D87): every part reads `--bc-light-*`/`--bc-dark-*` (surface, sunk, text, muted, line), `--bc-radius-*`, `--bc-radius-button`, `--bc-font-body`, each with its own value as the fallback, and "system" obeys `<html data-bc-scheme>`. A new part must do the same: run `python scripts/theme-codemod.py` on it. Themes live in `lib/theme.ts` (`themeCss`).
 - `lib/export.ts` → `applyConfig(source, config)`: swap the config block. Files without one come back unchanged.
 - `lib/schema.ts` — option types incl. `list` (repeatable items) and URL-safe `format: "url"`; `parseConfig` validates untrusted query params; `isDefault`, `toSearchParams`, `isVisible`.
 - `lib/html.ts` — `escapeHtml`, `safeHref`, `luminance`, `htmlPage` for generated markup.

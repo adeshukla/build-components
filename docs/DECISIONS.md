@@ -729,3 +729,31 @@ go out in the downloads (no accounts yet).
   shadcn item that writes every page and part. The downloaded three-page project installs and builds.
 - **Found on the way:** the page view must be memoised. Rebuilt every render, it re-ran the effects that
   watch it every render: the page was re-sent to the frame endlessly and the checks never ran.
+
+## 2026-10-04 — D87. The site theme: presets first, every part takes it
+**Adesh chose:** direction A, "Presets first" (`scratchpad/theme-demo.html`), and the full theme across all
+parts. **What it is** (`lib/theme.ts`): six finished themes (Clean, Editorial, Bold, Calm, Mono, Warm),
+each a brand colour, a colour family, heading and body fonts, corners, a button shape and spacing; "Fine-tune"
+changes any one. Fonts are system font stacks, so a site still loads nothing from anywhere. Every colour
+family keeps text at 7:1 and muted text at 4.5:1 on its surfaces in light and dark (tested).
+**How every part takes it** (the contract, `scripts/theme-codemod.py`, kept as the record): parts read
+`--bc-light-*`/`--bc-dark-*` (surface, sunk, text, muted, line), `--bc-radius-*` (and `--bc-radius-button`
+for buttons on the accent), `--bc-font-body`; a page's headings take `--bc-font-heading`; section spacing
+takes `--bc-space`. Every value falls back to the part's own, so a part with no theme around it looks as it
+always did. "Follow the system" now also obeys a page's choice, `<html data-bc-scheme="light|dark">`. Under
+a theme a part's own corner option is hidden: the theme's corners apply. iPhone corners stay the iPhone's.
+**The visitors' switch:** a header option (`schemeSwitch`), off by default: a toggle button, "Dark theme",
+pressed while dark; it sets `data-bc-scheme`, is remembered (`localStorage` "bc-scheme"), and the Next.js
+layout and the HTML pages put the choice back before they paint. Turning it on in the builder sets the site
+to follow the system, since only parts that follow the system move with it.
+**Outputs:** the preview gets the theme's stylesheet; the Next.js project `app/bc-theme.css`, imported by its
+layout; the shadcn item the same file, imported by each page; the HTML pages the stylesheet inline.
+Templates are unchanged: they have no theme. A new site starts on Clean.
+**Found on the way:**
+- HTML-first parts set to follow the system wrote their light palette inline, which beat the stylesheet's
+  dark block: their HTML output never turned dark. They leave it to the stylesheet now.
+- form, table and pagination's HTML renderers imported helpers from their React (client) files, so a site's
+  HTML download failed with any of them on it. The helpers are copied in.
+**Tested:** every part under Editorial (light) and Bold (dark), React and HTML, with axe
+(`e2e/theme.spec.ts`); the header switch in both outputs and three browsers; a downloaded themed site run with
+`next start`: theme, switch, the choice surviving a reload and a page change, no console errors.
