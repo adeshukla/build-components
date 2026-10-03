@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, safeHref, themedColour } from "@/lib/html";
 import type { AlertBannerConfig } from "../react/alert-banner";
 
 /** Each tone has its own word, icon and colour: colour is never the only sign of what this is. */
@@ -30,8 +30,8 @@ export function renderAlertBannerMarkup(config: AlertBannerConfig) {
   const vars = [
     `--ab-surface: ${palette.surface[config.tone]}`,
     `--ab-tone: ${palette.tone[config.tone]}`,
-    `--ab-text: ${palette.text}`,
-    `--ab-muted: ${palette.muted}`,
+    ...(config.theme === "system" ? [] : [`--ab-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ab-muted: ${themedColour("muted", palette.muted, dark)}`]),
   ].join("; ");
 
   return `    <div class="ab ab--theme-${config.theme}" style="${vars}" role="${config.tone === "error" ? "alert" : "status"}" data-alert-banner>

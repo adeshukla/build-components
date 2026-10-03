@@ -2,17 +2,17 @@
 .ls {
   --ls-accent: #2563eb;
   --ls-accent-text: #1b4ab0;
-  --ls-surface: #ffffff;
+  --ls-surface: var(--bc-light-surface, #ffffff);
   --ls-hover: #eeecf5;
-  --ls-text: #16121f;
-  --ls-muted: #4d4a57;
+  --ls-text: var(--bc-light-text, #16121f);
+  --ls-muted: var(--bc-light-muted, #4d4a57);
   --ls-border: #737373;
-  --ls-line: #d9d5e4;
+  --ls-line: var(--bc-light-line, #d9d5e4);
   position: relative;
   display: inline-block;
   background: var(--ls-surface);
   color: var(--ls-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,15 +24,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ls--theme-system {
-    --ls-surface: #1c1826;
+  :root:not([data-bc-scheme="light"]) .ls--theme-system {
+    --ls-surface: var(--bc-dark-surface, #1c1826);
     --ls-hover: #2a2438;
-    --ls-text: #f6f5fa;
-    --ls-muted: #b6b3c2;
+    --ls-text: var(--bc-dark-text, #f6f5fa);
+    --ls-muted: var(--bc-dark-muted, #b6b3c2);
     --ls-border: #8e8a99;
-    --ls-line: #3a3448;
+    --ls-line: var(--bc-dark-line, #3a3448);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ls--theme-system {
+    --ls-surface: var(--bc-dark-surface, #1c1826);
+    --ls-hover: #2a2438;
+    --ls-text: var(--bc-dark-text, #f6f5fa);
+    --ls-muted: var(--bc-dark-muted, #b6b3c2);
+    --ls-border: #8e8a99;
+    --ls-line: var(--bc-dark-line, #3a3448);
+  }
+
 
 .ls-button {
   display: inline-flex;
@@ -41,7 +51,7 @@
   gap: 0.5rem;
   padding: 0 0.75rem;
   border: 1px solid var(--ls-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--ls-surface);
   color: inherit;
   font: inherit;
@@ -59,7 +69,7 @@
   margin: 0.25rem 0 0;
   padding: 0.25rem;
   border: 1px solid var(--ls-line);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--ls-surface);
   box-shadow: 0 10px 25px -10px rgb(0 0 0 / 0.3);
   list-style: none;
@@ -72,7 +82,7 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   color: inherit;
   text-decoration: none;
 }

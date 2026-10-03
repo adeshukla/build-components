@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { NavProgressConfig } from "../react/nav-progress";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderNavProgressMarkup(config: NavProgressConfig) {
   const vars = [
     `--np-accent: ${config.accentColor}`,
     `--np-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--np-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--np-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="np np--theme-${config.theme} np--${config.position}" style="${vars}" data-nav-progress>

@@ -2,16 +2,16 @@
 .hc {
   --hc-accent: #7c3aed;
   --hc-accent-text: #6021d6;
-  --hc-surface: #ffffff;
-  --hc-sunk: #f4f3f8;
-  --hc-text: #16121f;
-  --hc-muted: #4d4a57;
-  --hc-line: #c9c4d6;
+  --hc-surface: var(--bc-light-surface, #ffffff);
+  --hc-sunk: var(--bc-light-sunk, #f4f3f8);
+  --hc-text: var(--bc-light-text, #16121f);
+  --hc-muted: var(--bc-light-muted, #4d4a57);
+  --hc-line: var(--bc-light-line, #c9c4d6);
   display: block;
   padding: 1rem;
   background: var(--hc-surface);
   color: var(--hc-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .hc--theme-system {
-    --hc-surface: #1b1624;
-    --hc-sunk: #272031;
-    --hc-text: #f6f5fa;
-    --hc-muted: #b6b3c2;
-    --hc-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .hc--theme-system {
+    --hc-surface: var(--bc-dark-surface, #1b1624);
+    --hc-sunk: var(--bc-dark-sunk, #272031);
+    --hc-text: var(--bc-dark-text, #f6f5fa);
+    --hc-muted: var(--bc-dark-muted, #b6b3c2);
+    --hc-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .hc--theme-system {
+    --hc-surface: var(--bc-dark-surface, #1b1624);
+    --hc-sunk: var(--bc-dark-sunk, #272031);
+    --hc-text: var(--bc-dark-text, #f6f5fa);
+    --hc-muted: var(--bc-dark-muted, #b6b3c2);
+    --hc-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
 .hc [hidden] { display: none; }
@@ -39,7 +48,7 @@
 .hc-holder { position: relative; display: inline-block; }
 
 .hc-trigger {
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   color: inherit;
   text-decoration: underline;
   text-decoration-color: var(--hc-accent);
@@ -56,7 +65,7 @@
   width: 18rem;
   padding: 0.75rem;
   border: 1px solid var(--hc-line);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--hc-surface);
   text-align: left;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);

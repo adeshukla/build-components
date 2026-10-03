@@ -37,13 +37,22 @@ const sizes = {
   md: { track: "h-6 w-11", thumb: "size-5", travel: "translate-x-5" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -78,9 +87,9 @@ export function Switch({ config = defaultConfig }: { config?: SwitchConfig }) {
   const style = {
     "--sw-accent": config.accentColor,
     "--sw-accent-text": readableAccent(config.accentColor, dark),
-    "--sw-surface": palette.surface,
-    "--sw-text": palette.text,
-    "--sw-muted": palette.muted,
+    "--sw-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sw-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sw-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--sw-track": palette.track,
   } as CSSProperties;
   const hint = config.hint.trim();

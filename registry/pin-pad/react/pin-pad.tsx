@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -91,11 +100,11 @@ export function PinPad({ config = defaultConfig }: { config?: PinPadConfig }) {
   const style = {
     "--pp-accent": config.accentColor,
     "--pp-accent-text": readableAccent(config.accentColor, dark),
-    "--pp-surface": palette.surface,
-    "--pp-sunk": palette.sunk,
-    "--pp-text": palette.text,
-    "--pp-muted": palette.muted,
-    "--pp-line": palette.line,
+    "--pp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--pp-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--pp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--pp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--pp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const push = (digit: string) => setValue((current) => (current.length >= config.length ? current : current + digit));
@@ -103,7 +112,7 @@ export function PinPad({ config = defaultConfig }: { config?: PinPadConfig }) {
   const full = value.length === config.length;
 
   const key =
-    "flex min-h-14 items-center justify-center rounded-md border border-(--pp-line) bg-(--pp-sunk) text-xl font-medium text-(--pp-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pp-accent-text)";
+    "flex min-h-14 items-center justify-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--pp-line) bg-(--pp-sunk) text-xl font-medium text-(--pp-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pp-accent-text)";
 
   return (
     <div

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SkipLinksConfig } from "../react/skip-links";
 
 const palettes = {
@@ -29,7 +29,7 @@ export function renderSkipLinksMarkup(config: SkipLinksConfig) {
     `--sk-accent: ${config.accentColor}`,
     `--sk-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--sk-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--sk-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sk-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const links = config.links

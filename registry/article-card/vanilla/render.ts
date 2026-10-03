@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { ArticleCardConfig } from "../react/article-card";
 
 const palettes = {
@@ -35,7 +35,7 @@ export function renderArticleCardMarkup(config: ArticleCardConfig) {
   const vars = [
     `--atc-accent: ${config.accentColor}`,
     `--atc-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--atc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--atc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const tags = config.tags

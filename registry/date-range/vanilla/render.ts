@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { DateRangeConfig } from "../react/date-range";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderDateRangeMarkup(config: DateRangeConfig) {
   const vars = [
     `--dr-accent: ${config.accentColor}`,
     `--dr-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--dr-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--dr-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const limits = (extra: string) =>

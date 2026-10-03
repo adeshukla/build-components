@@ -3,18 +3,18 @@
   --es-accent: #2563eb;
   --es-accent-text: #1b4ab0;
   --es-on-accent: #ffffff;
-  --es-surface: #ffffff;
-  --es-sunk: #f4f3f8;
-  --es-text: #16121f;
-  --es-muted: #4d4a57;
+  --es-surface: var(--bc-light-surface, #ffffff);
+  --es-sunk: var(--bc-light-sunk, #f4f3f8);
+  --es-text: var(--bc-light-text, #16121f);
+  --es-muted: var(--bc-light-muted, #4d4a57);
   --es-border: #737373;
   display: block;
   padding: 2.5rem 1.5rem;
   border: 1px dashed var(--es-border);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   background: var(--es-surface);
   color: var(--es-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -26,14 +26,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .es--theme-system {
-    --es-surface: #141019;
-    --es-sunk: #1f1a29;
-    --es-text: #f6f5fa;
-    --es-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .es--theme-system {
+    --es-surface: var(--bc-dark-surface, #141019);
+    --es-sunk: var(--bc-dark-sunk, #1f1a29);
+    --es-text: var(--bc-dark-text, #f6f5fa);
+    --es-muted: var(--bc-dark-muted, #b6b3c2);
     --es-border: #8e8a99;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .es--theme-system {
+    --es-surface: var(--bc-dark-surface, #141019);
+    --es-sunk: var(--bc-dark-sunk, #1f1a29);
+    --es-text: var(--bc-dark-text, #f6f5fa);
+    --es-muted: var(--bc-dark-muted, #b6b3c2);
+    --es-border: #8e8a99;
+  }
+
 
 .es-inner { display: flex; max-width: 28rem; flex-direction: column; gap: 0.75rem; margin: 0 auto; }
 .es--center { text-align: center; }
@@ -61,7 +70,7 @@
   align-items: center;
   padding: 0 1rem;
   border: 1px solid transparent;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   font-weight: 500;
   text-decoration: none;
 }

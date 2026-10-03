@@ -2,16 +2,16 @@
 .stc {
   --stc-accent: #0f766e;
   --stc-accent-text: #0b5a54;
-  --stc-surface: #ffffff;
-  --stc-sunk: #f1f5f4;
-  --stc-text: #16121f;
-  --stc-muted: #4d4a57;
-  --stc-line: #c9c4d6;
+  --stc-surface: var(--bc-light-surface, #ffffff);
+  --stc-sunk: var(--bc-light-sunk, #f1f5f4);
+  --stc-text: var(--bc-light-text, #16121f);
+  --stc-muted: var(--bc-light-muted, #4d4a57);
+  --stc-line: var(--bc-light-line, #c9c4d6);
   display: block;
   padding: 0.25rem;
   background: var(--stc-surface);
   color: var(--stc-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .stc--theme-system {
-    --stc-surface: #141019;
-    --stc-sunk: #1c2422;
-    --stc-text: #f6f5fa;
-    --stc-muted: #b6b3c2;
-    --stc-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .stc--theme-system {
+    --stc-surface: var(--bc-dark-surface, #141019);
+    --stc-sunk: var(--bc-dark-sunk, #1c2422);
+    --stc-text: var(--bc-dark-text, #f6f5fa);
+    --stc-muted: var(--bc-dark-muted, #b6b3c2);
+    --stc-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .stc--theme-system {
+    --stc-surface: var(--bc-dark-surface, #141019);
+    --stc-sunk: var(--bc-dark-sunk, #1c2422);
+    --stc-text: var(--bc-dark-text, #f6f5fa);
+    --stc-muted: var(--bc-dark-muted, #b6b3c2);
+    --stc-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .stc-scroll { overflow-x: auto; }
 .stc-scroll:focus-visible { outline: 2px solid var(--stc-accent-text); outline-offset: 2px; }

@@ -33,13 +33,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -81,11 +90,11 @@ export function PullQuote({ config = defaultConfig }: { config?: PullQuoteConfig
   const style = {
     "--pq-accent": config.accentColor,
     "--pq-accent-text": readableAccent(config.accentColor, dark),
-    "--pq-surface": palette.surface,
-    "--pq-sunk": palette.sunk,
-    "--pq-text": palette.text,
-    "--pq-muted": palette.muted,
-    "--pq-line": palette.line,
+    "--pq-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--pq-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--pq-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--pq-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--pq-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const linked = config.sourceHref.trim() !== "" && config.source.trim() !== "";

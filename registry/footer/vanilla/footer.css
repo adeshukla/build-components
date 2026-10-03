@@ -1,14 +1,14 @@
 /* Site footer — plain CSS, no JavaScript. Colours come from the inline custom properties. */
 .ft {
   --ft-accent: #1b4ab0;
-  --ft-surface: #f7f7fb;
-  --ft-text: #16121f;
-  --ft-muted: #4d4a57;
-  --ft-line: #d9d5e4;
+  --ft-surface: var(--bc-light-surface, #f7f7fb);
+  --ft-text: var(--bc-light-text, #16121f);
+  --ft-muted: var(--bc-light-muted, #4d4a57);
+  --ft-line: var(--bc-light-line, #d9d5e4);
   padding: 3rem 1.5rem;
   background: var(--ft-surface);
   color: var(--ft-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -20,13 +20,21 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ft--theme-system {
-    --ft-surface: #141019;
-    --ft-text: #f6f5fa;
-    --ft-muted: #b6b3c2;
-    --ft-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .ft--theme-system {
+    --ft-surface: var(--bc-dark-surface, #141019);
+    --ft-text: var(--bc-dark-text, #f6f5fa);
+    --ft-muted: var(--bc-dark-muted, #b6b3c2);
+    --ft-line: var(--bc-dark-line, #3a3448);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ft--theme-system {
+    --ft-surface: var(--bc-dark-surface, #141019);
+    --ft-text: var(--bc-dark-text, #f6f5fa);
+    --ft-muted: var(--bc-dark-muted, #b6b3c2);
+    --ft-line: var(--bc-dark-line, #3a3448);
+  }
+
 
 .ft--bordered { border-top: 1px solid var(--ft-line); }
 .ft--compact { padding-block: 2rem; }

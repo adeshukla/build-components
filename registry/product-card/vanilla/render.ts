@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ProductCardConfig } from "../react/product-card";
 
 const palettes = {
@@ -33,7 +33,7 @@ export function renderProductCardMarkup(config: ProductCardConfig) {
     `--pc-accent: ${config.accentColor}`,
     `--pc-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--pc-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--pc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--pc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const options = config.options.filter((option) => option.label.trim() !== "");

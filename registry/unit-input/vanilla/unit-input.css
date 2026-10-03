@@ -2,16 +2,16 @@
 .ui {
   --ui-accent: #1d4ed8;
   --ui-accent-text: #1a46c2;
-  --ui-surface: #ffffff;
-  --ui-sunk: #f4f3f8;
-  --ui-text: #16121f;
-  --ui-muted: #4d4a57;
-  --ui-line: #c9c4d6;
+  --ui-surface: var(--bc-light-surface, #ffffff);
+  --ui-sunk: var(--bc-light-sunk, #f4f3f8);
+  --ui-text: var(--bc-light-text, #16121f);
+  --ui-muted: var(--bc-light-muted, #4d4a57);
+  --ui-line: var(--bc-light-line, #c9c4d6);
   --ui-error: #b42318;
   display: block;
   background: var(--ui-surface);
   color: var(--ui-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,15 +23,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ui--theme-system {
-    --ui-surface: #141019;
-    --ui-sunk: #221d2e;
-    --ui-text: #f6f5fa;
-    --ui-muted: #b6b3c2;
-    --ui-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .ui--theme-system {
+    --ui-surface: var(--bc-dark-surface, #141019);
+    --ui-sunk: var(--bc-dark-sunk, #221d2e);
+    --ui-text: var(--bc-dark-text, #f6f5fa);
+    --ui-muted: var(--bc-dark-muted, #b6b3c2);
+    --ui-line: var(--bc-dark-line, #4a4459);
     --ui-error: #ff9d95;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ui--theme-system {
+    --ui-surface: var(--bc-dark-surface, #141019);
+    --ui-sunk: var(--bc-dark-sunk, #221d2e);
+    --ui-text: var(--bc-dark-text, #f6f5fa);
+    --ui-muted: var(--bc-dark-muted, #b6b3c2);
+    --ui-line: var(--bc-dark-line, #4a4459);
+    --ui-error: #ff9d95;
+  }
+
 
 .ui-label { display: block; font-weight: 500; }
 .ui-hint { margin: 0; color: var(--ui-muted); font-size: 0.875rem; }
@@ -43,7 +53,7 @@
   min-height: 2.75rem;
   padding: 0 0.75rem;
   border: 1px solid var(--ui-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--ui-sunk);
   color: var(--ui-text);
   font: inherit;

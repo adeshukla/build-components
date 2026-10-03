@@ -46,13 +46,22 @@ const palettes = {
   },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 const safeHref = (value: string) => (/^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#");
@@ -66,8 +75,8 @@ export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerCo
   const style = {
     "--ab-surface": palette.surface[config.tone],
     "--ab-tone": palette.tone[config.tone],
-    "--ab-text": palette.text,
-    "--ab-muted": palette.muted,
+    "--ab-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ab-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
   } as CSSProperties;
 
   if (gone) return null;
@@ -77,7 +86,7 @@ export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerCo
       style={style}
       // An error interrupts; anything else waits its turn.
       role={config.tone === "error" ? "alert" : "status"}
-      className="flex max-w-2xl items-start gap-3 rounded-lg border-l-4 border-(--ab-tone) bg-(--ab-surface) p-4 text-(--ab-text)"
+      className="flex max-w-2xl items-start gap-3 rounded-[var(--bc-radius-md,0.5rem)] border-l-4 border-(--ab-tone) bg-(--ab-surface) p-4 text-(--ab-text)"
     >
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="mt-0.5 size-5 shrink-0 text-(--ab-tone)">
         <path d={tone.path} />
@@ -110,7 +119,7 @@ export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerCo
             const after = document.querySelector<HTMLElement>("[data-after-dismiss]");
             window.requestAnimationFrame(() => after?.focus());
           }}
-          className="-m-1 grid size-8 shrink-0 cursor-pointer place-items-center rounded-md text-(--ab-muted) hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ab-tone)"
+          className="-m-1 grid size-8 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-sm,0.375rem)] text-(--ab-muted) hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ab-tone)"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
             <path d="M6 6l12 12M18 6 6 18" />

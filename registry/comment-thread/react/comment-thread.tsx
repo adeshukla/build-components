@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -84,11 +93,11 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
     "--ct-accent": config.accentColor,
     "--ct-accent-text": readableAccent(config.accentColor, dark),
     "--ct-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--ct-surface": palette.surface,
-    "--ct-sunk": palette.sunk,
-    "--ct-text": palette.text,
-    "--ct-muted": palette.muted,
-    "--ct-line": palette.line,
+    "--ct-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ct-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ct-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ct-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--ct-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const comments: Comment[] = [
@@ -121,7 +130,7 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
             aria-expanded={open}
             aria-controls={`${id}-list`}
             onClick={() => setOpen((current) => !current)}
-            className="min-h-11 cursor-pointer rounded px-2 text-sm text-(--ct-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-xs,0.25rem)] px-2 text-sm text-(--ct-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text)"
           >
             {open ? "Hide the thread" : "Show the thread"}
           </button>
@@ -133,7 +142,7 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
         {comments.map((comment, index) => (
           <li
             key={`${comment.author}-${index}`}
-            className={`rounded-lg border border-(--ct-line) p-3 ${comment.reply ? "ml-6 bg-(--ct-sunk)" : ""}`}
+            className={`rounded-[var(--bc-radius-md,0.5rem)] border border-(--ct-line) p-3 ${comment.reply ? "ml-6 bg-(--ct-sunk)" : ""}`}
           >
             <p className="flex flex-wrap items-baseline gap-2 text-sm">
               <span className="font-medium">{comment.author}</span>
@@ -156,13 +165,13 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
             rows={3}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            className="mt-1 w-full rounded-md border border-(--ct-line) bg-(--ct-sunk) p-3 text-(--ct-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text)"
+            className="mt-1 w-full rounded-[var(--bc-radius-sm,0.375rem)] border border-(--ct-line) bg-(--ct-sunk) p-3 text-(--ct-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text)"
           />
           <button
             type="button"
             disabled={draft.trim() === ""}
             onClick={post}
-            className="mt-2 min-h-11 cursor-pointer rounded-md bg-(--ct-accent) px-4 font-medium text-(--ct-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-2 min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--ct-accent) px-4 font-medium text-(--ct-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
           >
             {config.postText}
           </button>

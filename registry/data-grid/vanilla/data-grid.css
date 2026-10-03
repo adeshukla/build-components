@@ -2,15 +2,15 @@
 .dg {
   --dg-accent: #1d4ed8;
   --dg-accent-text: #1a46c2;
-  --dg-surface: #ffffff;
-  --dg-sunk: #f4f3f8;
-  --dg-text: #16121f;
-  --dg-muted: #4d4a57;
-  --dg-line: #c9c4d6;
+  --dg-surface: var(--bc-light-surface, #ffffff);
+  --dg-sunk: var(--bc-light-sunk, #f4f3f8);
+  --dg-text: var(--bc-light-text, #16121f);
+  --dg-muted: var(--bc-light-muted, #4d4a57);
+  --dg-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--dg-surface);
   color: var(--dg-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -22,17 +22,26 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .dg--theme-system {
-    --dg-surface: #141019;
-    --dg-sunk: #221d2e;
-    --dg-text: #f6f5fa;
-    --dg-muted: #b6b3c2;
-    --dg-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .dg--theme-system {
+    --dg-surface: var(--bc-dark-surface, #141019);
+    --dg-sunk: var(--bc-dark-sunk, #221d2e);
+    --dg-text: var(--bc-dark-text, #f6f5fa);
+    --dg-muted: var(--bc-dark-muted, #b6b3c2);
+    --dg-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .dg--theme-system {
+    --dg-surface: var(--bc-dark-surface, #141019);
+    --dg-sunk: var(--bc-dark-sunk, #221d2e);
+    --dg-text: var(--bc-dark-text, #f6f5fa);
+    --dg-muted: var(--bc-dark-muted, #b6b3c2);
+    --dg-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* The header stays put because the scrolling happens in here, not on the page. */
-.dg-scroll { overflow: auto; border: 1px solid var(--dg-line); border-radius: 0.5rem; }
+.dg-scroll { overflow: auto; border: 1px solid var(--dg-line); border-radius: var(--bc-radius-md, 0.5rem); }
 .dg-scroll:focus-visible { outline: 2px solid var(--dg-accent-text); outline-offset: 2px; }
 .dg-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.875rem; }
 .dg-caption { padding: 0.75rem; font-weight: 500; text-align: left; }

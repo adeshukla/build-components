@@ -3,16 +3,16 @@
   --wz-accent: #1d4ed8;
   --wz-accent-text: #1a46c2;
   --wz-on-accent: #ffffff;
-  --wz-surface: #ffffff;
-  --wz-sunk: #f4f3f8;
-  --wz-text: #16121f;
-  --wz-muted: #4d4a57;
-  --wz-line: #c9c4d6;
+  --wz-surface: var(--bc-light-surface, #ffffff);
+  --wz-sunk: var(--bc-light-sunk, #f4f3f8);
+  --wz-text: var(--bc-light-text, #16121f);
+  --wz-muted: var(--bc-light-muted, #4d4a57);
+  --wz-line: var(--bc-light-line, #c9c4d6);
   --wz-error: #b42318;
   display: block;
   background: var(--wz-surface);
   color: var(--wz-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,15 +24,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .wz--theme-system {
-    --wz-surface: #141019;
-    --wz-sunk: #221d2e;
-    --wz-text: #f6f5fa;
-    --wz-muted: #b6b3c2;
-    --wz-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .wz--theme-system {
+    --wz-surface: var(--bc-dark-surface, #141019);
+    --wz-sunk: var(--bc-dark-sunk, #221d2e);
+    --wz-text: var(--bc-dark-text, #f6f5fa);
+    --wz-muted: var(--bc-dark-muted, #b6b3c2);
+    --wz-line: var(--bc-dark-line, #4a4459);
     --wz-error: #ff9d95;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .wz--theme-system {
+    --wz-surface: var(--bc-dark-surface, #141019);
+    --wz-sunk: var(--bc-dark-sunk, #221d2e);
+    --wz-text: var(--bc-dark-text, #f6f5fa);
+    --wz-muted: var(--bc-dark-muted, #b6b3c2);
+    --wz-line: var(--bc-dark-line, #4a4459);
+    --wz-error: #ff9d95;
+  }
+
 
 .wz-heading { margin: 0; color: var(--wz-muted); font-size: 0.875rem; }
 
@@ -54,7 +64,7 @@
   margin-top: 0.25rem;
   padding: 0 0.75rem;
   border: 1px solid var(--wz-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--wz-sunk);
   color: var(--wz-text);
   font: inherit;
@@ -69,7 +79,7 @@
   min-height: 2.75rem;
   padding: 0 1rem;
   border: 1px solid var(--wz-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: none;
   color: inherit;
   font: inherit;
@@ -81,7 +91,7 @@
   min-height: 2.75rem;
   padding: 0 1rem;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-button, 0.375rem);
   background: var(--wz-accent);
   color: var(--wz-on-accent);
   font: inherit;

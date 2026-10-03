@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SplitFeatureConfig } from "../react/split-feature";
 
 const palettes = {
@@ -37,7 +37,7 @@ export function renderSplitFeatureMarkup(config: SplitFeatureConfig) {
   const vars = [
     `--spl-accent: ${config.accentColor}`,
     `--spl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--spl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--spl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const src = safeUrl(config.mediaSrc);

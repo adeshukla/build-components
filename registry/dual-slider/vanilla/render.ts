@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { DualSliderConfig } from "../react/dual-slider";
 
 const palettes = {
@@ -33,7 +33,7 @@ export function renderDualSliderMarkup(config: DualSliderConfig) {
   const vars = [
     `--dsl-accent: ${config.accentColor}`,
     `--dsl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--dsl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--dsl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const say = (value: number) => `${config.valuePrefix}${group(value)}${config.valueSuffix}`;

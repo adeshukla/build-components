@@ -34,13 +34,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -87,11 +96,11 @@ export function ImageGallery({ config = defaultConfig }: { config?: ImageGallery
   const style = {
     "--gal-accent": config.accentColor,
     "--gal-accent-text": readableAccent(config.accentColor, dark),
-    "--gal-surface": palette.surface,
-    "--gal-sunk": palette.sunk,
-    "--gal-text": palette.text,
-    "--gal-muted": palette.muted,
-    "--gal-line": palette.line,
+    "--gal-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--gal-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--gal-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--gal-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--gal-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   return (
@@ -119,7 +128,7 @@ export function ImageGallery({ config = defaultConfig }: { config?: ImageGallery
                     role={described ? "img" : undefined}
                     aria-label={described ? item.alt : undefined}
                     aria-hidden={described ? undefined : true}
-                    className="grid w-full place-items-center rounded-lg border border-(--gal-line) bg-(--gal-sunk) p-2 text-center font-mono text-xs text-(--gal-muted)"
+                    className="grid w-full place-items-center rounded-[var(--bc-radius-md,0.5rem)] border border-(--gal-line) bg-(--gal-sunk) p-2 text-center font-mono text-xs text-(--gal-muted)"
                     style={{
                       aspectRatio: ratios[config.aspect],
                       backgroundImage:
@@ -137,7 +146,7 @@ export function ImageGallery({ config = defaultConfig }: { config?: ImageGallery
                     alt={item.alt}
                     loading="lazy"
                     decoding="async"
-                    className="w-full rounded-lg border border-(--gal-line) bg-(--gal-sunk) object-cover"
+                    className="w-full rounded-[var(--bc-radius-md,0.5rem)] border border-(--gal-line) bg-(--gal-sunk) object-cover"
                     style={{ aspectRatio: ratios[config.aspect] }}
                   />
                 )}

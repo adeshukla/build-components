@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#1c1826", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448", hover: "#2a2438" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -126,11 +135,11 @@ export function CookieConsent({
     "--cc-accent": config.accentColor,
     "--cc-accent-text": readableAccent(config.accentColor, dark),
     "--cc-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--cc-surface": palette.surface,
-    "--cc-text": palette.text,
-    "--cc-muted": palette.muted,
+    "--cc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--cc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--cc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--cc-border": palette.border,
-    "--cc-line": palette.line,
+    "--cc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--cc-hover": palette.hover,
   } as CSSProperties;
 
@@ -180,7 +189,7 @@ export function CookieConsent({
     }
   }
 
-  const button = "min-h-10 cursor-pointer rounded-lg px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cc-accent-text)";
+  const button = "min-h-10 cursor-pointer rounded-[var(--bc-radius-md,0.5rem)] px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cc-accent-text)";
   // Accept and reject look the same on purpose: refusing must be as easy as agreeing.
   const choiceButton = `${button} bg-(--cc-accent) text-(--cc-on-accent)`;
   const quietButton = `${button} border border-(--cc-border) bg-transparent text-(--cc-text) hover:bg-(--cc-hover)`;
@@ -190,7 +199,7 @@ export function CookieConsent({
       {!saved && (
         <section
           aria-labelledby={`${id}-banner-title`}
-          className={`fixed z-40 border border-(--cc-line) bg-(--cc-surface) p-5 shadow-2xl ${config.position === "corner" ? "right-4 bottom-4 left-4 max-w-md rounded-xl sm:left-auto" : "inset-x-0 bottom-0 border-x-0 border-b-0"}`}
+          className={`fixed z-40 border border-(--cc-line) bg-(--cc-surface) p-5 shadow-2xl ${config.position === "corner" ? "right-4 bottom-4 left-4 max-w-md rounded-[var(--bc-radius-lg,0.75rem)] sm:left-auto" : "inset-x-0 bottom-0 border-x-0 border-b-0"}`}
         >
           <div className={config.position === "bottom" ? "mx-auto flex max-w-5xl flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" : "flex flex-col gap-4"}>
             <div className="max-w-2xl">
@@ -236,7 +245,7 @@ export function CookieConsent({
         onClose={() => {
           if (!focusReopen.current) reopenRef.current?.focus();
         }}
-        className="m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-auto rounded-xl border-0 bg-(--cc-surface) p-0 text-(--cc-text) shadow-2xl backdrop:bg-black/50"
+        className="m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-auto rounded-[var(--bc-radius-lg,0.75rem)] border-0 bg-(--cc-surface) p-0 text-(--cc-text) shadow-2xl backdrop:bg-black/50"
       >
         <form
           method="dialog"

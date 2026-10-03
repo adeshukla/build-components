@@ -29,13 +29,22 @@ const palettes = {
   dark: { surface: "#141019", block: "#2a2438", line: "#3a3448" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 /** Line widths that look like text instead of a solid block; the last line is always shorter. */
@@ -46,14 +55,14 @@ export function Skeleton({ config = defaultConfig }: { config?: SkeletonConfig }
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
   const style = {
-    "--sk-surface": palette.surface,
+    "--sk-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
     "--sk-block": palette.block,
-    "--sk-line": palette.line,
+    "--sk-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
   const lines = Math.max(1, Math.min(8, Math.round(config.lines)));
   const rows = Math.max(1, Math.min(8, Math.round(config.variant === "lines" ? 1 : config.rows)));
   // The pulse only runs if it was asked for; reduced motion turns it off as well.
-  const block = `rounded bg-(--sk-block) ${config.animate ? "animate-pulse motion-reduce:animate-none" : ""}`;
+  const block = `rounded-[var(--bc-radius-xs,0.25rem)] bg-(--sk-block) ${config.animate ? "animate-pulse motion-reduce:animate-none" : ""}`;
 
   return (
     // One polite status for the whole block: a screen reader hears "Loading comments" once,
@@ -69,7 +78,7 @@ export function Skeleton({ config = defaultConfig }: { config?: SkeletonConfig }
         {Array.from({ length: rows }, (_, row) => (
           <div
             key={row}
-            className={config.variant === "card" ? "rounded-lg border border-(--sk-line) p-4" : ""}
+            className={config.variant === "card" ? "rounded-[var(--bc-radius-md,0.5rem)] border border-(--sk-line) p-4" : ""}
           >
             {config.variant === "card" && <div className={`mb-4 h-28 w-full ${block}`} />}
             <div className="flex items-start gap-3">

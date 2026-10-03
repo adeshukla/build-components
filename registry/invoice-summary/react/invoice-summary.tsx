@@ -47,13 +47,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -100,11 +109,11 @@ export function InvoiceSummary({ config = defaultConfig }: { config?: InvoiceSum
   const style = {
     "--inv-accent": config.accentColor,
     "--inv-accent-text": readableAccent(config.accentColor, dark),
-    "--inv-surface": palette.surface,
-    "--inv-sunk": palette.sunk,
-    "--inv-text": palette.text,
-    "--inv-muted": palette.muted,
-    "--inv-line": palette.line,
+    "--inv-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--inv-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--inv-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--inv-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--inv-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const lines = config.items.map((item) => ({ ...item, amount: count(item.quantity) * pence(item.unitPrice) }));

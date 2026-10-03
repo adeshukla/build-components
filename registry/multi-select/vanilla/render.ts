@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { MultiSelectConfig } from "../react/multi-select";
 
 const palettes = {
@@ -35,12 +35,12 @@ export function renderMultiSelectMarkup(config: MultiSelectConfig) {
     `--ms-accent: ${config.accentColor}`,
     `--ms-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--ms-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--ms-radius: ${config.radius}px`,
-    `--ms-surface: ${palette.surface}`,
-    `--ms-sunk: ${palette.sunk}`,
-    `--ms-text: ${palette.text}`,
-    `--ms-muted: ${palette.muted}`,
-    `--ms-line: ${palette.line}`,
+    `--ms-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--ms-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ms-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ms-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ms-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ms-line: ${themedColour("line", palette.line, dark)}`]),
     `--ms-hover: ${palette.hover}`,
   ].join("; ");
 

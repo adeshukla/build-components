@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { AutosaveFieldConfig } from "../react/autosave-field";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderAutosaveFieldMarkup(config: AutosaveFieldConfig) {
   const vars = [
     `--asf-accent: ${config.accentColor}`,
     `--asf-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--asf-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--asf-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="asf asf--theme-${config.theme}" style="${vars}" data-autosave-field>

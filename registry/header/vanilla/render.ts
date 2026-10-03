@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { HeaderConfig } from "../react/header";
 
 const palettes = {
@@ -11,17 +11,18 @@ const palettes = {
  * generated from the options. "system" theme and the breakpoint are handled in CSS.
  */
 export function renderHeaderMarkup(config: HeaderConfig) {
-  const palette = config.theme === "dark" ? palettes.dark : palettes.light;
+  const dark = config.theme === "dark";
+  const palette = dark ? palettes.dark : palettes.light;
   const accentLuminance = luminance(config.accentColor);
   const vars = [
     `--hd-accent: ${config.accentColor}`,
     `--hd-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
     `--hd-ring: ${accentLuminance <= 0.35 || config.theme === "dark" ? config.accentColor : palette.text}`,
-    `--hd-radius: ${config.radius}px`,
-    `--hd-surface: ${palette.surface}`,
-    `--hd-text: ${palette.text}`,
-    `--hd-muted: ${palette.muted}`,
-    `--hd-line: ${palette.line}`,
+    `--hd-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--hd-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--hd-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--hd-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--hd-line: ${themedColour("line", palette.line, dark)}`]),
     `--hd-hover: ${palette.hover}`,
   ].join("; ");
   const classes = [

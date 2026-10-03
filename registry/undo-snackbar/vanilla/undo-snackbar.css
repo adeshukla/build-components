@@ -3,19 +3,19 @@
   --usb-accent: #e6b24a;
   --usb-accent-on-panel: #e6b24a;
   --usb-accent-text: #6b4a05;
-  --usb-surface: #ffffff;
-  --usb-sunk: #f4f3f8;
+  --usb-surface: var(--bc-light-surface, #ffffff);
+  --usb-sunk: var(--bc-light-sunk, #f4f3f8);
   --usb-panel: #1b1624;
   --usb-on-panel: #f6f5fa;
-  --usb-text: #16121f;
-  --usb-muted: #4d4a57;
-  --usb-line: #c9c4d6;
+  --usb-text: var(--bc-light-text, #16121f);
+  --usb-muted: var(--bc-light-muted, #4d4a57);
+  --usb-line: var(--bc-light-line, #c9c4d6);
   position: relative;
   display: block;
   min-height: 14rem;
   background: var(--usb-surface);
   color: var(--usb-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -27,15 +27,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .usb--theme-system {
-    --usb-surface: #141019;
-    --usb-sunk: #221d2e;
+  :root:not([data-bc-scheme="light"]) .usb--theme-system {
+    --usb-surface: var(--bc-dark-surface, #141019);
+    --usb-sunk: var(--bc-dark-sunk, #221d2e);
     --usb-panel: #2c2639;
-    --usb-text: #f6f5fa;
-    --usb-muted: #b6b3c2;
-    --usb-line: #4a4459;
+    --usb-text: var(--bc-dark-text, #f6f5fa);
+    --usb-muted: var(--bc-dark-muted, #b6b3c2);
+    --usb-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .usb--theme-system {
+    --usb-surface: var(--bc-dark-surface, #141019);
+    --usb-sunk: var(--bc-dark-sunk, #221d2e);
+    --usb-panel: #2c2639;
+    --usb-text: var(--bc-dark-text, #f6f5fa);
+    --usb-muted: var(--bc-dark-muted, #b6b3c2);
+    --usb-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
 .usb [hidden] { display: none; }
@@ -48,7 +58,7 @@
   align-items: center;
   padding: 0 1rem;
   border: 1px solid var(--usb-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--usb-sunk);
   color: var(--usb-text);
   font: inherit;
@@ -72,7 +82,7 @@
   align-items: center;
   gap: 0.5rem 1rem;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--usb-panel);
   color: var(--usb-on-panel);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
@@ -86,7 +96,7 @@
   min-height: 2.75rem;
   padding: 0 0.5rem;
   border: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   background: transparent;
   color: var(--usb-accent-on-panel);
   font: inherit;
@@ -99,7 +109,7 @@
   min-width: 2.75rem;
   min-height: 2.75rem;
   border: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   background: transparent;
   color: inherit;
   font: inherit;

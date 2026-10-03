@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { NewsletterConfig } from "../react/newsletter";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderNewsletterMarkup(config: NewsletterConfig) {
     `--nl-accent: ${config.accentColor}`,
     `--nl-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--nl-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--nl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--nl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const consent = config.requireConsent

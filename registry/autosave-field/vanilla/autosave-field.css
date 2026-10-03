@@ -2,16 +2,16 @@
 .asf {
   --asf-accent: #0f766e;
   --asf-accent-text: #0b5a54;
-  --asf-surface: #ffffff;
-  --asf-sunk: #f4f3f8;
-  --asf-text: #16121f;
-  --asf-muted: #4d4a57;
-  --asf-line: #c9c4d6;
+  --asf-surface: var(--bc-light-surface, #ffffff);
+  --asf-sunk: var(--bc-light-sunk, #f4f3f8);
+  --asf-text: var(--bc-light-text, #16121f);
+  --asf-muted: var(--bc-light-muted, #4d4a57);
+  --asf-line: var(--bc-light-line, #c9c4d6);
   --asf-error: #b42318;
   display: block;
   background: var(--asf-surface);
   color: var(--asf-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,15 +23,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .asf--theme-system {
-    --asf-surface: #141019;
-    --asf-sunk: #221d2e;
-    --asf-text: #f6f5fa;
-    --asf-muted: #b6b3c2;
-    --asf-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .asf--theme-system {
+    --asf-surface: var(--bc-dark-surface, #141019);
+    --asf-sunk: var(--bc-dark-sunk, #221d2e);
+    --asf-text: var(--bc-dark-text, #f6f5fa);
+    --asf-muted: var(--bc-dark-muted, #b6b3c2);
+    --asf-line: var(--bc-dark-line, #4a4459);
     --asf-error: #ff9d95;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .asf--theme-system {
+    --asf-surface: var(--bc-dark-surface, #141019);
+    --asf-sunk: var(--bc-dark-sunk, #221d2e);
+    --asf-text: var(--bc-dark-text, #f6f5fa);
+    --asf-muted: var(--bc-dark-muted, #b6b3c2);
+    --asf-line: var(--bc-dark-line, #4a4459);
+    --asf-error: #ff9d95;
+  }
+
 
 .asf-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
 .asf-label { font-weight: 500; }
@@ -47,7 +57,7 @@
   margin-top: 0.5rem;
   padding: 0.75rem;
   border: 1px solid var(--asf-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--asf-sunk);
   color: var(--asf-text);
   font: inherit;
@@ -60,7 +70,7 @@
   margin-top: 0.5rem;
   padding: 0 1rem;
   border: 1px solid var(--asf-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--asf-sunk);
   color: var(--asf-text);
   font: inherit;

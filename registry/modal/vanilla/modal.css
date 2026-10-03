@@ -5,11 +5,11 @@
   --modal-on-accent: #ffffff;
   --modal-ring: #2563eb;
   --modal-radius: 8px;
-  --modal-surface: #ffffff;
-  --modal-text: #171717;
-  --modal-muted: #535358;
+  --modal-surface: var(--bc-light-surface, #ffffff);
+  --modal-text: var(--bc-light-text, #171717);
+  --modal-muted: var(--bc-light-muted, #535358);
   --modal-border: #737373;
-  --modal-line: #d4d4d4;
+  --modal-line: var(--bc-light-line, #d4d4d4);
   --modal-hover: #f2f2f7;
   --modal-font: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-family: var(--modal-font);

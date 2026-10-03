@@ -5,14 +5,14 @@
   --cta-accent-text: #1b4ab0;
   --cta-deep: #1a478a;
   --cta-radius: 14px;
-  --cta-surface: #ffffff;
-  --cta-text: #16121f;
-  --cta-muted: #4d4a57;
+  --cta-surface: var(--bc-light-surface, #ffffff);
+  --cta-text: var(--bc-light-text, #16121f);
+  --cta-muted: var(--bc-light-muted, #4d4a57);
   --cta-border: #d9d5e4;
   --cta-outer: transparent;
   display: block;
   background: var(--cta-outer);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,14 +24,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .cta--theme-system:not(.cta--bold) {
-    --cta-surface: #141019;
-    --cta-text: #f6f5fa;
-    --cta-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .cta--theme-system:not(.cta--bold) {
+    --cta-surface: var(--bc-dark-surface, #141019);
+    --cta-text: var(--bc-dark-text, #f6f5fa);
+    --cta-muted: var(--bc-dark-muted, #b6b3c2);
     --cta-border: #3a3448;
   }
-  .cta--theme-system.cta--card { --cta-outer: #1c1726; }
+  :root:not([data-bc-scheme="light"]) .cta--theme-system.cta--card { --cta-outer: #1c1726; }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .cta--theme-system:not(.cta--bold) {
+    --cta-surface: var(--bc-dark-surface, #141019);
+    --cta-text: var(--bc-dark-text, #f6f5fa);
+    --cta-muted: var(--bc-dark-muted, #b6b3c2);
+    --cta-border: #3a3448;
+  }
+  :root[data-bc-scheme="dark"] .cta--theme-system.cta--card { --cta-outer: #1c1726; }
+
 
 .cta--card { padding: 1rem; }
 @media (min-width: 640px) {

@@ -3,16 +3,16 @@
   --hr-accent: #16303f;
   --hr-accent-text: #142936;
   --hr-on-accent: #ffffff;
-  --hr-surface: #ffffff;
-  --hr-sunk: #f4f3f8;
-  --hr-text: #16121f;
-  --hr-muted: #4d4a57;
-  --hr-line: #c9c4d6;
+  --hr-surface: var(--bc-light-surface, #ffffff);
+  --hr-sunk: var(--bc-light-sunk, #f4f3f8);
+  --hr-text: var(--bc-light-text, #16121f);
+  --hr-muted: var(--bc-light-muted, #4d4a57);
+  --hr-line: var(--bc-light-line, #c9c4d6);
   display: block;
   padding: 2.5rem 1rem;
   background: var(--hr-surface);
   color: var(--hr-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 @media (min-width: 640px) {
@@ -27,14 +27,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .hr--theme-system {
-    --hr-surface: #141019;
-    --hr-sunk: #221d2e;
-    --hr-text: #f6f5fa;
-    --hr-muted: #b6b3c2;
-    --hr-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .hr--theme-system {
+    --hr-surface: var(--bc-dark-surface, #141019);
+    --hr-sunk: var(--bc-dark-sunk, #221d2e);
+    --hr-text: var(--bc-dark-text, #f6f5fa);
+    --hr-muted: var(--bc-dark-muted, #b6b3c2);
+    --hr-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .hr--theme-system {
+    --hr-surface: var(--bc-dark-surface, #141019);
+    --hr-sunk: var(--bc-dark-sunk, #221d2e);
+    --hr-text: var(--bc-dark-text, #f6f5fa);
+    --hr-muted: var(--bc-dark-muted, #b6b3c2);
+    --hr-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .hr-inner { display: grid; align-items: center; gap: 2rem; max-width: 64rem; margin: 0 auto; }
 @media (min-width: 640px) {
@@ -59,7 +68,7 @@
   align-items: center;
   min-height: 2.75rem;
   padding: 0 1.25rem;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   font-weight: 500;
   text-decoration: none;
 }
@@ -76,11 +85,11 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
   border: 1px solid var(--hr-line);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
 }
 .hr-panel {
   aspect-ratio: 4 / 3;
   border: 1px solid var(--hr-line);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   background: var(--hr-sunk) repeating-linear-gradient(135deg, transparent 0 18px, rgb(0 0 0 / 0.04) 18px 36px);
 }

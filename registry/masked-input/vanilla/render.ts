@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { MaskedInputConfig } from "../react/masked-input";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderMaskedInputMarkup(config: MaskedInputConfig) {
   const vars = [
     `--mi-accent: ${config.accentColor}`,
     `--mi-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--mi-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--mi-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const example = config.mask.replace(/#/g, "0").replace(/[A*]/g, "X");

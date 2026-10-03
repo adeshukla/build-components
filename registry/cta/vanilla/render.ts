@@ -44,7 +44,7 @@ export function renderCtaMarkup(config: CtaConfig) {
     `--cta-on-accent: ${onAccent}`,
     `--cta-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--cta-deep: ${deepen(config.accentColor)}`,
-    `--cta-radius: ${config.radius}px`,
+    `--cta-radius: var(--bc-radius-md, ${config.radius}px)`,
     `--cta-surface: ${bold ? config.accentColor : palette.surface}`,
     `--cta-text: ${bold ? onAccent : palette.text}`,
     `--cta-muted: ${bold ? onAccent : palette.muted}`,

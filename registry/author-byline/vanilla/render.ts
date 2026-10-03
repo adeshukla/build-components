@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { AuthorBylineConfig } from "../react/author-byline";
 
 const palettes = {
@@ -45,7 +45,7 @@ export function renderAuthorBylineMarkup(config: AuthorBylineConfig) {
   const vars = [
     `--byl-accent: ${config.accentColor}`,
     `--byl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--byl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--byl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const who =

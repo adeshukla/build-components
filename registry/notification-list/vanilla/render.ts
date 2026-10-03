@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { NotificationListConfig } from "../react/notification-list";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderNotificationListMarkup(config: NotificationListConfig) {
     `--ntf-accent: ${config.accentColor}`,
     `--ntf-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--ntf-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--ntf-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ntf-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const items = config.items

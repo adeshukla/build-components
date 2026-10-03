@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CheckboxGroupConfig } from "../react/checkbox-group";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderCheckboxGroupMarkup(config: CheckboxGroupConfig) {
   const vars = [
     `--cg-accent: ${config.accentColor}`,
     `--cg-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--cg-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cg-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const options = config.options.filter((option) => option.label.trim() !== "");

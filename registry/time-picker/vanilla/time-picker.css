@@ -3,11 +3,11 @@
   --tp-accent: #2563eb;
   --tp-accent-text: #1b4ab0;
   --tp-on-accent: #ffffff;
-  --tp-surface: #ffffff;
-  --tp-text: #16121f;
-  --tp-muted: #4d4a57;
+  --tp-surface: var(--bc-light-surface, #ffffff);
+  --tp-text: var(--bc-light-text, #16121f);
+  --tp-muted: var(--bc-light-muted, #4d4a57);
   --tp-border: #737373;
-  --tp-line: #d9d5e4;
+  --tp-line: var(--bc-light-line, #d9d5e4);
   --tp-hover: #eeecf5;
   --tp-error: #b3261e;
   display: flex;
@@ -15,7 +15,7 @@
   gap: 0.375rem;
   background: var(--tp-surface);
   color: var(--tp-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -27,16 +27,27 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .tp--theme-system {
-    --tp-surface: #141019;
-    --tp-text: #f6f5fa;
-    --tp-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .tp--theme-system {
+    --tp-surface: var(--bc-dark-surface, #141019);
+    --tp-text: var(--bc-dark-text, #f6f5fa);
+    --tp-muted: var(--bc-dark-muted, #b6b3c2);
     --tp-border: #8e8a99;
-    --tp-line: #3a3448;
+    --tp-line: var(--bc-dark-line, #3a3448);
     --tp-hover: #2a2438;
     --tp-error: #ff6b6b;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .tp--theme-system {
+    --tp-surface: var(--bc-dark-surface, #141019);
+    --tp-text: var(--bc-dark-text, #f6f5fa);
+    --tp-muted: var(--bc-dark-muted, #b6b3c2);
+    --tp-border: #8e8a99;
+    --tp-line: var(--bc-dark-line, #3a3448);
+    --tp-hover: #2a2438;
+    --tp-error: #ff6b6b;
+  }
+
 
 .tp-label { font-weight: 500; }
 .tp-hint { margin: -0.25rem 0 0; color: var(--tp-muted); font-size: 0.875rem; }
@@ -47,7 +58,7 @@
   height: 2.5rem;
   overflow: hidden;
   border: 1px solid var(--tp-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--tp-surface);
 }
 .tp-field:has(.tp-input:focus-visible) { outline: 2px solid var(--tp-accent-text); outline-offset: 2px; }
@@ -89,7 +100,7 @@
   padding: 0.25rem;
   overflow-y: auto;
   border: 1px solid var(--tp-line);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--tp-surface);
   box-shadow: 0 10px 25px -10px rgb(0 0 0 / 0.3);
   list-style: none;
@@ -102,7 +113,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 0.75rem;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
   cursor: pointer;

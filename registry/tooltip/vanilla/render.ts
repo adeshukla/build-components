@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TooltipConfig } from "../react/tooltip";
 
 const palettes = {
@@ -28,12 +28,12 @@ export function renderTooltipMarkup(config: TooltipConfig) {
   const palette = dark ? palettes.dark : palettes.light;
   const vars = [
     `--tt-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--tt-radius: ${config.radius}px`,
-    `--tt-surface: ${palette.surface}`,
+    `--tt-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--tt-surface: ${themedColour("surface", palette.surface, dark)}`]),
     `--tt-tip: ${palette.tip}`,
     `--tt-tip-text: ${palette.tipText}`,
-    `--tt-text: ${palette.text}`,
-    `--tt-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--tt-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tt-line: ${themedColour("line", palette.line, dark)}`]),
   ].join("; ");
 
   const label = config.trigger === "icon" ? ` aria-label="${escapeHtml(config.triggerText)}"` : "";

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TimePickerConfig } from "../react/time-picker";
 
 // The same two helpers as the React file (which is a client module, so its functions can't be
@@ -57,7 +57,7 @@ export function renderTimePickerMarkup(config: TimePickerConfig) {
     `--tp-accent: ${config.accentColor}`,
     `--tp-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--tp-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--tp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const hasHint = config.hint.trim() !== "";
   const describedBy = ["time-picker-format", hasHint && "time-picker-hint", "time-picker-error"].filter(Boolean).join(" ");

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { OfflineBannerConfig } from "../react/offline-banner";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderOfflineBannerMarkup(config: OfflineBannerConfig) {
     `--ob-accent: ${config.accentColor}`,
     `--ob-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--ob-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--ob-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ob-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const retry = config.showRetry

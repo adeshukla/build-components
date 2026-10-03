@@ -36,13 +36,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 const isHex = (value: string) => /^#[0-9a-f]{6}$/i.test(value.trim());
@@ -56,11 +65,11 @@ export function ColorPicker({ config = defaultConfig }: { config?: ColorPickerCo
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
   const style = {
-    "--cp-surface": palette.surface,
-    "--cp-text": palette.text,
-    "--cp-muted": palette.muted,
+    "--cp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--cp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--cp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--cp-border": palette.border,
-    "--cp-line": palette.line,
+    "--cp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
   const named = swatches.find((swatch) => swatch.hex.toLowerCase() === value);
 
@@ -105,7 +114,7 @@ export function ColorPicker({ config = defaultConfig }: { config?: ColorPickerCo
             type="color"
             value={value}
             onChange={(event) => setValue(event.target.value.toLowerCase())}
-            className="size-9 cursor-pointer rounded border border-(--cp-border) bg-(--cp-surface) p-0.5"
+            className="size-9 cursor-pointer rounded-[var(--bc-radius-xs,0.25rem)] border border-(--cp-border) bg-(--cp-surface) p-0.5"
           />
         </p>
       )}

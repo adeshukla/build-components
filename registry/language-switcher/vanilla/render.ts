@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { LanguageSwitcherConfig } from "../react/language-switcher";
 
 const palettes = {
@@ -30,7 +30,7 @@ export function renderLanguageSwitcherMarkup(config: LanguageSwitcherConfig) {
   const vars = [
     `--ls-accent: ${config.accentColor}`,
     `--ls-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--ls-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ls-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const languages = config.languages.filter((language) => language.name.trim() !== "" && language.code.trim() !== "");
   const current = languages.find((language) => language.code === config.currentCode) ?? languages[0];

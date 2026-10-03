@@ -54,13 +54,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#2c2838", hover: "#221d2e" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 const pathStore = {
@@ -99,11 +108,11 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
     "--hd-accent": config.accentColor,
     "--hd-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
     "--hd-ring": accentLuminance <= 0.35 || dark ? config.accentColor : palette.text,
-    "--hd-radius": `${config.radius}px`,
-    "--hd-surface": palette.surface,
-    "--hd-text": palette.text,
-    "--hd-muted": palette.muted,
-    "--hd-line": palette.line,
+    "--hd-radius": `var(--bc-radius-md, ${config.radius}px)`,
+    "--hd-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--hd-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--hd-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--hd-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--hd-hover": palette.hover,
   } as CSSProperties;
 

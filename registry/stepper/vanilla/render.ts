@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { StepperConfig } from "../react/stepper";
 
 const palettes = {
@@ -34,10 +34,10 @@ export function renderStepperMarkup(config: StepperConfig) {
     `--st-accent: ${config.accentColor}`,
     `--st-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--st-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--st-surface: ${palette.surface}`,
-    `--st-text: ${palette.text}`,
-    `--st-muted: ${palette.muted}`,
-    `--st-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--st-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--st-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--st-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--st-line: ${themedColour("line", palette.line, dark)}`]),
     `--st-done: ${palette.done}`,
   ].join("; ");
 

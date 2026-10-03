@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { QuantityConfig } from "../react/quantity";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderQuantityMarkup(config: QuantityConfig) {
   const vars = [
     `--qt-accent: ${config.accentColor}`,
     `--qt-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--qt-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--qt-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const min = config.min;
   const max = Math.max(min, config.max);

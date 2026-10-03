@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CursorPaginationConfig } from "../react/cursor-pagination";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderCursorPaginationMarkup(config: CursorPaginationConfig) {
   const vars = [
     `--cp-accent: ${config.accentColor}`,
     `--cp-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--cp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="cp cp--theme-${config.theme}" style="${vars}" data-cursor-pagination>

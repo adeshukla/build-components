@@ -43,13 +43,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -85,11 +94,11 @@ export function SelectField({ config = defaultConfig }: { config?: SelectFieldCo
   const style = {
     "--sf-accent": config.accentColor,
     "--sf-accent-text": readableAccent(config.accentColor, dark),
-    "--sf-surface": palette.surface,
-    "--sf-sunk": palette.sunk,
-    "--sf-text": palette.text,
-    "--sf-muted": palette.muted,
-    "--sf-line": palette.line,
+    "--sf-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sf-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sf-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sf-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sf-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--sf-error": palette.error,
   } as CSSProperties;
 
@@ -122,7 +131,7 @@ export function SelectField({ config = defaultConfig }: { config?: SelectFieldCo
           setValue(event.target.value);
           if (event.target.value !== "") setError("");
         }}
-        className={`mt-2 block rounded-md border bg-(--sf-sunk) pr-9 text-(--sf-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sf-accent-text) ${
+        className={`mt-2 block rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--sf-sunk) pr-9 text-(--sf-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sf-accent-text) ${
           config.width === "full" ? "w-full" : "w-auto"
         } ${config.size === "sm" ? "min-h-11 px-2 text-sm" : "min-h-11 px-3"} ${error === "" ? "border-(--sf-line)" : "border-(--sf-error)"}`}
       >
@@ -166,7 +175,7 @@ export function SelectField({ config = defaultConfig }: { config?: SelectFieldCo
             setError("");
           }
         }}
-        className="mt-3 min-h-11 cursor-pointer rounded-md border border-(--sf-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sf-accent-text)"
+        className="mt-3 min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sf-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sf-accent-text)"
       >
         Carry on
       </button>

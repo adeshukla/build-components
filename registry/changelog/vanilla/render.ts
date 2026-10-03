@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ChangelogConfig } from "../react/changelog";
 
 const palettes = {
@@ -51,7 +51,7 @@ export function renderChangelogMarkup(config: ChangelogConfig) {
     `--chg-accent: ${config.accentColor}`,
     `--chg-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--chg-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--chg-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--chg-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const sub = config.headingLevel === "h2" ? "h3" : "h4";

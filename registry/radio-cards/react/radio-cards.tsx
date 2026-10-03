@@ -36,13 +36,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -77,11 +86,11 @@ export function RadioCards({ config = defaultConfig }: { config?: RadioCardsConf
   const style = {
     "--rc-accent": config.accentColor,
     "--rc-accent-text": readableAccent(config.accentColor, dark),
-    "--rc-surface": palette.surface,
-    "--rc-sunk": palette.sunk,
-    "--rc-text": palette.text,
-    "--rc-muted": palette.muted,
-    "--rc-line": palette.line,
+    "--rc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--rc-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--rc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--rc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--rc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const columns = config.columns === "three" ? "sm:grid-cols-3" : config.columns === "two" ? "sm:grid-cols-2" : "";
@@ -104,7 +113,7 @@ export function RadioCards({ config = defaultConfig }: { config?: RadioCardsConf
             return (
               <label
                 key={option.label}
-                className={`relative flex min-h-11 flex-col rounded-lg border p-3 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-(--rc-accent-text) ${
+                className={`relative flex min-h-11 flex-col rounded-[var(--bc-radius-md,0.5rem)] border p-3 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-(--rc-accent-text) ${
                   off
                     ? "cursor-not-allowed border-dashed border-(--rc-line) text-(--rc-muted)"
                     : on

@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -80,11 +89,11 @@ export function DetailsList({ config = defaultConfig }: { config?: DetailsListCo
   const style = {
     "--dl-accent": config.accentColor,
     "--dl-accent-text": readableAccent(config.accentColor, dark),
-    "--dl-surface": palette.surface,
-    "--dl-sunk": palette.sunk,
-    "--dl-text": palette.text,
-    "--dl-muted": palette.muted,
-    "--dl-line": palette.line,
+    "--dl-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--dl-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--dl-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--dl-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--dl-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const rows = config.rows.filter((row) => row.term.trim() !== "");
@@ -113,7 +122,7 @@ export function DetailsList({ config = defaultConfig }: { config?: DetailsListCo
                 <a
                   href={safeHref(row.href)}
                   // A standalone action in a row, not a word in a sentence, so it needs a real 24px target.
-                  className="inline-flex min-h-6 items-center rounded text-sm text-(--dl-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dl-accent-text)"
+                  className="inline-flex min-h-6 items-center rounded-[var(--bc-radius-xs,0.25rem)] text-sm text-(--dl-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dl-accent-text)"
                 >
                   {config.editText}
                   {/* Five identical "Change" links are useless in a list of links: name the row. */}

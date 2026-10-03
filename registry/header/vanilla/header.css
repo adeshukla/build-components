@@ -4,31 +4,40 @@
   --hd-on-accent: #ffffff;
   --hd-ring: #2563eb;
   --hd-radius: 8px;
-  --hd-surface: #ffffff;
-  --hd-text: #16121f;
-  --hd-muted: #4d4a57;
-  --hd-line: #e4e1ec;
+  --hd-surface: var(--bc-light-surface, #ffffff);
+  --hd-text: var(--bc-light-text, #16121f);
+  --hd-muted: var(--bc-light-muted, #4d4a57);
+  --hd-line: var(--bc-light-line, #e4e1ec);
   --hd-hover: #f4f3f8;
   display: block;
   width: 100%;
   border-bottom: 1px solid var(--hd-line);
   background: var(--hd-surface);
   color: var(--hd-text);
-  font-family: system-ui, sans-serif;
+  font-family: var(--bc-font-body, system-ui, sans-serif);
   line-height: 1.5;
 }
 .hd *, .hd *::before, .hd *::after { box-sizing: border-box; }
 .hd--sticky { position: sticky; top: 0; z-index: 40; }
 
 @media (prefers-color-scheme: dark) {
-  .hd--theme-system {
-    --hd-surface: #141019;
-    --hd-text: #f6f5fa;
-    --hd-muted: #b6b3c2;
-    --hd-line: #2c2838;
+  :root:not([data-bc-scheme="light"]) .hd--theme-system {
+    --hd-surface: var(--bc-dark-surface, #141019);
+    --hd-text: var(--bc-dark-text, #f6f5fa);
+    --hd-muted: var(--bc-dark-muted, #b6b3c2);
+    --hd-line: var(--bc-dark-line, #2c2838);
     --hd-hover: #221d2e;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .hd--theme-system {
+    --hd-surface: var(--bc-dark-surface, #141019);
+    --hd-text: var(--bc-dark-text, #f6f5fa);
+    --hd-muted: var(--bc-dark-muted, #b6b3c2);
+    --hd-line: var(--bc-dark-line, #2c2838);
+    --hd-hover: #221d2e;
+  }
+
 
 .hd-skip {
   position: absolute;
@@ -150,4 +159,4 @@
 }
 
 /* Only used by the exported demo page. */
-.hd-demo-main { max-width: 80rem; margin: 0 auto; padding: 2rem 1rem; font-family: system-ui, sans-serif; }
+.hd-demo-main { max-width: 80rem; margin: 0 auto; padding: 2rem 1rem; font-family: var(--bc-font-body, system-ui, sans-serif); }

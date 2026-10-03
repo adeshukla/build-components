@@ -2,17 +2,17 @@
 .ti {
   --ti-accent: #2563eb;
   --ti-accent-text: #1b4ab0;
-  --ti-surface: #ffffff;
-  --ti-sunk: #eeecf5;
-  --ti-text: #16121f;
-  --ti-muted: #4d4a57;
+  --ti-surface: var(--bc-light-surface, #ffffff);
+  --ti-sunk: var(--bc-light-sunk, #eeecf5);
+  --ti-text: var(--bc-light-text, #16121f);
+  --ti-muted: var(--bc-light-muted, #4d4a57);
   --ti-border: #737373;
-  --ti-line: #d9d5e4;
+  --ti-line: var(--bc-light-line, #d9d5e4);
   display: block;
   max-width: 28rem;
   background: var(--ti-surface);
   color: var(--ti-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,15 +24,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ti--theme-system {
-    --ti-surface: #141019;
-    --ti-sunk: #2a2438;
-    --ti-text: #f6f5fa;
-    --ti-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .ti--theme-system {
+    --ti-surface: var(--bc-dark-surface, #141019);
+    --ti-sunk: var(--bc-dark-sunk, #2a2438);
+    --ti-text: var(--bc-dark-text, #f6f5fa);
+    --ti-muted: var(--bc-dark-muted, #b6b3c2);
     --ti-border: #8e8a99;
-    --ti-line: #3a3448;
+    --ti-line: var(--bc-dark-line, #3a3448);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ti--theme-system {
+    --ti-surface: var(--bc-dark-surface, #141019);
+    --ti-sunk: var(--bc-dark-sunk, #2a2438);
+    --ti-text: var(--bc-dark-text, #f6f5fa);
+    --ti-muted: var(--bc-dark-muted, #b6b3c2);
+    --ti-border: #8e8a99;
+    --ti-line: var(--bc-dark-line, #3a3448);
+  }
+
 
 .ti-label { display: block; font-weight: 500; }
 .ti-hint { margin: 0; color: var(--ti-muted); font-size: 0.875rem; }
@@ -71,7 +81,7 @@
   margin-top: 0.5rem;
   padding: 0 0.75rem;
   border: 1px solid var(--ti-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--ti-surface);
   color: inherit;
   font: inherit;

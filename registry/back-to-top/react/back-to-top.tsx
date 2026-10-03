@@ -31,13 +31,22 @@ const palettes = {
   dark: { surface: "#1c1826", text: "#f6f5fa", border: "#8e8a99" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -57,8 +66,8 @@ export function BackToTop({ config = defaultConfig }: { config?: BackToTopConfig
   const style = {
     "--bt-accent": config.accentColor,
     "--bt-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--bt-surface": palette.surface,
-    "--bt-text": palette.text,
+    "--bt-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--bt-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
     "--bt-border": palette.border,
   } as CSSProperties;
 

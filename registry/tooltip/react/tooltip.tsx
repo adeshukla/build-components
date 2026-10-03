@@ -33,13 +33,22 @@ const palettes = {
   dark: { surface: "#141019", tip: "#f6f5fa", tipText: "#16121f", text: "#f6f5fa", line: "#3a3448" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // WCAG relative luminance, used to keep the accent readable as a focus ring.
@@ -113,12 +122,12 @@ export function Tooltip({ config = defaultConfig }: { config?: TooltipConfig }) 
 
   const style = {
     "--tt-accent-text": readableAccent(config.accentColor, dark),
-    "--tt-radius": `${config.radius}px`,
-    "--tt-surface": palette.surface,
+    "--tt-radius": `var(--bc-radius-md, ${config.radius}px)`,
+    "--tt-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
     "--tt-tip": palette.tip,
     "--tt-tip-text": palette.tipText,
-    "--tt-text": palette.text,
-    "--tt-line": palette.line,
+    "--tt-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tt-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   return (

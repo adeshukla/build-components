@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import { fieldName, type FormConfig, type FormField } from "../react/form";
 
 const palettes = {
@@ -39,12 +39,12 @@ export function renderFormMarkup(config: FormConfig) {
     `--fm-accent: ${config.accentColor}`,
     `--fm-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--fm-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    `--fm-radius: ${config.radius}px`,
-    `--fm-surface: ${palette.surface}`,
-    `--fm-sunk: ${palette.sunk}`,
-    `--fm-text: ${palette.text}`,
-    `--fm-muted: ${palette.muted}`,
-    `--fm-line: ${palette.line}`,
+    `--fm-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--fm-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--fm-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--fm-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--fm-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--fm-line: ${themedColour("line", palette.line, dark)}`]),
     `--fm-error: ${palette.error}`,
   ].join("; ");
 

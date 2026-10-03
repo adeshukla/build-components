@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { InlineConfirmConfig } from "../react/inline-confirm";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderInlineConfirmMarkup(config: InlineConfirmConfig) {
     `--icf-accent: ${config.accentColor}`,
     `--icf-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--icf-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--icf-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--icf-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="icf icf--theme-${config.theme}" style="${vars}" data-inline-confirm>

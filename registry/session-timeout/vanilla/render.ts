@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SessionTimeoutConfig } from "../react/session-timeout";
 
 const palettes = {
@@ -33,7 +33,7 @@ export function renderSessionTimeoutMarkup(config: SessionTimeoutConfig) {
     `--st-accent: ${config.accentColor}`,
     `--st-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--st-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--st-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--st-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const countdown = Math.max(5, config.countdownSeconds);

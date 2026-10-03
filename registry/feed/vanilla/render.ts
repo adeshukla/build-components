@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { FeedConfig } from "../react/feed";
 
 const palettes = {
@@ -30,7 +30,7 @@ export function renderFeedMarkup(config: FeedConfig) {
   const vars = [
     `--fd-accent: ${config.accentColor}`,
     `--fd-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--fd-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--fd-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const all = config.items.filter((item) => item.title.trim() !== "");
   const pageSize = Math.max(1, config.pageSize);

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { BreadcrumbsConfig } from "../react/breadcrumbs";
 
 const palettes = {
@@ -31,9 +31,9 @@ export function renderBreadcrumbsMarkup(config: BreadcrumbsConfig) {
   const palette = dark ? palettes.dark : palettes.light;
   const vars = [
     `--bc-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--bc-surface: ${palette.surface}`,
-    `--bc-text: ${palette.text}`,
-    `--bc-muted: ${palette.muted}`,
+    ...(config.theme === "system" ? [] : [`--bc-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--bc-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--bc-muted: ${themedColour("muted", palette.muted, dark)}`]),
   ].join("; ");
   const collapses = config.collapse && items.length > 2;
 

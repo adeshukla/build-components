@@ -2,20 +2,20 @@
 .rp {
   --rp-accent: #2563eb;
   --rp-accent-text: #1b4ab0;
-  --rp-surface: #ffffff;
-  --rp-sunk: #f4f3f8;
-  --rp-text: #16121f;
-  --rp-muted: #4d4a57;
-  --rp-line: #d9d5e4;
+  --rp-surface: var(--bc-light-surface, #ffffff);
+  --rp-sunk: var(--bc-light-sunk, #f4f3f8);
+  --rp-text: var(--bc-light-text, #16121f);
+  --rp-muted: var(--bc-light-muted, #4d4a57);
+  --rp-line: var(--bc-light-line, #d9d5e4);
   --rp-handle: #8e8a99;
   display: flex;
   height: 18rem;
   overflow: hidden;
   border: 1px solid var(--rp-line);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--rp-surface);
   color: var(--rp-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 .rp--vertical { flex-direction: column; }
@@ -28,14 +28,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .rp--theme-system {
-    --rp-surface: #141019;
-    --rp-sunk: #1f1a29;
-    --rp-text: #f6f5fa;
-    --rp-muted: #b6b3c2;
-    --rp-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .rp--theme-system {
+    --rp-surface: var(--bc-dark-surface, #141019);
+    --rp-sunk: var(--bc-dark-sunk, #1f1a29);
+    --rp-text: var(--bc-dark-text, #f6f5fa);
+    --rp-muted: var(--bc-dark-muted, #b6b3c2);
+    --rp-line: var(--bc-dark-line, #3a3448);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .rp--theme-system {
+    --rp-surface: var(--bc-dark-surface, #141019);
+    --rp-sunk: var(--bc-dark-sunk, #1f1a29);
+    --rp-text: var(--bc-dark-text, #f6f5fa);
+    --rp-muted: var(--bc-dark-muted, #b6b3c2);
+    --rp-line: var(--bc-dark-line, #3a3448);
+  }
+
 
 .rp-pane { min-width: 0; min-height: 0; overflow: auto; padding: 1rem; }
 .rp-pane[hidden] { display: none; }

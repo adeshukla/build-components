@@ -33,13 +33,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 const stillMedia = {
@@ -86,11 +95,11 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
     "--sth-accent": config.accentColor,
     "--sth-accent-text": readableAccent(config.accentColor, dark),
     "--sth-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--sth-surface": palette.surface,
-    "--sth-sunk": palette.sunk,
-    "--sth-text": palette.text,
-    "--sth-muted": palette.muted,
-    "--sth-line": palette.line,
+    "--sth-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sth-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sth-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sth-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sth-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -125,7 +134,7 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
         ref={scroller}
         data-scroller
         // scroll-padding-top keeps a heading jumped to from landing underneath the header.
-        className="relative h-96 overflow-y-auto scroll-pt-28 rounded-md border border-(--sth-line)"
+        className="relative h-96 overflow-y-auto scroll-pt-28 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sth-line)"
       >
         <header
           data-shrunk={shrunk ? "true" : undefined}
@@ -155,7 +164,7 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
           </nav>
           <button
             type="button"
-            className="ml-auto inline-flex min-h-11 items-center rounded-md bg-(--sth-accent) px-4 text-sm font-medium text-(--sth-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sth-accent-text)"
+            className="ml-auto inline-flex min-h-11 items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--sth-accent) px-4 text-sm font-medium text-(--sth-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sth-accent-text)"
           >
             {config.actionLabel}
           </button>
@@ -172,7 +181,7 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
                 Scroll down and the header shrinks; keep going and it steps out of the way. Tab back up and it
                 returns before the focus reaches it.
               </p>
-              <div aria-hidden="true" className="mt-3 h-28 rounded-md bg-(--sth-sunk)" />
+              <div aria-hidden="true" className="mt-3 h-28 rounded-[var(--bc-radius-sm,0.375rem)] bg-(--sth-sunk)" />
             </section>
           ))}
         </div>

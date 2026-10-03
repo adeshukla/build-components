@@ -4,16 +4,16 @@
   --sb-accent-text: #1b4ab0;
   --sb-radius: 10px;
   --sb-width: 260px;
-  --sb-surface: #ffffff;
-  --sb-sunk: #f4f3f8;
-  --sb-text: #16121f;
-  --sb-muted: #4d4a57;
-  --sb-line: #d9d5e4;
+  --sb-surface: var(--bc-light-surface, #ffffff);
+  --sb-sunk: var(--bc-light-sunk, #f4f3f8);
+  --sb-text: var(--bc-light-text, #16121f);
+  --sb-muted: var(--bc-light-muted, #4d4a57);
+  --sb-line: var(--bc-light-line, #d9d5e4);
   --sb-hover: #f0eff6;
   display: block;
   background: var(--sb-surface);
   color: var(--sb-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -25,15 +25,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .sb--theme-system {
-    --sb-surface: #141019;
-    --sb-sunk: #1c1726;
-    --sb-text: #f6f5fa;
-    --sb-muted: #b6b3c2;
-    --sb-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .sb--theme-system {
+    --sb-surface: var(--bc-dark-surface, #141019);
+    --sb-sunk: var(--bc-dark-sunk, #1c1726);
+    --sb-text: var(--bc-dark-text, #f6f5fa);
+    --sb-muted: var(--bc-dark-muted, #b6b3c2);
+    --sb-line: var(--bc-dark-line, #3a3448);
     --sb-hover: #221d2e;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .sb--theme-system {
+    --sb-surface: var(--bc-dark-surface, #141019);
+    --sb-sunk: var(--bc-dark-sunk, #1c1726);
+    --sb-text: var(--bc-dark-text, #f6f5fa);
+    --sb-muted: var(--bc-dark-muted, #b6b3c2);
+    --sb-line: var(--bc-dark-line, #3a3448);
+    --sb-hover: #221d2e;
+  }
+
 
 .sb-panel {
   width: var(--sb-width);

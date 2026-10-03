@@ -8,12 +8,12 @@
   --ss-visible: 6;
   --ss-height: 2.5rem;
   --ss-row: 2.25rem;
-  --ss-surface: #ffffff;
-  --ss-sunk: #f2f2f7;
-  --ss-text: #171717;
-  --ss-muted: #535358;
+  --ss-surface: var(--bc-light-surface, #ffffff);
+  --ss-sunk: var(--bc-light-sunk, #f2f2f7);
+  --ss-text: var(--bc-light-text, #171717);
+  --ss-muted: var(--bc-light-muted, #535358);
   --ss-border: #737373;
-  --ss-line: #d4d4d4;
+  --ss-line: var(--bc-light-line, #d4d4d4);
   --ss-error: #b3261e;
   --ss-hover: #f2f2f7;
   --ss-font: system-ui, -apple-system, "Segoe UI", sans-serif;

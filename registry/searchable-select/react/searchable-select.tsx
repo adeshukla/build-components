@@ -78,7 +78,23 @@ const media = (query: string) => ({
   },
   get: () => window.matchMedia(query).matches,
 });
-const darkMedia = media("(prefers-color-scheme: dark)");
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
+const darkMedia = {
+  subscribe: (onChange: () => void) => {
+    const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
+    list.addEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
+  },
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
+};
 const phoneMedia = media("(max-width: 480px)");
 const isApplePhone = () =>
   /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -171,12 +187,12 @@ export function SearchableSelect({ config = defaultConfig }: { config?: Searchab
     "--ss-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
     "--ss-ring": accentLuminance <= 0.35 || dark ? accent : "#000000",
     "--ss-radius": `${ios ? 12 : config.radius}px`,
-    "--ss-surface": palette.surface,
-    "--ss-sunk": palette.sunk,
-    "--ss-text": palette.text,
-    "--ss-muted": palette.muted,
+    "--ss-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ss-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ss-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ss-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ss-border": ios ? palette.sunk : palette.border,
-    "--ss-line": palette.line,
+    "--ss-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--ss-error": palette.error,
     "--ss-hover": palette.hover,
     ...(ios ? { fontFamily: IOS_FONT } : null),

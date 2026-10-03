@@ -2,15 +2,15 @@
 .cpr {
   --cpr-accent: #0f766e;
   --cpr-accent-text: #0b5a54;
-  --cpr-surface: #ffffff;
-  --cpr-sunk: #e6e3ef;
-  --cpr-text: #16121f;
-  --cpr-muted: #4d4a57;
-  --cpr-line: #c9c4d6;
+  --cpr-surface: var(--bc-light-surface, #ffffff);
+  --cpr-sunk: var(--bc-light-sunk, #e6e3ef);
+  --cpr-text: var(--bc-light-text, #16121f);
+  --cpr-muted: var(--bc-light-muted, #4d4a57);
+  --cpr-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--cpr-surface);
   color: var(--cpr-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -22,14 +22,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .cpr--theme-system {
-    --cpr-surface: #141019;
-    --cpr-sunk: #2c2639;
-    --cpr-text: #f6f5fa;
-    --cpr-muted: #b6b3c2;
-    --cpr-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .cpr--theme-system {
+    --cpr-surface: var(--bc-dark-surface, #141019);
+    --cpr-sunk: var(--bc-dark-sunk, #2c2639);
+    --cpr-text: var(--bc-dark-text, #f6f5fa);
+    --cpr-muted: var(--bc-dark-muted, #b6b3c2);
+    --cpr-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .cpr--theme-system {
+    --cpr-surface: var(--bc-dark-surface, #141019);
+    --cpr-sunk: var(--bc-dark-sunk, #2c2639);
+    --cpr-text: var(--bc-dark-text, #f6f5fa);
+    --cpr-muted: var(--bc-dark-muted, #b6b3c2);
+    --cpr-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .cpr-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
 .cpr-dial { position: relative; flex-shrink: 0; }
@@ -67,7 +76,7 @@
   margin-top: 0.75rem;
   padding: 0 1rem;
   border: 1px solid var(--cpr-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--cpr-sunk);
   color: var(--cpr-text);
   font: inherit;

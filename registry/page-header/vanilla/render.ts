@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { PageHeaderConfig } from "../react/page-header";
 
 const palettes = {
@@ -38,7 +38,7 @@ export function renderPageHeaderMarkup(config: PageHeaderConfig) {
     `--pgh-accent: ${config.accentColor}`,
     `--pgh-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--pgh-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--pgh-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--pgh-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const crumbs =

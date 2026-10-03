@@ -3,15 +3,15 @@
   --sk-accent: #1d4ed8;
   --sk-accent-text: #1a41b8;
   --sk-on-accent: #ffffff;
-  --sk-surface: #ffffff;
-  --sk-sunk: #f4f3f8;
-  --sk-text: #16121f;
-  --sk-muted: #4d4a57;
-  --sk-line: #c9c4d6;
+  --sk-surface: var(--bc-light-surface, #ffffff);
+  --sk-sunk: var(--bc-light-sunk, #f4f3f8);
+  --sk-text: var(--bc-light-text, #16121f);
+  --sk-muted: var(--bc-light-muted, #4d4a57);
+  --sk-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--sk-surface);
   color: var(--sk-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .sk--theme-system {
-    --sk-surface: #141019;
-    --sk-sunk: #221d2e;
-    --sk-text: #f6f5fa;
-    --sk-muted: #b6b3c2;
-    --sk-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .sk--theme-system {
+    --sk-surface: var(--bc-dark-surface, #141019);
+    --sk-sunk: var(--bc-dark-sunk, #221d2e);
+    --sk-text: var(--bc-dark-text, #f6f5fa);
+    --sk-muted: var(--bc-dark-muted, #b6b3c2);
+    --sk-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .sk--theme-system {
+    --sk-surface: var(--bc-dark-surface, #141019);
+    --sk-sunk: var(--bc-dark-sunk, #221d2e);
+    --sk-text: var(--bc-dark-text, #f6f5fa);
+    --sk-muted: var(--bc-dark-muted, #b6b3c2);
+    --sk-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .sk-nav { display: flex; gap: 0.5rem; }
 .sk--centre .sk-nav { justify-content: center; }
@@ -42,7 +51,7 @@
   min-height: 2.75rem;
   align-items: center;
   padding: 0 1rem;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-button, 0.375rem);
   background: var(--sk-accent);
   color: var(--sk-on-accent);
   font-weight: 500;
@@ -83,7 +92,7 @@
 .sk-target {
   padding: 0.75rem;
   border: 1px solid var(--sk-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--sk-sunk);
 }
 .sk-target:focus-visible { outline: 2px solid var(--sk-accent-text); outline-offset: 2px; }

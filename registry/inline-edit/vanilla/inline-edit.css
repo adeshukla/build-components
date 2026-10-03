@@ -3,17 +3,17 @@
   --ie-accent: #2563eb;
   --ie-accent-text: #1b4ab0;
   --ie-on-accent: #ffffff;
-  --ie-surface: #ffffff;
+  --ie-surface: var(--bc-light-surface, #ffffff);
   --ie-hover: #eeecf5;
-  --ie-text: #16121f;
-  --ie-muted: #4d4a57;
+  --ie-text: var(--bc-light-text, #16121f);
+  --ie-muted: var(--bc-light-muted, #4d4a57);
   --ie-border: #737373;
   --ie-error: #b3261e;
   display: block;
   max-width: 28rem;
   background: var(--ie-surface);
   color: var(--ie-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -25,15 +25,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ie--theme-system {
-    --ie-surface: #141019;
+  :root:not([data-bc-scheme="light"]) .ie--theme-system {
+    --ie-surface: var(--bc-dark-surface, #141019);
     --ie-hover: #2a2438;
-    --ie-text: #f6f5fa;
-    --ie-muted: #b6b3c2;
+    --ie-text: var(--bc-dark-text, #f6f5fa);
+    --ie-muted: var(--bc-dark-muted, #b6b3c2);
     --ie-border: #8e8a99;
     --ie-error: #ff6b6b;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ie--theme-system {
+    --ie-surface: var(--bc-dark-surface, #141019);
+    --ie-hover: #2a2438;
+    --ie-text: var(--bc-dark-text, #f6f5fa);
+    --ie-muted: var(--bc-dark-muted, #b6b3c2);
+    --ie-border: #8e8a99;
+    --ie-error: #ff6b6b;
+  }
+
 
 .ie [hidden] { display: none; }
 .ie-label { margin: 0; color: var(--ie-muted); font-size: 0.875rem; font-weight: 500; }
@@ -48,7 +58,7 @@
   margin-top: 0.25rem;
   padding: 0.5rem 0.75rem;
   border: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -68,7 +78,7 @@
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--ie-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--ie-surface);
   color: inherit;
   font: inherit;
@@ -84,7 +94,7 @@
   min-height: 2.25rem;
   padding: 0 0.75rem;
   border: 1px solid transparent;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;

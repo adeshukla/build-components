@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { RadioCardsConfig } from "../react/radio-cards";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderRadioCardsMarkup(config: RadioCardsConfig) {
   const vars = [
     `--rc-accent: ${config.accentColor}`,
     `--rc-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--rc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--rc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const options = config.options.filter((option) => option.label.trim() !== "");

@@ -2,16 +2,16 @@
 .atc {
   --atc-accent: #7c3aed;
   --atc-accent-text: #6021d6;
-  --atc-surface: #ffffff;
-  --atc-sunk: #f1eff7;
-  --atc-text: #16121f;
-  --atc-muted: #4d4a57;
-  --atc-line: #c9c4d6;
+  --atc-surface: var(--bc-light-surface, #ffffff);
+  --atc-sunk: var(--bc-light-sunk, #f1eff7);
+  --atc-text: var(--bc-light-text, #16121f);
+  --atc-muted: var(--bc-light-muted, #4d4a57);
+  --atc-line: var(--bc-light-line, #c9c4d6);
   display: block;
   padding: 0.25rem;
   background: var(--atc-surface);
   color: var(--atc-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .atc--theme-system {
-    --atc-surface: #181320;
-    --atc-sunk: #272031;
-    --atc-text: #f6f5fa;
-    --atc-muted: #b6b3c2;
-    --atc-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .atc--theme-system {
+    --atc-surface: var(--bc-dark-surface, #181320);
+    --atc-sunk: var(--bc-dark-sunk, #272031);
+    --atc-text: var(--bc-dark-text, #f6f5fa);
+    --atc-muted: var(--bc-dark-muted, #b6b3c2);
+    --atc-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .atc--theme-system {
+    --atc-surface: var(--bc-dark-surface, #181320);
+    --atc-sunk: var(--bc-dark-sunk, #272031);
+    --atc-text: var(--bc-dark-text, #f6f5fa);
+    --atc-muted: var(--bc-dark-muted, #b6b3c2);
+    --atc-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /*
  * One link per card, and it is the heading. A card with a "Read more" as well gives a screen reader two
@@ -41,7 +50,7 @@
   max-width: 32rem;
   overflow: hidden;
   border: 1px solid var(--atc-line);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   background: var(--atc-surface);
 }
 /* The ring goes round the card, because the link fills it. */

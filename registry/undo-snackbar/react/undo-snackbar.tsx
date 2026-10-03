@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", panel: "#2c2639", onPanel: "#f6f5fa", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -82,13 +91,13 @@ export function UndoSnackbar({ config = defaultConfig }: { config?: UndoSnackbar
     "--usb-accent": config.accentColor,
     "--usb-accent-on-panel": readableOnPanel(config.accentColor, palette.panel),
     "--usb-accent-text": readableOnPanel(config.accentColor, palette.surface),
-    "--usb-surface": palette.surface,
-    "--usb-sunk": palette.sunk,
+    "--usb-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--usb-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
     "--usb-panel": palette.panel,
     "--usb-on-panel": palette.onPanel,
-    "--usb-text": palette.text,
-    "--usb-muted": palette.muted,
-    "--usb-line": palette.line,
+    "--usb-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--usb-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--usb-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // Counting only while nobody is using it is what makes the time limit adjustable, which WCAG 2.2.1
@@ -123,7 +132,7 @@ export function UndoSnackbar({ config = defaultConfig }: { config?: UndoSnackbar
         <button
           type="button"
           onClick={start}
-          className="inline-flex min-h-11 items-center rounded-md border border-(--usb-line) bg-(--usb-sunk) px-4 font-medium text-(--usb-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--usb-accent-text)"
+          className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--usb-line) bg-(--usb-sunk) px-4 font-medium text-(--usb-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--usb-accent-text)"
         >
           {config.triggerLabel}
         </button>
@@ -148,7 +157,7 @@ export function UndoSnackbar({ config = defaultConfig }: { config?: UndoSnackbar
           onBlur={(event) => {
             if (!event.currentTarget.contains(event.relatedTarget as Node)) setHeld(false);
           }}
-          className={`absolute bottom-3 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg bg-(--usb-panel) px-4 py-3 text-(--usb-on-panel) shadow-xl ${
+          className={`absolute bottom-3 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[var(--bc-radius-md,0.5rem)] bg-(--usb-panel) px-4 py-3 text-(--usb-on-panel) shadow-xl ${
             config.position === "bottom-centre" ? "left-1/2 -translate-x-1/2" : "left-3"
           }`}
         >
@@ -161,7 +170,7 @@ export function UndoSnackbar({ config = defaultConfig }: { config?: UndoSnackbar
               setOpen(false);
               setSaid(config.undoneText);
             }}
-            className="min-h-11 rounded px-2 font-semibold text-(--usb-accent-on-panel) underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--usb-accent-on-panel)"
+            className="min-h-11 rounded-[var(--bc-radius-xs,0.25rem)] px-2 font-semibold text-(--usb-accent-on-panel) underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--usb-accent-on-panel)"
           >
             {config.undoLabel}
           </button>
@@ -172,7 +181,7 @@ export function UndoSnackbar({ config = defaultConfig }: { config?: UndoSnackbar
               setSaid(config.keptText);
             }}
             aria-label={config.closeLabel}
-            className="min-h-11 min-w-11 rounded text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--usb-accent-on-panel)"
+            className="min-h-11 min-w-11 rounded-[var(--bc-radius-xs,0.25rem)] text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--usb-accent-on-panel)"
           >
             <span aria-hidden="true">×</span>
           </button>

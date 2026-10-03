@@ -57,13 +57,22 @@ const spacings = {
   spacious: "px-6 py-16 sm:py-20",
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // WCAG relative luminance, used to keep the accent readable as text.
@@ -104,10 +113,10 @@ export function SiteFooter({ config = defaultConfig }: { config?: FooterConfig }
 
   const style = {
     "--ft-accent": readableAccent(config.accentColor, dark),
-    "--ft-surface": palette.surface,
-    "--ft-text": palette.text,
-    "--ft-muted": palette.muted,
-    "--ft-line": palette.line,
+    "--ft-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ft-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ft-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--ft-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
   // inline-block with a minimum height: a standalone link still needs a 24px target (WCAG 2.2).
   const link =

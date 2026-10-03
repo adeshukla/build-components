@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { FilterBarConfig } from "../react/filter-bar";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderFilterBarMarkup(config: FilterBarConfig) {
     `--fb-accent: ${config.accentColor}`,
     `--fb-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--fb-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--fb-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--fb-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const filters = config.filters.filter((filter) => filter.label.trim() !== "");

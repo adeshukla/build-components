@@ -3,17 +3,17 @@
   --vid-accent: #b42318;
   --vid-accent-text: #8f1c13;
   --vid-on-accent: #ffffff;
-  --vid-surface: #ffffff;
-  --vid-sunk: #1b1624;
+  --vid-surface: var(--bc-light-surface, #ffffff);
+  --vid-sunk: var(--bc-light-sunk, #1b1624);
   --vid-on-sunk: #f6f5fa;
-  --vid-text: #16121f;
-  --vid-muted: #4d4a57;
-  --vid-line: #c9c4d6;
+  --vid-text: var(--bc-light-text, #16121f);
+  --vid-muted: var(--bc-light-muted, #4d4a57);
+  --vid-line: var(--bc-light-line, #c9c4d6);
   display: block;
   padding: 0.25rem;
   background: var(--vid-surface);
   color: var(--vid-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -25,14 +25,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .vid--theme-system {
-    --vid-surface: #141019;
-    --vid-sunk: #0f0c14;
-    --vid-text: #f6f5fa;
-    --vid-muted: #b6b3c2;
-    --vid-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .vid--theme-system {
+    --vid-surface: var(--bc-dark-surface, #141019);
+    --vid-sunk: var(--bc-dark-sunk, #0f0c14);
+    --vid-text: var(--bc-dark-text, #f6f5fa);
+    --vid-muted: var(--bc-dark-muted, #b6b3c2);
+    --vid-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .vid--theme-system {
+    --vid-surface: var(--bc-dark-surface, #141019);
+    --vid-sunk: var(--bc-dark-sunk, #0f0c14);
+    --vid-text: var(--bc-dark-text, #f6f5fa);
+    --vid-muted: var(--bc-dark-muted, #b6b3c2);
+    --vid-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
 .vid [hidden] { display: none; }
@@ -42,7 +51,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--vid-sunk);
 }
 .vid--16-9 .vid-frame { aspect-ratio: 16 / 9; }

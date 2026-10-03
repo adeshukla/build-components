@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SlotPickerConfig } from "../react/slot-picker";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderSlotPickerMarkup(config: SlotPickerConfig) {
     `--sl-accent: ${config.accentColor}`,
     `--sl-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--sl-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--sl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const slots = config.slots.filter((slot) => slot.time.trim() !== "");

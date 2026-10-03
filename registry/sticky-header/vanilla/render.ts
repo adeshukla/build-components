@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { StickyHeaderConfig } from "../react/sticky-header";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderStickyHeaderMarkup(config: StickyHeaderConfig) {
     `--sth-accent: ${config.accentColor}`,
     `--sth-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--sth-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--sth-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sth-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const count = Math.max(config.demoSections, 1);

@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#1b1624", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -95,11 +104,11 @@ export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetCo
     "--bsh-accent": config.accentColor,
     "--bsh-accent-text": readableAccent(config.accentColor, dark),
     "--bsh-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--bsh-surface": palette.surface,
-    "--bsh-sunk": palette.sunk,
-    "--bsh-text": palette.text,
-    "--bsh-muted": palette.muted,
-    "--bsh-line": palette.line,
+    "--bsh-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--bsh-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--bsh-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--bsh-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--bsh-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const detent = steps[Math.min(at, steps.length - 1)] ?? "full";
@@ -166,7 +175,7 @@ export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetCo
       <button
         type="button"
         onClick={(event) => open(event.currentTarget)}
-        className="inline-flex min-h-11 items-center rounded-md bg-(--bsh-accent) px-4 font-medium text-(--bsh-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
+        className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--bsh-accent) px-4 font-medium text-(--bsh-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
       >
         {config.triggerLabel}
       </button>
@@ -186,8 +195,8 @@ export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetCo
         // No display class on the dialog itself: display:flex would beat the browser's own
         // dialog:not([open]) { display: none }, and a closed sheet would stay on the page.
         className={`m-0 w-full max-w-none overflow-hidden border border-(--bsh-line) bg-(--bsh-surface) p-0 text-(--bsh-text) backdrop:bg-black/40 ${
-          config.centreOnWide ? "sm:mx-auto sm:my-[8vh] sm:max-w-lg sm:rounded-xl" : ""
-        } max-sm:mt-auto max-sm:mb-0 max-sm:rounded-t-2xl`}
+          config.centreOnWide ? "sm:mx-auto sm:my-[8vh] sm:max-w-lg sm:rounded-[var(--bc-radius-lg,0.75rem)]" : ""
+        } max-sm:mt-auto max-sm:mb-0 max-sm:rounded-t-[var(--bc-radius-xl,1rem)]`}
         style={{ height: heights[detent], marginTop: "auto", marginBottom: 0 }}
       >
         <div className="flex h-full flex-col">
@@ -202,7 +211,7 @@ export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetCo
             aria-label={canGrow ? config.expandLabel : config.collapseLabel}
             onClick={() => setAt(canGrow ? at + 1 : 0)}
             onKeyDown={handleKeys}
-            className="flex min-h-11 w-24 items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
+            className="flex min-h-11 w-24 items-center justify-center rounded-[var(--bc-radius-sm,0.375rem)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
           >
             <span aria-hidden="true" className="block h-1.5 w-10 rounded-full bg-(--bsh-line)" />
           </button>
@@ -223,14 +232,14 @@ export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetCo
           <button
             type="button"
             onClick={() => close(`${config.confirmLabel} chosen.`)}
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-md bg-(--bsh-accent) px-4 font-medium text-(--bsh-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
+            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--bsh-accent) px-4 font-medium text-(--bsh-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
           >
             {config.confirmLabel}
           </button>
           <button
             type="button"
             onClick={() => close(`${config.title} closed.`)}
-            className="inline-flex min-h-11 items-center justify-center rounded-md border border-(--bsh-line) bg-(--bsh-sunk) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
+            className="inline-flex min-h-11 items-center justify-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--bsh-line) bg-(--bsh-sunk) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bsh-accent-text)"
           >
             {config.cancelLabel}
           </button>

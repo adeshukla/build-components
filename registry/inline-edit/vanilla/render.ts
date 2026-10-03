@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { InlineEditConfig } from "../react/inline-edit";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderInlineEditMarkup(config: InlineEditConfig) {
     `--ie-accent: ${config.accentColor}`,
     `--ie-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--ie-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--ie-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ie-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const hint = config.hint.trim();
   const value = config.value;

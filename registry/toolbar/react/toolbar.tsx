@@ -32,13 +32,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -77,11 +86,11 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
     "--tb-accent": config.accentColor,
     "--tb-accent-text": readableAccent(config.accentColor, dark),
     "--tb-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--tb-surface": palette.surface,
-    "--tb-sunk": palette.sunk,
-    "--tb-text": palette.text,
-    "--tb-muted": palette.muted,
-    "--tb-line": palette.line,
+    "--tb-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--tb-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--tb-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tb-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--tb-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const vertical = config.orientation === "vertical";
@@ -120,7 +129,7 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
         aria-label={config.label}
         aria-orientation={config.orientation}
         onKeyDown={onKeyDown}
-        className={`inline-flex gap-1 rounded-lg border border-(--tb-line) bg-(--tb-sunk) p-1 ${vertical ? "flex-col" : "flex-row flex-wrap"}`}
+        className={`inline-flex gap-1 rounded-[var(--bc-radius-md,0.5rem)] border border-(--tb-line) bg-(--tb-sunk) p-1 ${vertical ? "flex-col" : "flex-row flex-wrap"}`}
       >
         {items.map((item, index) => {
           const toggle = item.kind === "toggle";
@@ -137,7 +146,7 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
               aria-pressed={toggle ? on : undefined}
               onFocus={() => setHere(index)}
               onClick={() => activate(item)}
-              className={`min-h-11 cursor-pointer rounded-md border px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tb-accent-text) ${
+              className={`min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tb-accent-text) ${
                 on ? "border-(--tb-accent) bg-(--tb-accent) text-(--tb-on-accent)" : "border-transparent"
               }`}
             >

@@ -40,13 +40,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -84,11 +93,11 @@ export function UnitInput({ config = defaultConfig }: { config?: UnitInputConfig
   const style = {
     "--ui-accent": config.accentColor,
     "--ui-accent-text": readableAccent(config.accentColor, dark),
-    "--ui-surface": palette.surface,
-    "--ui-sunk": palette.sunk,
-    "--ui-text": palette.text,
-    "--ui-muted": palette.muted,
-    "--ui-line": palette.line,
+    "--ui-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ui-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ui-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ui-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--ui-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--ui-error": palette.error,
   } as CSSProperties;
 
@@ -134,7 +143,7 @@ export function UnitInput({ config = defaultConfig }: { config?: UnitInputConfig
             if (error !== "") setError(check(next));
           }}
           onBlur={(event) => setError(check(event.target.value))}
-          className={`min-h-11 w-32 rounded-md border bg-(--ui-sunk) px-3 text-(--ui-text) tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-accent-text) ${
+          className={`min-h-11 w-32 rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--ui-sunk) px-3 text-(--ui-text) tabular-nums focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-accent-text) ${
             error === "" ? "border-(--ui-line)" : "border-(--ui-error)"
           }`}
         />
@@ -146,7 +155,7 @@ export function UnitInput({ config = defaultConfig }: { config?: UnitInputConfig
           name={config.unitName}
           value={unit}
           onChange={(event) => setUnit(event.target.value)}
-          className="min-h-11 rounded-md border border-(--ui-line) bg-(--ui-sunk) px-3 text-(--ui-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-accent-text)"
+          className="min-h-11 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--ui-line) bg-(--ui-sunk) px-3 text-(--ui-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-accent-text)"
         >
           {units.map((entry) => (
             <option key={entry.value} value={entry.value}>

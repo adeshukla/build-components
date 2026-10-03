@@ -40,13 +40,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", error: "#ff6b6b", success: "#6fdc8c" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -141,9 +150,9 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
     "--cf-accent": config.accentColor,
     "--cf-accent-text": readableAccent(config.accentColor, dark),
     "--cf-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--cf-surface": palette.surface,
-    "--cf-text": palette.text,
-    "--cf-muted": palette.muted,
+    "--cf-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--cf-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--cf-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--cf-border": palette.border,
     "--cf-error": palette.error,
     "--cf-success": palette.success,
@@ -261,7 +270,7 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
             onBlur={() => {
               if (values[field] !== "" || errors[field]) check(field);
             }}
-            className={`h-11 w-full rounded-lg border bg-(--cf-surface) px-3 text-(--cf-text) tabular-nums outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cf-accent-text) ${error ? "border-2 border-(--cf-error)" : "border-(--cf-border)"} ${field === "number" ? "pr-40" : ""}`}
+            className={`h-11 w-full rounded-[var(--bc-radius-md,0.5rem)] border bg-(--cf-surface) px-3 text-(--cf-text) tabular-nums outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cf-accent-text) ${error ? "border-2 border-(--cf-error)" : "border-(--cf-border)"} ${field === "number" ? "pr-40" : ""}`}
           />
           {field === "number" && brand && (
             <span id={`${id}-brand`} className="absolute top-1/2 right-3 -translate-y-1/2 text-sm font-medium text-(--cf-muted)">
@@ -287,7 +296,7 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
       </fieldset>
       <button
         type="submit"
-        className="mt-6 min-h-11 w-full cursor-pointer rounded-lg bg-(--cf-accent) px-4 font-semibold text-(--cf-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cf-accent-text)"
+        className="mt-6 min-h-11 w-full cursor-pointer rounded-[var(--bc-radius-button,0.5rem)] bg-(--cf-accent) px-4 font-semibold text-(--cf-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cf-accent-text)"
       >
         {config.buttonText} {config.amount}
       </button>

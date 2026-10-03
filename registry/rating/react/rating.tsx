@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", empty: "#4a4458" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -112,9 +121,9 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
   const style = {
     "--ra-accent": config.accentColor,
     "--ra-accent-text": readableAccent(config.accentColor, dark),
-    "--ra-surface": palette.surface,
-    "--ra-text": palette.text,
-    "--ra-muted": palette.muted,
+    "--ra-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ra-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ra-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ra-empty": palette.empty,
   } as CSSProperties;
   const stars = Array.from({ length: max }, (_, index) => index + 1);

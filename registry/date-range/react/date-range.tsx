@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -97,11 +106,11 @@ export function DateRange({ config = defaultConfig }: { config?: DateRangeConfig
   const style = {
     "--dr-accent": config.accentColor,
     "--dr-accent-text": readableAccent(config.accentColor, dark),
-    "--dr-surface": palette.surface,
-    "--dr-sunk": palette.sunk,
-    "--dr-text": palette.text,
-    "--dr-muted": palette.muted,
-    "--dr-line": palette.line,
+    "--dr-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--dr-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--dr-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--dr-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--dr-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--dr-error": palette.error,
   } as CSSProperties;
 
@@ -111,7 +120,7 @@ export function DateRange({ config = defaultConfig }: { config?: DateRangeConfig
   const nights = config.spanUnit === "nights" ? span : span === null ? null : span + 1;
   const unit = config.spanUnit === "nights" ? "night" : "day";
 
-  const field = `mt-2 min-h-11 w-full rounded-md border bg-(--dr-sunk) px-3 text-(--dr-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dr-accent-text)`;
+  const field = `mt-2 min-h-11 w-full rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--dr-sunk) px-3 text-(--dr-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dr-accent-text)`;
 
   return (
     <div style={style} className="bg-(--dr-surface) text-(--dr-text)">

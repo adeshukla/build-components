@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -87,11 +96,11 @@ export function LoadingButton({
     "--lbn-accent": config.accentColor,
     "--lbn-accent-text": readableAccent(config.accentColor, dark),
     "--lbn-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--lbn-surface": palette.surface,
-    "--lbn-sunk": palette.sunk,
-    "--lbn-text": palette.text,
-    "--lbn-muted": palette.muted,
-    "--lbn-line": palette.line,
+    "--lbn-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--lbn-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--lbn-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--lbn-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--lbn-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--lbn-error": palette.error,
   } as CSSProperties;
 
@@ -138,7 +147,7 @@ export function LoadingButton({
         aria-busy={busy || undefined}
         aria-disabled={busy || undefined}
         data-phase={phase}
-        className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-(--lbn-accent) px-5 font-medium text-(--lbn-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--lbn-accent-text) ${
+        className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--bc-radius-button,0.375rem)] bg-(--lbn-accent) px-5 font-medium text-(--lbn-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--lbn-accent-text) ${
           config.fullWidth ? "w-full" : ""
         } ${busy ? "opacity-80" : ""}`}
         // The widest label sets the width, so the button does not jump as the words change.

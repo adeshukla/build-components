@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { HowItWorksConfig } from "../react/how-it-works";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderHowItWorksMarkup(config: HowItWorksConfig) {
     `--hw-accent: ${config.accentColor}`,
     `--hw-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--hw-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--hw-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--hw-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const steps = config.steps

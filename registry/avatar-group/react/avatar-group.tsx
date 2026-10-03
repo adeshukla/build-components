@@ -36,13 +36,22 @@ const sizes = { sm: "size-7 text-xs", md: "size-9 text-sm", lg: "size-12 text-ba
 /** Tints picked to keep dark text on them above 4.5:1, so initials stay readable. */
 const tints = ["#d9e4ff", "#d8f0e0", "#fce4d6", "#e7ddfb", "#fbe3ef", "#d7eef5"];
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 /** The first letter of the first two words: "Ada Okafor" becomes AO. */
@@ -68,9 +77,9 @@ export function AvatarGroup({ config = defaultConfig }: { config?: AvatarGroupCo
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
   const style = {
-    "--ag-surface": palette.surface,
-    "--ag-text": palette.text,
-    "--ag-muted": palette.muted,
+    "--ag-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ag-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ag-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ag-ring": palette.ring,
   } as CSSProperties;
   const people = config.people.filter((person) => person.name.trim() !== "");

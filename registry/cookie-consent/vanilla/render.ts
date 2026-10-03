@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { CookieConsentConfig } from "../react/cookie-consent";
 
 const palettes = {
@@ -31,7 +31,7 @@ export function renderCookieConsentMarkup(config: CookieConsentConfig) {
     `--cc-accent: ${config.accentColor}`,
     `--cc-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--cc-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--cc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const categories = config.categories.filter((category) => category.key.trim() && category.name.trim());
   const policy = config.policyText.trim()

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CommentThreadConfig } from "../react/comment-thread";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderCommentThreadMarkup(config: CommentThreadConfig) {
     `--ct-accent: ${config.accentColor}`,
     `--ct-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--ct-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--ct-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ct-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const comments = config.comments.filter((comment) => comment.body.trim() !== "");

@@ -45,13 +45,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -101,11 +110,11 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
     "--hr-accent": config.accentColor,
     "--hr-accent-text": readableAccent(config.accentColor, dark),
     "--hr-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--hr-surface": palette.surface,
-    "--hr-sunk": palette.sunk,
-    "--hr-text": palette.text,
-    "--hr-muted": palette.muted,
-    "--hr-line": palette.line,
+    "--hr-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--hr-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--hr-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--hr-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--hr-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const Heading = config.headingLevel;
@@ -133,7 +142,7 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
             {config.primaryText.trim() !== "" && (
               <a
                 href={safeHref(config.primaryHref)}
-                className="inline-flex min-h-11 items-center rounded-md bg-(--hr-accent) px-5 font-medium text-(--hr-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hr-accent-text)"
+                className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--hr-accent) px-5 font-medium text-(--hr-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hr-accent-text)"
               >
                 {config.primaryText}
               </a>
@@ -141,7 +150,7 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
             {config.secondaryText.trim() !== "" && (
               <a
                 href={safeHref(config.secondaryHref)}
-                className="inline-flex min-h-11 items-center rounded-md border border-(--hr-line) px-5 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hr-accent-text)"
+                className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--hr-line) px-5 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hr-accent-text)"
               >
                 {config.secondaryText}
               </a>
@@ -153,13 +162,13 @@ export function Hero({ config = defaultConfig }: { config?: HeroConfig }) {
 
         {config.showPanel && !centred && (picture ? (
           // eslint-disable-next-line @next/next/no-img-element -- a plain file: it must work in any React project
-          <img src={picture} alt={config.panelLabel} className="aspect-[4/3] w-full rounded-xl border border-(--hr-line) object-cover" />
+          <img src={picture} alt={config.panelLabel} className="aspect-[4/3] w-full rounded-[var(--bc-radius-lg,0.75rem)] border border-(--hr-line) object-cover" />
         ) : (
           // A place for a picture, drawn rather than loaded: the exported file carries no image of ours.
           <div
             role="img"
             aria-label={config.panelLabel}
-            className="aspect-[4/3] rounded-xl border border-(--hr-line) bg-(--hr-sunk) bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgb(0_0_0/0.04)_18px_36px)]"
+            className="aspect-[4/3] rounded-[var(--bc-radius-lg,0.75rem)] border border-(--hr-line) bg-(--hr-sunk) bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgb(0_0_0/0.04)_18px_36px)]"
           />
         ))}
       </div>

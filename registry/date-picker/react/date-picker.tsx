@@ -233,7 +233,23 @@ const media = (query: string) => ({
   get: () => window.matchMedia(query).matches,
 });
 
-const darkMedia = media("(prefers-color-scheme: dark)");
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
+const darkMedia = {
+  subscribe: (onChange: () => void) => {
+    const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
+    list.addEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
+  },
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
+};
 const phoneMedia = media("(max-width: 480px)");
 const isApplePhone = () =>
   /iP(hone|od)/.test(navigator.userAgent) ||
@@ -283,12 +299,12 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
     "--dp-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
     "--dp-ring": accentLuminance <= 0.35 || dark ? accent : "#000000",
     "--dp-radius": `${ios ? 12 : config.radius}px`,
-    "--dp-surface": palette.surface,
-    "--dp-sunk": palette.sunk,
-    "--dp-text": palette.text,
-    "--dp-muted": palette.muted,
+    "--dp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--dp-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--dp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--dp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--dp-border": ios ? palette.sunk : palette.border,
-    "--dp-line": palette.line,
+    "--dp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--dp-disabled": palette.disabled,
     "--dp-error": palette.error,
     "--dp-hover": palette.hover,
@@ -601,7 +617,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
         }}
         className={`m-0 border bg-(--dp-surface) p-0 text-(--dp-text) shadow-xl ${
           ios
-            ? "fixed inset-x-0 top-auto bottom-0 max-h-[85vh] w-full max-w-none rounded-t-2xl border-(--dp-line) pb-[env(safe-area-inset-bottom)] backdrop:bg-black/40 transition-transform duration-300 ease-out starting:translate-y-full motion-reduce:transition-none"
+            ? "fixed inset-x-0 top-auto bottom-0 max-h-[85vh] w-full max-w-none rounded-t-[var(--bc-radius-xl,1rem)] border-(--dp-line) pb-[env(safe-area-inset-bottom)] backdrop:bg-black/40 transition-transform duration-300 ease-out starting:translate-y-full motion-reduce:transition-none"
             : "fixed inset-auto rounded-(--dp-radius) border-(--dp-line) backdrop:bg-black/10"
         }`}
       >

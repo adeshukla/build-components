@@ -43,13 +43,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -99,11 +108,11 @@ export function TimeRange({ config = defaultConfig }: { config?: TimeRangeConfig
   const style = {
     "--tmr-accent": config.accentColor,
     "--tmr-accent-text": readableAccent(config.accentColor, dark),
-    "--tmr-surface": palette.surface,
-    "--tmr-sunk": palette.sunk,
-    "--tmr-text": palette.text,
-    "--tmr-muted": palette.muted,
-    "--tmr-line": palette.line,
+    "--tmr-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--tmr-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--tmr-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tmr-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--tmr-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--tmr-error": palette.error,
   } as CSSProperties;
 
@@ -114,7 +123,7 @@ export function TimeRange({ config = defaultConfig }: { config?: TimeRangeConfig
   const length = both && !outOfOrder ? (gap <= 0 ? gap + 24 * 60 : gap) : null;
 
   const field =
-    "mt-2 min-h-11 w-full rounded-md border bg-(--tmr-sunk) px-3 text-(--tmr-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tmr-accent-text)";
+    "mt-2 min-h-11 w-full rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--tmr-sunk) px-3 text-(--tmr-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tmr-accent-text)";
 
   return (
     <div style={style} className="bg-(--tmr-surface) text-(--tmr-text)">

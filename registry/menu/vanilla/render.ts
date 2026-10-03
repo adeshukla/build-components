@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { MenuConfig } from "../react/menu";
 
 const palettes = {
@@ -30,11 +30,11 @@ export function renderMenuMarkup(config: MenuConfig) {
   const palette = dark ? palettes.dark : palettes.light;
   const vars = [
     `--mn-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--mn-radius: ${config.radius}px`,
-    `--mn-surface: ${palette.surface}`,
-    `--mn-text: ${palette.text}`,
-    `--mn-muted: ${palette.muted}`,
-    `--mn-line: ${palette.line}`,
+    `--mn-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--mn-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--mn-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--mn-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--mn-line: ${themedColour("line", palette.line, dark)}`]),
     `--mn-hover: ${palette.hover}`,
   ].join("; ");
 

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { OtpConfig } from "../react/otp";
 
 const palettes = {
@@ -31,11 +31,11 @@ export function renderOtpMarkup(config: OtpConfig) {
   const vars = [
     `--ot-accent: ${config.accentColor}`,
     `--ot-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--ot-radius: ${config.radius}px`,
-    `--ot-surface: ${palette.surface}`,
-    `--ot-text: ${palette.text}`,
-    `--ot-muted: ${palette.muted}`,
-    `--ot-line: ${palette.line}`,
+    `--ot-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--ot-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ot-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ot-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ot-line: ${themedColour("line", palette.line, dark)}`]),
   ].join("; ");
 
   const hint = config.hint.trim()

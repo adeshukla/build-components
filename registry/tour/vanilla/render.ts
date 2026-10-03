@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TourConfig } from "../react/tour";
 
 const palettes = {
@@ -31,7 +31,7 @@ export function renderTourMarkup(config: TourConfig) {
     `--to-accent: ${config.accentColor}`,
     `--to-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--to-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--to-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--to-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const steps = config.steps.filter((step) => step.title.trim() !== "");
 

@@ -2,16 +2,16 @@
 .sl {
   --sl-accent: #2563eb;
   --sl-accent-text: #1b4ab0;
-  --sl-surface: #ffffff;
+  --sl-surface: var(--bc-light-surface, #ffffff);
   --sl-track: #d9d5e4;
-  --sl-text: #16121f;
-  --sl-muted: #4d4a57;
+  --sl-text: var(--bc-light-text, #16121f);
+  --sl-muted: var(--bc-light-muted, #4d4a57);
   --sl-from: 0%;
   --sl-to: 50%;
   display: block;
   background: var(--sl-surface);
   color: var(--sl-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,13 +23,21 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .sl--theme-system {
-    --sl-surface: #141019;
+  :root:not([data-bc-scheme="light"]) .sl--theme-system {
+    --sl-surface: var(--bc-dark-surface, #141019);
     --sl-track: #3a3448;
-    --sl-text: #f6f5fa;
-    --sl-muted: #b6b3c2;
+    --sl-text: var(--bc-dark-text, #f6f5fa);
+    --sl-muted: var(--bc-dark-muted, #b6b3c2);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .sl--theme-system {
+    --sl-surface: var(--bc-dark-surface, #141019);
+    --sl-track: #3a3448;
+    --sl-text: var(--bc-dark-text, #f6f5fa);
+    --sl-muted: var(--bc-dark-muted, #b6b3c2);
+  }
+
 
 .sl-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
 .sl-label { margin: 0; font-weight: 500; }

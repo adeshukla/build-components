@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { MaintenanceNoticeConfig } from "../react/maintenance-notice";
 
 const palettes = {
@@ -47,7 +47,7 @@ export function renderMaintenanceNoticeMarkup(config: MaintenanceNoticeConfig) {
   const vars = [
     `--mnt-accent: ${config.accentColor}`,
     `--mnt-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--mnt-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--mnt-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const when = sayWindow(config.startsAt, config.endsAt);

@@ -33,13 +33,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#2a2438", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -76,12 +85,12 @@ export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }
   const style = {
     "--ti-accent": config.accentColor,
     "--ti-accent-text": readableAccent(config.accentColor, dark),
-    "--ti-surface": palette.surface,
-    "--ti-sunk": palette.sunk,
-    "--ti-text": palette.text,
-    "--ti-muted": palette.muted,
+    "--ti-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ti-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ti-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ti-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ti-border": palette.border,
-    "--ti-line": palette.line,
+    "--ti-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
   const max = Math.max(1, Math.min(30, Math.round(config.maxTags)));
   const full = tags.length >= max;
@@ -161,7 +170,7 @@ export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }
         onChange={(event) => setText(event.target.value)}
         onKeyDown={onKeyDown}
         onBlur={() => add(text)}
-        className="mt-2 h-11 w-full rounded-lg border border-(--ti-border) bg-(--ti-surface) px-3 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ti-accent-text)"
+        className="mt-2 h-11 w-full rounded-[var(--bc-radius-md,0.5rem)] border border-(--ti-border) bg-(--ti-surface) px-3 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ti-accent-text)"
       />
       <p id={`${id}-count`} className="mt-1 text-sm text-(--ti-muted)">
         {tags.length} of {max} added

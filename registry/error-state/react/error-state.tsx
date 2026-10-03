@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#2a1b1d", text: "#f6f5fa", muted: "#c5b8b8", line: "#6b3a38" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -87,11 +96,11 @@ export function ErrorState({ config = defaultConfig }: { config?: ErrorStateConf
     "--est-accent": config.accentColor,
     "--est-accent-text": readableAccent(config.accentColor, dark),
     "--est-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--est-surface": palette.surface,
-    "--est-sunk": palette.sunk,
-    "--est-text": palette.text,
-    "--est-muted": palette.muted,
-    "--est-line": palette.line,
+    "--est-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--est-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--est-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--est-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--est-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // Focus moves to the panel once it is rendered, not a frame later.
@@ -118,7 +127,7 @@ export function ErrorState({ config = defaultConfig }: { config?: ErrorStateConf
         <button
           type="button"
           onClick={attempt}
-          className="inline-flex min-h-11 items-center rounded-md border border-(--est-line) bg-(--est-sunk) px-4 font-medium text-(--est-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--est-accent-text)"
+          className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--est-line) bg-(--est-sunk) px-4 font-medium text-(--est-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--est-accent-text)"
         >
           {config.triggerLabel}
         </button>
@@ -133,7 +142,7 @@ export function ErrorState({ config = defaultConfig }: { config?: ErrorStateConf
           role="group"
           data-panel
           aria-labelledby={`${id}-heading`}
-          className="max-w-prose rounded-lg border-2 border-(--est-line) bg-(--est-sunk) p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--est-accent-text)"
+          className="max-w-prose rounded-[var(--bc-radius-md,0.5rem)] border-2 border-(--est-line) bg-(--est-sunk) p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--est-accent-text)"
         >
           <div className="flex items-start gap-3">
             <svg aria-hidden="true" viewBox="0 0 24 24" className="mt-0.5 size-6 shrink-0 fill-(--est-accent-text)">
@@ -151,7 +160,7 @@ export function ErrorState({ config = defaultConfig }: { config?: ErrorStateConf
                 <button
                   type="button"
                   onClick={attempt}
-                  className="inline-flex min-h-11 items-center rounded-md bg-(--est-accent) px-4 font-medium text-(--est-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--est-accent-text)"
+                  className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--est-accent) px-4 font-medium text-(--est-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--est-accent-text)"
                 >
                   {config.retryLabel}
                 </button>

@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -79,11 +88,11 @@ export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig
     "--fb-accent": config.accentColor,
     "--fb-accent-text": readableAccent(config.accentColor, dark),
     "--fb-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--fb-surface": palette.surface,
-    "--fb-sunk": palette.sunk,
-    "--fb-text": palette.text,
-    "--fb-muted": palette.muted,
-    "--fb-line": palette.line,
+    "--fb-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--fb-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--fb-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--fb-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--fb-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const groups = [...new Set(filters.map((filter) => filter.group))];
@@ -117,7 +126,7 @@ export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig
               // This button goes away once nothing is on, so hand focus to the first chip.
               chips.current.values().next().value?.focus();
             }}
-            className="min-h-11 cursor-pointer rounded px-2 text-sm text-(--fb-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fb-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-xs,0.25rem)] px-2 text-sm text-(--fb-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fb-accent-text)"
           >
             Clear all
           </button>

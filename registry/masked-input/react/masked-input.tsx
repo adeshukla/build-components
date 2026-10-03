@@ -31,13 +31,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -97,11 +106,11 @@ export function MaskedInput({ config = defaultConfig }: { config?: MaskedInputCo
   const style = {
     "--mi-accent": config.accentColor,
     "--mi-accent-text": readableAccent(config.accentColor, dark),
-    "--mi-surface": palette.surface,
-    "--mi-sunk": palette.sunk,
-    "--mi-text": palette.text,
-    "--mi-muted": palette.muted,
-    "--mi-line": palette.line,
+    "--mi-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--mi-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--mi-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--mi-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--mi-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--mi-error": palette.error,
   } as CSSProperties;
 
@@ -133,7 +142,7 @@ export function MaskedInput({ config = defaultConfig }: { config?: MaskedInputCo
           if (error !== "") setError("");
         }}
         onBlur={() => setError(value === "" || value.length === config.mask.length ? "" : config.errorText)}
-        className={`mt-2 min-h-11 w-full max-w-64 rounded-md border bg-(--mi-sunk) px-3 font-mono text-(--mi-text) uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mi-accent-text) ${
+        className={`mt-2 min-h-11 w-full max-w-64 rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--mi-sunk) px-3 font-mono text-(--mi-text) uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mi-accent-text) ${
           error === "" ? "border-(--mi-line)" : "border-(--mi-error)"
         }`}
       />

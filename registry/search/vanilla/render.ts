@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SearchConfig } from "../react/search";
 
 const palettes = {
@@ -32,12 +32,12 @@ export function renderSearchMarkup(config: SearchConfig) {
   const vars = [
     `--se-accent: ${config.accentColor}`,
     `--se-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--se-radius: ${config.radius}px`,
-    `--se-surface: ${palette.surface}`,
-    `--se-sunk: ${palette.sunk}`,
-    `--se-text: ${palette.text}`,
-    `--se-muted: ${palette.muted}`,
-    `--se-line: ${palette.line}`,
+    `--se-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--se-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--se-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--se-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--se-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--se-line: ${themedColour("line", palette.line, dark)}`]),
     `--se-hover: ${palette.hover}`,
   ].join("; ");
   const dialog = config.layout === "dialog";

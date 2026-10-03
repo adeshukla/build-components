@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { LoadingButtonConfig } from "../react/loading-button";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderLoadingButtonMarkup(config: LoadingButtonConfig) {
     `--lbn-accent: ${config.accentColor}`,
     `--lbn-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--lbn-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--lbn-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--lbn-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   // The widest label sets the width, so the button does not jump as the words change.

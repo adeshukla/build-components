@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TagInputConfig } from "../react/tag-input";
 
 const palettes = {
@@ -29,7 +29,7 @@ export function renderTagInputMarkup(config: TagInputConfig) {
   const vars = [
     `--ti-accent: ${config.accentColor}`,
     `--ti-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--ti-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ti-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const max = Math.max(1, Math.min(30, Math.round(config.maxTags)));
   const tags = config.startTags.map((tag) => tag.text).filter((text) => text.trim() !== "");

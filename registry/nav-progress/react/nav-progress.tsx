@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -80,11 +89,11 @@ export function NavProgress({ config = defaultConfig }: { config?: NavProgressCo
   const style = {
     "--np-accent": config.accentColor,
     "--np-accent-text": readableAccent(config.accentColor, dark),
-    "--np-surface": palette.surface,
-    "--np-sunk": palette.sunk,
-    "--np-text": palette.text,
-    "--np-muted": palette.muted,
-    "--np-line": palette.line,
+    "--np-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--np-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--np-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--np-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--np-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -131,7 +140,7 @@ export function NavProgress({ config = defaultConfig }: { config?: NavProgressCo
           type="button"
           onClick={start}
           aria-describedby={`${id}-state`}
-          className="inline-flex min-h-11 items-center rounded-md bg-(--np-sunk) px-4 font-medium text-(--np-text) ring-1 ring-(--np-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--np-accent-text)"
+          className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] bg-(--np-sunk) px-4 font-medium text-(--np-text) ring-1 ring-(--np-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--np-accent-text)"
         >
           {config.triggerLabel}
         </button>
@@ -146,7 +155,7 @@ export function NavProgress({ config = defaultConfig }: { config?: NavProgressCo
 
         <div aria-hidden="true" className="mt-4 grid gap-2">
           {[0, 1, 2].map((row) => (
-            <div key={row} className="h-3 rounded bg-(--np-sunk)" style={{ width: `${90 - row * 18}%` }} />
+            <div key={row} className="h-3 rounded-[var(--bc-radius-xs,0.25rem)] bg-(--np-sunk)" style={{ width: `${90 - row * 18}%` }} />
           ))}
         </div>
       </div>

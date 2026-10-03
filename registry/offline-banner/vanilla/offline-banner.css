@@ -3,15 +3,15 @@
   --ob-accent: #b45309;
   --ob-accent-text: #96450a;
   --ob-on-accent: #ffffff;
-  --ob-surface: #ffffff;
-  --ob-sunk: #f4f3f8;
-  --ob-text: #16121f;
-  --ob-muted: #4d4a57;
-  --ob-line: #c9c4d6;
+  --ob-surface: var(--bc-light-surface, #ffffff);
+  --ob-sunk: var(--bc-light-sunk, #f4f3f8);
+  --ob-text: var(--bc-light-text, #16121f);
+  --ob-muted: var(--bc-light-muted, #4d4a57);
+  --ob-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--ob-surface);
   color: var(--ob-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ob--theme-system {
-    --ob-surface: #141019;
-    --ob-sunk: #221d2e;
-    --ob-text: #f6f5fa;
-    --ob-muted: #b6b3c2;
-    --ob-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .ob--theme-system {
+    --ob-surface: var(--bc-dark-surface, #141019);
+    --ob-sunk: var(--bc-dark-sunk, #221d2e);
+    --ob-text: var(--bc-dark-text, #f6f5fa);
+    --ob-muted: var(--bc-dark-muted, #b6b3c2);
+    --ob-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ob--theme-system {
+    --ob-surface: var(--bc-dark-surface, #141019);
+    --ob-sunk: var(--bc-dark-sunk, #221d2e);
+    --ob-text: var(--bc-dark-text, #f6f5fa);
+    --ob-muted: var(--bc-dark-muted, #b6b3c2);
+    --ob-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* Sticky, not fixed: it stays in view while scrolling but keeps its own space, so it never lands
    on top of the first thing on the page. */
@@ -57,7 +66,7 @@
   min-height: 2.75rem;
   padding: 0 0.75rem;
   border: 1px solid currentColor;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: none;
   color: inherit;
   font: inherit;
@@ -71,7 +80,7 @@
   min-height: 2.75rem;
   padding: 0 1rem;
   border: 1px solid var(--ob-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: none;
   color: inherit;
   font: inherit;

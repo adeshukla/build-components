@@ -2,17 +2,17 @@
 .rwa {
   --rwa-accent: #1d4ed8;
   --rwa-accent-text: #1a41b8;
-  --rwa-surface: #ffffff;
-  --rwa-sunk: #f4f3f8;
-  --rwa-text: #16121f;
-  --rwa-muted: #4d4a57;
-  --rwa-line: #c9c4d6;
+  --rwa-surface: var(--bc-light-surface, #ffffff);
+  --rwa-sunk: var(--bc-light-sunk, #f4f3f8);
+  --rwa-text: var(--bc-light-text, #16121f);
+  --rwa-muted: var(--bc-light-muted, #4d4a57);
+  --rwa-line: var(--bc-light-line, #c9c4d6);
   --rwa-danger: #b42318;
   display: block;
   padding: 0.25rem;
   background: var(--rwa-surface);
   color: var(--rwa-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,15 +24,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .rwa--theme-system {
-    --rwa-surface: #141019;
-    --rwa-sunk: #221d2e;
-    --rwa-text: #f6f5fa;
-    --rwa-muted: #b6b3c2;
-    --rwa-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .rwa--theme-system {
+    --rwa-surface: var(--bc-dark-surface, #141019);
+    --rwa-sunk: var(--bc-dark-sunk, #221d2e);
+    --rwa-text: var(--bc-dark-text, #f6f5fa);
+    --rwa-muted: var(--bc-dark-muted, #b6b3c2);
+    --rwa-line: var(--bc-dark-line, #4a4459);
     --rwa-danger: #ff9d95;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .rwa--theme-system {
+    --rwa-surface: var(--bc-dark-surface, #141019);
+    --rwa-sunk: var(--bc-dark-sunk, #221d2e);
+    --rwa-text: var(--bc-dark-text, #f6f5fa);
+    --rwa-muted: var(--bc-dark-muted, #b6b3c2);
+    --rwa-line: var(--bc-dark-line, #4a4459);
+    --rwa-danger: #ff9d95;
+  }
+
 
 .rwa-table { width: 100%; border-collapse: collapse; text-align: left; }
 .rwa-caption { padding-bottom: 0.75rem; font-size: 1.25rem; font-weight: 600; text-align: left; }
@@ -52,7 +62,7 @@
   align-items: center;
   padding: 0 0.625rem;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: transparent;
   color: var(--rwa-accent-text);
   font: inherit;

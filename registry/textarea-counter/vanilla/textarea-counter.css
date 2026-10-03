@@ -2,16 +2,16 @@
 .tc {
   --tc-accent: #1d4ed8;
   --tc-accent-text: #1a46c2;
-  --tc-surface: #ffffff;
-  --tc-sunk: #f4f3f8;
-  --tc-text: #16121f;
-  --tc-muted: #4d4a57;
-  --tc-line: #c9c4d6;
+  --tc-surface: var(--bc-light-surface, #ffffff);
+  --tc-sunk: var(--bc-light-sunk, #f4f3f8);
+  --tc-text: var(--bc-light-text, #16121f);
+  --tc-muted: var(--bc-light-muted, #4d4a57);
+  --tc-line: var(--bc-light-line, #c9c4d6);
   --tc-error: #b42318;
   display: block;
   background: var(--tc-surface);
   color: var(--tc-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,15 +23,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .tc--theme-system {
-    --tc-surface: #141019;
-    --tc-sunk: #221d2e;
-    --tc-text: #f6f5fa;
-    --tc-muted: #b6b3c2;
-    --tc-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .tc--theme-system {
+    --tc-surface: var(--bc-dark-surface, #141019);
+    --tc-sunk: var(--bc-dark-sunk, #221d2e);
+    --tc-text: var(--bc-dark-text, #f6f5fa);
+    --tc-muted: var(--bc-dark-muted, #b6b3c2);
+    --tc-line: var(--bc-dark-line, #4a4459);
     --tc-error: #ff9d95;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .tc--theme-system {
+    --tc-surface: var(--bc-dark-surface, #141019);
+    --tc-sunk: var(--bc-dark-sunk, #221d2e);
+    --tc-text: var(--bc-dark-text, #f6f5fa);
+    --tc-muted: var(--bc-dark-muted, #b6b3c2);
+    --tc-line: var(--bc-dark-line, #4a4459);
+    --tc-error: #ff9d95;
+  }
+
 
 .tc-label { display: block; font-weight: 500; }
 .tc-hint { margin: 0; color: var(--tc-muted); font-size: 0.875rem; }
@@ -40,7 +50,7 @@
   margin-top: 0.5rem;
   padding: 0.75rem;
   border: 1px solid var(--tc-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--tc-sunk);
   color: var(--tc-text);
   font: inherit;

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { MenuBarConfig } from "../react/menu-bar";
 
 const palettes = {
@@ -38,7 +38,7 @@ export function renderMenuBarMarkup(config: MenuBarConfig) {
     `--mb-accent: ${config.accentColor}`,
     `--mb-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--mb-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--mb-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--mb-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const menus = toMenus(config.items)

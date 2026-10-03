@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#181320", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -96,11 +105,11 @@ export function ArticleCard({ config = defaultConfig }: { config?: ArticleCardCo
   const style = {
     "--atc-accent": config.accentColor,
     "--atc-accent-text": readableAccent(config.accentColor, dark),
-    "--atc-surface": palette.surface,
-    "--atc-sunk": palette.sunk,
-    "--atc-text": palette.text,
-    "--atc-muted": palette.muted,
-    "--atc-line": palette.line,
+    "--atc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--atc-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--atc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--atc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--atc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const Heading = config.headingLevel;
@@ -117,7 +126,7 @@ export function ArticleCard({ config = defaultConfig }: { config?: ArticleCardCo
       */}
       <article
         data-card
-        className="group relative max-w-lg overflow-hidden rounded-xl border border-(--atc-line) bg-(--atc-surface) has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-(--atc-accent-text)"
+        className="group relative max-w-lg overflow-hidden rounded-[var(--bc-radius-lg,0.75rem)] border border-(--atc-line) bg-(--atc-surface) has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-(--atc-accent-text)"
       >
         {config.showThumb && (
           // A thumbnail slot, drawn rather than shipped: put your own image here. An empty alt is

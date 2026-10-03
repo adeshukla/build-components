@@ -79,27 +79,39 @@
 
     // Theme and platform come from the browser, so this file works anywhere it is dropped in.
     const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    // The system's choice, unless the page has a light/dark choice of its own: <html data-bc-scheme>.
+    function pageIsDark() {
+      const chosen = document.documentElement.dataset.bcScheme;
+      return chosen ? chosen === "dark" : darkQuery.matches;
+    }
     const phoneQuery = window.matchMedia("(max-width: 480px)");
 
     function applyAppearance() {
-      const dark = config.theme === "dark" || (config.theme === "system" && darkQuery.matches);
+      const dark = config.theme === "dark" || (config.theme === "system" && pageIsDark());
       const ios = config.iosOnPhone && phoneQuery.matches && isApplePhone();
       const palette = dark ? palettes.dark : palettes.light;
       const accent = ios && config.accentColor === "#2563eb" ? IOS_BLUE[dark ? "dark" : "light"] : config.accentColor;
       const accentLuminance = luminance(accent);
       root.classList.toggle("mdl--dark", dark);
       root.classList.toggle("mdl--ios", ios);
-      Object.keys(palette).forEach((key) => root.style.setProperty(`--modal-${key}`, palette[key]));
+      // Neutral colours are the site theme's when the page has one; this part's own otherwise.
+      Object.keys(palette).forEach((key) =>
+        root.style.setProperty(
+          `--modal-${key}`,
+          ["surface", "sunk", "text", "muted", "line"].includes(key) ? `var(--bc-${dark ? "dark" : "light"}-${key}, ${palette[key]})` : palette[key],
+        ),
+      );
       root.style.setProperty("--modal-accent", accent);
       root.style.setProperty("--modal-accent-text", readableAccent(accent, palette.surface, dark));
       root.style.setProperty("--modal-on-accent", accentLuminance > 0.179 ? "#000000" : "#ffffff");
       root.style.setProperty("--modal-ring", accentLuminance <= 0.35 || dark ? accent : "#000000");
-      root.style.setProperty("--modal-radius", `${ios ? 14 : config.radius}px`);
+      root.style.setProperty("--modal-radius", ios ? "14px" : `var(--bc-radius-md, ${config.radius}px)`);
       root.style.setProperty("--modal-font", ios ? IOS_FONT : SYSTEM_FONT);
     }
 
     applyAppearance();
     darkQuery.addEventListener("change", applyAppearance);
+    new MutationObserver(applyAppearance).observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
     phoneQuery.addEventListener("change", applyAppearance);
 
     // Only ids and fixed markup are interpolated here; user-provided text is set with textContent below.

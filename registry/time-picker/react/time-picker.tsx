@@ -43,13 +43,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448", hover: "#2a2438", error: "#ff6b6b" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -127,11 +136,11 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
     "--tp-accent": config.accentColor,
     "--tp-accent-text": readableAccent(config.accentColor, dark),
     "--tp-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--tp-surface": palette.surface,
-    "--tp-text": palette.text,
-    "--tp-muted": palette.muted,
+    "--tp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--tp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--tp-border": palette.border,
-    "--tp-line": palette.line,
+    "--tp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--tp-hover": palette.hover,
     "--tp-error": palette.error,
   } as CSSProperties;
@@ -234,7 +243,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
       )}
       <div className="relative w-full max-w-xs">
         <div
-          className={`flex h-10 items-stretch overflow-hidden rounded-lg border bg-(--tp-surface) has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--tp-accent-text) ${error ? "border-(--tp-error)" : "border-(--tp-border)"}`}
+          className={`flex h-10 items-stretch overflow-hidden rounded-[var(--bc-radius-md,0.5rem)] border bg-(--tp-surface) has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--tp-accent-text) ${error ? "border-(--tp-error)" : "border-(--tp-border)"}`}
         >
           <input
             ref={inputRef}
@@ -292,7 +301,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
           role="listbox"
           aria-labelledby={`${id}-label`}
           hidden={!expanded}
-          className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-(--tp-line) bg-(--tp-surface) p-1 shadow-lg"
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-[var(--bc-radius-md,0.5rem)] border border-(--tp-line) bg-(--tp-surface) p-1 shadow-lg"
         >
           {expanded &&
             matches.map((slot, index) => (
@@ -307,7 +316,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
                   if (active !== index) setActive(index);
                 }}
                 onClick={() => choose(slot)}
-                className={`flex min-h-9 cursor-pointer items-center justify-between rounded-md px-3 text-sm tabular-nums ${index === active ? "bg-(--tp-accent) text-(--tp-on-accent)" : "hover:bg-(--tp-hover)"}`}
+                className={`flex min-h-9 cursor-pointer items-center justify-between rounded-[var(--bc-radius-button,0.375rem)] px-3 text-sm tabular-nums ${index === active ? "bg-(--tp-accent) text-(--tp-on-accent)" : "hover:bg-(--tp-hover)"}`}
               >
                 {formatTime(slot, config.format)}
                 {slot === value && (

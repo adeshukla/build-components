@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { StatComparisonConfig } from "../react/stat-comparison";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderStatComparisonMarkup(config: StatComparisonConfig) {
   const vars = [
     `--stc-accent: ${config.accentColor}`,
     `--stc-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--stc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--stc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const cell = (side: "left" | "right", row: StatComparisonConfig["rows"][number]) => {

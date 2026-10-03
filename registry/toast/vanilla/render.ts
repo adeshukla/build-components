@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ToastConfig } from "../react/toast";
 
 const palettes = {
@@ -29,12 +29,12 @@ export function renderToastMarkup(config: ToastConfig) {
   const palette = dark ? palettes.dark : palettes.light;
   const vars = [
     `--to-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--to-radius: ${config.radius}px`,
+    `--to-radius: var(--bc-radius-md, ${config.radius}px)`,
     `--to-page: ${palette.page}`,
-    `--to-surface: ${palette.surface}`,
-    `--to-text: ${palette.text}`,
-    `--to-muted: ${palette.muted}`,
-    `--to-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--to-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--to-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--to-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--to-line: ${themedColour("line", palette.line, dark)}`]),
     `--to-good: ${palette.good}`,
     `--to-bad: ${palette.bad}`,
   ].join("; ");

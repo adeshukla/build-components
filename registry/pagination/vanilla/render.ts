@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import { pagesFor, type PaginationConfig } from "../react/pagination";
 
 const palettes = {
@@ -39,11 +39,11 @@ export function renderPaginationMarkup(config: PaginationConfig) {
     `--pg-accent: ${config.accentColor}`,
     `--pg-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--pg-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--pg-radius: ${config.radius}px`,
-    `--pg-surface: ${palette.surface}`,
-    `--pg-text: ${palette.text}`,
-    `--pg-muted: ${palette.muted}`,
-    `--pg-line: ${palette.line}`,
+    `--pg-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--pg-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pg-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pg-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pg-line: ${themedColour("line", palette.line, dark)}`]),
     `--pg-hover: ${palette.hover}`,
   ].join("; ");
 

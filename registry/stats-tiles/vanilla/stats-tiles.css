@@ -2,15 +2,15 @@
 .sx {
   --sx-accent: #0f766e;
   --sx-accent-text: #0b5a54;
-  --sx-surface: #ffffff;
-  --sx-sunk: #f4f3f8;
-  --sx-text: #16121f;
-  --sx-muted: #4d4a57;
-  --sx-line: #c9c4d6;
+  --sx-surface: var(--bc-light-surface, #ffffff);
+  --sx-sunk: var(--bc-light-sunk, #f4f3f8);
+  --sx-text: var(--bc-light-text, #16121f);
+  --sx-muted: var(--bc-light-muted, #4d4a57);
+  --sx-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--sx-surface);
   color: var(--sx-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -22,14 +22,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .sx--theme-system {
-    --sx-surface: #141019;
-    --sx-sunk: #221d2e;
-    --sx-text: #f6f5fa;
-    --sx-muted: #b6b3c2;
-    --sx-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .sx--theme-system {
+    --sx-surface: var(--bc-dark-surface, #141019);
+    --sx-sunk: var(--bc-dark-sunk, #221d2e);
+    --sx-text: var(--bc-dark-text, #f6f5fa);
+    --sx-muted: var(--bc-dark-muted, #b6b3c2);
+    --sx-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .sx--theme-system {
+    --sx-surface: var(--bc-dark-surface, #141019);
+    --sx-sunk: var(--bc-dark-sunk, #221d2e);
+    --sx-text: var(--bc-dark-text, #f6f5fa);
+    --sx-muted: var(--bc-dark-muted, #b6b3c2);
+    --sx-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .sx-heading { margin: 0; font-size: 1.25rem; }
 
@@ -40,7 +49,7 @@
   .sx--four .sx-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
-.sx-tile { padding: 1rem; border: 1px solid var(--sx-line); border-radius: 0.75rem; background: var(--sx-sunk); }
+.sx-tile { padding: 1rem; border: 1px solid var(--sx-line); border-radius: var(--bc-radius-lg, 0.75rem); background: var(--sx-sunk); }
 .sx-label { color: var(--sx-muted); font-size: 0.875rem; }
 .sx-body { margin: 0; }
 .sx-value { display: block; font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }

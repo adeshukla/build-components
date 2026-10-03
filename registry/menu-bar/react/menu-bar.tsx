@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#1b1624", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -90,11 +99,11 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
     "--mb-accent": config.accentColor,
     "--mb-accent-text": readableAccent(config.accentColor, dark),
     "--mb-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--mb-surface": palette.surface,
-    "--mb-sunk": palette.sunk,
-    "--mb-text": palette.text,
-    "--mb-muted": palette.muted,
-    "--mb-line": palette.line,
+    "--mb-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--mb-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--mb-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--mb-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--mb-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const itemsIn = (index: number) =>
@@ -186,7 +195,7 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
         role="menubar"
         aria-label={config.label}
         aria-orientation="horizontal"
-        className="flex flex-wrap items-center gap-1 rounded-md border border-(--mb-line) bg-(--mb-sunk) p-1"
+        className="flex flex-wrap items-center gap-1 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--mb-line) bg-(--mb-sunk) p-1"
       >
         {menus.map((menu, index) => (
           <div key={menu.name} className="relative">
@@ -220,7 +229,7 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
                   moveTop(menus.length - 1, false);
                 }
               }}
-              className={`flex min-h-11 items-center gap-1.5 rounded px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mb-accent-text) ${
+              className={`flex min-h-11 items-center gap-1.5 rounded-[var(--bc-radius-xs,0.25rem)] px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mb-accent-text) ${
                 openAt === index ? "bg-(--mb-accent) text-(--mb-on-accent)" : "text-(--mb-text)"
               }`}
             >
@@ -232,7 +241,7 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
                 role="menu"
                 aria-label={menu.name}
                 data-menu={index}
-                className="absolute top-full left-0 z-30 mt-1 min-w-56 rounded-md border border-(--mb-line) bg-(--mb-surface) p-1 shadow-lg"
+                className="absolute top-full left-0 z-30 mt-1 min-w-56 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--mb-line) bg-(--mb-surface) p-1 shadow-lg"
               >
                 {menu.items.map((entry, at) => (
                   <button
@@ -269,7 +278,7 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
                         if (typeAhead(list, at, event.key)) event.preventDefault();
                       }
                     }}
-                    className="flex w-full min-h-11 items-center justify-between gap-6 rounded px-3 text-left hover:bg-(--mb-sunk) focus-visible:bg-(--mb-sunk) focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--mb-accent-text)"
+                    className="flex w-full min-h-11 items-center justify-between gap-6 rounded-[var(--bc-radius-xs,0.25rem)] px-3 text-left hover:bg-(--mb-sunk) focus-visible:bg-(--mb-sunk) focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--mb-accent-text)"
                   >
                     <span>{entry.item}</span>
                     {config.showShortcuts && entry.shortcut !== "" && (

@@ -55,13 +55,22 @@ const spacings = {
   spacious: "px-6 py-24 sm:px-16 sm:py-28",
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // WCAG relative luminance, used to keep text on the accent readable.
@@ -116,7 +125,7 @@ export function Cta({ config = defaultConfig }: { config?: CtaConfig }) {
     "--cta-on-accent": onAccent,
     "--cta-accent-text": readableAccent(config.accentColor, dark),
     "--cta-deep": deepen(config.accentColor),
-    "--cta-radius": `${config.radius}px`,
+    "--cta-radius": `var(--bc-radius-md, ${config.radius}px)`,
     "--cta-surface": bold ? config.accentColor : config.look === "card" ? palette.surface : palette.surface,
     "--cta-text": bold ? onAccent : palette.text,
     "--cta-muted": bold ? onAccent : palette.muted,

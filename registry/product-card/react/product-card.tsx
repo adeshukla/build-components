@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -81,11 +90,11 @@ export function ProductCard({ config = defaultConfig }: { config?: ProductCardCo
     "--pc-accent": config.accentColor,
     "--pc-accent-text": readableAccent(config.accentColor, dark),
     "--pc-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--pc-surface": palette.surface,
-    "--pc-sunk": palette.sunk,
-    "--pc-text": palette.text,
-    "--pc-muted": palette.muted,
-    "--pc-line": palette.line,
+    "--pc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--pc-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--pc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--pc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--pc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const options = config.options.filter((option) => option.label.trim() !== "");
@@ -93,7 +102,7 @@ export function ProductCard({ config = defaultConfig }: { config?: ProductCardCo
   const ready = groups.every((group) => picked[group]);
 
   return (
-    <div style={style} className="max-w-md rounded-xl border border-(--pc-line) bg-(--pc-surface) p-4 text-(--pc-text)">
+    <div style={style} className="max-w-md rounded-[var(--bc-radius-lg,0.75rem)] border border-(--pc-line) bg-(--pc-surface) p-4 text-(--pc-text)">
       <h2 className="text-lg font-semibold">{config.name}</h2>
       {config.showPrice && <p className="mt-1 text-xl font-semibold">{config.price}</p>}
       <p className="mt-1 text-sm text-(--pc-muted)">{config.blurb}</p>
@@ -111,7 +120,7 @@ export function ProductCard({ config = defaultConfig }: { config?: ProductCardCo
                 return (
                   <label
                     key={option.label}
-                    className={`inline-flex min-h-11 items-center gap-1 rounded-md border px-3 text-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-(--pc-accent-text) ${
+                    className={`inline-flex min-h-11 items-center gap-1 rounded-[var(--bc-radius-sm,0.375rem)] border px-3 text-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-(--pc-accent-text) ${
                       out
                         ? "cursor-not-allowed border-dashed border-(--pc-line) text-(--pc-muted)"
                         : on
@@ -145,7 +154,7 @@ export function ProductCard({ config = defaultConfig }: { config?: ProductCardCo
         type="button"
         disabled={!ready}
         onClick={() => setSaid(`${config.name} added: ${groups.map((group) => picked[group]).join(", ")}`)}
-        className="mt-4 min-h-11 w-full cursor-pointer rounded-md bg-(--pc-accent) px-4 font-medium text-(--pc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pc-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 min-h-11 w-full cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--pc-accent) px-4 font-medium text-(--pc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pc-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
       >
         {config.addText}
       </button>

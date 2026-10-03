@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { DetailsListConfig } from "../react/details-list";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderDetailsListMarkup(config: DetailsListConfig) {
   const vars = [
     `--dl-accent: ${config.accentColor}`,
     `--dl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--dl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--dl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const rows = config.rows

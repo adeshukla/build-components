@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { BottomSheetConfig } from "../react/bottom-sheet";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderBottomSheetMarkup(config: BottomSheetConfig) {
     `--bsh-accent: ${config.accentColor}`,
     `--bsh-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--bsh-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--bsh-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--bsh-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const steps = config.detents === "full" ? ["full"] : config.detents === "half-full" ? ["half", "full"] : ["peek", "half", "full"];

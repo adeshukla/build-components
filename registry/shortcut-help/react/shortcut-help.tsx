@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#1c1826", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -91,11 +100,11 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
     "--sh-accent": config.accentColor,
     "--sh-accent-text": readableAccent(config.accentColor, dark),
     "--sh-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--sh-surface": palette.surface,
-    "--sh-sunk": palette.sunk,
-    "--sh-text": palette.text,
-    "--sh-muted": palette.muted,
-    "--sh-line": palette.line,
+    "--sh-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sh-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sh-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sh-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sh-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const shortcuts = config.shortcuts.filter((shortcut) => shortcut.action.trim() !== "");
@@ -141,10 +150,10 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
             returnTo.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
             setOpen(true);
           }}
-          className="min-h-11 cursor-pointer rounded-md border border-(--sh-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sh-accent-text)"
+          className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sh-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sh-accent-text)"
         >
           {config.triggerText}
-          <kbd className="ml-2 rounded border border-(--sh-line) bg-(--sh-sunk) px-1.5 py-0.5 font-mono text-xs">{config.openKey}</kbd>
+          <kbd className="ml-2 rounded-[var(--bc-radius-xs,0.25rem)] border border-(--sh-line) bg-(--sh-sunk) px-1.5 py-0.5 font-mono text-xs">{config.openKey}</kbd>
         </button>
       )}
 
@@ -169,7 +178,7 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
             last.focus();
           }
         }}
-        className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-xl border border-(--sh-line) bg-(--sh-surface) p-5 text-(--sh-text) backdrop:bg-black/50"
+        className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-[var(--bc-radius-lg,0.75rem)] border border-(--sh-line) bg-(--sh-surface) p-5 text-(--sh-text) backdrop:bg-black/50"
       >
         <div className="flex items-start justify-between gap-3">
           <h2 id={`${id}-title`} className="text-lg font-semibold">
@@ -179,7 +188,7 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
             ref={closeRef}
             type="button"
             onClick={close}
-            className="-m-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-md text-(--sh-muted) hover:bg-(--sh-sunk) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sh-accent-text)"
+            className="-m-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-sm,0.375rem)] text-(--sh-muted) hover:bg-(--sh-sunk) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sh-accent-text)"
           >
             <span className="sr-only">Close the shortcut list</span>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
@@ -196,7 +205,7 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
                 {shortcut.keys.split(" then ").map((part, index) => (
                   <span key={part + index}>
                     {index > 0 && <span className="mx-1 text-sm text-(--sh-muted)">then</span>}
-                    <kbd className="rounded border border-(--sh-line) bg-(--sh-sunk) px-1.5 py-0.5 font-mono text-xs">{part}</kbd>
+                    <kbd className="rounded-[var(--bc-radius-xs,0.25rem)] border border-(--sh-line) bg-(--sh-sunk) px-1.5 py-0.5 font-mono text-xs">{part}</kbd>
                   </span>
                 ))}
               </dt>

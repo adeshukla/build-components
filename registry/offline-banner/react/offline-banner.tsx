@@ -31,13 +31,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // The browser's own idea of the connection. Treated as a hint: it says the network is there, not
@@ -96,11 +105,11 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
     "--ob-accent": config.accentColor,
     "--ob-accent-text": readableAccent(config.accentColor, dark),
     "--ob-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--ob-surface": palette.surface,
-    "--ob-sunk": palette.sunk,
-    "--ob-text": palette.text,
-    "--ob-muted": palette.muted,
-    "--ob-line": palette.line,
+    "--ob-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ob-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ob-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ob-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--ob-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // Sticky, not fixed: it stays in view while scrolling but keeps its own space, so it never lands
@@ -119,7 +128,7 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
               <button
                 type="button"
                 onClick={() => setNote(navigator.onLine && !pretend ? "" : "Still nothing. The connection is not back yet.")}
-                className="min-h-11 shrink-0 cursor-pointer rounded-md border border-current px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
+                className="min-h-11 shrink-0 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-current px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
               >
                 {config.retryText}
               </button>
@@ -141,7 +150,7 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
               if (next) setDropped(true);
               setNote("");
             }}
-            className="min-h-11 cursor-pointer rounded-md border border-(--ob-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--ob-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent-text)"
           >
             {offline ? "Pretend the connection is back" : "Pretend to go offline"}
           </button>

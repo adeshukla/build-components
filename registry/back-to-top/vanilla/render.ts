@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { BackToTopConfig } from "../react/back-to-top";
 
 const palettes = {
@@ -12,7 +12,7 @@ export function renderBackToTopMarkup(config: BackToTopConfig) {
   const vars = [
     `--bt-accent: ${config.accentColor}`,
     `--bt-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--bt-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--bt-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   // Example page content, so there is something to scroll. Delete it in your own page.

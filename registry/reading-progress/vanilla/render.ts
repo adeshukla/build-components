@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ReadingProgressConfig } from "../react/reading-progress";
 
 const palettes = {
@@ -32,7 +32,7 @@ export function renderReadingProgressMarkup(config: ReadingProgressConfig) {
   const vars = [
     `--rp-accent: ${config.accentColor}`,
     `--rp-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--rp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--rp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const sections = config.sections.filter((section) => section.title.trim() !== "");
 

@@ -7,7 +7,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SliderConfig } from "../react/slider";
 
 const palettes = {
@@ -39,10 +39,10 @@ export function renderSliderMarkup(config: SliderConfig) {
   const vars = [
     `--sl-accent: ${config.accentColor}`,
     `--sl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--sl-surface: ${palette.surface}`,
+    ...(config.theme === "system" ? [] : [`--sl-surface: ${themedColour("surface", palette.surface, dark)}`]),
     `--sl-track: ${palette.track}`,
-    `--sl-text: ${palette.text}`,
-    `--sl-muted: ${palette.muted}`,
+    ...(config.theme === "system" ? [] : [`--sl-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--sl-muted: ${themedColour("muted", palette.muted, dark)}`]),
     `--sl-from: ${percent(config.mode === "range" ? lower : min)}%`,
     `--sl-to: ${percent(config.mode === "range" ? upper : value)}%`,
   ].join("; ");

@@ -40,13 +40,22 @@ const palettes = {
   dark: { surface: "#1c1826", sunk: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448", hover: "#2a2438" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -116,12 +125,12 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
     "--to-accent": config.accentColor,
     "--to-accent-text": readableAccent(config.accentColor, dark),
     "--to-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--to-surface": palette.surface,
-    "--to-sunk": palette.sunk,
-    "--to-text": palette.text,
-    "--to-muted": palette.muted,
+    "--to-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--to-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--to-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--to-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--to-border": palette.border,
-    "--to-line": palette.line,
+    "--to-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--to-hover": palette.hover,
   } as CSSProperties;
   const step = index === null ? null : steps[index];
@@ -171,18 +180,18 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
     return () => document.removeEventListener("keydown", onKeyDown);
   });
 
-  const button = "min-h-10 cursor-pointer rounded-lg px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--to-accent-text)";
+  const button = "min-h-10 cursor-pointer rounded-[var(--bc-radius-md,0.5rem)] px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--to-accent-text)";
   const quiet = `${button} border border-(--to-border) bg-(--to-surface) text-(--to-text) hover:bg-(--to-hover)`;
 
   return (
     <div style={style} className="text-(--to-text)">
       {config.showDemo && (
         // Example page to point the tour at. Delete it and point each step's target at your own elements.
-        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-(--to-line) bg-(--to-sunk) p-3">
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-[var(--bc-radius-md,0.5rem)] border border-(--to-line) bg-(--to-sunk) p-3">
           <label htmlFor="tour-search" className="sr-only">
             Search
           </label>
-          <input id="tour-search" type="search" placeholder="Search" className="h-10 min-w-40 flex-[1_1_10rem] rounded-lg border border-(--to-border) bg-(--to-surface) px-3 text-(--to-text) placeholder:text-(--to-muted) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--to-accent-text)" />
+          <input id="tour-search" type="search" placeholder="Search" className="h-10 min-w-40 flex-[1_1_10rem] rounded-[var(--bc-radius-md,0.5rem)] border border-(--to-border) bg-(--to-surface) px-3 text-(--to-text) placeholder:text-(--to-muted) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--to-accent-text)" />
           <button id="tour-new" type="button" className={`${button} bg-(--to-accent) text-(--to-on-accent)`}>
             New project
           </button>
@@ -203,7 +212,7 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
           <div
             ref={ringRef}
             aria-hidden="true"
-            className="pointer-events-none fixed z-40 rounded-xl shadow-[0_0_0_3px_var(--to-accent),0_0_0_9999px_rgb(0_0_0/0.45)] transition-all duration-200 motion-reduce:transition-none"
+            className="pointer-events-none fixed z-40 rounded-[var(--bc-radius-lg,0.75rem)] shadow-[0_0_0_3px_var(--to-accent),0_0_0_9999px_rgb(0_0_0/0.45)] transition-all duration-200 motion-reduce:transition-none"
           />
           <div
             ref={popupRef}
@@ -211,7 +220,7 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
             aria-modal="false"
             aria-labelledby={`${id}-title`}
             aria-describedby={`${id}-body`}
-            className="fixed z-50 w-[min(20rem,calc(100vw-1rem))] rounded-xl border border-(--to-line) bg-(--to-surface) p-4 text-(--to-text) shadow-2xl"
+            className="fixed z-50 w-[min(20rem,calc(100vw-1rem))] rounded-[var(--bc-radius-lg,0.75rem)] border border-(--to-line) bg-(--to-surface) p-4 text-(--to-text) shadow-2xl"
           >
             {config.showProgress && (
               <p className="text-xs font-medium tracking-wide text-(--to-muted) uppercase">

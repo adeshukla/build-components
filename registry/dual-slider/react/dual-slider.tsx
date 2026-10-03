@@ -47,13 +47,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#2c2639", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -95,11 +104,11 @@ export function DualSlider({ config = defaultConfig }: { config?: DualSliderConf
   const style = {
     "--dsl-accent": config.accentColor,
     "--dsl-accent-text": readableAccent(config.accentColor, dark),
-    "--dsl-surface": palette.surface,
-    "--dsl-sunk": palette.sunk,
-    "--dsl-text": palette.text,
-    "--dsl-muted": palette.muted,
-    "--dsl-line": palette.line,
+    "--dsl-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--dsl-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--dsl-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--dsl-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--dsl-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const say = (value: number) => `${config.valuePrefix}${group(value)}${config.valueSuffix}`;

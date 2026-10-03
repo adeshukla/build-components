@@ -46,13 +46,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -86,16 +95,16 @@ export function AddressFields({ config = defaultConfig }: { config?: AddressFiel
   const style = {
     "--af-accent": config.accentColor,
     "--af-accent-text": readableAccent(config.accentColor, dark),
-    "--af-surface": palette.surface,
-    "--af-sunk": palette.sunk,
-    "--af-text": palette.text,
-    "--af-muted": palette.muted,
-    "--af-line": palette.line,
+    "--af-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--af-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--af-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--af-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--af-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const country = config.countries.find((item) => item.code === code) ?? config.countries[0];
   const field =
-    "mt-2 min-h-11 w-full rounded-md border border-(--af-line) bg-(--af-sunk) px-3 text-(--af-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--af-accent-text)";
+    "mt-2 min-h-11 w-full rounded-[var(--bc-radius-sm,0.375rem)] border border-(--af-line) bg-(--af-sunk) px-3 text-(--af-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--af-accent-text)";
   const labelClass = "block text-sm font-medium";
 
   // Every field carries the autocomplete token for its own purpose, which is what lets a browser or a

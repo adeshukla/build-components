@@ -3,15 +3,15 @@
   --bsh-accent: #0f766e;
   --bsh-accent-text: #0b5a54;
   --bsh-on-accent: #ffffff;
-  --bsh-surface: #ffffff;
-  --bsh-sunk: #f4f3f8;
-  --bsh-text: #16121f;
-  --bsh-muted: #4d4a57;
-  --bsh-line: #c9c4d6;
+  --bsh-surface: var(--bc-light-surface, #ffffff);
+  --bsh-sunk: var(--bc-light-sunk, #f4f3f8);
+  --bsh-text: var(--bc-light-text, #16121f);
+  --bsh-muted: var(--bc-light-muted, #4d4a57);
+  --bsh-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--bsh-surface);
   color: var(--bsh-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .bsh--theme-system {
-    --bsh-surface: #1b1624;
-    --bsh-sunk: #272031;
-    --bsh-text: #f6f5fa;
-    --bsh-muted: #b6b3c2;
-    --bsh-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .bsh--theme-system {
+    --bsh-surface: var(--bc-dark-surface, #1b1624);
+    --bsh-sunk: var(--bc-dark-sunk, #272031);
+    --bsh-text: var(--bc-dark-text, #f6f5fa);
+    --bsh-muted: var(--bc-dark-muted, #b6b3c2);
+    --bsh-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .bsh--theme-system {
+    --bsh-surface: var(--bc-dark-surface, #1b1624);
+    --bsh-sunk: var(--bc-dark-sunk, #272031);
+    --bsh-text: var(--bc-dark-text, #f6f5fa);
+    --bsh-muted: var(--bc-dark-muted, #b6b3c2);
+    --bsh-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .bsh-trigger,
 .bsh-confirm {
@@ -40,7 +49,7 @@
   justify-content: center;
   padding: 0 1rem;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-button, 0.375rem);
   background: var(--bsh-accent);
   color: var(--bsh-on-accent);
   font: inherit;
@@ -74,7 +83,7 @@
 .bsh-sheet[data-detent="full"] { height: 92%; }
 
 @media (min-width: 40rem) {
-  .bsh--centre .bsh-sheet { max-width: 32rem; margin: 8vh auto; border-radius: 0.75rem; }
+  .bsh--centre .bsh-sheet { max-width: 32rem; margin: 8vh auto; border-radius: var(--bc-radius-lg, 0.75rem); }
 }
 
 .bsh-frame { display: flex; height: 100%; flex-direction: column; }
@@ -98,7 +107,7 @@
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: transparent;
   cursor: grab;
 }
@@ -118,7 +127,7 @@
   justify-content: center;
   padding: 0 1rem;
   border: 1px solid var(--bsh-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--bsh-sunk);
   color: var(--bsh-text);
   font: inherit;

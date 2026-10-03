@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { FooterConfig } from "../react/footer";
 
 const palettes = {
@@ -38,10 +38,10 @@ export function renderFooterMarkup(config: FooterConfig) {
   const palette = dark ? palettes.dark : palettes.light;
   const vars = [
     `--ft-accent: ${readableAccent(config.accentColor, dark)}`,
-    `--ft-surface: ${palette.surface}`,
-    `--ft-text: ${palette.text}`,
-    `--ft-muted: ${palette.muted}`,
-    `--ft-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--ft-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ft-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ft-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ft-line: ${themedColour("line", palette.line, dark)}`]),
   ].join("; ");
   const classes = [
     "ft",

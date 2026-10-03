@@ -46,13 +46,22 @@ const palettes = {
   dark: { surface: "#141019", raised: "#1f1a29", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", hover: "#2a2438" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -85,7 +94,7 @@ function move(list: Item[], from: number, to: number) {
 }
 
 const iconButton =
-  "grid size-8 shrink-0 cursor-pointer place-items-center rounded-md text-(--sl-muted) hover:bg-(--sl-hover) hover:text-(--sl-text) focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--sl-accent-text) aria-disabled:cursor-default aria-disabled:opacity-40 aria-disabled:hover:bg-transparent";
+  "grid size-8 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-sm,0.375rem)] text-(--sl-muted) hover:bg-(--sl-hover) hover:text-(--sl-text) focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--sl-accent-text) aria-disabled:cursor-default aria-disabled:opacity-40 aria-disabled:hover:bg-transparent";
 
 export function SortableList({
   config = defaultConfig,
@@ -113,11 +122,11 @@ export function SortableList({
   const style = {
     "--sl-accent": config.accentColor,
     "--sl-accent-text": readableAccent(config.accentColor, dark),
-    "--sl-surface": palette.surface,
+    "--sl-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
     "--sl-raised": palette.raised,
-    "--sl-text": palette.text,
-    "--sl-muted": palette.muted,
-    "--sl-line": palette.line,
+    "--sl-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sl-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sl-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--sl-hover": palette.hover,
   } as CSSProperties;
 
@@ -236,7 +245,7 @@ export function SortableList({
                 if (element) rows.current.set(item.id, element);
                 else rows.current.delete(item.id);
               }}
-              className={`flex min-h-12 items-center gap-2 rounded-lg border bg-(--sl-raised) px-2 py-1.5 transition-shadow motion-reduce:transition-none ${active ? "border-(--sl-accent) shadow-lg ring-1 ring-(--sl-accent)" : "border-(--sl-line)"}`}
+              className={`flex min-h-12 items-center gap-2 rounded-[var(--bc-radius-md,0.5rem)] border bg-(--sl-raised) px-2 py-1.5 transition-shadow motion-reduce:transition-none ${active ? "border-(--sl-accent) shadow-lg ring-1 ring-(--sl-accent)" : "border-(--sl-line)"}`}
             >
               <button
                 id={`${id}-handle-${item.id}`}

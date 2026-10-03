@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { StatsTilesConfig } from "../react/stats-tiles";
 
 const palettes = {
@@ -30,7 +30,7 @@ export function renderStatsTilesMarkup(config: StatsTilesConfig) {
   const vars = [
     `--sx-accent: ${config.accentColor}`,
     `--sx-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--sx-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sx-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const tiles = config.tiles

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { InvoiceSummaryConfig } from "../react/invoice-summary";
 
 const palettes = {
@@ -41,7 +41,7 @@ export function renderInvoiceSummaryMarkup(config: InvoiceSummaryConfig) {
   const vars = [
     `--inv-accent: ${config.accentColor}`,
     `--inv-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--inv-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--inv-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const lines = config.items.map((item) => ({ ...item, amount: count(item.quantity) * pence(item.unitPrice) }));

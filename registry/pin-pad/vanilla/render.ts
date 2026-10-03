@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { PinPadConfig } from "../react/pin-pad";
 
 const palettes = {
@@ -30,7 +30,7 @@ export function renderPinPadMarkup(config: PinPadConfig) {
   const vars = [
     `--pp-accent: ${config.accentColor}`,
     `--pp-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--pp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--pp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const dots = Array.from({ length: config.length }, () => '<span class="pp-dot" data-dot></span>').join("");

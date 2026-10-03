@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { RowActionsConfig } from "../react/row-actions";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderRowActionsMarkup(config: RowActionsConfig) {
   const vars = [
     `--rwa-accent: ${config.accentColor}`,
     `--rwa-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--rwa-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--rwa-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const rows = config.records

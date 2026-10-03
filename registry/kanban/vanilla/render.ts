@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { KanbanConfig } from "../react/kanban";
 
 const palettes = {
@@ -32,7 +32,7 @@ export function renderKanbanMarkup(config: KanbanConfig) {
   const vars = [
     `--kb-accent: ${config.accentColor}`,
     `--kb-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--kb-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--kb-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const columns = config.columns.filter((column) => column.name.trim() !== "");

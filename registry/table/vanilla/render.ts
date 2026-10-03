@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import { parseTable, type TableConfig } from "../react/table";
 
 const palettes = {
@@ -34,12 +34,12 @@ export function renderTableMarkup(config: TableConfig) {
   const vars = [
     `--tl-accent: ${config.accentColor}`,
     `--tl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--tl-radius: ${config.radius}px`,
-    `--tl-surface: ${palette.surface}`,
-    `--tl-sunk: ${palette.sunk}`,
-    `--tl-text: ${palette.text}`,
-    `--tl-muted: ${palette.muted}`,
-    `--tl-line: ${palette.line}`,
+    `--tl-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--tl-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tl-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tl-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tl-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tl-line: ${themedColour("line", palette.line, dark)}`]),
     `--tl-hover: ${palette.hover}`,
   ].join("; ");
   const classes = [

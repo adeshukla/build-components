@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#0f0c14", onSunk: "#f6f5fa", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -117,12 +126,12 @@ export function VideoEmbed({ config = defaultConfig }: { config?: VideoEmbedConf
     "--vid-accent": config.accentColor,
     "--vid-accent-text": readableAccent(config.accentColor, dark),
     "--vid-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--vid-surface": palette.surface,
-    "--vid-sunk": palette.sunk,
+    "--vid-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--vid-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
     "--vid-on-sunk": palette.onSunk,
-    "--vid-text": palette.text,
-    "--vid-muted": palette.muted,
-    "--vid-line": palette.line,
+    "--vid-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--vid-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--vid-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const embed = safeUrl(toEmbedUrl(config.embedUrl));
@@ -134,7 +143,7 @@ export function VideoEmbed({ config = defaultConfig }: { config?: VideoEmbedConf
       <figure className="m-0 max-w-2xl">
         <div
           data-frame
-          className="relative w-full overflow-hidden rounded-lg bg-(--vid-sunk)"
+          className="relative w-full overflow-hidden rounded-[var(--bc-radius-md,0.5rem)] bg-(--vid-sunk)"
           style={{ aspectRatio: ratios[config.aspect] }}
         >
           {!playing ? (

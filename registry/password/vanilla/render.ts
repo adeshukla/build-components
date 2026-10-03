@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { PasswordConfig } from "../react/password";
 
 const palettes = {
@@ -30,12 +30,12 @@ export function renderPasswordMarkup(config: PasswordConfig) {
   const vars = [
     `--pw-accent: ${config.accentColor}`,
     `--pw-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--pw-radius: ${config.radius}px`,
-    `--pw-surface: ${palette.surface}`,
-    `--pw-sunk: ${palette.sunk}`,
-    `--pw-text: ${palette.text}`,
-    `--pw-muted: ${palette.muted}`,
-    `--pw-line: ${palette.line}`,
+    `--pw-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--pw-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pw-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pw-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pw-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pw-line: ${themedColour("line", palette.line, dark)}`]),
     `--pw-good: ${palette.good}`,
     `--pw-bad: ${palette.bad}`,
   ].join("; ");

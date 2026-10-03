@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TabsConfig } from "../react/tabs";
 
 const palettes = {
@@ -34,11 +34,11 @@ export function renderTabsMarkup(config: TabsConfig) {
     `--tb-accent: ${config.accentColor}`,
     `--tb-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--tb-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--tb-radius: ${config.radius}px`,
-    `--tb-surface: ${palette.surface}`,
-    `--tb-text: ${palette.text}`,
-    `--tb-muted: ${palette.muted}`,
-    `--tb-line: ${palette.line}`,
+    `--tb-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--tb-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tb-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tb-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--tb-line: ${themedColour("line", palette.line, dark)}`]),
     `--tb-hover: ${palette.hover}`,
   ].join("; ");
   const classes = [

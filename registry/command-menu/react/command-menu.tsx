@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#1b1624", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -94,11 +103,11 @@ export function CommandMenu({ config = defaultConfig }: { config?: CommandMenuCo
     "--cmd-accent": config.accentColor,
     "--cmd-accent-text": readableAccent(config.accentColor, dark),
     "--cmd-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--cmd-surface": palette.surface,
-    "--cmd-sunk": palette.sunk,
-    "--cmd-text": palette.text,
-    "--cmd-muted": palette.muted,
-    "--cmd-line": palette.line,
+    "--cmd-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--cmd-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--cmd-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--cmd-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--cmd-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const shown = config.commands.filter((command) => matchesQuery(command, query));
@@ -153,11 +162,11 @@ export function CommandMenu({ config = defaultConfig }: { config?: CommandMenuCo
         id={`${id}-trigger`}
         type="button"
         onClick={(event) => open(event.currentTarget)}
-        className="inline-flex min-h-11 items-center gap-3 rounded-md border border-(--cmd-line) bg-(--cmd-sunk) px-4 font-medium text-(--cmd-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cmd-accent-text)"
+        className="inline-flex min-h-11 items-center gap-3 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--cmd-line) bg-(--cmd-sunk) px-4 font-medium text-(--cmd-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cmd-accent-text)"
       >
         {config.triggerLabel}
         {config.showHint && hotkey !== "" && (
-          <kbd className="rounded border border-(--cmd-line) px-1.5 py-0.5 font-mono text-xs text-(--cmd-muted)">
+          <kbd className="rounded-[var(--bc-radius-xs,0.25rem)] border border-(--cmd-line) px-1.5 py-0.5 font-mono text-xs text-(--cmd-muted)">
             Ctrl {hotkey.toUpperCase()}
           </kbd>
         )}
@@ -178,7 +187,7 @@ export function CommandMenu({ config = defaultConfig }: { config?: CommandMenuCo
         onClick={(event) => {
           if (event.target === dialog.current) close();
         }}
-        className="m-0 mx-auto mt-[10vh] w-[min(34rem,calc(100vw-2rem))] rounded-xl border border-(--cmd-line) bg-(--cmd-surface) p-0 text-(--cmd-text) backdrop:bg-black/40"
+        className="m-0 mx-auto mt-[10vh] w-[min(34rem,calc(100vw-2rem))] rounded-[var(--bc-radius-lg,0.75rem)] border border-(--cmd-line) bg-(--cmd-surface) p-0 text-(--cmd-text) backdrop:bg-black/40"
       >
         <div className="border-b border-(--cmd-line) p-3">
           <label htmlFor={`${id}-input`} className="sr-only">
@@ -248,14 +257,14 @@ export function CommandMenu({ config = defaultConfig }: { config?: CommandMenuCo
                     // The pointer sets the active option too, so hovering and arrowing agree.
                     onMouseMove={() => setActive(index)}
                     onClick={() => run(command.label)}
-                    className={`flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-md px-2 ${
+                    className={`flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-[var(--bc-radius-sm,0.375rem)] px-2 ${
                       here ? "bg-(--cmd-accent) text-(--cmd-on-accent)" : ""
                     }`}
                   >
                     <span>{command.label}</span>
                     {config.showShortcuts && command.shortcut !== "" && (
                       <kbd
-                        className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-xs ${
+                        className={`shrink-0 rounded-[var(--bc-radius-xs,0.25rem)] border px-1.5 py-0.5 font-mono text-xs ${
                           here ? "border-current/40 text-(--cmd-on-accent)" : "border-(--cmd-line) text-(--cmd-muted)"
                         }`}
                       >

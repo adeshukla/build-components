@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { LogoWallConfig } from "../react/logo-wall";
 
 const palettes = {
@@ -37,7 +37,7 @@ export function renderLogoWallMarkup(config: LogoWallConfig) {
   const vars = [
     `--lw-accent: ${config.accentColor}`,
     `--lw-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--lw-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--lw-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const quiet = config.headingLevel === "p";

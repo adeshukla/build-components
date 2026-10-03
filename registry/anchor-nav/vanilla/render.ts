@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { AnchorNavConfig } from "../react/anchor-nav";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderAnchorNavMarkup(config: AnchorNavConfig) {
   const vars = [
     `--an-accent: ${config.accentColor}`,
     `--an-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--an-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--an-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const links = config.sections

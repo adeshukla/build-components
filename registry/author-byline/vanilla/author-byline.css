@@ -2,16 +2,16 @@
 .byl {
   --byl-accent: #7c3aed;
   --byl-accent-text: #6021d6;
-  --byl-surface: #ffffff;
-  --byl-sunk: #f1eff7;
-  --byl-text: #16121f;
-  --byl-muted: #4d4a57;
-  --byl-line: #c9c4d6;
+  --byl-surface: var(--bc-light-surface, #ffffff);
+  --byl-sunk: var(--bc-light-sunk, #f1eff7);
+  --byl-text: var(--bc-light-text, #16121f);
+  --byl-muted: var(--bc-light-muted, #4d4a57);
+  --byl-line: var(--bc-light-line, #c9c4d6);
   display: block;
   padding: 0.25rem;
   background: var(--byl-surface);
   color: var(--byl-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .byl--theme-system {
-    --byl-surface: #141019;
-    --byl-sunk: #272031;
-    --byl-text: #f6f5fa;
-    --byl-muted: #b6b3c2;
-    --byl-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .byl--theme-system {
+    --byl-surface: var(--bc-dark-surface, #141019);
+    --byl-sunk: var(--bc-dark-sunk, #272031);
+    --byl-text: var(--bc-dark-text, #f6f5fa);
+    --byl-muted: var(--bc-dark-muted, #b6b3c2);
+    --byl-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .byl--theme-system {
+    --byl-surface: var(--bc-dark-surface, #141019);
+    --byl-sunk: var(--bc-dark-sunk, #272031);
+    --byl-text: var(--bc-dark-text, #f6f5fa);
+    --byl-muted: var(--bc-dark-muted, #b6b3c2);
+    --byl-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /*
  * Not an <address> element: that is for the contact details of the nearest article or of the page, and a

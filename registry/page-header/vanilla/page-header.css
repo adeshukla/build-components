@@ -3,15 +3,15 @@
   --pgh-accent: #1d4ed8;
   --pgh-accent-text: #1a41b8;
   --pgh-on-accent: #ffffff;
-  --pgh-surface: #ffffff;
-  --pgh-sunk: #f4f3f8;
-  --pgh-text: #16121f;
-  --pgh-muted: #4d4a57;
-  --pgh-line: #c9c4d6;
+  --pgh-surface: var(--bc-light-surface, #ffffff);
+  --pgh-sunk: var(--bc-light-sunk, #f4f3f8);
+  --pgh-text: var(--bc-light-text, #16121f);
+  --pgh-muted: var(--bc-light-muted, #4d4a57);
+  --pgh-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--pgh-surface);
   color: var(--pgh-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .pgh--theme-system {
-    --pgh-surface: #141019;
-    --pgh-sunk: #221d2e;
-    --pgh-text: #f6f5fa;
-    --pgh-muted: #b6b3c2;
-    --pgh-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .pgh--theme-system {
+    --pgh-surface: var(--bc-dark-surface, #141019);
+    --pgh-sunk: var(--bc-dark-sunk, #221d2e);
+    --pgh-text: var(--bc-dark-text, #f6f5fa);
+    --pgh-muted: var(--bc-dark-muted, #b6b3c2);
+    --pgh-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .pgh--theme-system {
+    --pgh-surface: var(--bc-dark-surface, #141019);
+    --pgh-sunk: var(--bc-dark-sunk, #221d2e);
+    --pgh-text: var(--bc-dark-text, #f6f5fa);
+    --pgh-muted: var(--bc-dark-muted, #b6b3c2);
+    --pgh-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /*
  * A header element, so it is a landmark whichever page it is on — and it holds the page's one h1, which
@@ -91,7 +100,7 @@
   align-items: center;
   padding: 0 1.25rem;
   border: 1px solid transparent;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   font-weight: 500;
   text-decoration: none;
 }

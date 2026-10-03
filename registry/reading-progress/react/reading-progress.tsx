@@ -36,13 +36,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -85,11 +94,11 @@ export function ReadingProgress({ config = defaultConfig }: { config?: ReadingPr
   const style = {
     "--rp-accent": config.accentColor,
     "--rp-accent-text": readableAccent(config.accentColor, dark),
-    "--rp-surface": palette.surface,
-    "--rp-sunk": palette.sunk,
-    "--rp-text": palette.text,
-    "--rp-muted": palette.muted,
-    "--rp-line": palette.line,
+    "--rp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--rp-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--rp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--rp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--rp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // How far down the page, and which heading you are in. Both are read from the page itself, so
@@ -136,7 +145,7 @@ export function ReadingProgress({ config = defaultConfig }: { config?: ReadingPr
       )}
 
       {config.showContents && sections.length > 0 && (
-        <nav aria-labelledby={`${id}-contents`} className="rounded-lg border border-(--rp-line) p-4">
+        <nav aria-labelledby={`${id}-contents`} className="rounded-[var(--bc-radius-md,0.5rem)] border border-(--rp-line) p-4">
           <p id={`${id}-contents`} className="font-medium">
             {config.contentsTitle}
           </p>
@@ -150,7 +159,7 @@ export function ReadingProgress({ config = defaultConfig }: { config?: ReadingPr
                     href={`#${target}`}
                     // The heading you are in is marked for everyone, not just by colour.
                     aria-current={here ? "location" : undefined}
-                    className={`block rounded py-1 text-sm underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--rp-accent-text) ${here ? "font-semibold text-(--rp-accent-text)" : "text-(--rp-muted)"}`}
+                    className={`block rounded-[var(--bc-radius-xs,0.25rem)] py-1 text-sm underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--rp-accent-text) ${here ? "font-semibold text-(--rp-accent-text)" : "text-(--rp-muted)"}`}
                   >
                     {here && <span className="sr-only">Current section: </span>}
                     {section.title}

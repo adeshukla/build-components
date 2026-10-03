@@ -48,13 +48,22 @@ const palettes = {
   dark: { surface: "#141019", slide: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 const motionMedia = {
@@ -164,12 +173,12 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
     "--cr-accent": config.accentColor,
     "--cr-accent-text": readableAccent(config.accentColor, dark),
     "--cr-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--cr-radius": `${config.radius}px`,
-    "--cr-surface": palette.surface,
+    "--cr-radius": `var(--bc-radius-md, ${config.radius}px)`,
+    "--cr-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
     "--cr-slide": palette.slide,
-    "--cr-text": palette.text,
-    "--cr-muted": palette.muted,
-    "--cr-line": palette.line,
+    "--cr-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--cr-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--cr-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
   const control =
     "inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-(--cr-line) bg-(--cr-surface) text-(--cr-text) transition-[background-color,transform,opacity] duration-200 ease-out hover:bg-(--cr-slide) active:scale-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cr-accent-text)";

@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -93,11 +102,11 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
     "--esm-accent": config.accentColor,
     "--esm-accent-text": readableAccent(config.accentColor, dark),
     "--esm-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--esm-surface": palette.surface,
-    "--esm-sunk": palette.sunk,
-    "--esm-text": palette.text,
-    "--esm-muted": palette.muted,
-    "--esm-line": palette.line,
+    "--esm-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--esm-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--esm-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--esm-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--esm-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--esm-error": palette.error,
   } as CSSProperties;
 
@@ -133,7 +142,7 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
             tabIndex={-1}
             role="group"
             aria-labelledby={`${id}-summary-heading`}
-            className="mb-5 rounded-md border-4 border-(--esm-error) p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text)"
+            className="mb-5 rounded-[var(--bc-radius-sm,0.375rem)] border-4 border-(--esm-error) p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text)"
           >
             <Heading id={`${id}-summary-heading`} className="m-0 text-lg font-semibold text-(--esm-error)">
               {config.countInHeading ? `${count} ${count === 1 ? "problem" : "problems"} to fix` : config.heading}
@@ -188,7 +197,7 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
                     // Once a problem is shown, it follows the typing rather than waiting for another submit.
                     if (problems !== null) setProblems(problems.filter((problem) => problem.index !== index));
                   }}
-                  className={`mt-2 min-h-11 w-full max-w-md rounded-md border bg-(--esm-sunk) px-3 text-(--esm-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text) ${
+                  className={`mt-2 min-h-11 w-full max-w-md rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--esm-sunk) px-3 text-(--esm-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text) ${
                     message !== "" ? "border-(--esm-error)" : "border-(--esm-line)"
                   }`}
                 />
@@ -199,7 +208,7 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
 
         <button
           type="submit"
-          className="mt-5 min-h-11 rounded-md bg-(--esm-accent) px-5 font-medium text-(--esm-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text)"
+          className="mt-5 min-h-11 rounded-[var(--bc-radius-button,0.375rem)] bg-(--esm-accent) px-5 font-medium text-(--esm-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text)"
         >
           {config.submitLabel}
         </button>

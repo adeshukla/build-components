@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { MegaMenuConfig, MegaMenuItem } from "../react/mega-menu";
 
 const palettes = {
@@ -63,11 +63,11 @@ export function renderMegaMenuMarkup(config: MegaMenuConfig) {
     `--mm-accent: ${config.accentColor}`,
     `--mm-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--mm-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--mm-radius: ${config.radius}px`,
-    `--mm-surface: ${palette.surface}`,
-    `--mm-text: ${palette.text}`,
-    `--mm-muted: ${palette.muted}`,
-    `--mm-line: ${palette.line}`,
+    `--mm-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--mm-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--mm-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--mm-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--mm-line: ${themedColour("line", palette.line, dark)}`]),
     `--mm-hover: ${palette.hover}`,
   ].join("; ");
   const classes = ["mm", `mm--cols-${config.columns}`, `mm--panel-${config.panel}`, `mm--theme-${config.theme}`].join(

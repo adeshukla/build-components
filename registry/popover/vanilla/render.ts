@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { PopoverConfig } from "../react/popover";
 
 const palettes = {
@@ -31,12 +31,12 @@ export function renderPopoverMarkup(config: PopoverConfig) {
     `--pv-accent: ${config.accentColor}`,
     `--pv-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--pv-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--pv-radius: ${config.radius}px`,
+    `--pv-radius: var(--bc-radius-md, ${config.radius}px)`,
     `--pv-width: ${config.width}px`,
-    `--pv-surface: ${palette.surface}`,
-    `--pv-text: ${palette.text}`,
-    `--pv-muted: ${palette.muted}`,
-    `--pv-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--pv-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pv-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pv-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--pv-line: ${themedColour("line", palette.line, dark)}`]),
     `--pv-hover: ${palette.hover}`,
   ].join("; ");
 

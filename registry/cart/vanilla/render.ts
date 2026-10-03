@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { CartConfig } from "../react/cart";
 
 const palettes = {
@@ -48,12 +48,12 @@ export function renderCartMarkup(config: CartConfig) {
     `--ct-accent: ${config.accentColor}`,
     `--ct-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--ct-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    `--ct-radius: ${config.radius}px`,
-    `--ct-surface: ${palette.surface}`,
-    `--ct-sunk: ${palette.sunk}`,
-    `--ct-text: ${palette.text}`,
-    `--ct-muted: ${palette.muted}`,
-    `--ct-line: ${palette.line}`,
+    `--ct-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--ct-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ct-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ct-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ct-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ct-line: ${themedColour("line", palette.line, dark)}`]),
   ].join("; ");
 
   const rows = lines

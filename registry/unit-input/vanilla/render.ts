@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { UnitInputConfig } from "../react/unit-input";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderUnitInputMarkup(config: UnitInputConfig) {
   const vars = [
     `--ui-accent: ${config.accentColor}`,
     `--ui-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--ui-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ui-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const units = config.units

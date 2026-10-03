@@ -29,13 +29,22 @@ const palettes = {
   dark: { surface: "#141019", hover: "#2a2438", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", error: "#ff6b6b" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -78,10 +87,10 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
     "--ie-accent": config.accentColor,
     "--ie-accent-text": readableAccent(config.accentColor, dark),
     "--ie-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--ie-surface": palette.surface,
+    "--ie-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
     "--ie-hover": palette.hover,
-    "--ie-text": palette.text,
-    "--ie-muted": palette.muted,
+    "--ie-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ie-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ie-border": palette.border,
     "--ie-error": palette.error,
   } as CSSProperties;
@@ -131,8 +140,8 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
     }
   }
 
-  const field = `w-full rounded-lg border bg-(--ie-surface) px-3 py-2 text-(--ie-text) outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text) ${error ? "border-2 border-(--ie-error)" : "border-(--ie-border)"}`;
-  const button = "min-h-9 cursor-pointer rounded-lg px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text)";
+  const field = `w-full rounded-[var(--bc-radius-md,0.5rem)] border bg-(--ie-surface) px-3 py-2 text-(--ie-text) outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text) ${error ? "border-2 border-(--ie-error)" : "border-(--ie-border)"}`;
+  const button = "min-h-9 cursor-pointer rounded-[var(--bc-radius-md,0.5rem)] px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text)";
 
   return (
     <div style={style} className="max-w-md bg-(--ie-surface) text-(--ie-text)">
@@ -195,7 +204,7 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
           ref={buttonRef}
           type="button"
           onClick={start}
-          className="mt-1 flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-left hover:bg-(--ie-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text)"
+          className="mt-1 flex w-full cursor-pointer items-center justify-between gap-3 rounded-[var(--bc-radius-md,0.5rem)] px-3 py-2 text-left hover:bg-(--ie-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text)"
         >
           <span className={`min-w-0 break-words ${value === "" ? "text-(--ie-muted)" : ""}`}>{value === "" ? "Not set" : value}</span>
           <span className="flex shrink-0 items-center gap-1 text-sm text-(--ie-muted)">

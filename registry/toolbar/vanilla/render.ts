@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ToolbarConfig } from "../react/toolbar";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderToolbarMarkup(config: ToolbarConfig) {
     `--tb-accent: ${config.accentColor}`,
     `--tb-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--tb-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--tb-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tb-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const items = config.items.filter((item) => item.label.trim() !== "");

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { DrawerConfig } from "../react/drawer";
 
 const palettes = {
@@ -32,7 +32,7 @@ export function renderDrawerMarkup(config: DrawerConfig) {
     `--dr-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
     `--dr-width: ${widths[config.size]}`,
     `--dr-height: ${heights[config.size]}`,
-    ...Object.entries(palette).map(([key, value]) => `--dr-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--dr-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const options = config.options.filter((option) => option.label.trim() !== "");
   const hasBody = config.body.trim() !== "";

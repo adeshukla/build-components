@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TimelineConfig } from "../react/timeline";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderTimelineMarkup(config: TimelineConfig) {
   const vars = [
     `--tl-accent: ${config.accentColor}`,
     `--tl-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--tl-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tl-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const entries = config.entries.filter((entry) => entry.what.trim() !== "");

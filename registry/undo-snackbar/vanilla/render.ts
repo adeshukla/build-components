@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { UndoSnackbarConfig } from "../react/undo-snackbar";
 
 const palettes = {
@@ -28,7 +28,7 @@ export function renderUndoSnackbarMarkup(config: UndoSnackbarConfig) {
     `--usb-accent: ${config.accentColor}`,
     `--usb-accent-on-panel: ${readableOn(config.accentColor, palette.panel)}`,
     `--usb-accent-text: ${readableOn(config.accentColor, palette.surface)}`,
-    ...Object.entries(palette).map(([key, value]) => `--usb-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--usb-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="usb usb--theme-${config.theme} usb--${config.position === "bottom-centre" ? "centre" : "left"}" style="${vars}" data-undo-snackbar>

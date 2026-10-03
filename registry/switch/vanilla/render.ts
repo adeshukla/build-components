@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SwitchConfig } from "../react/switch";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderSwitchMarkup(config: SwitchConfig) {
   const vars = [
     `--sw-accent: ${config.accentColor}`,
     `--sw-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--sw-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sw-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const hint = config.hint.trim();
 

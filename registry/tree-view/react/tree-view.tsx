@@ -49,13 +49,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", hover: "#2a2438", selected: "#26304d" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -142,10 +151,10 @@ export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }
   const style = {
     "--tv-accent": config.accentColor,
     "--tv-accent-text": readableAccent(config.accentColor, dark),
-    "--tv-surface": palette.surface,
-    "--tv-text": palette.text,
-    "--tv-muted": palette.muted,
-    "--tv-line": palette.line,
+    "--tv-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--tv-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tv-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--tv-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--tv-hover": palette.hover,
     "--tv-selected": palette.selected,
   } as CSSProperties;
@@ -253,7 +262,7 @@ export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }
               if (isParent) toggle(node.id, !isOpen);
             }}
             style={{ paddingLeft: `${(node.level - 1) * 1.25 + 0.5}rem` }}
-            className={`flex min-h-8 cursor-pointer items-center gap-2 rounded-md pr-2 text-sm select-none ${isSelected ? "bg-(--tv-selected) font-medium" : "hover:bg-(--tv-hover)"}`}
+            className={`flex min-h-8 cursor-pointer items-center gap-2 rounded-[var(--bc-radius-sm,0.375rem)] pr-2 text-sm select-none ${isSelected ? "bg-(--tv-selected) font-medium" : "hover:bg-(--tv-hover)"}`}
           >
             <span aria-hidden="true" className="grid size-4 shrink-0 place-items-center text-(--tv-muted)">
               {isParent && (
@@ -278,7 +287,7 @@ export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }
       <p id={`${id}-label`} className="mb-2 font-medium">
         {config.label}
       </p>
-      <ul role="tree" aria-labelledby={`${id}-label`} className="rounded-lg border border-(--tv-line) p-1">
+      <ul role="tree" aria-labelledby={`${id}-label`} className="rounded-[var(--bc-radius-md,0.5rem)] border border-(--tv-line) p-1">
         {renderNodes(tree)}
       </ul>
       {config.showSelection && (

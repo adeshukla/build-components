@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { TeamGridConfig } from "../react/team-grid";
 
 const palettes = {
@@ -37,7 +37,7 @@ export function renderTeamGridMarkup(config: TeamGridConfig) {
   const vars = [
     `--tm-accent: ${config.accentColor}`,
     `--tm-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--tm-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tm-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const people = config.people

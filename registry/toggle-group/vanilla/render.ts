@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ToggleGroupConfig } from "../react/toggle-group";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderToggleGroupMarkup(config: ToggleGroupConfig) {
     `--tg-accent: ${config.accentColor}`,
     `--tg-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--tg-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--tg-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tg-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const options = config.options

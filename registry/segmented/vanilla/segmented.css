@@ -3,11 +3,11 @@
   --sg-accent: #25154d;
   --sg-accent-text: #25154d;
   --sg-on-accent: #ffffff;
-  --sg-surface: #ffffff;
-  --sg-sunk: #f4f3f8;
-  --sg-text: #16121f;
-  --sg-muted: #4d4a57;
-  --sg-line: #d9d5e4;
+  --sg-surface: var(--bc-light-surface, #ffffff);
+  --sg-sunk: var(--bc-light-sunk, #f4f3f8);
+  --sg-text: var(--bc-light-text, #16121f);
+  --sg-muted: var(--bc-light-muted, #4d4a57);
+  --sg-line: var(--bc-light-line, #d9d5e4);
   --sg-height: 2.5rem;
   display: block;
   min-width: 0;
@@ -16,7 +16,7 @@
   border: 0;
   background: var(--sg-surface);
   color: var(--sg-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -28,14 +28,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .sg--theme-system {
-    --sg-surface: #141019;
-    --sg-sunk: #221d2e;
-    --sg-text: #f6f5fa;
-    --sg-muted: #b6b3c2;
-    --sg-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .sg--theme-system {
+    --sg-surface: var(--bc-dark-surface, #141019);
+    --sg-sunk: var(--bc-dark-sunk, #221d2e);
+    --sg-text: var(--bc-dark-text, #f6f5fa);
+    --sg-muted: var(--bc-dark-muted, #b6b3c2);
+    --sg-line: var(--bc-dark-line, #3a3448);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .sg--theme-system {
+    --sg-surface: var(--bc-dark-surface, #141019);
+    --sg-sunk: var(--bc-dark-sunk, #221d2e);
+    --sg-text: var(--bc-dark-text, #f6f5fa);
+    --sg-muted: var(--bc-dark-muted, #b6b3c2);
+    --sg-line: var(--bc-dark-line, #3a3448);
+  }
+
 
 .sg--sm { --sg-height: 2rem; }
 .sg-legend { padding: 0; font-weight: 500; }
@@ -45,7 +54,7 @@
   margin-top: 0.5rem;
   padding: 0.125rem;
   border: 1px solid var(--sg-line);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--sg-sunk);
 }
 .sg--full .sg-group { display: flex; width: 100%; }
@@ -60,7 +69,7 @@
   justify-content: center;
   padding: 0 1rem;
   overflow: hidden;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   color: var(--sg-muted);
   font-weight: 500;
   text-overflow: ellipsis;

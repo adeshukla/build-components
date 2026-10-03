@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CardFieldsConfig } from "../react/card-fields";
 
 const palettes = {
@@ -30,7 +30,7 @@ export function renderCardFieldsMarkup(config: CardFieldsConfig) {
     `--cf-accent: ${config.accentColor}`,
     `--cf-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--cf-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--cf-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cf-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const fields: Field[] = [
     ...(config.showName ? [{ key: "name", label: "Name on card", autocomplete: "cc-name", numeric: false }] : []),

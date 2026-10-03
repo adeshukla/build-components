@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -83,11 +92,11 @@ export function ToggleGroup({ config = defaultConfig }: { config?: ToggleGroupCo
     "--tg-accent": config.accentColor,
     "--tg-accent-text": readableAccent(config.accentColor, dark),
     "--tg-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--tg-surface": palette.surface,
-    "--tg-sunk": palette.sunk,
-    "--tg-text": palette.text,
-    "--tg-muted": palette.muted,
-    "--tg-line": palette.line,
+    "--tg-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--tg-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--tg-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tg-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--tg-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   return (
@@ -109,7 +118,7 @@ export function ToggleGroup({ config = defaultConfig }: { config?: ToggleGroupCo
             return (
               <label
                 key={value}
-                className={`inline-flex min-h-11 cursor-pointer items-center rounded-md border has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-(--tg-accent-text) ${
+                className={`inline-flex min-h-11 cursor-pointer items-center rounded-[var(--bc-radius-sm,0.375rem)] border has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-(--tg-accent-text) ${
                   config.size === "sm" ? "px-3 text-sm" : "px-4"
                 } ${picked ? "border-(--tg-accent) bg-(--tg-accent) font-medium text-(--tg-on-accent)" : "border-(--tg-line) bg-(--tg-sunk)"}`}
               >

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ComparisonTableConfig } from "../react/comparison-table";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderComparisonTableMarkup(config: ComparisonTableConfig) {
   const vars = [
     `--cp-accent: ${config.accentColor}`,
     `--cp-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--cp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const plans = config.plans.filter((plan) => plan.name.trim() !== "").slice(0, 3);

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { HelpHintConfig } from "../react/help-hint";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderHelpHintMarkup(config: HelpHintConfig) {
   const vars = [
     `--hlp-accent: ${config.accentColor}`,
     `--hlp-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--hlp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--hlp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const hasExample = config.exampleText.trim() !== "";

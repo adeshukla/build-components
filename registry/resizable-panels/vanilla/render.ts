@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ResizablePanelsConfig } from "../react/resizable-panels";
 
 const palettes = {
@@ -30,7 +30,7 @@ export function renderResizablePanelsMarkup(config: ResizablePanelsConfig) {
   const vars = [
     `--rp-accent: ${config.accentColor}`,
     `--rp-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--rp-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--rp-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const horizontal = config.orientation === "horizontal";
 

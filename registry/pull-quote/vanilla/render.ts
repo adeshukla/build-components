@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { PullQuoteConfig } from "../react/pull-quote";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderPullQuoteMarkup(config: PullQuoteConfig) {
   const vars = [
     `--pq-accent: ${config.accentColor}`,
     `--pq-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--pq-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--pq-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const linked = config.sourceHref.trim() !== "" && config.source.trim() !== "";

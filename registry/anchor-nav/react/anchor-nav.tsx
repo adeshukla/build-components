@@ -36,13 +36,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -76,11 +85,11 @@ export function AnchorNav({ config = defaultConfig }: { config?: AnchorNavConfig
   const style = {
     "--an-accent": config.accentColor,
     "--an-accent-text": readableAccent(config.accentColor, dark),
-    "--an-surface": palette.surface,
-    "--an-sunk": palette.sunk,
-    "--an-text": palette.text,
-    "--an-muted": palette.muted,
-    "--an-line": palette.line,
+    "--an-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--an-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--an-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--an-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--an-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const targets = config.sections.map((section) => section.target).join("|");
@@ -170,7 +179,7 @@ export function AnchorNav({ config = defaultConfig }: { config?: AnchorNavConfig
                 {section.label}
               </h2>
               <p className="mt-2 text-(--an-muted)">{section.body}</p>
-              <div aria-hidden="true" className="mt-4 h-24 rounded-md bg-(--an-sunk)" />
+              <div aria-hidden="true" className="mt-4 h-24 rounded-[var(--bc-radius-sm,0.375rem)] bg-(--an-sunk)" />
             </section>
           ))}
         </div>

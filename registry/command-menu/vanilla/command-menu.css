@@ -3,15 +3,15 @@
   --cmd-accent: #7c3aed;
   --cmd-accent-text: #6021d6;
   --cmd-on-accent: #ffffff;
-  --cmd-surface: #ffffff;
-  --cmd-sunk: #f4f3f8;
-  --cmd-text: #16121f;
-  --cmd-muted: #4d4a57;
-  --cmd-line: #c9c4d6;
+  --cmd-surface: var(--bc-light-surface, #ffffff);
+  --cmd-sunk: var(--bc-light-sunk, #f4f3f8);
+  --cmd-text: var(--bc-light-text, #16121f);
+  --cmd-muted: var(--bc-light-muted, #4d4a57);
+  --cmd-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--cmd-surface);
   color: var(--cmd-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .cmd--theme-system {
-    --cmd-surface: #1b1624;
-    --cmd-sunk: #272031;
-    --cmd-text: #f6f5fa;
-    --cmd-muted: #b6b3c2;
-    --cmd-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .cmd--theme-system {
+    --cmd-surface: var(--bc-dark-surface, #1b1624);
+    --cmd-sunk: var(--bc-dark-sunk, #272031);
+    --cmd-text: var(--bc-dark-text, #f6f5fa);
+    --cmd-muted: var(--bc-dark-muted, #b6b3c2);
+    --cmd-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .cmd--theme-system {
+    --cmd-surface: var(--bc-dark-surface, #1b1624);
+    --cmd-sunk: var(--bc-dark-sunk, #272031);
+    --cmd-text: var(--bc-dark-text, #f6f5fa);
+    --cmd-muted: var(--bc-dark-muted, #b6b3c2);
+    --cmd-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* A display declaration beats [hidden]'s display:none from the UA sheet, so say it again here. */
 .cmd [hidden] { display: none; }
@@ -42,7 +51,7 @@
   gap: 0.75rem;
   padding: 0 1rem;
   border: 1px solid var(--cmd-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--cmd-sunk);
   color: var(--cmd-text);
   font: inherit;
@@ -54,7 +63,7 @@
 .cmd-kbd {
   padding: 0.125rem 0.375rem;
   border: 1px solid var(--cmd-line);
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   color: var(--cmd-muted);
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
   font-size: 0.75rem;
@@ -67,7 +76,7 @@
   margin: 10vh auto 0;
   padding: 0;
   border: 1px solid var(--cmd-line);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   background: var(--cmd-surface);
   color: var(--cmd-text);
 }
@@ -104,7 +113,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0 0.5rem;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   cursor: pointer;
 }
 /* The active option is the one aria-activedescendant points at, so the two can never disagree. */

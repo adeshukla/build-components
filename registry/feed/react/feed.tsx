@@ -48,13 +48,22 @@ const palettes = {
 /** Stands in for a network request in this demo; replace loadMore's body with your fetch. */
 const DEMO_DELAY = 500;
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -99,11 +108,11 @@ export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
     "--fd-accent": config.accentColor,
     "--fd-accent-text": readableAccent(config.accentColor, dark),
     "--fd-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--fd-surface": palette.surface,
+    "--fd-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
     "--fd-raised": palette.raised,
-    "--fd-text": palette.text,
-    "--fd-muted": palette.muted,
-    "--fd-line": palette.line,
+    "--fd-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--fd-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--fd-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--fd-border": palette.border,
     "--fd-hover": palette.hover,
   } as CSSProperties;
@@ -166,7 +175,7 @@ export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
             aria-posinset={index + 1}
             aria-setsize={all.length}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className="rounded-lg border border-(--fd-line) bg-(--fd-raised) p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fd-accent-text)"
+            className="rounded-[var(--bc-radius-md,0.5rem)] border border-(--fd-line) bg-(--fd-raised) p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fd-accent-text)"
           >
             <p id={`${id}-title-${index}`} className="font-semibold">
               {item.title}
@@ -190,7 +199,7 @@ export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
               type="button"
               onClick={() => loadMore(true)}
               aria-disabled={busy || undefined}
-              className="min-h-10 cursor-pointer rounded-lg border border-(--fd-border) bg-(--fd-surface) px-4 font-medium hover:bg-(--fd-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fd-accent-text) aria-disabled:cursor-wait"
+              className="min-h-10 cursor-pointer rounded-[var(--bc-radius-md,0.5rem)] border border-(--fd-border) bg-(--fd-surface) px-4 font-medium hover:bg-(--fd-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fd-accent-text) aria-disabled:cursor-wait"
             >
               {busy ? "Loading…" : "Load more"}
             </button>

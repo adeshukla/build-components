@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ShortcutHelpConfig } from "../react/shortcut-help";
 
 const palettes = {
@@ -35,7 +35,7 @@ export function renderShortcutHelpMarkup(config: ShortcutHelpConfig) {
     `--sh-accent: ${config.accentColor}`,
     `--sh-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--sh-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--sh-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sh-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const rows = config.shortcuts

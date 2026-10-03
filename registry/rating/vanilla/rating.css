@@ -2,14 +2,14 @@
 .ra {
   --ra-accent: #e6a700;
   --ra-accent-text: #8a6400;
-  --ra-surface: #ffffff;
-  --ra-text: #16121f;
-  --ra-muted: #4d4a57;
+  --ra-surface: var(--bc-light-surface, #ffffff);
+  --ra-text: var(--bc-light-text, #16121f);
+  --ra-muted: var(--bc-light-muted, #4d4a57);
   --ra-empty: #c9c5d4;
   display: block;
   background: var(--ra-surface);
   color: var(--ra-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -21,13 +21,21 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ra--theme-system {
-    --ra-surface: #141019;
-    --ra-text: #f6f5fa;
-    --ra-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .ra--theme-system {
+    --ra-surface: var(--bc-dark-surface, #141019);
+    --ra-text: var(--bc-dark-text, #f6f5fa);
+    --ra-muted: var(--bc-dark-muted, #b6b3c2);
     --ra-empty: #4a4458;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ra--theme-system {
+    --ra-surface: var(--bc-dark-surface, #141019);
+    --ra-text: var(--bc-dark-text, #f6f5fa);
+    --ra-muted: var(--bc-dark-muted, #b6b3c2);
+    --ra-empty: #4a4458;
+  }
+
 
 .ra-fieldset { margin: 0; padding: 0; border: 0; }
 .ra-legend { padding: 0; font-weight: 500; }
@@ -49,7 +57,7 @@
 .ra-picks:has(.ra-input:checked) .ra-pick { color: var(--ra-accent); }
 .ra-star-pair:has(.ra-input:checked) ~ .ra-star-pair .ra-pick,
 .ra-pick:has(.ra-input:checked) ~ .ra-pick { color: var(--ra-empty); }
-.ra-pick:has(.ra-input:focus-visible) { outline: 2px solid var(--ra-accent-text); outline-offset: 2px; border-radius: 0.25rem; }
+.ra-pick:has(.ra-input:focus-visible) { outline: 2px solid var(--ra-accent-text); outline-offset: 2px; border-radius: var(--bc-radius-xs, 0.25rem); }
 
 .ra-value { font-size: 0.875rem; font-weight: 500; font-variant-numeric: tabular-nums; }
 .ra-of { color: var(--ra-muted); font-weight: 400; }

@@ -3,16 +3,16 @@
   --to-accent: #2563eb;
   --to-accent-text: #1b4ab0;
   --to-on-accent: #ffffff;
-  --to-surface: #ffffff;
-  --to-sunk: #f4f3f8;
-  --to-text: #16121f;
-  --to-muted: #4d4a57;
+  --to-surface: var(--bc-light-surface, #ffffff);
+  --to-sunk: var(--bc-light-sunk, #f4f3f8);
+  --to-text: var(--bc-light-text, #16121f);
+  --to-muted: var(--bc-light-muted, #4d4a57);
   --to-border: #737373;
-  --to-line: #d9d5e4;
+  --to-line: var(--bc-light-line, #d9d5e4);
   --to-hover: #eeecf5;
   display: block;
   color: var(--to-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,21 +24,32 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .to--theme-system {
-    --to-surface: #1c1826;
-    --to-sunk: #141019;
-    --to-text: #f6f5fa;
-    --to-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .to--theme-system {
+    --to-surface: var(--bc-dark-surface, #1c1826);
+    --to-sunk: var(--bc-dark-sunk, #141019);
+    --to-text: var(--bc-dark-text, #f6f5fa);
+    --to-muted: var(--bc-dark-muted, #b6b3c2);
     --to-border: #8e8a99;
-    --to-line: #3a3448;
+    --to-line: var(--bc-dark-line, #3a3448);
     --to-hover: #2a2438;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .to--theme-system {
+    --to-surface: var(--bc-dark-surface, #1c1826);
+    --to-sunk: var(--bc-dark-sunk, #141019);
+    --to-text: var(--bc-dark-text, #f6f5fa);
+    --to-muted: var(--bc-dark-muted, #b6b3c2);
+    --to-border: #8e8a99;
+    --to-line: var(--bc-dark-line, #3a3448);
+    --to-hover: #2a2438;
+  }
+
 
 .to [hidden] { display: none; }
 
-.to-demo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem; border: 1px solid var(--to-line); border-radius: 0.5rem; background: var(--to-sunk); }
-.to-search { flex: 1 1 10rem; min-width: 10rem; height: 2.5rem; padding: 0 0.75rem; border: 1px solid var(--to-border); border-radius: 0.5rem; background: var(--to-surface); color: var(--to-text); font: inherit; }
+.to-demo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem; border: 1px solid var(--to-line); border-radius: var(--bc-radius-md, 0.5rem); background: var(--to-sunk); }
+.to-search { flex: 1 1 10rem; min-width: 10rem; height: 2.5rem; padding: 0 0.75rem; border: 1px solid var(--to-border); border-radius: var(--bc-radius-md, 0.5rem); background: var(--to-surface); color: var(--to-text); font: inherit; }
 .to-search::placeholder { color: var(--to-muted); opacity: 1; }
 
 .to-button {
@@ -47,7 +58,7 @@
   align-items: center;
   padding: 0 1rem;
   border: 1px solid transparent;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;
@@ -63,7 +74,7 @@
 .to-ring {
   position: fixed;
   z-index: 40;
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   box-shadow: 0 0 0 3px var(--to-accent), 0 0 0 9999px rgb(0 0 0 / 0.45);
   pointer-events: none;
   transition: all 200ms;
@@ -74,7 +85,7 @@
   width: min(20rem, calc(100vw - 1rem));
   padding: 1rem;
   border: 1px solid var(--to-line);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   background: var(--to-surface);
   color: var(--to-text);
   box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);

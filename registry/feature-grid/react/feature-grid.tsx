@@ -38,13 +38,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -82,11 +91,11 @@ export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridCo
   const style = {
     "--fg-accent": config.accentColor,
     "--fg-accent-text": readableAccent(config.accentColor, dark),
-    "--fg-surface": palette.surface,
-    "--fg-sunk": palette.sunk,
-    "--fg-text": palette.text,
-    "--fg-muted": palette.muted,
-    "--fg-line": palette.line,
+    "--fg-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--fg-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--fg-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--fg-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--fg-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const items = config.items.filter((item) => item.title.trim() !== "");
@@ -115,7 +124,7 @@ export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridCo
             {item.href.trim() !== "" && (
               <a
                 href={safeHref(item.href)}
-                className="mt-2 inline-flex min-h-11 items-center rounded text-sm font-medium text-(--fg-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fg-accent-text)"
+                className="mt-2 inline-flex min-h-11 items-center rounded-[var(--bc-radius-xs,0.25rem)] text-sm font-medium text-(--fg-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fg-accent-text)"
               >
                 {config.linkText}
                 {/* Six "Read more" links are useless in a list of links: name the feature. */}

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CurrencyInputConfig } from "../react/currency-input";
 
 const palettes = {
@@ -43,7 +43,7 @@ export function renderCurrencyInputMarkup(config: CurrencyInputConfig) {
   const vars = [
     `--ci-accent: ${config.accentColor}`,
     `--ci-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--ci-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ci-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const decimals = Math.max(0, Math.min(4, Math.round(config.decimals)));
   const start = parse(config.start, config.allowNegative);

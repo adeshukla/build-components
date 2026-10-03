@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { HoverCardConfig } from "../react/hover-card";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderHoverCardMarkup(config: HoverCardConfig) {
   const vars = [
     `--hc-accent: ${config.accentColor}`,
     `--hc-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--hc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--hc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="hc hc--theme-${config.theme} hc--${config.placement}" style="${vars}" data-hover-card>

@@ -31,13 +31,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", ink: "#f6f5fa" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -79,11 +88,11 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
     "--sp-accent": config.accentColor,
     "--sp-accent-text": readableAccent(config.accentColor, dark),
     "--sp-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--sp-surface": palette.surface,
-    "--sp-sunk": palette.sunk,
-    "--sp-text": palette.text,
-    "--sp-muted": palette.muted,
-    "--sp-line": palette.line,
+    "--sp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sp-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const signed = drawn || typed.trim() !== "";
@@ -153,7 +162,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
         onPointerCancel={() => {
           drawing.current = false;
         }}
-        className="mt-2 w-full touch-none rounded-lg border border-(--sp-line) bg-(--sp-sunk)"
+        className="mt-2 w-full touch-none rounded-[var(--bc-radius-md,0.5rem)] border border-(--sp-line) bg-(--sp-sunk)"
         style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
       />
 
@@ -168,7 +177,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
             value={typed}
             autoComplete="name"
             onChange={(event) => setTyped(event.target.value)}
-            className="mt-1 min-h-11 w-full rounded-md border border-(--sp-line) bg-(--sp-sunk) px-3 text-(--sp-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text)"
+            className="mt-1 min-h-11 w-full rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sp-line) bg-(--sp-sunk) px-3 text-(--sp-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text)"
           />
         </div>
       )}
@@ -177,7 +186,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
         <button
           type="button"
           onClick={clear}
-          className="min-h-11 cursor-pointer rounded-md border border-(--sp-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text)"
+          className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sp-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text)"
         >
           {config.clearText}
         </button>
@@ -185,7 +194,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
           type="button"
           disabled={!signed}
           onClick={() => setResult(drawn ? "Signed by drawing" : `Signed as ${typed.trim()}`)}
-          className="min-h-11 cursor-pointer rounded-md bg-(--sp-accent) px-4 font-medium text-(--sp-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--sp-accent) px-4 font-medium text-(--sp-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
         >
           {config.confirmText}
         </button>

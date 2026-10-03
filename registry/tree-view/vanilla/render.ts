@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TreeViewConfig } from "../react/tree-view";
 
 type TreeNode = { id: string; name: string; level: number; children: TreeNode[] };
@@ -56,7 +56,7 @@ export function renderTreeViewMarkup(config: TreeViewConfig) {
   const vars = [
     `--tv-accent: ${config.accentColor}`,
     `--tv-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--tv-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tv-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   let count = 0;
   let first = true;

@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { AddressFieldsConfig } from "../react/address-fields";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderAddressFieldsMarkup(config: AddressFieldsConfig) {
   const vars = [
     `--af-accent: ${config.accentColor}`,
     `--af-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--af-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--af-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const first = config.countries[0];

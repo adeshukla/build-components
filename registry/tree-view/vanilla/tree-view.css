@@ -2,17 +2,17 @@
 .tv {
   --tv-accent: #2563eb;
   --tv-accent-text: #1b4ab0;
-  --tv-surface: #ffffff;
-  --tv-text: #16121f;
-  --tv-muted: #4d4a57;
-  --tv-line: #d9d5e4;
+  --tv-surface: var(--bc-light-surface, #ffffff);
+  --tv-text: var(--bc-light-text, #16121f);
+  --tv-muted: var(--bc-light-muted, #4d4a57);
+  --tv-line: var(--bc-light-line, #d9d5e4);
   --tv-hover: #eeecf5;
   --tv-selected: #e4e9fb;
   display: block;
   max-width: 24rem;
   background: var(--tv-surface);
   color: var(--tv-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,20 +24,30 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .tv--theme-system {
-    --tv-surface: #141019;
-    --tv-text: #f6f5fa;
-    --tv-muted: #b6b3c2;
-    --tv-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .tv--theme-system {
+    --tv-surface: var(--bc-dark-surface, #141019);
+    --tv-text: var(--bc-dark-text, #f6f5fa);
+    --tv-muted: var(--bc-dark-muted, #b6b3c2);
+    --tv-line: var(--bc-dark-line, #3a3448);
     --tv-hover: #2a2438;
     --tv-selected: #26304d;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .tv--theme-system {
+    --tv-surface: var(--bc-dark-surface, #141019);
+    --tv-text: var(--bc-dark-text, #f6f5fa);
+    --tv-muted: var(--bc-dark-muted, #b6b3c2);
+    --tv-line: var(--bc-dark-line, #3a3448);
+    --tv-hover: #2a2438;
+    --tv-selected: #26304d;
+  }
+
 
 .tv-label { margin: 0 0 0.5rem; font-weight: 500; }
 .tv-tree,
 .tv-group { margin: 0; padding: 0; list-style: none; }
-.tv-tree { padding: 0.25rem; border: 1px solid var(--tv-line); border-radius: 0.5rem; }
+.tv-tree { padding: 0.25rem; border: 1px solid var(--tv-line); border-radius: var(--bc-radius-md, 0.5rem); }
 .tv-group[hidden] { display: none; }
 
 .tv-item { outline: none; }
@@ -49,7 +59,7 @@
   align-items: center;
   gap: 0.5rem;
   padding-right: 0.5rem;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   font-size: 0.875rem;
   cursor: pointer;
   user-select: none;

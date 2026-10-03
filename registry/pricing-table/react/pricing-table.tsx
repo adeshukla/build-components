@@ -59,13 +59,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -107,11 +116,11 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
     "--pt-accent": config.accentColor,
     "--pt-accent-text": readableAccent(config.accentColor, dark),
     "--pt-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--pt-surface": palette.surface,
-    "--pt-sunk": palette.sunk,
-    "--pt-text": palette.text,
-    "--pt-muted": palette.muted,
-    "--pt-line": palette.line,
+    "--pt-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--pt-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--pt-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--pt-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--pt-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const plans = config.plans.filter((plan) => plan.name.trim() !== "");
@@ -157,7 +166,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
           return (
             <li
               key={plan.name}
-              className={`flex flex-col rounded-xl border p-4 ${featured ? "border-(--pt-accent) bg-(--pt-sunk)" : "border-(--pt-line)"}`}
+              className={`flex flex-col rounded-[var(--bc-radius-lg,0.75rem)] border p-4 ${featured ? "border-(--pt-accent) bg-(--pt-sunk)" : "border-(--pt-line)"}`}
             >
               <h3 className="flex items-baseline gap-2 text-lg font-semibold">
                 {plan.name}
@@ -183,7 +192,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
               </ul>
               <button
                 type="button"
-                className={`mt-4 min-h-11 cursor-pointer rounded-md px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pt-accent-text) ${
+                className={`mt-4 min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--pt-accent-text) ${
                   featured ? "bg-(--pt-accent) text-(--pt-on-accent)" : "border border-(--pt-line)"
                 }`}
               >

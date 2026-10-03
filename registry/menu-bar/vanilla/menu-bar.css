@@ -3,15 +3,15 @@
   --mb-accent: #1d4ed8;
   --mb-accent-text: #1a41b8;
   --mb-on-accent: #ffffff;
-  --mb-surface: #ffffff;
-  --mb-sunk: #f4f3f8;
-  --mb-text: #16121f;
-  --mb-muted: #4d4a57;
-  --mb-line: #c9c4d6;
+  --mb-surface: var(--bc-light-surface, #ffffff);
+  --mb-sunk: var(--bc-light-sunk, #f4f3f8);
+  --mb-text: var(--bc-light-text, #16121f);
+  --mb-muted: var(--bc-light-muted, #4d4a57);
+  --mb-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--mb-surface);
   color: var(--mb-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .mb--theme-system {
-    --mb-surface: #1b1624;
-    --mb-sunk: #272031;
-    --mb-text: #f6f5fa;
-    --mb-muted: #b6b3c2;
-    --mb-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .mb--theme-system {
+    --mb-surface: var(--bc-dark-surface, #1b1624);
+    --mb-sunk: var(--bc-dark-sunk, #272031);
+    --mb-text: var(--bc-dark-text, #f6f5fa);
+    --mb-muted: var(--bc-dark-muted, #b6b3c2);
+    --mb-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .mb--theme-system {
+    --mb-surface: var(--bc-dark-surface, #1b1624);
+    --mb-sunk: var(--bc-dark-sunk, #272031);
+    --mb-text: var(--bc-dark-text, #f6f5fa);
+    --mb-muted: var(--bc-dark-muted, #b6b3c2);
+    --mb-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .mb-bar {
   display: flex;
@@ -39,7 +48,7 @@
   gap: 0.25rem;
   padding: 0.25rem;
   border: 1px solid var(--mb-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--mb-sunk);
 }
 
@@ -52,7 +61,7 @@
   gap: 0.375rem;
   padding: 0 0.75rem;
   border: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   background: transparent;
   color: var(--mb-text);
   font: inherit;
@@ -71,7 +80,7 @@
   margin-top: 0.25rem;
   padding: 0.25rem;
   border: 1px solid var(--mb-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--mb-surface);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
@@ -85,7 +94,7 @@
   gap: 1.5rem;
   padding: 0 0.75rem;
   border: 0;
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   background: transparent;
   color: var(--mb-text);
   font: inherit;

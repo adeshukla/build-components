@@ -34,13 +34,22 @@ const palettes = {
 };
 const sizes = { sm: "min-h-8 px-3 text-sm", md: "min-h-10 px-4" };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -77,11 +86,11 @@ export function Segmented({ config = defaultConfig }: { config?: SegmentedConfig
     "--sg-accent": config.accentColor,
     "--sg-accent-text": readableAccent(config.accentColor, dark),
     "--sg-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--sg-surface": palette.surface,
-    "--sg-sunk": palette.sunk,
-    "--sg-text": palette.text,
-    "--sg-muted": palette.muted,
-    "--sg-line": palette.line,
+    "--sg-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sg-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sg-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sg-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sg-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   return (
@@ -90,7 +99,7 @@ export function Segmented({ config = defaultConfig }: { config?: SegmentedConfig
     <fieldset style={style} className="min-w-0 bg-(--sg-surface) text-(--sg-text)">
       <legend className={config.hideLegend ? "sr-only" : "font-medium"}>{config.legend}</legend>
       <div
-        className={`mt-2 inline-flex gap-0.5 rounded-lg border border-(--sg-line) bg-(--sg-sunk) p-0.5 ${config.fullWidth ? "flex w-full" : ""}`}
+        className={`mt-2 inline-flex gap-0.5 rounded-[var(--bc-radius-md,0.5rem)] border border-(--sg-line) bg-(--sg-sunk) p-0.5 ${config.fullWidth ? "flex w-full" : ""}`}
       >
         {options.map((label, index) => (
           <label key={`${label}-${index}`} className={`relative min-w-0 cursor-pointer ${config.fullWidth ? "flex-1" : ""}`}>
@@ -103,7 +112,7 @@ export function Segmented({ config = defaultConfig }: { config?: SegmentedConfig
               className="peer sr-only"
             />
             <span
-              className={`flex items-center justify-center truncate rounded-md font-medium text-(--sg-muted) transition-colors peer-checked:bg-(--sg-accent) peer-checked:text-(--sg-on-accent) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--sg-accent-text) hover:text-(--sg-text) motion-reduce:transition-none ${sizes[config.size]}`}
+              className={`flex items-center justify-center truncate rounded-[var(--bc-radius-button,0.375rem)] font-medium text-(--sg-muted) transition-colors peer-checked:bg-(--sg-accent) peer-checked:text-(--sg-on-accent) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--sg-accent-text) hover:text-(--sg-text) motion-reduce:transition-none ${sizes[config.size]}`}
             >
               {label}
             </span>

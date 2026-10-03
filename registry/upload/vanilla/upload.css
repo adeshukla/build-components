@@ -4,16 +4,16 @@
   --up-accent-text: #1b4ab0;
   --up-on-accent: #ffffff;
   --up-radius: 12px;
-  --up-surface: #ffffff;
-  --up-sunk: #f4f3f8;
-  --up-text: #16121f;
-  --up-muted: #4d4a57;
-  --up-line: #8d8a99;
+  --up-surface: var(--bc-light-surface, #ffffff);
+  --up-sunk: var(--bc-light-sunk, #f4f3f8);
+  --up-text: var(--bc-light-text, #16121f);
+  --up-muted: var(--bc-light-muted, #4d4a57);
+  --up-line: var(--bc-light-line, #8d8a99);
   --up-error: #b4232b;
   display: block;
   background: var(--up-surface);
   color: var(--up-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -25,14 +25,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .up--theme-system {
-    --up-surface: #141019;
-    --up-sunk: #221d2e;
-    --up-text: #f6f5fa;
-    --up-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .up--theme-system {
+    --up-surface: var(--bc-dark-surface, #141019);
+    --up-sunk: var(--bc-dark-sunk, #221d2e);
+    --up-text: var(--bc-dark-text, #f6f5fa);
+    --up-muted: var(--bc-dark-muted, #b6b3c2);
     --up-error: #ff8f8f;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .up--theme-system {
+    --up-surface: var(--bc-dark-surface, #141019);
+    --up-sunk: var(--bc-dark-sunk, #221d2e);
+    --up-text: var(--bc-dark-text, #f6f5fa);
+    --up-muted: var(--bc-dark-muted, #b6b3c2);
+    --up-error: #ff8f8f;
+  }
+
 
 .up-label { margin: 0; font-weight: 500; }
 .up-hint { margin: 0.125rem 0 0; color: var(--up-muted); font-size: 0.875rem; }

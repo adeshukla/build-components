@@ -49,13 +49,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#1f1a29", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", handle: "#8e8a99" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -98,11 +107,11 @@ export function ResizablePanels({ config = defaultConfig }: { config?: Resizable
   const style = {
     "--rp-accent": config.accentColor,
     "--rp-accent-text": readableAccent(config.accentColor, dark),
-    "--rp-surface": palette.surface,
-    "--rp-sunk": palette.sunk,
-    "--rp-text": palette.text,
-    "--rp-muted": palette.muted,
-    "--rp-line": palette.line,
+    "--rp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--rp-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--rp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--rp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--rp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--rp-handle": palette.handle,
   } as CSSProperties;
 
@@ -145,7 +154,7 @@ export function ResizablePanels({ config = defaultConfig }: { config?: Resizable
     <div
       ref={containerRef}
       style={style}
-      className={`flex h-72 overflow-hidden rounded-lg border border-(--rp-line) bg-(--rp-surface) text-(--rp-text) ${horizontal ? "flex-row" : "flex-col"}`}
+      className={`flex h-72 overflow-hidden rounded-[var(--bc-radius-md,0.5rem)] border border-(--rp-line) bg-(--rp-surface) text-(--rp-text) ${horizontal ? "flex-row" : "flex-col"}`}
     >
       <section
         id={`${id}-first`}

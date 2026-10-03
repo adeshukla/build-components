@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ImageGalleryConfig } from "../react/image-gallery";
 
 const palettes = {
@@ -37,7 +37,7 @@ export function renderImageGalleryMarkup(config: ImageGalleryConfig) {
   const vars = [
     `--gal-accent: ${config.accentColor}`,
     `--gal-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--gal-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--gal-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const items = config.items

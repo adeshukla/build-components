@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#1c1826", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -92,11 +101,11 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
     "--st-accent": config.accentColor,
     "--st-accent-text": readableAccent(config.accentColor, dark),
     "--st-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--st-surface": palette.surface,
-    "--st-sunk": palette.sunk,
-    "--st-text": palette.text,
-    "--st-muted": palette.muted,
-    "--st-line": palette.line,
+    "--st-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--st-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--st-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--st-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--st-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // Safari does not focus a button when it is clicked, so the opener is passed in rather than read
@@ -166,7 +175,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
         <button
           type="button"
           onClick={(event) => warn(event.currentTarget)}
-          className="min-h-11 cursor-pointer rounded-md border border-(--st-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
+          className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--st-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
         >
           Show the warning now
         </button>
@@ -195,7 +204,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
             last.focus();
           }
         }}
-        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-(--st-line) bg-(--st-surface) p-5 text-(--st-text) backdrop:bg-black/50"
+        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-[var(--bc-radius-lg,0.75rem)] border border-(--st-line) bg-(--st-surface) p-5 text-(--st-text) backdrop:bg-black/50"
       >
         <h2 id={`${id}-title`} className="text-lg font-semibold">
           {config.title}
@@ -211,7 +220,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
           <button
             type="button"
             onClick={() => finish("Signed out")}
-            className="min-h-11 cursor-pointer rounded-md border border-(--st-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--st-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
           >
             {config.signOutText}
           </button>
@@ -219,7 +228,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
             ref={stayRef}
             type="button"
             onClick={() => finish("Still signed in")}
-            className="min-h-11 cursor-pointer rounded-md bg-(--st-accent) px-4 font-medium text-(--st-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--st-accent) px-4 font-medium text-(--st-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
           >
             {config.stayText}
           </button>

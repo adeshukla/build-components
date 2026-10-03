@@ -27,13 +27,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -95,11 +104,11 @@ export function Countdown({ config = defaultConfig }: { config?: CountdownConfig
   const style = {
     "--cn-accent": config.accentColor,
     "--cn-accent-text": readableAccent(config.accentColor, dark),
-    "--cn-surface": palette.surface,
-    "--cn-sunk": palette.sunk,
-    "--cn-text": palette.text,
-    "--cn-muted": palette.muted,
-    "--cn-line": palette.line,
+    "--cn-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--cn-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--cn-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--cn-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--cn-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -139,7 +148,7 @@ export function Countdown({ config = defaultConfig }: { config?: CountdownConfig
         // The digits tick every second, so they are hidden from the reading order and said separately.
         <ol aria-hidden="true" className="mt-1 flex list-none flex-wrap gap-2 p-0">
           {boxes.map((box) => (
-            <li key={box.name} className="min-w-16 rounded-lg border border-(--cn-line) bg-(--cn-sunk) px-3 py-2 text-center">
+            <li key={box.name} className="min-w-16 rounded-[var(--bc-radius-md,0.5rem)] border border-(--cn-line) bg-(--cn-sunk) px-3 py-2 text-center">
               <span className="block text-2xl font-semibold tabular-nums">{box.value}</span>
               <span className="block text-xs text-(--cn-muted)">{box.name}</span>
             </li>

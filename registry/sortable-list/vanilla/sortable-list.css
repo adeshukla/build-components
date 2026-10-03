@@ -2,17 +2,17 @@
 .so {
   --sl-accent: #2563eb;
   --sl-accent-text: #1b4ab0;
-  --sl-surface: #ffffff;
+  --sl-surface: var(--bc-light-surface, #ffffff);
   --sl-raised: #ffffff;
-  --sl-text: #16121f;
-  --sl-muted: #4d4a57;
-  --sl-line: #d9d5e4;
+  --sl-text: var(--bc-light-text, #16121f);
+  --sl-muted: var(--bc-light-muted, #4d4a57);
+  --sl-line: var(--bc-light-line, #d9d5e4);
   --sl-hover: #eeecf5;
   display: block;
   max-width: 28rem;
   background: var(--sl-surface);
   color: var(--sl-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,15 +24,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .so--theme-system {
-    --sl-surface: #141019;
+  :root:not([data-bc-scheme="light"]) .so--theme-system {
+    --sl-surface: var(--bc-dark-surface, #141019);
     --sl-raised: #1f1a29;
-    --sl-text: #f6f5fa;
-    --sl-muted: #b6b3c2;
-    --sl-line: #3a3448;
+    --sl-text: var(--bc-dark-text, #f6f5fa);
+    --sl-muted: var(--bc-dark-muted, #b6b3c2);
+    --sl-line: var(--bc-dark-line, #3a3448);
     --sl-hover: #2a2438;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .so--theme-system {
+    --sl-surface: var(--bc-dark-surface, #141019);
+    --sl-raised: #1f1a29;
+    --sl-text: var(--bc-dark-text, #f6f5fa);
+    --sl-muted: var(--bc-dark-muted, #b6b3c2);
+    --sl-line: var(--bc-dark-line, #3a3448);
+    --sl-hover: #2a2438;
+  }
+
 
 .so-label { margin: 0; font-weight: 500; }
 .so-hint { margin: 0.125rem 0 0; color: var(--sl-muted); font-size: 0.875rem; }
@@ -45,7 +55,7 @@
   gap: 0.5rem;
   padding: 0.375rem 0.5rem;
   border: 1px solid var(--sl-line);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--sl-raised);
   transition: box-shadow 150ms;
 }
@@ -62,7 +72,7 @@
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: transparent;
   color: var(--sl-muted);
   cursor: pointer;

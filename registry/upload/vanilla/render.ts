@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { UploadConfig } from "../react/upload";
 
 const palettes = {
@@ -32,12 +32,12 @@ export function renderUploadMarkup(config: UploadConfig) {
     `--up-accent: ${config.accentColor}`,
     `--up-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--up-on-accent: ${accentLuminance > 0.179 ? "#000000" : "#ffffff"}`,
-    `--up-radius: ${config.radius}px`,
-    `--up-surface: ${palette.surface}`,
-    `--up-sunk: ${palette.sunk}`,
-    `--up-text: ${palette.text}`,
-    `--up-muted: ${palette.muted}`,
-    `--up-line: ${palette.line}`,
+    `--up-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--up-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--up-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--up-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--up-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--up-line: ${themedColour("line", palette.line, dark)}`]),
     `--up-error: ${palette.error}`,
   ].join("; ");
 

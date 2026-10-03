@@ -31,13 +31,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -70,11 +79,11 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
     "--sk-accent": config.accentColor,
     "--sk-accent-text": readableAccent(config.accentColor, dark),
     "--sk-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--sk-surface": palette.surface,
-    "--sk-sunk": palette.sunk,
-    "--sk-text": palette.text,
-    "--sk-muted": palette.muted,
-    "--sk-line": palette.line,
+    "--sk-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sk-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sk-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sk-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sk-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // Hidden by size rather than by display:none or visibility:hidden, because both of those take the
@@ -103,7 +112,7 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
               target.focus();
               target.scrollIntoView({ block: "start" });
             }}
-            className={`${sizing} z-50 inline-flex items-center rounded-md bg-(--sk-accent) font-medium text-(--sk-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sk-accent-text)`}
+            className={`${sizing} z-50 inline-flex items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--sk-accent) font-medium text-(--sk-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sk-accent-text)`}
           >
             {link.label}
           </a>
@@ -123,7 +132,7 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
               id={link.target}
               tabIndex={-1}
               aria-label={link.label.replace(/^Skip to /i, "")}
-              className="rounded-md border border-(--sk-line) bg-(--sk-sunk) p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sk-accent-text)"
+              className="rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sk-line) bg-(--sk-sunk) p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sk-accent-text)"
             >
               <p className="font-mono text-xs text-(--sk-muted)">#{link.target}</p>
               <p className="mt-1">{link.label.replace(/^Skip to /i, "Landing here skips to ")}</p>

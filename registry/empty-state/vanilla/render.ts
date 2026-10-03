@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { EmptyStateConfig } from "../react/empty-state";
 
 const icons = {
@@ -33,7 +33,7 @@ export function renderEmptyStateMarkup(config: EmptyStateConfig) {
     `--es-accent: ${config.accentColor}`,
     `--es-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--es-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--es-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--es-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const actions = [
     config.actionText.trim() &&

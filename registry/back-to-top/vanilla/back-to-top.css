@@ -2,13 +2,13 @@
 .bt {
   --bt-accent: #25154d;
   --bt-on-accent: #ffffff;
-  --bt-surface: #ffffff;
-  --bt-text: #16121f;
+  --bt-surface: var(--bc-light-surface, #ffffff);
+  --bt-text: var(--bc-light-text, #16121f);
   --bt-border: #737373;
   display: block;
   background: var(--bt-surface);
   color: var(--bt-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -20,8 +20,11 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .bt--theme-system { --bt-surface: #1c1826; --bt-text: #f6f5fa; --bt-border: #8e8a99; }
+  :root:not([data-bc-scheme="light"]) .bt--theme-system { --bt-surface: var(--bc-dark-surface, #1c1826); --bt-text: var(--bc-dark-text, #f6f5fa); --bt-border: #8e8a99; }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .bt--theme-system { --bt-surface: var(--bc-dark-surface, #1c1826); --bt-text: var(--bc-dark-text, #f6f5fa); --bt-border: #8e8a99; }
+
 
 /* Example page content, so there is something to scroll. Delete it in your own page. */
 .bt-heading { margin: 0 0 1rem; font-size: 1.5rem; outline: none; }

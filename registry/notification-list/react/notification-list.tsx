@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -80,11 +89,11 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
     "--ntf-accent": config.accentColor,
     "--ntf-accent-text": readableAccent(config.accentColor, dark),
     "--ntf-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--ntf-surface": palette.surface,
-    "--ntf-sunk": palette.sunk,
-    "--ntf-text": palette.text,
-    "--ntf-muted": palette.muted,
-    "--ntf-line": palette.line,
+    "--ntf-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ntf-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ntf-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ntf-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--ntf-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const isUnread = (item: { title: string; unread: string }) => item.unread === "yes" && !read.includes(item.title);
@@ -102,7 +111,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
           <button
             type="button"
             onClick={() => setRead(config.items.map((item) => item.title))}
-            className="inline-flex min-h-11 items-center rounded-md border border-(--ntf-line) bg-(--ntf-sunk) px-3 text-sm font-medium text-(--ntf-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ntf-accent-text)"
+            className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--ntf-line) bg-(--ntf-sunk) px-3 text-sm font-medium text-(--ntf-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ntf-accent-text)"
           >
             {config.markAllLabel}
           </button>
@@ -135,7 +144,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
                   // Named with the thing it acts on, so a list of buttons all called "Mark as read" is not
                   // what a screen reader hears.
                   aria-label={`${config.markOneLabel}: ${item.title}`}
-                  className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-(--ntf-accent-text) underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ntf-accent-text)"
+                  className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] px-2 text-sm font-medium text-(--ntf-accent-text) underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ntf-accent-text)"
                 >
                   {config.markOneLabel}
                 </button>

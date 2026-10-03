@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { RatingConfig } from "../react/rating";
 
 const palettes = {
@@ -40,7 +40,7 @@ export function renderRatingMarkup(config: RatingConfig) {
   const vars = [
     `--ra-accent: ${config.accentColor}`,
     `--ra-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--ra-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ra-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const max = Math.max(2, Math.min(10, Math.round(config.max)));
   const stars = Array.from({ length: max }, (_, index) => index + 1);

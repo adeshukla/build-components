@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -77,11 +86,11 @@ export function HelpHint({ config = defaultConfig }: { config?: HelpHintConfig }
   const style = {
     "--hlp-accent": config.accentColor,
     "--hlp-accent-text": readableAccent(config.accentColor, dark),
-    "--hlp-surface": palette.surface,
-    "--hlp-sunk": palette.sunk,
-    "--hlp-text": palette.text,
-    "--hlp-muted": palette.muted,
-    "--hlp-line": palette.line,
+    "--hlp-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--hlp-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--hlp-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--hlp-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--hlp-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   // The help joins the field's description while it is open, so it is read as part of the question
@@ -142,7 +151,7 @@ export function HelpHint({ config = defaultConfig }: { config?: HelpHintConfig }
         type="text"
         placeholder={config.placeholder === "" ? undefined : config.placeholder}
         aria-describedby={described}
-        className="mt-2 min-h-11 w-full max-w-72 rounded-md border border-(--hlp-line) bg-(--hlp-sunk) px-3 text-(--hlp-text) uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hlp-accent-text)"
+        className="mt-2 min-h-11 w-full max-w-72 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--hlp-line) bg-(--hlp-sunk) px-3 text-(--hlp-text) uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hlp-accent-text)"
       />
     </div>
   );

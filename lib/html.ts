@@ -38,3 +38,12 @@ ${body}${script ? `\n    <script src="${slug}.js"></script>` : ""}
 </html>
 `;
 }
+
+const themeable = ["surface", "sunk", "text", "muted", "line"];
+/**
+ * A part's neutral colour in generated markup, as the site theme's when the page has one (D87): the theme
+ * sets --bc-light-* and --bc-dark-*, and a part with no theme around it keeps its own colour.
+ */
+export function themedColour(key: string, value: string, dark: boolean) {
+  return themeable.includes(key) ? `var(--bc-${dark ? "dark" : "light"}-${key}, ${value})` : value;
+}

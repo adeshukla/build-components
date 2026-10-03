@@ -2,17 +2,17 @@
 .cb {
   --cb-accent: #0f766e;
   --cb-accent-text: #5eead4;
-  --cb-surface: #141019;
-  --cb-sunk: #1c1826;
-  --cb-text: #f6f5fa;
-  --cb-muted: #b6b3c2;
-  --cb-line: #4a4459;
+  --cb-surface: var(--bc-light-surface, #141019);
+  --cb-sunk: var(--bc-light-sunk, #1c1826);
+  --cb-text: var(--bc-light-text, #f6f5fa);
+  --cb-muted: var(--bc-light-muted, #b6b3c2);
+  --cb-line: var(--bc-light-line, #4a4459);
   display: block;
   border: 1px solid var(--cb-line);
-  border-radius: 0.75rem;
+  border-radius: var(--bc-radius-lg, 0.75rem);
   background: var(--cb-surface);
   color: var(--cb-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,14 +24,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .cb--theme-system {
-    --cb-surface: #141019;
-    --cb-sunk: #1c1826;
-    --cb-text: #f6f5fa;
-    --cb-muted: #b6b3c2;
-    --cb-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .cb--theme-system {
+    --cb-surface: var(--bc-dark-surface, #141019);
+    --cb-sunk: var(--bc-dark-sunk, #1c1826);
+    --cb-text: var(--bc-dark-text, #f6f5fa);
+    --cb-muted: var(--bc-dark-muted, #b6b3c2);
+    --cb-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .cb--theme-system {
+    --cb-surface: var(--bc-dark-surface, #141019);
+    --cb-sunk: var(--bc-dark-sunk, #1c1826);
+    --cb-text: var(--bc-dark-text, #f6f5fa);
+    --cb-muted: var(--bc-dark-muted, #b6b3c2);
+    --cb-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .cb-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--cb-line); }
 .cb-title { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.875rem; }
@@ -40,7 +49,7 @@
   min-height: 2.75rem;
   padding: 0 0.75rem;
   border: 1px solid var(--cb-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: none;
   color: inherit;
   font: inherit;

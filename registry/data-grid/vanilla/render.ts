@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { DataGridConfig } from "../react/data-grid";
 
 const palettes = {
@@ -33,7 +33,7 @@ export function renderDataGridMarkup(config: DataGridConfig) {
   const vars = [
     `--dg-accent: ${config.accentColor}`,
     `--dg-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--dg-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--dg-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const rows = config.rows.filter((row) => row.name.trim() !== "");

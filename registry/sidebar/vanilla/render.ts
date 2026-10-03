@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { SidebarConfig, SidebarItem } from "../react/sidebar";
 
 const palettes = {
@@ -49,13 +49,13 @@ export function renderSidebarMarkup(config: SidebarConfig) {
   const vars = [
     `--sb-accent: ${config.accentColor}`,
     `--sb-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--sb-radius: ${config.radius}px`,
+    `--sb-radius: var(--bc-radius-md, ${config.radius}px)`,
     `--sb-width: ${config.width}px`,
-    `--sb-surface: ${palette.surface}`,
-    `--sb-sunk: ${palette.sunk}`,
-    `--sb-text: ${palette.text}`,
-    `--sb-muted: ${palette.muted}`,
-    `--sb-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--sb-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--sb-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--sb-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--sb-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--sb-line: ${themedColour("line", palette.line, dark)}`]),
     `--sb-hover: ${palette.hover}`,
   ].join("; ");
 

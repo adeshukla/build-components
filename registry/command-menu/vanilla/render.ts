@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CommandMenuConfig } from "../react/command-menu";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderCommandMenuMarkup(config: CommandMenuConfig) {
     `--cmd-accent: ${config.accentColor}`,
     `--cmd-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--cmd-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--cmd-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cmd-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   // Grouped for the eye; one flat run of options for the keyboard, which is what activedescendant walks.

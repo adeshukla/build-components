@@ -2,15 +2,15 @@
 .rp {
   --rp-accent: #2563eb;
   --rp-accent-text: #1b4ab0;
-  --rp-surface: #ffffff;
-  --rp-sunk: #f4f3f8;
-  --rp-text: #16121f;
-  --rp-muted: #4d4a57;
-  --rp-line: #d9d5e4;
+  --rp-surface: var(--bc-light-surface, #ffffff);
+  --rp-sunk: var(--bc-light-sunk, #f4f3f8);
+  --rp-text: var(--bc-light-text, #16121f);
+  --rp-muted: var(--bc-light-muted, #4d4a57);
+  --rp-line: var(--bc-light-line, #d9d5e4);
   display: block;
   background: var(--rp-surface);
   color: var(--rp-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -22,25 +22,34 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .rp--theme-system {
-    --rp-surface: #141019;
-    --rp-sunk: #221d2e;
-    --rp-text: #f6f5fa;
-    --rp-muted: #b6b3c2;
-    --rp-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .rp--theme-system {
+    --rp-surface: var(--bc-dark-surface, #141019);
+    --rp-sunk: var(--bc-dark-sunk, #221d2e);
+    --rp-text: var(--bc-dark-text, #f6f5fa);
+    --rp-muted: var(--bc-dark-muted, #b6b3c2);
+    --rp-line: var(--bc-dark-line, #3a3448);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .rp--theme-system {
+    --rp-surface: var(--bc-dark-surface, #141019);
+    --rp-sunk: var(--bc-dark-sunk, #221d2e);
+    --rp-text: var(--bc-dark-text, #f6f5fa);
+    --rp-muted: var(--bc-dark-muted, #b6b3c2);
+    --rp-line: var(--bc-dark-line, #3a3448);
+  }
+
 
 .rp-track { position: fixed; inset: 0 0 auto; z-index: 40; height: 0.25rem; background: var(--rp-sunk); }
 .rp-bar { width: 0; height: 100%; background: var(--rp-accent); transition: width 150ms; }
 
-.rp-contents { padding: 1rem; border: 1px solid var(--rp-line); border-radius: 0.5rem; }
+.rp-contents { padding: 1rem; border: 1px solid var(--rp-line); border-radius: var(--bc-radius-md, 0.5rem); }
 .rp-contents-title { margin: 0; font-weight: 500; }
 .rp-list { display: grid; gap: 0.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
 .rp-link {
   display: block;
   padding: 0.25rem 0;
-  border-radius: 0.25rem;
+  border-radius: var(--bc-radius-xs, 0.25rem);
   color: var(--rp-muted);
   font-size: 0.875rem;
   text-decoration: none;

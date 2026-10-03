@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -87,11 +96,11 @@ export function Newsletter({ config = defaultConfig }: { config?: NewsletterConf
     "--nl-accent": config.accentColor,
     "--nl-accent-text": readableAccent(config.accentColor, dark),
     "--nl-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--nl-surface": palette.surface,
-    "--nl-sunk": palette.sunk,
-    "--nl-text": palette.text,
-    "--nl-muted": palette.muted,
-    "--nl-line": palette.line,
+    "--nl-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--nl-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--nl-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--nl-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--nl-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--nl-error": palette.error,
   } as CSSProperties;
 
@@ -116,7 +125,7 @@ export function Newsletter({ config = defaultConfig }: { config?: NewsletterConf
   }
 
   return (
-    <section style={style} aria-labelledby={`${id}-heading`} className="rounded-xl border border-(--nl-line) bg-(--nl-sunk) p-5 text-(--nl-text)">
+    <section style={style} aria-labelledby={`${id}-heading`} className="rounded-[var(--bc-radius-lg,0.75rem)] border border-(--nl-line) bg-(--nl-sunk) p-5 text-(--nl-text)">
       <h2 id={`${id}-heading`} className="text-lg font-semibold">
         {config.heading}
       </h2>
@@ -143,14 +152,14 @@ export function Newsletter({ config = defaultConfig }: { config?: NewsletterConf
                 setEmail(event.target.value);
                 if (error !== "") setError("");
               }}
-              className={`mt-1 min-h-11 w-full rounded-md border bg-(--nl-surface) px-3 text-(--nl-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--nl-accent-text) ${
+              className={`mt-1 min-h-11 w-full rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--nl-surface) px-3 text-(--nl-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--nl-accent-text) ${
                 error !== "" && !consentError(error) ? "border-(--nl-error)" : "border-(--nl-line)"
               }`}
             />
           </div>
           <button
             type="submit"
-            className="min-h-11 shrink-0 cursor-pointer rounded-md bg-(--nl-accent) px-4 font-medium text-(--nl-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--nl-accent-text)"
+            className="min-h-11 shrink-0 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--nl-accent) px-4 font-medium text-(--nl-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--nl-accent-text)"
           >
             {config.buttonText}
           </button>

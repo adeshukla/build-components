@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -81,11 +90,11 @@ export function TextareaCounter({ config = defaultConfig }: { config?: TextareaC
   const style = {
     "--tc-accent": config.accentColor,
     "--tc-accent-text": readableAccent(config.accentColor, dark),
-    "--tc-surface": palette.surface,
-    "--tc-sunk": palette.sunk,
-    "--tc-text": palette.text,
-    "--tc-muted": palette.muted,
-    "--tc-line": palette.line,
+    "--tc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--tc-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--tc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--tc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--tc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--tc-error": palette.error,
   } as CSSProperties;
 
@@ -130,7 +139,7 @@ export function TextareaCounter({ config = defaultConfig }: { config?: TextareaC
             setSaid(phrase);
           }
         }}
-        className={`mt-2 w-full rounded-md border bg-(--tc-sunk) p-3 text-(--tc-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tc-accent-text) ${
+        className={`mt-2 w-full rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--tc-sunk) p-3 text-(--tc-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tc-accent-text) ${
           over ? "border-(--tc-error)" : "border-(--tc-line)"
         }`}
       />

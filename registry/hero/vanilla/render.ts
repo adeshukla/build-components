@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance, safeHref } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { HeroConfig } from "../react/hero";
 
 const palettes = {
@@ -38,7 +38,7 @@ export function renderHeroMarkup(config: HeroConfig) {
     `--hr-accent: ${config.accentColor}`,
     `--hr-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--hr-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--hr-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--hr-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const centred = config.align === "centre";

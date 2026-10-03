@@ -43,13 +43,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#1f1a29", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -85,20 +94,20 @@ export function EmptyState({ config = defaultConfig }: { config?: EmptyStateConf
     "--es-accent": config.accentColor,
     "--es-accent-text": readableAccent(config.accentColor, dark),
     "--es-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--es-surface": palette.surface,
-    "--es-sunk": palette.sunk,
-    "--es-text": palette.text,
-    "--es-muted": palette.muted,
+    "--es-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--es-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--es-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--es-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--es-border": palette.border,
   } as CSSProperties;
   const Heading = config.headingLevel;
   const centred = config.align === "center";
-  const button = "inline-flex min-h-10 cursor-pointer items-center rounded-lg px-4 font-medium no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--es-accent-text)";
+  const button = "inline-flex min-h-10 cursor-pointer items-center rounded-[var(--bc-radius-md,0.5rem)] px-4 font-medium no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--es-accent-text)";
 
   return (
     <div
       style={style}
-      className={`rounded-xl border border-dashed border-(--es-border) bg-(--es-surface) px-6 py-10 text-(--es-text) ${centred ? "text-center" : ""}`}
+      className={`rounded-[var(--bc-radius-lg,0.75rem)] border border-dashed border-(--es-border) bg-(--es-surface) px-6 py-10 text-(--es-text) ${centred ? "text-center" : ""}`}
     >
       <div className={`mx-auto flex max-w-md flex-col gap-3 ${centred ? "items-center" : "items-start"}`}>
         <span aria-hidden="true" className="grid size-12 place-items-center rounded-full bg-(--es-sunk) text-(--es-muted)">

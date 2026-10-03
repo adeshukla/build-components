@@ -49,13 +49,22 @@ const palettes = {
 
 const widths = { sm: 640, md: 768, lg: 1024 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 /** True while the screen is narrower than the breakpoint, so the sidebar becomes a drawer. */
@@ -150,13 +159,13 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
   const style = {
     "--sb-accent": config.accentColor,
     "--sb-accent-text": readableAccent(config.accentColor, dark),
-    "--sb-radius": `${config.radius}px`,
+    "--sb-radius": `var(--bc-radius-md, ${config.radius}px)`,
     "--sb-width": `${config.width}px`,
-    "--sb-surface": palette.surface,
-    "--sb-sunk": palette.sunk,
-    "--sb-text": palette.text,
-    "--sb-muted": palette.muted,
-    "--sb-line": palette.line,
+    "--sb-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--sb-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--sb-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--sb-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--sb-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--sb-hover": palette.hover,
   } as CSSProperties;
   const focus = "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--sb-accent-text)";

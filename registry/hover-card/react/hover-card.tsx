@@ -39,13 +39,22 @@ const palettes = {
   dark: { surface: "#1b1624", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -91,11 +100,11 @@ export function HoverCard({ config = defaultConfig }: { config?: HoverCardConfig
   const style = {
     "--hc-accent": config.accentColor,
     "--hc-accent-text": readableAccent(config.accentColor, dark),
-    "--hc-surface": palette.surface,
-    "--hc-sunk": palette.sunk,
-    "--hc-text": palette.text,
-    "--hc-muted": palette.muted,
-    "--hc-line": palette.line,
+    "--hc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--hc-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--hc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--hc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--hc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const later = (next: boolean, delay: number) => {
@@ -142,7 +151,7 @@ export function HoverCard({ config = defaultConfig }: { config?: HoverCardConfig
             href={safeHref(config.linkHref)}
             aria-describedby={open ? `${id}-card` : undefined}
             data-trigger
-            className="rounded underline decoration-(--hc-accent) decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hc-accent-text)"
+            className="rounded-[var(--bc-radius-xs,0.25rem)] underline decoration-(--hc-accent) decoration-2 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--hc-accent-text)"
           >
             {config.triggerText}
           </a>
@@ -152,7 +161,7 @@ export function HoverCard({ config = defaultConfig }: { config?: HoverCardConfig
             role="tooltip"
             data-card
             hidden={!open}
-            className={`absolute left-0 z-30 block w-72 rounded-lg border border-(--hc-line) bg-(--hc-surface) p-3 text-left shadow-xl ${
+            className={`absolute left-0 z-30 block w-72 rounded-[var(--bc-radius-md,0.5rem)] border border-(--hc-line) bg-(--hc-surface) p-3 text-left shadow-xl ${
               config.placement === "above" ? "bottom-full mb-2" : "top-full mt-2"
             }`}
           >

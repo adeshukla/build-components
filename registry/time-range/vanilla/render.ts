@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TimeRangeConfig } from "../react/time-range";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderTimeRangeMarkup(config: TimeRangeConfig) {
   const vars = [
     `--tmr-accent: ${config.accentColor}`,
     `--tmr-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--tmr-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--tmr-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const limits =

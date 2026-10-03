@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ErrorSummaryConfig } from "../react/error-summary";
 
 const palettes = {
@@ -29,7 +29,7 @@ export function renderErrorSummaryMarkup(config: ErrorSummaryConfig) {
     `--esm-accent: ${config.accentColor}`,
     `--esm-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--esm-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--esm-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--esm-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const rows = config.fields

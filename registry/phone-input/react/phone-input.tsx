@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", error: "#ff6b6b" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -98,10 +107,10 @@ export function PhoneInput({ config = defaultConfig }: { config?: PhoneInputConf
   const style = {
     "--ph-accent": config.accentColor,
     "--ph-accent-text": readableAccent(config.accentColor, dark),
-    "--ph-surface": palette.surface,
-    "--ph-sunk": palette.sunk,
-    "--ph-text": palette.text,
-    "--ph-muted": palette.muted,
+    "--ph-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ph-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ph-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ph-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ph-border": palette.border,
     "--ph-error": palette.error,
   } as CSSProperties;
@@ -120,7 +129,7 @@ export function PhoneInput({ config = defaultConfig }: { config?: PhoneInputConf
         </p>
       )}
       <div
-        className={`mt-2 flex h-11 items-stretch overflow-hidden rounded-lg border bg-(--ph-surface) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(--ph-accent-text) ${error ? "border-2 border-(--ph-error)" : "border-(--ph-border)"}`}
+        className={`mt-2 flex h-11 items-stretch overflow-hidden rounded-[var(--bc-radius-md,0.5rem)] border bg-(--ph-surface) has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(--ph-accent-text) ${error ? "border-2 border-(--ph-error)" : "border-(--ph-border)"}`}
       >
         {/* A real select: the country is a choice, and the dial code is part of its name. */}
         <select

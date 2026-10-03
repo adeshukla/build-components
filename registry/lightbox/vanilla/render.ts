@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { LightboxConfig } from "../react/lightbox";
 
 const palettes = {
@@ -32,7 +32,7 @@ export function renderLightboxMarkup(config: LightboxConfig) {
   const vars = [
     `--lb-accent: ${config.accentColor}`,
     `--lb-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--lb-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--lb-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const items = config.items.filter((item) => item.alt.trim() !== "" || item.src.trim() !== "");
 

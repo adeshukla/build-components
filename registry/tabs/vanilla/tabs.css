@@ -4,14 +4,14 @@
   --tb-accent-text: #1b4ab0;
   --tb-on-accent: #ffffff;
   --tb-radius: 8px;
-  --tb-surface: #ffffff;
-  --tb-text: #16121f;
-  --tb-muted: #4d4a57;
-  --tb-line: #d9d5e4;
+  --tb-surface: var(--bc-light-surface, #ffffff);
+  --tb-text: var(--bc-light-text, #16121f);
+  --tb-muted: var(--bc-light-muted, #4d4a57);
+  --tb-line: var(--bc-light-line, #d9d5e4);
   --tb-hover: #f4f3f8;
   background: var(--tb-surface);
   color: var(--tb-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .tb--theme-system {
-    --tb-surface: #141019;
-    --tb-text: #f6f5fa;
-    --tb-muted: #b6b3c2;
-    --tb-line: #3a3448;
+  :root:not([data-bc-scheme="light"]) .tb--theme-system {
+    --tb-surface: var(--bc-dark-surface, #141019);
+    --tb-text: var(--bc-dark-text, #f6f5fa);
+    --tb-muted: var(--bc-dark-muted, #b6b3c2);
+    --tb-line: var(--bc-dark-line, #3a3448);
     --tb-hover: #221d2e;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .tb--theme-system {
+    --tb-surface: var(--bc-dark-surface, #141019);
+    --tb-text: var(--bc-dark-text, #f6f5fa);
+    --tb-muted: var(--bc-dark-muted, #b6b3c2);
+    --tb-line: var(--bc-dark-line, #3a3448);
+    --tb-hover: #221d2e;
+  }
+
 
 .tb--md { font-size: 1rem; }
 .tb--sm { font-size: 0.875rem; }

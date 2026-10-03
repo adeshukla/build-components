@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#8d8a99", good: "#6ddba4", bad: "#ff8f8f" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // WCAG relative luminance, used to keep the accent readable as text.
@@ -110,12 +119,12 @@ export function Password({ config = defaultConfig }: { config?: PasswordConfig }
   const style = {
     "--pw-accent": config.accentColor,
     "--pw-accent-text": readableAccent(config.accentColor, dark),
-    "--pw-radius": `${config.radius}px`,
-    "--pw-surface": palette.surface,
-    "--pw-sunk": palette.sunk,
-    "--pw-text": palette.text,
-    "--pw-muted": palette.muted,
-    "--pw-line": palette.line,
+    "--pw-radius": `var(--bc-radius-md, ${config.radius}px)`,
+    "--pw-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--pw-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--pw-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--pw-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--pw-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--pw-good": palette.good,
     "--pw-bad": palette.bad,
   } as CSSProperties;

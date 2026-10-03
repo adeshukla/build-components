@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { UnsavedChangesConfig } from "../react/unsaved-changes";
 
 const palettes = {
@@ -27,7 +27,7 @@ export function renderUnsavedChangesMarkup(config: UnsavedChangesConfig) {
     `--uc-accent: ${config.accentColor}`,
     `--uc-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--uc-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--uc-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--uc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   return `    <div class="uc uc--theme-${config.theme}" style="${vars}" data-unsaved-changes data-warn-on-reload="${config.warnOnReload}">

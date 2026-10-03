@@ -36,13 +36,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // WCAG relative luminance, used to keep the accent readable as text.
@@ -83,9 +92,9 @@ export function Breadcrumbs({ config = defaultConfig }: { config?: BreadcrumbsCo
 
   const style = {
     "--bc-accent-text": readableAccent(config.accentColor, dark),
-    "--bc-surface": palette.surface,
-    "--bc-text": palette.text,
-    "--bc-muted": palette.muted,
+    "--bc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--bc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--bc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
   } as CSSProperties;
   const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bc-accent-text)";
 

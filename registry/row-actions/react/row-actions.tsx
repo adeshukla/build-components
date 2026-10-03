@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", danger: "#ff9d95" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -80,11 +89,11 @@ export function RowActions({ config = defaultConfig }: { config?: RowActionsConf
   const style = {
     "--rwa-accent": config.accentColor,
     "--rwa-accent-text": readableAccent(config.accentColor, dark),
-    "--rwa-surface": palette.surface,
-    "--rwa-sunk": palette.sunk,
-    "--rwa-text": palette.text,
-    "--rwa-muted": palette.muted,
-    "--rwa-line": palette.line,
+    "--rwa-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--rwa-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--rwa-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--rwa-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--rwa-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--rwa-danger": palette.danger,
   } as CSSProperties;
 
@@ -125,7 +134,7 @@ export function RowActions({ config = defaultConfig }: { config?: RowActionsConf
                       onClick={() =>
                         setDone(config.doneTemplate.replace("{action}", action.label).replace("{record}", record.name))
                       }
-                      className={`inline-flex min-h-11 items-center rounded-md px-2.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--rwa-accent-text) ${
+                      className={`inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] px-2.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--rwa-accent-text) ${
                         action.kind === "danger" ? "text-(--rwa-danger)" : "text-(--rwa-accent-text)"
                       }`}
                     >

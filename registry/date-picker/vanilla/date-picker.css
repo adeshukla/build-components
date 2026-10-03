@@ -5,12 +5,12 @@
   --dp-on-accent: #ffffff;
   --dp-ring: #2563eb;
   --dp-radius: 6px;
-  --dp-surface: #ffffff;
-  --dp-sunk: #f2f2f7;
-  --dp-text: #171717;
-  --dp-muted: #535358;
+  --dp-surface: var(--bc-light-surface, #ffffff);
+  --dp-sunk: var(--bc-light-sunk, #f2f2f7);
+  --dp-text: var(--bc-light-text, #171717);
+  --dp-muted: var(--bc-light-muted, #535358);
   --dp-border: #737373;
-  --dp-line: #d4d4d4;
+  --dp-line: var(--bc-light-line, #d4d4d4);
   --dp-disabled: #a3a3a3;
   --dp-error: #b3261e;
   --dp-hover: #f2f2f7;

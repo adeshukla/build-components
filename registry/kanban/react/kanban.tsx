@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", card: "#1c1826", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -87,12 +96,12 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
   const style = {
     "--kb-accent": config.accentColor,
     "--kb-accent-text": readableAccent(config.accentColor, dark),
-    "--kb-surface": palette.surface,
-    "--kb-sunk": palette.sunk,
+    "--kb-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--kb-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
     "--kb-card": palette.card,
-    "--kb-text": palette.text,
-    "--kb-muted": palette.muted,
-    "--kb-line": palette.line,
+    "--kb-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--kb-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--kb-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   function moveTo(title: string, column: string) {
@@ -132,7 +141,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
                     }
                   : undefined
               }
-              className="rounded-lg border border-(--kb-line) bg-(--kb-sunk) p-3"
+              className="rounded-[var(--bc-radius-md,0.5rem)] border border-(--kb-line) bg-(--kb-sunk) p-3"
             >
               <h3 id={`${id}-kb-${slug(column.name)}`} className="text-sm font-semibold">
                 {column.name}
@@ -148,7 +157,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
                     }}
                     draggable={config.allowDrag}
                     onDragStart={config.allowDrag ? (event) => event.dataTransfer.setData("text/plain", card.title) : undefined}
-                    className="flex items-center justify-between gap-2 rounded-md border border-(--kb-line) bg-(--kb-card) p-2 text-sm"
+                    className="flex items-center justify-between gap-2 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--kb-line) bg-(--kb-card) p-2 text-sm"
                   >
                     <span>{card.title}</span>
                     {/* Dragging is optional; these buttons are what makes the board usable without a pointer. */}
@@ -157,7 +166,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
                         <button
                           type="button"
                           onClick={() => moveTo(card.title, columns[columnIndex - 1].name)}
-                          className="inline-flex size-8 cursor-pointer items-center justify-center rounded border border-(--kb-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--kb-accent-text)"
+                          className="inline-flex size-8 cursor-pointer items-center justify-center rounded-[var(--bc-radius-xs,0.25rem)] border border-(--kb-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--kb-accent-text)"
                         >
                           <span className="sr-only">{`Move ${card.title} to ${columns[columnIndex - 1].name}`}</span>
                           <span aria-hidden="true">←</span>
@@ -167,7 +176,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
                         <button
                           type="button"
                           onClick={() => moveTo(card.title, columns[columnIndex + 1].name)}
-                          className="inline-flex size-8 cursor-pointer items-center justify-center rounded border border-(--kb-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--kb-accent-text)"
+                          className="inline-flex size-8 cursor-pointer items-center justify-center rounded-[var(--bc-radius-xs,0.25rem)] border border-(--kb-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--kb-accent-text)"
                         >
                           <span className="sr-only">{`Move ${card.title} to ${columns[columnIndex + 1].name}`}</span>
                           <span aria-hidden="true">→</span>

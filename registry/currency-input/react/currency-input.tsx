@@ -35,13 +35,22 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", error: "#ff6b6b" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -99,9 +108,9 @@ export function CurrencyInput({ config = defaultConfig }: { config?: CurrencyInp
   const style = {
     "--ci-accent": config.accentColor,
     "--ci-accent-text": readableAccent(config.accentColor, dark),
-    "--ci-surface": palette.surface,
-    "--ci-text": palette.text,
-    "--ci-muted": palette.muted,
+    "--ci-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ci-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ci-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--ci-border": palette.border,
     "--ci-error": palette.error,
   } as CSSProperties;
@@ -122,7 +131,7 @@ export function CurrencyInput({ config = defaultConfig }: { config?: CurrencyInp
         </p>
       )}
       <div
-        className={`mt-2 flex h-11 items-center gap-1 rounded-lg border bg-(--ci-surface) px-3 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--ci-accent-text) ${error ? "border-2 border-(--ci-error)" : "border-(--ci-border)"}`}
+        className={`mt-2 flex h-11 items-center gap-1 rounded-[var(--bc-radius-md,0.5rem)] border bg-(--ci-surface) px-3 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--ci-accent-text) ${error ? "border-2 border-(--ci-error)" : "border-(--ci-border)"}`}
       >
         {symbol !== "" && !config.symbolAfter && (
           <span aria-hidden="true" className="text-(--ci-muted)">

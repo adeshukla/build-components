@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CarouselConfig } from "../react/carousel";
 
 const palettes = {
@@ -46,12 +46,12 @@ export function renderCarouselMarkup(config: CarouselConfig) {
   const vars = [
     `--cr-accent: ${config.accentColor}`,
     `--cr-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--cr-radius: ${config.radius}px`,
-    `--cr-surface: ${palette.surface}`,
+    `--cr-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--cr-surface: ${themedColour("surface", palette.surface, dark)}`]),
     `--cr-slide: ${palette.slide}`,
-    `--cr-text: ${palette.text}`,
-    `--cr-muted: ${palette.muted}`,
-    `--cr-line: ${palette.line}`,
+    ...(config.theme === "system" ? [] : [`--cr-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--cr-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--cr-line: ${themedColour("line", palette.line, dark)}`]),
     `--cr-aspect: ${config.aspect}`,
     `--cr-width: calc((100% - ${perView - 1} * 1rem) / ${perView})`,
   ].join("; ");

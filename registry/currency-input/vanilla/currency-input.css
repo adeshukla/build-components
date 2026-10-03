@@ -2,16 +2,16 @@
 .ci {
   --ci-accent: #2563eb;
   --ci-accent-text: #1b4ab0;
-  --ci-surface: #ffffff;
-  --ci-text: #16121f;
-  --ci-muted: #4d4a57;
+  --ci-surface: var(--bc-light-surface, #ffffff);
+  --ci-text: var(--bc-light-text, #16121f);
+  --ci-muted: var(--bc-light-muted, #4d4a57);
   --ci-border: #737373;
   --ci-error: #b3261e;
   display: block;
   max-width: 20rem;
   background: var(--ci-surface);
   color: var(--ci-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,14 +23,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ci--theme-system {
-    --ci-surface: #141019;
-    --ci-text: #f6f5fa;
-    --ci-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .ci--theme-system {
+    --ci-surface: var(--bc-dark-surface, #141019);
+    --ci-text: var(--bc-dark-text, #f6f5fa);
+    --ci-muted: var(--bc-dark-muted, #b6b3c2);
     --ci-border: #8e8a99;
     --ci-error: #ff6b6b;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ci--theme-system {
+    --ci-surface: var(--bc-dark-surface, #141019);
+    --ci-text: var(--bc-dark-text, #f6f5fa);
+    --ci-muted: var(--bc-dark-muted, #b6b3c2);
+    --ci-border: #8e8a99;
+    --ci-error: #ff6b6b;
+  }
+
 
 .ci-label { display: block; font-weight: 500; }
 .ci-hint { margin: 0; color: var(--ci-muted); font-size: 0.875rem; }
@@ -43,7 +52,7 @@
   margin-top: 0.5rem;
   padding: 0 0.75rem;
   border: 1px solid var(--ci-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--ci-surface);
 }
 .ci-field:has(.ci-input:focus-visible) { outline: 2px solid var(--ci-accent-text); outline-offset: 2px; }

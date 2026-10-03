@@ -3,15 +3,15 @@
   --sth-accent: #1d4ed8;
   --sth-accent-text: #1a41b8;
   --sth-on-accent: #ffffff;
-  --sth-surface: #ffffff;
-  --sth-sunk: #f4f3f8;
-  --sth-text: #16121f;
-  --sth-muted: #4d4a57;
-  --sth-line: #c9c4d6;
+  --sth-surface: var(--bc-light-surface, #ffffff);
+  --sth-sunk: var(--bc-light-sunk, #f4f3f8);
+  --sth-text: var(--bc-light-text, #16121f);
+  --sth-muted: var(--bc-light-muted, #4d4a57);
+  --sth-line: var(--bc-light-line, #c9c4d6);
   display: block;
   background: var(--sth-surface);
   color: var(--sth-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -23,21 +23,30 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .sth--theme-system {
-    --sth-surface: #141019;
-    --sth-sunk: #221d2e;
-    --sth-text: #f6f5fa;
-    --sth-muted: #b6b3c2;
-    --sth-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .sth--theme-system {
+    --sth-surface: var(--bc-dark-surface, #141019);
+    --sth-sunk: var(--bc-dark-sunk, #221d2e);
+    --sth-text: var(--bc-dark-text, #f6f5fa);
+    --sth-muted: var(--bc-dark-muted, #b6b3c2);
+    --sth-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .sth--theme-system {
+    --sth-surface: var(--bc-dark-surface, #141019);
+    --sth-sunk: var(--bc-dark-sunk, #221d2e);
+    --sth-text: var(--bc-dark-text, #f6f5fa);
+    --sth-muted: var(--bc-dark-muted, #b6b3c2);
+    --sth-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 .sth-scroller {
   position: relative;
   height: 24rem;
   overflow-y: auto;
   border: 1px solid var(--sth-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   /* Keeps a heading jumped to from landing underneath the header. */
   scroll-padding-top: 7rem;
 }
@@ -83,7 +92,7 @@
   margin-left: auto;
   padding: 0 1rem;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-button, 0.375rem);
   background: var(--sth-accent);
   color: var(--sth-on-accent);
   font: inherit;
@@ -96,7 +105,7 @@
 .sth-body { display: grid; gap: 2rem; padding: 1rem; }
 .sth-section-title { margin: 0; font-size: 1.125rem; font-weight: 600; }
 .sth-text { margin: 0.25rem 0 0; color: var(--sth-muted); }
-.sth-block { height: 7rem; margin-top: 0.75rem; border-radius: 0.375rem; background: var(--sth-sunk); }
+.sth-block { height: 7rem; margin-top: 0.75rem; border-radius: var(--bc-radius-sm, 0.375rem); background: var(--sth-sunk); }
 
 /*
  * Hiding a header is motion in the way that matters, so it stays put for anyone who asks for less of

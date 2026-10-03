@@ -52,13 +52,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#8d8a99", hover: "#2a2438" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 // WCAG relative luminance, used to keep text on the accent readable.
@@ -166,12 +175,12 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
     "--ms-accent": config.accentColor,
     "--ms-accent-text": readableAccent(config.accentColor, dark),
     "--ms-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--ms-radius": `${config.radius}px`,
-    "--ms-surface": palette.surface,
-    "--ms-sunk": palette.sunk,
-    "--ms-text": palette.text,
-    "--ms-muted": palette.muted,
-    "--ms-line": palette.line,
+    "--ms-radius": `var(--bc-radius-md, ${config.radius}px)`,
+    "--ms-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--ms-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--ms-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--ms-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--ms-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--ms-hover": palette.hover,
   } as CSSProperties;
   const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ms-accent-text)";
@@ -284,7 +293,7 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
             >
               <span
                 aria-hidden="true"
-                className={`grid size-5 shrink-0 place-items-center rounded border ${
+                className={`grid size-5 shrink-0 place-items-center rounded-[var(--bc-radius-xs,0.25rem)] border ${
                   selected ? "border-(--ms-accent) bg-(--ms-accent) text-(--ms-on-accent)" : "border-(--ms-line)"
                 }`}
               >

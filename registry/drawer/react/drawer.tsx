@@ -49,13 +49,22 @@ const palettes = {
   dark: { surface: "#1c1826", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448", hover: "#2a2438" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -86,7 +95,7 @@ const heights = { sm: "40dvh", md: "60dvh", lg: "85dvh" };
 const sides = {
   right: "my-0 mr-0 ml-auto h-dvh max-h-dvh w-(--dr-width) max-w-[calc(100vw-3rem)] starting:translate-x-full",
   left: "my-0 mr-auto ml-0 h-dvh max-h-dvh w-(--dr-width) max-w-[calc(100vw-3rem)] starting:-translate-x-full",
-  bottom: "mx-0 mt-auto mb-0 max-h-(--dr-height) w-full max-w-full rounded-t-2xl starting:translate-y-full",
+  bottom: "mx-0 mt-auto mb-0 max-h-(--dr-height) w-full max-w-full rounded-t-[var(--bc-radius-xl,1rem)] starting:translate-y-full",
 };
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dr-accent-text)";
 /** How far a swipe has to travel, in pixels, to close the drawer. */
@@ -111,16 +120,16 @@ export function Drawer({ config = defaultConfig }: { config?: DrawerConfig }) {
     "--dr-accent": config.accentColor,
     "--dr-accent-text": readableAccent(config.accentColor, dark),
     "--dr-on-accent": accentLuminance > 0.179 ? "#000000" : "#ffffff",
-    "--dr-surface": palette.surface,
-    "--dr-text": palette.text,
-    "--dr-muted": palette.muted,
+    "--dr-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--dr-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--dr-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
     "--dr-border": palette.border,
-    "--dr-line": palette.line,
+    "--dr-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
     "--dr-hover": palette.hover,
     "--dr-width": widths[config.size],
     "--dr-height": heights[config.size],
   } as CSSProperties;
-  const button = `min-h-10 cursor-pointer rounded-lg px-4 font-medium ${focusRing}`;
+  const button = `min-h-10 cursor-pointer rounded-[var(--bc-radius-md,0.5rem)] px-4 font-medium ${focusRing}`;
 
   function open() {
     const dialog = dialogRef.current;
@@ -222,7 +231,7 @@ export function Drawer({ config = defaultConfig }: { config?: DrawerConfig }) {
               type="button"
               aria-label="Close"
               onClick={() => dialogRef.current?.close()}
-              className={`-m-1.5 grid size-9 shrink-0 cursor-pointer place-items-center rounded-lg text-(--dr-muted) hover:bg-(--dr-hover) ${focusRing}`}
+              className={`-m-1.5 grid size-9 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-md,0.5rem)] text-(--dr-muted) hover:bg-(--dr-hover) ${focusRing}`}
             >
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
                 <path d="M6 6l12 12M18 6 6 18" />

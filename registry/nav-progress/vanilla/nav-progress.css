@@ -2,17 +2,17 @@
 .np {
   --np-accent: #e6b24a;
   --np-accent-text: #6b4a05;
-  --np-surface: #ffffff;
-  --np-sunk: #f4f3f8;
-  --np-text: #16121f;
-  --np-muted: #4d4a57;
-  --np-line: #c9c4d6;
+  --np-surface: var(--bc-light-surface, #ffffff);
+  --np-sunk: var(--bc-light-sunk, #f4f3f8);
+  --np-text: var(--bc-light-text, #16121f);
+  --np-muted: var(--bc-light-muted, #4d4a57);
+  --np-line: var(--bc-light-line, #c9c4d6);
   position: relative;
   display: block;
   overflow: hidden;
   background: var(--np-surface);
   color: var(--np-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,14 +24,23 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .np--theme-system {
-    --np-surface: #141019;
-    --np-sunk: #221d2e;
-    --np-text: #f6f5fa;
-    --np-muted: #b6b3c2;
-    --np-line: #4a4459;
+  :root:not([data-bc-scheme="light"]) .np--theme-system {
+    --np-surface: var(--bc-dark-surface, #141019);
+    --np-sunk: var(--bc-dark-sunk, #221d2e);
+    --np-text: var(--bc-dark-text, #f6f5fa);
+    --np-muted: var(--bc-dark-muted, #b6b3c2);
+    --np-line: var(--bc-dark-line, #4a4459);
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .np--theme-system {
+    --np-surface: var(--bc-dark-surface, #141019);
+    --np-sunk: var(--bc-dark-sunk, #221d2e);
+    --np-text: var(--bc-dark-text, #f6f5fa);
+    --np-muted: var(--bc-dark-muted, #b6b3c2);
+    --np-line: var(--bc-dark-line, #4a4459);
+  }
+
 
 /* The bar is a picture of the state the live region already carries, so screen readers skip it. */
 .np-track {
@@ -71,7 +80,7 @@
   align-items: center;
   padding: 0 1rem;
   border: 1px solid var(--np-line);
-  border-radius: 0.375rem;
+  border-radius: var(--bc-radius-sm, 0.375rem);
   background: var(--np-sunk);
   color: var(--np-text);
   font: inherit;
@@ -83,7 +92,7 @@
 .np-state { margin: 0.75rem 0 0; color: var(--np-muted); font-size: 0.875rem; }
 
 .np-skeleton { display: grid; gap: 0.5rem; margin-top: 1rem; }
-.np-skeleton span { display: block; height: 0.75rem; border-radius: 0.25rem; background: var(--np-sunk); }
+.np-skeleton span { display: block; height: 0.75rem; border-radius: var(--bc-radius-xs, 0.25rem); background: var(--np-sunk); }
 .np-skeleton span:nth-child(1) { width: 90%; }
 .np-skeleton span:nth-child(2) { width: 72%; }
 .np-skeleton span:nth-child(3) { width: 54%; }

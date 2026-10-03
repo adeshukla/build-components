@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SegmentedConfig } from "../react/segmented";
 
 const palettes = {
@@ -28,7 +28,7 @@ export function renderSegmentedMarkup(config: SegmentedConfig) {
     `--sg-accent: ${config.accentColor}`,
     `--sg-accent-text: ${readableAccent(config.accentColor, dark)}`,
     `--sg-on-accent: ${luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff"}`,
-    ...Object.entries(palette).map(([key, value]) => `--sg-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--sg-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const options = config.options.map((option) => option.label).filter((label) => label.trim() !== "");
   const picked = Math.min(Math.max(0, Math.round(config.startIndex)), Math.max(0, options.length - 1));

@@ -49,13 +49,22 @@ const palettes = {
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -96,11 +105,11 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
   const style = {
     "--dg-accent": config.accentColor,
     "--dg-accent-text": readableAccent(config.accentColor, dark),
-    "--dg-surface": palette.surface,
-    "--dg-sunk": palette.sunk,
-    "--dg-text": palette.text,
-    "--dg-muted": palette.muted,
-    "--dg-line": palette.line,
+    "--dg-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--dg-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--dg-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--dg-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--dg-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const sorted = sort
@@ -139,7 +148,7 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
         role="region"
         aria-labelledby={`${id}-caption`}
         tabIndex={0}
-        className="overflow-auto rounded-lg border border-(--dg-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dg-accent-text)"
+        className="overflow-auto rounded-[var(--bc-radius-md,0.5rem)] border border-(--dg-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dg-accent-text)"
         style={config.maxHeight > 0 ? { maxHeight: `${config.maxHeight}px` } : undefined}
       >
         <table className="w-full table-fixed border-collapse text-sm">

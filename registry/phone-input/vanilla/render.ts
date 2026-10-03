@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { PhoneInputConfig } from "../react/phone-input";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderPhoneInputMarkup(config: PhoneInputConfig) {
   const vars = [
     `--ph-accent: ${config.accentColor}`,
     `--ph-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--ph-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--ph-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const countries = config.countries.filter((country) => country.name.trim() !== "" && country.dial.trim() !== "");
   const startName = countries.some((country) => country.name === config.startCountry) ? config.startCountry : countries[0]?.name;

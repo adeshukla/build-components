@@ -3,9 +3,9 @@
   --cf-accent: #2563eb;
   --cf-accent-text: #1b4ab0;
   --cf-on-accent: #ffffff;
-  --cf-surface: #ffffff;
-  --cf-text: #16121f;
-  --cf-muted: #4d4a57;
+  --cf-surface: var(--bc-light-surface, #ffffff);
+  --cf-text: var(--bc-light-text, #16121f);
+  --cf-muted: var(--bc-light-muted, #4d4a57);
   --cf-border: #737373;
   --cf-error: #b3261e;
   --cf-success: #146c2e;
@@ -13,7 +13,7 @@
   max-width: 28rem;
   background: var(--cf-surface);
   color: var(--cf-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -25,15 +25,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .cf--theme-system {
-    --cf-surface: #141019;
-    --cf-text: #f6f5fa;
-    --cf-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .cf--theme-system {
+    --cf-surface: var(--bc-dark-surface, #141019);
+    --cf-text: var(--bc-dark-text, #f6f5fa);
+    --cf-muted: var(--bc-dark-muted, #b6b3c2);
     --cf-border: #8e8a99;
     --cf-error: #ff6b6b;
     --cf-success: #6fdc8c;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .cf--theme-system {
+    --cf-surface: var(--bc-dark-surface, #141019);
+    --cf-text: var(--bc-dark-text, #f6f5fa);
+    --cf-muted: var(--bc-dark-muted, #b6b3c2);
+    --cf-border: #8e8a99;
+    --cf-error: #ff6b6b;
+    --cf-success: #6fdc8c;
+  }
+
 
 .cf-fieldset { margin: 0; padding: 0; border: 0; }
 .cf-title { padding: 0; font-size: 1.125rem; font-weight: 600; }
@@ -52,7 +62,7 @@
   height: 2.75rem;
   padding: 0 0.75rem;
   border: 1px solid var(--cf-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--cf-surface);
   color: var(--cf-text);
   font: inherit;
@@ -72,7 +82,7 @@
   margin-top: 1.5rem;
   padding: 0 1rem;
   border: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-button, 0.5rem);
   background: var(--cf-accent);
   color: var(--cf-on-accent);
   font: inherit;

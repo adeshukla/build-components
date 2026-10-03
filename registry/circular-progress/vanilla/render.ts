@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CircularProgressConfig } from "../react/circular-progress";
 
 const palettes = {
@@ -26,7 +26,7 @@ export function renderCircularProgressMarkup(config: CircularProgressConfig) {
   const vars = [
     `--cpr-accent: ${config.accentColor}`,
     `--cpr-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    ...Object.entries(palette).map(([key, value]) => `--cpr-${key}: ${value}`),
+    ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cpr-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
   const radius = (config.size - config.thickness) / 2;

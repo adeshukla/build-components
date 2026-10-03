@@ -1,4 +1,4 @@
-import { escapeHtml, htmlPage, luminance } from "@/lib/html";
+import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { AccordionConfig } from "../react/accordion";
 
 const palettes = {
@@ -37,12 +37,12 @@ export function renderAccordionMarkup(config: AccordionConfig) {
   const vars = [
     `--ac-accent: ${config.accentColor}`,
     `--ac-accent-text: ${readableAccent(config.accentColor, dark)}`,
-    `--ac-radius: ${config.radius}px`,
-    `--ac-surface: ${palette.surface}`,
-    `--ac-sunk: ${palette.sunk}`,
-    `--ac-text: ${palette.text}`,
-    `--ac-muted: ${palette.muted}`,
-    `--ac-line: ${palette.line}`,
+    `--ac-radius: var(--bc-radius-md, ${config.radius}px)`,
+    ...(config.theme === "system" ? [] : [`--ac-surface: ${themedColour("surface", palette.surface, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ac-sunk: ${themedColour("sunk", palette.sunk, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ac-text: ${themedColour("text", palette.text, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ac-muted: ${themedColour("muted", palette.muted, dark)}`]),
+    ...(config.theme === "system" ? [] : [`--ac-line: ${themedColour("line", palette.line, dark)}`]),
   ].join("; ");
   const heading = config.headingLevel;
 

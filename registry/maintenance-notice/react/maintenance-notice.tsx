@@ -41,13 +41,22 @@ const palettes = {
   dark: { surface: "#211b10", text: "#f6f5fa", muted: "#c8c0ad", line: "#5a4a28" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -138,10 +147,10 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
   const style = {
     "--mnt-accent": config.accentColor,
     "--mnt-accent-text": readableAccent(config.accentColor, dark),
-    "--mnt-surface": palette.surface,
-    "--mnt-text": palette.text,
-    "--mnt-muted": palette.muted,
-    "--mnt-line": palette.line,
+    "--mnt-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--mnt-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--mnt-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--mnt-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const gone = justGone || (config.remember && stored);
@@ -198,7 +207,7 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
                 setJustGone(true);
               }}
               aria-label={config.dismissLabel}
-              className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-md text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mnt-accent-text)"
+              className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-[var(--bc-radius-sm,0.375rem)] text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--mnt-accent-text)"
             >
               <span aria-hidden="true">×</span>
             </button>
@@ -213,7 +222,7 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
           {gone ? (config.remember ? "Notice dismissed. It will not come back on this browser." : "Notice dismissed.") : ""}
         </p>
         {[0, 1, 2, 3, 4, 5].map((row) => (
-          <div key={row} aria-hidden="true" className="h-4 rounded bg-(--mnt-line)" style={{ width: `${92 - row * 9}%` }} />
+          <div key={row} aria-hidden="true" className="h-4 rounded-[var(--bc-radius-xs,0.25rem)] bg-(--mnt-line)" style={{ width: `${92 - row * 9}%` }} />
         ))}
       </div>
     </div>

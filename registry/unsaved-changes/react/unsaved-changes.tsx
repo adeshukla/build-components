@@ -37,13 +37,22 @@ const palettes = {
   dark: { surface: "#1c1826", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
+// Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).
 const darkMedia = {
   subscribe: (onChange: () => void) => {
     const list = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosen = new MutationObserver(onChange);
     list.addEventListener("change", onChange);
-    return () => list.removeEventListener("change", onChange);
+    chosen.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    return () => {
+      list.removeEventListener("change", onChange);
+      chosen.disconnect();
+    };
   },
-  get: () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  get: () => {
+    const chosen = document.documentElement.dataset.bcScheme;
+    return chosen ? chosen === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  },
 };
 
 function luminance(hex: string) {
@@ -83,11 +92,11 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
     "--uc-accent": config.accentColor,
     "--uc-accent-text": readableAccent(config.accentColor, dark),
     "--uc-on-accent": luminance(config.accentColor) > 0.179 ? "#000000" : "#ffffff",
-    "--uc-surface": palette.surface,
-    "--uc-sunk": palette.sunk,
-    "--uc-text": palette.text,
-    "--uc-muted": palette.muted,
-    "--uc-line": palette.line,
+    "--uc-surface": `var(--bc-${dark ? "dark" : "light"}-surface, ${palette.surface})`,
+    "--uc-sunk": `var(--bc-${dark ? "dark" : "light"}-sunk, ${palette.sunk})`,
+    "--uc-text": `var(--bc-${dark ? "dark" : "light"}-text, ${palette.text})`,
+    "--uc-muted": `var(--bc-${dark ? "dark" : "light"}-muted, ${palette.muted})`,
+    "--uc-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
   const dirty = text !== saved;
@@ -134,7 +143,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
         placeholder={config.placeholder}
         onChange={(event) => setText(event.target.value)}
         aria-describedby={`${id}-dirty`}
-        className="mt-1 w-full rounded-md border border-(--uc-line) bg-(--uc-sunk) p-3 text-(--uc-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
+        className="mt-1 w-full rounded-[var(--bc-radius-sm,0.375rem)] border border-(--uc-line) bg-(--uc-sunk) p-3 text-(--uc-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
       />
 
       {/* Said once, when it changes, so nobody is told on every keystroke. */}
@@ -149,7 +158,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
             setSaved(text);
             setResult("Saved");
           }}
-          className="min-h-11 cursor-pointer rounded-md bg-(--uc-accent) px-4 font-medium text-(--uc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
+          className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--uc-accent) px-4 font-medium text-(--uc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
         >
           {config.saveText}
         </button>
@@ -157,7 +166,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
           ref={leaveRef}
           type="button"
           onClick={leave}
-          className="min-h-11 cursor-pointer rounded-md border border-(--uc-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
+          className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--uc-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
         >
           {config.leaveText}
         </button>
@@ -186,7 +195,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
             last.focus();
           }
         }}
-        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-(--uc-line) bg-(--uc-surface) p-5 text-(--uc-text) backdrop:bg-black/50"
+        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-[var(--bc-radius-lg,0.75rem)] border border-(--uc-line) bg-(--uc-surface) p-5 text-(--uc-text) backdrop:bg-black/50"
       >
         <h2 id={`${id}-title`} className="text-lg font-semibold">
           {config.title}
@@ -198,7 +207,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
           <button
             type="button"
             onClick={discard}
-            className="min-h-11 cursor-pointer rounded-md border border-(--uc-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--uc-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
           >
             {config.discardText}
           </button>
@@ -206,7 +215,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
             ref={stayRef}
             type="button"
             onClick={stay}
-            className="min-h-11 cursor-pointer rounded-md bg-(--uc-accent) px-4 font-medium text-(--uc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
+            className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--uc-accent) px-4 font-medium text-(--uc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
           >
             {config.stayText}
           </button>

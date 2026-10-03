@@ -2,17 +2,17 @@
 .ph {
   --ph-accent: #2563eb;
   --ph-accent-text: #1b4ab0;
-  --ph-surface: #ffffff;
-  --ph-sunk: #f4f3f8;
-  --ph-text: #16121f;
-  --ph-muted: #4d4a57;
+  --ph-surface: var(--bc-light-surface, #ffffff);
+  --ph-sunk: var(--bc-light-sunk, #f4f3f8);
+  --ph-text: var(--bc-light-text, #16121f);
+  --ph-muted: var(--bc-light-muted, #4d4a57);
   --ph-border: #737373;
   --ph-error: #b3261e;
   display: block;
   max-width: 24rem;
   background: var(--ph-surface);
   color: var(--ph-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
   line-height: 1.5;
 }
 
@@ -24,15 +24,25 @@
 
 /* Only the "follow the device" theme flips with the operating system. */
 @media (prefers-color-scheme: dark) {
-  .ph--theme-system {
-    --ph-surface: #141019;
-    --ph-sunk: #221d2e;
-    --ph-text: #f6f5fa;
-    --ph-muted: #b6b3c2;
+  :root:not([data-bc-scheme="light"]) .ph--theme-system {
+    --ph-surface: var(--bc-dark-surface, #141019);
+    --ph-sunk: var(--bc-dark-sunk, #221d2e);
+    --ph-text: var(--bc-dark-text, #f6f5fa);
+    --ph-muted: var(--bc-dark-muted, #b6b3c2);
     --ph-border: #8e8a99;
     --ph-error: #ff6b6b;
   }
 }
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ph--theme-system {
+    --ph-surface: var(--bc-dark-surface, #141019);
+    --ph-sunk: var(--bc-dark-sunk, #221d2e);
+    --ph-text: var(--bc-dark-text, #f6f5fa);
+    --ph-muted: var(--bc-dark-muted, #b6b3c2);
+    --ph-border: #8e8a99;
+    --ph-error: #ff6b6b;
+  }
+
 
 .ph-label { display: block; font-weight: 500; }
 .ph-hint { margin: 0; color: var(--ph-muted); font-size: 0.875rem; }
@@ -44,7 +54,7 @@
   margin-top: 0.5rem;
   overflow: hidden;
   border: 1px solid var(--ph-border);
-  border-radius: 0.5rem;
+  border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--ph-surface);
 }
 .ph-field:has(:focus-visible) { outline: 2px solid var(--ph-accent-text); outline-offset: 2px; }
