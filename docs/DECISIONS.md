@@ -707,3 +707,25 @@ go out in the downloads (no accounts yet).
   and plays it from YouTube's no-cookie host. Its HTML output now refuses a non-http(s) address too.
 - **The site's CSP** now allows `img-src https:` (people's own images, wherever hosted) and `frame-src` the
   two players. Scripts stay same-origin.
+
+## 2026-10-03 — D86. The builder makes websites
+**Asked:** "a proper website with more pages, just like we show in the navigation", with links that work.
+- **Model** (`lib/site-builder.ts`): a site is pages (title, address, their own sections) sharing one top
+  (header or mega menu) and one bottom (footer). `pageView` shows a page as an ordinary built page, so every
+  builder tool, the preview and the checks work unchanged; `fromView` splits an edit back into shared and
+  page. The home page is always `/`; other addresses are made unique from what is typed; 12 pages at most.
+- **The menu:** with more than one page, the header's and footer's links are the site's pages (turn it off in
+  Website settings to write them by hand; while it is on, their link lists are not offered for editing).
+- **Builder:** page tabs above the page and "+ Add a page"; Page settings (name, address, delete) and Website
+  settings (name, colour, theme, menu); templates fill the open page and keep the site's header and footer;
+  in the preview and while trying the page, a link to one of the site's pages opens that page.
+- **Links:** `encodeSite` compresses the site (deflate-raw through the platform's CompressionStream, the same
+  in the browser and in Node): a three-page site is about 2 KB. `decodeSite` also reads every page link from
+  before, as a one-page site, and refuses anything that unpacks past 2 MB. This browser keeps the site as
+  plain JSON (`built-site`); a page kept before sites carries on.
+- **Outputs** (`lib/next-project.ts`): a Next.js project with a route per page, the shared parts in
+  `components/` and each page's own parts in `components/<page>/` (two pages can each have their own page
+  header); HTML files per page, linked to one another (`pricing.html`), zipped with their pictures; one
+  shadcn item that writes every page and part. The downloaded three-page project installs and builds.
+- **Found on the way:** the page view must be memoised. Rebuilt every render, it re-ran the effects that
+  watch it every render: the page was re-sent to the frame endlessly and the checks never ran.

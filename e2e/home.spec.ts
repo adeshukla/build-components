@@ -89,8 +89,13 @@ test("slash jumps to the search box, but not while typing in it", async ({ page 
   const search = page.getByRole("searchbox", { name: "Search the catalogue" });
   // The shortcut is wired up on hydration, so wait for the box before pressing anything.
   await expect(search).toBeVisible();
-  await page.keyboard.press("/");
-  await expect(search).toBeFocused();
+  // Until the page has hydrated nothing listens for the key, so it is pressed until something does.
+  await expect
+    .poll(async () => {
+      await page.keyboard.press("/");
+      return search.evaluate((el) => el === document.activeElement);
+    })
+    .toBe(true);
   await page.keyboard.type("table");
   await expect(search).toHaveValue("table");
 });

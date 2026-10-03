@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent } from "react";
 import { match } from "@/components/catalogue";
 import { OptionsPanel } from "@/components/options-panel";
 import { PartDrawing } from "@/components/part-drawing";
 import { Segmented } from "@/components/segmented";
 import { checkPage, PageFields, type Check } from "@/components/template-editor";
 import {
-  blankPage,
   decodePage,
   encodePage,
   fromTemplate,
@@ -17,9 +16,11 @@ import {
   pageTemplate,
   regionOf,
   type BuiltPage,
+  type BuiltSection,
 } from "@/lib/page-builder";
 import { inStock, partBySlug, type Category } from "@/lib/parts";
 import { registry, type RegistrySlug } from "@/lib/registry";
+import { addressFor, blankSite, decodeSite, encodeSite, fromView, MAX_PAGES, newPage, pageView, siteData, siteFrom, siteFromPage, type BuiltSite } from "@/lib/site-builder";
 import { ACCEPTED_PICTURES, loadPicture, pictureName, picturesIn, savePicture, swapPictures } from "@/lib/pictures";
 import type { Schema } from "@/lib/schema";
 import { templateReactSource } from "@/lib/template-output";
@@ -37,31 +38,44 @@ import { defaultOptions, sectionSpaces, sectionWidths, templateById, templates, 
  * and does nothing on a touch screen. Every drag has a button that does the same, for the keyboard.
  */
 
-const STORAGE_KEY = "built-page";
+const STORAGE_KEY = "built-site";
 const subscribeNever = () => () => {};
 /** Page sections first: they are what a page is made of. */
 const order: Category[] = ["Page sections", "Content", "Navigation", "Feedback", "Inputs", "Overlays"];
 
-/** A link (shared, or from a template) first, then the page this browser kept. */
-function initialPage(): BuiltPage {
+/** A link (shared, or from a template) first, then the site this browser kept, then a fresh one. */
+async function initialSite(): Promise<BuiltSite> {
   const shared = new URLSearchParams(window.location.hash.slice(1)).get("p");
-  const fromLink = shared ? decodePage(shared) : null;
+  const fromLink = shared ? await decodeSite(shared) : null;
   if (fromLink) return fromLink;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    const page = saved ? decodePage(saved) : null;
-    if (page) return page;
+    const site = saved ? siteFrom(JSON.parse(saved)) : null;
+    if (site) return site;
+    // A page kept before websites (D80–D85) carries on as a one-page site.
+    const page = decodePage(localStorage.getItem("built-page") ?? "");
+    if (page) return siteFromPage(page);
   } catch {
     // Storage blocked: start fresh.
   }
-  return blankPage();
+  return blankSite();
 }
 
 /** The builder reads the address and storage, so it only ever renders in the browser. */
 export function PageBuilder({ exportNames }: { exportNames: Record<string, string> }) {
   const inBrowser = useSyncExternalStore(subscribeNever, () => true, () => false);
   if (!inBrowser) return <p className="px-4 py-20 text-ink-muted">Opening the builder…</p>;
-  return <Builder exportNames={exportNames} />;
+  return <SiteLoader exportNames={exportNames} />;
+}
+
+/** A shared link is compressed, so reading it takes a moment. */
+function SiteLoader({ exportNames }: { exportNames: Record<string, string> }) {
+  const [site, setSite] = useState<BuiltSite | null>(null);
+  useEffect(() => {
+    initialSite().then(setSite);
+  }, []);
+  if (!site) return <p className="px-4 py-20 text-ink-muted">Opening the builder…</p>;
+  return <Builder exportNames={exportNames} initialSite={site} />;
 }
 
 type Box = { slug: RegistrySlug; top: number; height: number };
@@ -90,9 +104,20 @@ const asDataUrl = (blob: Blob) =>
   });
 type Drop = { where: "page" | "layers"; index: number; y: number };
 
-function Builder({ exportNames }: { exportNames: Record<string, string> }) {
+function Builder({ exportNames, initialSite }: { exportNames: Record<string, string>; initialSite: BuiltSite }) {
   const uid = useId();
-  const [page, setPage] = useState(initialPage);
+  const [site, setSite] = useState(initialSite);
+  const [pageId, setPageId] = useState(initialSite.pages[0].id);
+  // The page being edited, as a page: the shared header, its own sections, the shared footer. Every tool
+  // below works on it; setPage puts an edit back into the site (lib/site-builder.ts).
+  // Memoised: effects below watch it, and a new object every render would re-run them every render.
+  const page = useMemo(() => pageView(site, pageId), [site, pageId]);
+  const setPage = (next: BuiltPage) => setSite(fromView(site, pageId, next));
+  const current = site.pages.find((candidate) => candidate.id === pageId) ?? site.pages[0];
+  const menuFollows = site.menu && site.pages.length > 1;
+  // The site's link text (compressed, so it takes a moment) and the same without kept pictures.
+  const [link, setLink] = useState("");
+  const [installLink, setInstallLink] = useState("");
   const [selected, setSelected] = useState<RegistrySlug | null>(() => page.sections.find((s) => regionOf(s.slug) === "main")?.slug ?? null);
   const [hovered, setHovered] = useState<RegistrySlug | null>(null);
   const [query, setQuery] = useState("");
@@ -130,7 +155,10 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
 
   const sections = page.sections;
   const onPage = new Set(sections.map((section) => section.slug));
+  // The page alone, for "Open in a new tab".
   const encoded = encodePage(page);
+  const siteName = site.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "site";
+  const sitePictures = picturesIn(site);
   const { template, options } = pageTemplate(page);
   const origin = window.location.origin;
   const found = inStock.filter((part) => part.slug in registry && match(part, query).hit);
@@ -153,11 +181,20 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, encoded);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData(site)));
     } catch {
-      // Storage blocked: the page still travels as a link.
+      // Storage blocked: the site still travels as a link.
     }
-  }, [encoded]);
+    let current = true;
+    Promise.all([encodeSite(site), encodeSite(swapPictures(site, () => ""))]).then(([full, bare]) => {
+      if (!current) return;
+      setLink(full);
+      setInstallLink(bare);
+    });
+    return () => {
+      current = false;
+    };
+  }, [site]);
 
   useEffect(() => {
     if (focusNext.current) {
@@ -186,14 +223,11 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       setPreviewing(false);
       focusNext.current = `${uid}-preview-button`;
     };
-    // Heard in the page's frame too: after a click in there, the keyboard is in there.
-    const frameDoc = frameRef.current?.contentDocument;
+    // The frame hears Escape too (after a click in there, the keyboard is in there): see its listeners.
     document.addEventListener("keydown", onKey);
-    frameDoc?.addEventListener("keydown", onKey);
     return () => {
       behind.forEach((el) => (el.inert = false));
       document.removeEventListener("keydown", onKey);
-      frameDoc?.removeEventListener("keydown", onKey);
     };
   }, [previewing, uid]);
 
@@ -276,7 +310,8 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   useEffect(() => {
     const frameWindow = frameRef.current?.contentWindow;
     const doc = frameRef.current?.contentDocument;
-    if (!frameWindow || !doc) return;
+    // Mid-load the frame's document can have no root yet; this runs again once the frame says it is ready.
+    if (!frameWindow || !doc?.documentElement) return;
     let frame = 0;
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(() => ((frame = 0), measure()));
@@ -304,6 +339,12 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       const href = link?.getAttribute("href") ?? "";
       if (link && !href.startsWith("#")) {
         event.preventDefault();
+        // One of the site's own pages: go to it, as the real site will.
+        const to = site.pages.find((candidate) => candidate.path === href);
+        if (to) {
+          openPage(to.id);
+          return;
+        }
         setNote(`On your site, this goes to ${href}`);
         window.setTimeout(() => setNote(""), 2600);
       }
@@ -330,6 +371,14 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     const answered = () => setServed(Boolean(workers?.controller));
     answered();
     workers?.addEventListener("controllerchange", answered);
+    // Escape closes the full-screen preview from inside the frame too. Here, not where the preview opens:
+    // the frame's document can be replaced after that (its first load waits for the picture worker).
+    const onKey = (event: KeyboardEvent) => {
+      if (!previewing || event.key !== "Escape") return;
+      setPreviewing(false);
+      focusNext.current = `${uid}-preview-button`;
+    };
+    doc.addEventListener("keydown", onKey);
     doc.addEventListener("dragover", onFileOver);
     doc.addEventListener("drop", onFileDrop);
     doc.documentElement.addEventListener("dragleave", onFileLeave);
@@ -344,13 +393,14 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
       doc.documentElement.removeEventListener("pointerleave", onLeave);
       doc.removeEventListener("click", onClick, true);
       workers?.removeEventListener("controllerchange", answered);
+      doc.removeEventListener("keydown", onKey);
       doc.removeEventListener("dragover", onFileOver);
       doc.removeEventListener("drop", onFileDrop);
       doc.documentElement.removeEventListener("dragleave", onFileLeave);
     };
     // dropPicture reads the page as it is when the file lands; listeners are re-attached with every page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clicks, frameReady, page]);
+  }, [clicks, frameReady, page, previewing, uid]);
 
   // A picture dropped anywhere else in the builder is not opened by the browser in place of it.
   useEffect(() => {
@@ -433,13 +483,53 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   }
 
   function startFrom(choice: string) {
-    if (sections.length > 0 && !window.confirm("Replace the page you have with this one?")) return;
+    if (current.sections.length > 0 && !window.confirm("Replace this page's sections with the template's?")) return;
     const picked = templateById(choice);
-    const next = picked ? fromTemplate(picked, { ...defaultOptions(picked), name: page.name, brand: page.brand, theme: page.theme }) : { ...page, sections: [] };
+    const filled = picked ? fromTemplate(picked, { ...defaultOptions(picked), name: page.name, brand: page.brand, theme: page.theme }) : { ...page, sections: [] };
+    // The site's own header and footer stay; a template's are used only if the site has none yet.
+    const keep = (region: "top" | "bottom", own: BuiltSection[]) => (own.length ? own : filled.sections.filter((section) => regionOf(section.slug) === region));
+    const next = {
+      ...page,
+      sections: [...keep("top", site.top), ...filled.sections.filter((section) => regionOf(section.slug) === "main"), ...keep("bottom", site.bottom)],
+    };
     setPage(next);
     setSelected(next.sections.find((section) => regionOf(section.slug) === "main")?.slug ?? null);
     setSaid(picked ? `Started from the ${picked.name.toLowerCase()} template` : "Cleared the page");
     setStart("");
+  }
+
+  function openPage(id: string) {
+    setPageId(id);
+    setSelected(null);
+    const to = site.pages.find((candidate) => candidate.id === id);
+    if (to) setSaid(`Now editing ${to.title}`);
+  }
+
+  function addPage() {
+    if (site.pages.length >= MAX_PAGES) {
+      setSaid(`A website holds ${MAX_PAGES} pages at most`);
+      return;
+    }
+    const made = newPage(site, `Page ${site.pages.length + 1}`);
+    setSite({ ...site, pages: [...site.pages, made] });
+    setPageId(made.id);
+    setSelected(null);
+    setSaid(`Added ${made.title}. Name it in Page settings.`);
+    focusNext.current = `${uid}-page-title`;
+  }
+
+  function editPage(patch: { title?: string; path?: string }) {
+    setSite({ ...site, pages: site.pages.map((candidate) => (candidate.id === current.id ? { ...candidate, ...patch } : candidate)) });
+  }
+
+  function deletePage() {
+    if (current.path === "/" || !window.confirm(`Delete the page ${current.title}?`)) return;
+    const rest = site.pages.filter((candidate) => candidate.id !== current.id);
+    setSite({ ...site, pages: rest });
+    setPageId(rest[0].id);
+    setSelected(null);
+    setSaid(`Deleted ${current.title}`);
+    focusNext.current = `${uid}-tab-${rest[0].id}`;
   }
 
   /** Where a part would land at this point on screen, if anywhere: on the page, or in the layers list. */
@@ -559,7 +649,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
   /** The page with each kept picture swapped for what a download carries in its place. */
   async function withPictures(to: (address: string, blob: Blob) => Promise<string> | string) {
     const found: Record<string, string> = {};
-    for (const address of pictures) {
+    for (const address of sitePictures) {
       const blob = await loadPicture(address);
       found[address] = blob ? await to(address, blob) : "";
     }
@@ -576,21 +666,35 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
 
   /** The Next.js project with the pictures in public/images, zipped here: only this browser has them. */
   async function downloadProject() {
-    const files: Record<string, string> = await (await fetch(`/download/${template.id}.json?p=${encoded}`)).json();
+    const files: Record<string, string> = await (await fetch(`/download/${siteName}.json?p=${link}`)).json();
     const blobs: Record<string, Uint8Array> = {};
     const swap = await withPictures(async (address, blob) => {
       blobs[`public/images/${pictureName(address)}`] = new Uint8Array(await blob.arrayBuffer());
       return `/images/${pictureName(address)}`;
     });
     const all: Record<string, string | Uint8Array> = Object.fromEntries(Object.entries(files).map(([path, text]) => [path, swap(text)]));
-    save(zipInBrowser({ ...all, ...blobs }), `${template.id}.zip`);
+    save(zipInBrowser({ ...all, ...blobs }), `${siteName}.zip`);
   }
 
-  /** One HTML file with the pictures inside it, so it still needs nothing else. */
+  /**
+   * The HTML: one file with the pictures inside it for a one-page site; for a website, a .zip of its pages
+   * linked to one another, with the pictures in images/.
+   */
   async function downloadHtml() {
-    const html = await (await fetch(`/download/${template.id}.html?p=${encoded}`)).text();
-    const swap = await withPictures((_, blob) => asDataUrl(blob));
-    save(new Blob([swap(html)], { type: "text/html" }), `${template.id}.html`);
+    if (site.pages.length === 1) {
+      const html = await (await fetch(`/download/${siteName}.html?p=${link}`)).text();
+      const swap = await withPictures((_, blob) => asDataUrl(blob));
+      save(new Blob([swap(html)], { type: "text/html" }), `${siteName}.html`);
+      return;
+    }
+    const pages: Record<string, string> = await (await fetch(`/download/${siteName}-html.json?p=${link}`)).json();
+    const blobs: Record<string, Uint8Array> = {};
+    const swap = await withPictures(async (address, blob) => {
+      blobs[`images/${pictureName(address)}`] = new Uint8Array(await blob.arrayBuffer());
+      return `images/${pictureName(address)}`;
+    });
+    const files: Record<string, string | Uint8Array> = Object.fromEntries(Object.entries(pages).map(([file, html]) => [file, swap(html)]));
+    save(zipInBrowser({ ...files, ...blobs }), `${siteName}-html.zip`);
   }
 
   function openPreview() {
@@ -616,7 +720,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
     window.setTimeout(() => setCopied(""), 2500);
   }
 
-  const install = `npx shadcn@latest add "${origin}/r/pages/${template.id}.json?p=${pictures.length ? encodePage(swapPictures(page, () => "")) : encoded}"`;
+  const install = `npx shadcn@latest add "${origin}/r/pages/${siteName}.json?p=${installLink}"`;
   const code = codeTab === "install" ? install : templateReactSource(template, options, exportNames);
   const pinned = (slug: string) => regionOf(slug) !== "main";
   const outline = (slug: RegistrySlug) => boxes.find((box) => box.slug === slug);
@@ -655,7 +759,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
           onChange={(value) => setMode(value as typeof mode)}
         />
         <div className="grid min-w-0 max-w-full gap-1.5 text-sm font-medium">
-          <label htmlFor={`${uid}-start`}>Start from</label>
+          <label htmlFor={`${uid}-start`}>Fill this page from</label>
           <div className="flex min-w-0 gap-2">
             <select
               id={`${uid}-start`}
@@ -799,6 +903,25 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
             </button>
           </div>
         )}
+        {/* The website's pages: the one being edited is pressed. */}
+        <div className={`thin-scroll mb-2 flex shrink-0 items-center gap-1 overflow-x-auto ${previewing ? "hidden" : ""}`} role="group" aria-label="Pages">
+          {site.pages.map((candidate) => (
+            <button
+              key={candidate.id}
+              id={`${uid}-tab-${candidate.id}`}
+              type="button"
+              aria-pressed={candidate.id === current.id}
+              onClick={() => openPage(candidate.id)}
+              className="min-h-9 shrink-0 cursor-pointer rounded-full px-3.5 text-sm text-ink-muted transition-colors hover:text-ink aria-pressed:bg-ink aria-pressed:text-paper"
+            >
+              {candidate.title}
+              <span className="sr-only">{`, ${candidate.path}`}</span>
+            </button>
+          ))}
+          <button type="button" onClick={addPage} className="min-h-9 shrink-0 cursor-pointer rounded-full border border-dashed border-rule-strong px-3.5 text-sm hover:border-accent">
+            + Add a page
+          </button>
+        </div>
         <div className="relative h-[75vh] min-h-0 overflow-hidden rounded-2xl border border-rule bg-paper-sunk lg:h-auto lg:flex-1">
           <div className="relative mx-auto h-full max-w-full transition-[width] duration-500 ease-spring" style={{ width }}>
             <iframe ref={frameRef} title="Your page, React output" src={frameAllowed ? "/preview-page" : undefined} className="block h-full w-full border-0 bg-white" />
@@ -869,10 +992,14 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
               </p>
             )}
 
-            {sections.length === 0 && !drop && !previewing && (
+            {current.sections.length === 0 && !drop && !previewing && (
               <div className="absolute inset-0 overflow-y-auto bg-paper p-6">
-                <h3 className="font-display text-3xl leading-none">Start with a template</h3>
-                <p className="mt-2 text-sm text-ink-muted">Or drag parts from the left onto this page.</p>
+                <h3 className="font-display text-3xl leading-none">{current.path === "/" ? "Start with a template" : `Fill ${current.title} from a template`}</h3>
+                <p className="mt-2 text-sm text-ink-muted">
+                  {site.top.length + site.bottom.length > 0
+                    ? "Your header and footer stay; the template's sections go between them. Or drag parts from the left onto this page."
+                    : "Or drag parts from the left onto this page."}
+                </p>
                 <ul className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3">
                   {templates.map((option) => (
                     <li key={option.id}>
@@ -927,7 +1054,7 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
                       {label}
                     </button>
                     {pinned(section.slug) ? (
-                      <span className="shrink-0 px-1 text-xs text-ink-muted">{regionOf(section.slug) === "top" ? "First" : "Last"}</span>
+                      <span className="shrink-0 px-1 text-xs text-ink-muted">Every page</span>
                     ) : (
                       <>
                         <button type="button" id={rowId(section.slug, "up")} aria-label={`Move ${label} up`} onClick={() => move(section.slug, -1, rowId(section.slug, "up"))} className={iconButton}>
@@ -1061,7 +1188,13 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
                 key={chosen.slug}
                 className="min-h-0 flex-1"
                 // The page's colour and theme are every part's, so they are set once, for the page.
-                schema={registry[chosen.slug].schema.filter((option) => option.key !== "accentColor" && option.key !== "theme")}
+                schema={registry[chosen.slug].schema.filter(
+                  (option) =>
+                    option.key !== "accentColor" &&
+                    option.key !== "theme" &&
+                    // The menu lists the site's pages; it is turned off in Website settings to write it by hand.
+                    !(menuFollows && option.key === "links" && (chosen.slug === "header" || chosen.slug === "footer")),
+                )}
                 config={chosen.config}
                 onChange={(key, value) => setOption(chosen.slug, { [key]: value })}
                 onResetAll={() => setOption(chosen.slug, null)}
@@ -1071,8 +1204,47 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
         ) : (
           <form onSubmit={(event) => event.preventDefault()} className="glass thin-scroll relative grid min-h-0 grid-cols-[minmax(0,1fr)] content-start gap-5 overflow-y-auto rounded-2xl p-4">
             <h2 className="font-display text-2xl leading-none">Page settings</h2>
-            <PageFields options={page} onChange={(patch) => setPage({ ...page, ...patch })} />
+            <label className="grid gap-1.5 text-sm font-medium">
+              Page name
+              <input
+                id={`${uid}-page-title`}
+                value={current.title}
+                maxLength={40}
+                onChange={(event) => editPage({ title: event.target.value })}
+                onBlur={(event) => !event.target.value.trim() && editPage({ title: "Page" })}
+                className="min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 text-base font-normal"
+              />
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium">
+              Address
+              <input
+                key={`${current.id}-${current.path}`}
+                defaultValue={current.path}
+                readOnly={current.path === "/"}
+                aria-describedby={`${uid}-address-note`}
+                onBlur={(event) => editPage({ path: addressFor(site, current.id, event.target.value) })}
+                className="min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 font-mono text-sm font-normal read-only:bg-paper-sunk"
+              />
+              <span id={`${uid}-address-note`} className="text-xs font-normal text-ink-muted">
+                {current.path === "/" ? "The home page is always /." : "Where this page lives on your site, e.g. /pricing."}
+              </span>
+            </label>
+            {current.path !== "/" && (
+              <button type="button" onClick={deletePage} className="btn-glass w-fit cursor-pointer text-sm">
+                Delete this page
+              </button>
+            )}
             <p className="text-xs text-ink-muted">Choose a section on the page to set it up.</p>
+
+            <h2 className="mt-2 border-t border-rule pt-5 font-display text-2xl leading-none">Website</h2>
+            <PageFields options={page} onChange={(patch) => setPage({ ...page, ...patch })} />
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm">
+              <input type="checkbox" checked={site.menu} onChange={(event) => setSite({ ...site, menu: event.target.checked })} className="mt-1 size-4 accent-(--color-accent)" />
+              <span>
+                The header and footer list my pages
+                <span className="block text-xs text-ink-muted">With more than one page. Turn it off to write their links yourself.</span>
+              </span>
+            </label>
           </form>
         )}
       </div>
@@ -1100,33 +1272,33 @@ function Builder({ exportNames }: { exportNames: Record<string, string> }) {
             </button>
           </div>
           <p className="flex flex-wrap gap-2">
-            {pictures.length === 0 ? (
-              <>
-                <a href={`/download/${template.id}.zip?p=${encoded}`} download className="btn-accent text-sm">
-                  Download a Next.js project
-                </a>
-                <a href={`/download/${template.id}.html?p=${encoded}`} download className="btn-glass text-sm">
-                  Download one HTML file
-                </a>
-              </>
+            {/* Plain links while nothing has to be added in the browser: no kept pictures, one HTML file. */}
+            {sitePictures.length === 0 ? (
+              <a href={`/download/${siteName}.zip?p=${link}`} download className="btn-accent text-sm">
+                Download a Next.js project
+              </a>
             ) : (
-              <>
-                <button type="button" onClick={downloadProject} className="btn-accent cursor-pointer text-sm">
-                  Download a Next.js project
-                </button>
-                <button type="button" onClick={downloadHtml} className="btn-glass cursor-pointer text-sm">
-                  Download one HTML file
-                </button>
-              </>
+              <button type="button" disabled={!link} onClick={downloadProject} className="btn-accent cursor-pointer text-sm">
+                Download a Next.js project
+              </button>
             )}
-            <button type="button" onClick={() => copy(`${origin}/build#p=${encoded}`, "Link copied")} className="btn-glass cursor-pointer text-sm">
-              Copy a link to this page
+            {sitePictures.length === 0 && site.pages.length === 1 ? (
+              <a href={`/download/${siteName}.html?p=${link}`} download className="btn-glass text-sm">
+                Download one HTML file
+              </a>
+            ) : (
+              <button type="button" disabled={!link} onClick={downloadHtml} className="btn-glass cursor-pointer text-sm">
+                {site.pages.length === 1 ? "Download one HTML file" : "Download the HTML files (.zip)"}
+              </button>
+            )}
+            <button type="button" disabled={!link} onClick={() => copy(`${origin}/build#p=${link}`, "Link copied")} className="btn-glass cursor-pointer text-sm">
+              {site.pages.length === 1 ? "Copy a link to this page" : "Copy a link to this website"}
             </button>
           </p>
           <p className="-mt-2 text-xs text-ink-muted">
             The Next.js project runs as it is: npm install, then npm run dev. The link holds the whole page, so anyone with
             it can open it here.
-            {pictures.length > 0 &&
+            {sitePictures.length > 0 &&
               " Pictures you dropped in are in both downloads, but stay in this browser: the link and the install command leave them out."}
           </p>
           <div>

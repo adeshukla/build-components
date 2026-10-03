@@ -1,19 +1,71 @@
 import { applyConfig } from "@/lib/export";
+import { regionOf } from "@/lib/page-builder";
+import { siteTemplates, type BuiltSite } from "@/lib/site-builder";
 import { readComponentSources, readTemplateSources } from "@/lib/sources";
-import { templateReactSource } from "@/lib/template-output";
-import { resolve, type Template, type TemplateOptions } from "@/lib/templates";
+import { templateHtml, templateReactSource } from "@/lib/template-output";
+import { resolve } from "@/lib/templates";
 
 /*
- * A page as a Next.js project that runs as it is (D80): `npm install`, then `npm run dev`. The page is
- * app/page.tsx, exactly the page.tsx the other outputs give, and each part is its own file in components/,
- * written with the page's options already in it. Server only: it reads the parts from /registry.
+ * What a website from the builder goes out as (D80, D86). Server only: it reads the parts from /registry.
  *
- * The versions are the ones this site is built and tested with, so the project starts on a known-good set.
+ * Every page is the page.tsx the other outputs give. The shared header and footer are one file each in
+ * components/; a page's own parts are in components/<page>/, written with that page's options, so two
+ * pages can each have, say, a page header of their own.
  */
-export function nextProject(template: Template, options: TemplateOptions): Record<string, string> {
-  const sections = resolve(template, options);
-  const { exportNames } = readTemplateSources(sections.map((section) => section.slug));
-  const name = template.id;
+
+const pageFile = (path: string) => (path === "/" ? "app/page.tsx" : `app${path}/page.tsx`);
+const htmlFile = (path: string) => (path === "/" ? "index.html" : `${path.slice(1)}.html`);
+const partFile = (pageId: string, slug: string) => (regionOf(slug) === "main" ? `components/${pageId}/${slug}.tsx` : `components/${slug}.tsx`);
+
+/** Each page's file, and each part's file with its options in place. */
+function siteSources(site: BuiltSite) {
+  const pages = siteTemplates(site);
+  const { exportNames } = readTemplateSources(pages.flatMap(({ template }) => template.sections.map((section) => section.slug)));
+  const pageFiles: Record<string, string> = {};
+  const partFiles: Record<string, string> = {};
+  for (const { page, template, options } of pages) {
+    pageFiles[pageFile(page.path)] = templateReactSource(template, options, exportNames, (slug) => `@/${partFile(page.id, slug).replace(/\.tsx$/, "")}`);
+    for (const section of resolve(template, options)) {
+      partFiles[partFile(page.id, section.slug)] = applyConfig(readComponentSources(section.slug).react, section.config);
+    }
+  }
+  return { pageFiles, partFiles };
+}
+
+/** The site's pages as HTML files, each needing nothing else, linked to one another. */
+export function siteHtml(site: BuiltSite) {
+  const pages = siteTemplates(site);
+  const { sources } = readTemplateSources(pages.flatMap(({ template }) => template.sections.map((section) => section.slug)));
+  // A link to one of the site's pages goes to that page's file, so the files work opened from a folder.
+  const local = (html: string) =>
+    html.replace(/href="(\/[a-z0-9-]*)"/g, (link, path: string) => (site.pages.some((page) => page.path === path) ? `href="${htmlFile(path)}"` : link));
+  return Object.fromEntries(pages.map(({ page, template, options }) => [htmlFile(page.path), local(templateHtml(template, options, sources))]));
+}
+
+/** The site as one shadcn registry item: every page at its route, every part at its file. */
+export function siteRegistryItem(site: BuiltSite) {
+  const { pageFiles, partFiles } = siteSources(site);
+  return {
+    $schema: "https://ui.shadcn.com/schema/registry-item.json",
+    name: site.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "site",
+    type: "registry:block",
+    title: `${site.name} website`,
+    description: `${site.pages.length} ${site.pages.length === 1 ? "page" : "pages"} for ${site.name}, put together from parts.`,
+    files: [
+      ...Object.entries(pageFiles).map(([path, content]) => ({ path, type: "registry:page", target: path, content })),
+      ...Object.entries(partFiles).map(([path, content]) => ({ path, type: "registry:component", target: path, content })),
+    ],
+  };
+}
+
+/**
+ * The site as a Next.js project that runs as it is: `npm install`, then `npm run dev`. The versions are the
+ * ones this site is built and tested with, so the project starts on a known-good set.
+ */
+export function nextSite(site: BuiltSite): Record<string, string> {
+  const { pageFiles, partFiles } = siteSources(site);
+  const name = site.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "site";
+  const options = { name: site.name };
   const files: Record<string, string> = {};
 
   files["package.json"] = `${JSON.stringify(
@@ -91,22 +143,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   );
 }
 `;
-  files["app/page.tsx"] = templateReactSource(template, options, exportNames);
-  for (const section of sections) {
-    files[`components/${section.slug}.tsx`] = applyConfig(readComponentSources(section.slug).react, section.config);
-  }
+  Object.assign(files, pageFiles, partFiles);
   files["README.md"] = `# ${options.name}
 
-A page put together from accessible parts on Build Components (https://build-components.devstash.me).
+A website put together from accessible parts on Build Components (https://build-components.devstash.me).
 
     npm install
     npm run dev
 
 Then open http://localhost:3000.
 
-- \`app/page.tsx\` arranges the page.
-- \`components/\` holds one file per part, with the options you chose already set in its config block
-  (between \`// @config-start\` and \`// @config-end\`). Change them there.
+${site.pages.map((page) => `- \`${pageFile(page.path)}\`: ${page.title} (${page.path})`).join("\n")}
+- \`components/\` holds the shared header and footer; \`components/<page>/\` holds each page's own parts.
+  Every part has the options you chose already set in its config block (between \`// @config-start\`
+  and \`// @config-end\`). Change them there.
 - Styling is Tailwind CSS v4. Nothing else is needed at run time.
 `;
   return files;

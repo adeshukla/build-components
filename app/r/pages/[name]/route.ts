@@ -1,34 +1,14 @@
-import { decodePage, pageTemplate } from "@/lib/page-builder";
-import { readTemplateSources } from "@/lib/sources";
-import { partInstallUrls, templateReactSource } from "@/lib/template-output";
+import { siteRegistryItem } from "@/lib/next-project";
+import { decodeSite } from "@/lib/site-builder";
 
 /*
- * A page from the builder as a shadcn registry item (D80):
- * npx shadcn@latest add "<origin>/r/pages/<name>.json?p=<page>". Like a template's: it depends on each
- * part, installed by URL with the page's options applied, and adds the page at app/<name>/page.tsx.
+ * A website from the builder as one shadcn registry item (D80, D86):
+ * npx shadcn@latest add "<origin>/r/pages/<name>.json?p=<site>". It writes every page at its route
+ * (app/page.tsx, app/<page>/page.tsx) and every part at its file, with the site's options already in them.
  */
 export async function GET(request: Request, ctx: RouteContext<"/r/pages/[name]">) {
   const { name } = await ctx.params;
-  const url = new URL(request.url);
-  const page = decodePage(url.searchParams.get("p") ?? "");
-  if (!name.endsWith(".json") || !page || page.sections.length === 0) return new Response("Not found", { status: 404 });
-
-  const { template, options } = pageTemplate(page);
-  const { exportNames } = readTemplateSources(page.sections.map((section) => section.slug));
-  return Response.json({
-    $schema: "https://ui.shadcn.com/schema/registry-item.json",
-    name: template.id,
-    type: "registry:block",
-    title: `${page.name} page`,
-    description: template.summary,
-    registryDependencies: partInstallUrls(template, options, url.origin),
-    files: [
-      {
-        path: `app/${template.id}/page.tsx`,
-        type: "registry:page",
-        target: `app/${template.id}/page.tsx`,
-        content: templateReactSource(template, options, exportNames),
-      },
-    ],
-  });
+  const site = await decodeSite(new URL(request.url).searchParams.get("p") ?? "");
+  if (!name.endsWith(".json") || !site) return new Response("Not found", { status: 404 });
+  return Response.json(siteRegistryItem(site));
 }

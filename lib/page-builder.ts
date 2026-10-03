@@ -77,54 +77,65 @@ export function pageTemplate(page: BuiltPage): { template: Template; options: Te
   };
 }
 
+/** A section in a link: [slug, options as a query string (only what differs), width, space], the last two if set. */
+export function sectionEntry(section: BuiltSection) {
+  const entry: string[] = [section.slug, toSearchParams(registry[section.slug].schema, section.config).toString()];
+  if (section.width || section.space) entry.push(section.width ?? "", section.space ?? "");
+  return entry;
+}
+
+/** Sections read back from a link: unknown parts, repeats and anything malformed are dropped. */
+export function sectionsFromEntries(entries: unknown, seen = new Set<string>()): BuiltSection[] {
+  const sections: BuiltSection[] = [];
+  for (const entry of Array.isArray(entries) ? entries.slice(0, MAX_SECTIONS) : []) {
+    const [slug, query, width, space] = Array.isArray(entry) ? entry : [];
+    // One of each part: two of one would install over each other.
+    if (typeof slug !== "string" || !isRegistrySlug(slug) || seen.has(slug) || typeof query !== "string") continue;
+    seen.add(slug);
+    sections.push({
+      slug,
+      config: parseConfig(registry[slug].schema, new URLSearchParams(query)) as Record<string, unknown>,
+      ...(sectionWidths.includes(width) ? { width } : {}),
+      ...(sectionSpaces.includes(space) ? { space } : {}),
+    });
+  }
+  return sections;
+}
+
+/** The name, colour and theme from a link, each checked, each with its default. */
+export function basicsFrom(data: { n?: unknown; b?: unknown; t?: unknown }) {
+  const fallback = blankPage();
+  return {
+    name: typeof data.n === "string" && data.n.trim() ? data.n.trim().slice(0, 40) : fallback.name,
+    brand: typeof data.b === "string" && /^#[0-9a-f]{6}$/i.test(data.b) ? data.b : fallback.brand,
+    theme: (data.t === "dark" || data.t === "system" ? data.t : "light") as BuiltPage["theme"],
+  };
+}
+
+export function toBase64Url(bytes: Uint8Array) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export const fromBase64Url = (text: string) => Uint8Array.from(atob(text.replace(/-/g, "+").replace(/_/g, "/")), (char) => char.charCodeAt(0));
+
 /*
  * The link: JSON of the page with each part's options as its query string (only what differs from the
- * part's defaults), in URL-safe base64. Uncompressed, so reading it is synchronous everywhere.
+ * part's defaults), in URL-safe base64. Uncompressed, so reading it is synchronous everywhere. A whole
+ * website travels in its own, compressed form (lib/site-builder.ts), which reads this one too.
  */
 export function encodePage(page: BuiltPage) {
-  const data = {
-    n: page.name,
-    b: page.brand,
-    t: page.theme,
-    // [slug, options, width, space]: the last two only when set, so most links stay as short as before.
-    s: page.sections.map((section) => {
-      const entry: string[] = [section.slug, toSearchParams(registry[section.slug].schema, section.config).toString()];
-      if (section.width || section.space) entry.push(section.width ?? "", section.space ?? "");
-      return entry;
-    }),
-  };
-  let binary = "";
-  for (const byte of new TextEncoder().encode(JSON.stringify(data))) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const data = { n: page.name, b: page.brand, t: page.theme, s: page.sections.map(sectionEntry) };
+  return toBase64Url(new TextEncoder().encode(JSON.stringify(data)));
 }
 
 /** Reads a link someone else may have written: anything it cannot vouch for is dropped. */
 export function decodePage(text: string): BuiltPage | null {
   if (text.length > 60_000) return null;
   try {
-    const binary = atob(text.replace(/-/g, "+").replace(/_/g, "/"));
-    const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(binary, (char) => char.charCodeAt(0))));
-    const fallback = blankPage();
-    const seen = new Set<string>();
-    const sections: BuiltSection[] = [];
-    for (const entry of Array.isArray(data.s) ? data.s.slice(0, MAX_SECTIONS) : []) {
-      const [slug, query, width, space] = Array.isArray(entry) ? entry : [];
-      // One of each part: two of one would install over each other.
-      if (typeof slug !== "string" || !isRegistrySlug(slug) || seen.has(slug) || typeof query !== "string") continue;
-      seen.add(slug);
-      sections.push({
-        slug,
-        config: parseConfig(registry[slug].schema, new URLSearchParams(query)) as Record<string, unknown>,
-        ...(sectionWidths.includes(width) ? { width } : {}),
-        ...(sectionSpaces.includes(space) ? { space } : {}),
-      });
-    }
-    return {
-      name: typeof data.n === "string" && data.n.trim() ? data.n.trim().slice(0, 40) : fallback.name,
-      brand: typeof data.b === "string" && /^#[0-9a-f]{6}$/i.test(data.b) ? data.b : fallback.brand,
-      theme: data.t === "dark" || data.t === "system" ? data.t : "light",
-      sections,
-    };
+    const data = JSON.parse(new TextDecoder().decode(fromBase64Url(text)));
+    return { ...basicsFrom(data), sections: sectionsFromEntries(data.s) };
   } catch {
     return null;
   }

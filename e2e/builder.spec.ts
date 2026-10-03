@@ -129,6 +129,74 @@ test("on a touch screen, a part is dragged onto the page by its handle", async (
   await expect(rows(page)).toHaveCount(7);
 });
 
+test.describe("a website", () => {
+  test.skip(({ browserName, isMobile }) => browserName !== "chromium" || isMobile, "Chromium only: plain layout");
+  test.use({ viewport: { width: 1440, height: 1000 } });
+  const frameOf = (page: Page) => page.frameLocator('iframe[title="Your page, React output"]');
+  const pages = (page: Page) => page.getByRole("group", { name: "Pages" }).getByRole("button");
+
+  async function addPage(page: Page, title: string, address: string, template: RegExp) {
+    await page.getByRole("button", { name: "+ Add a page" }).click();
+    await expect(page.getByLabel("Page name")).toBeFocused();
+    await page.getByLabel("Page name").fill(title);
+    await page.getByRole("textbox", { name: /^Address/ }).fill(address);
+    await page.getByRole("textbox", { name: /^Address/ }).blur();
+    await page.getByRole("button", { name: template }).click();
+  }
+
+  test("pages share the header and footer, the menu lists them, and its links go to them", async ({ page, request }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Landing page/ }).click();
+    await addPage(page, "Pricing", "pricing", /^Pricing page/);
+    await addPage(page, "About us", "about", /^About page/);
+    await expect(pages(page)).toHaveText([/^Home/, /^Pricing/, /^About us/, "+ Add a page"]);
+
+    // One header for every page, listing the pages; a page's own sections stay its own.
+    const header = frameOf(page).locator('[data-part="header"]');
+    await expect(header.getByRole("link", { name: "Pricing" }).first()).toHaveAttribute("href", "/pricing");
+    await expect(header.getByRole("link", { name: "About us" }).first()).toHaveAttribute("href", "/about");
+    await expect(pageList(page).getByText("Every page")).toHaveCount(2);
+    await expect(frameOf(page).locator('[data-part="team-grid"]')).toBeVisible();
+    await pages(page).filter({ hasText: "Home" }).click();
+    await expect(frameOf(page).locator('[data-part="team-grid"]')).toHaveCount(0);
+
+    // In the preview, the menu goes to the site's own page.
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    await header.getByRole("link", { name: "Pricing" }).first().click();
+    await expect(frameOf(page).locator('[data-part="pricing-table"]')).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(pages(page).filter({ hasText: "Pricing" })).toHaveAttribute("aria-pressed", "true");
+
+    // Kept in this browser.
+    await page.reload();
+    await expect(pages(page)).toHaveCount(4);
+
+    // And taken home whole: a route per page, an HTML file per page, linked to one another.
+    await page.getByRole("button", { name: /Get the code/ }).click();
+    const href = await page.getByRole("link", { name: "Download a Next.js project" }).getAttribute("href");
+    const files = await (await request.get(href!.replace(".zip?", ".json?"))).json();
+    expect(Object.keys(files)).toEqual(expect.arrayContaining(["app/page.tsx", "app/pricing/page.tsx", "app/about/page.tsx", "components/header.tsx"]));
+    const htmlFiles = await (await request.get(href!.replace(".zip?", "-html.json?"))).json();
+    expect(Object.keys(htmlFiles).sort()).toEqual(["about.html", "index.html", "pricing.html"]);
+    expect(htmlFiles["index.html"]).toContain('href="pricing.html"');
+  });
+
+  test("a page can be renamed, readdressed and deleted; the home page stays /", async ({ page }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Landing page/ }).click();
+    // A template chooses its first section; Page settings is one step back.
+    await page.getByRole("button", { name: "Page settings" }).click();
+    await expect(page.getByRole("textbox", { name: /^Address/ })).toHaveAttribute("readonly", "");
+    await addPage(page, "Contact", "Get in touch!", /^Contact page/);
+    await page.getByRole("button", { name: "Page settings" }).click();
+    await expect(page.getByRole("textbox", { name: /^Address/ })).toHaveValue("/get-in-touch");
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Delete this page" }).click();
+    await expect(pages(page)).toHaveText([/^Home/, "+ Add a page"]);
+    await expect(pages(page).first()).toBeFocused();
+  });
+});
+
 /** A page of the given parts, as the builder would write it. */
 const built = (slugs: string[]): BuiltPage => ({
   name: "Northwind",
@@ -236,7 +304,8 @@ test.describe("what a page gives back", () => {
     expect(zip.headers()["content-type"]).toBe("application/zip");
     const bytes = await zip.body();
     expect(bytes.subarray(0, 2).toString()).toBe("PK");
-    for (const file of ["package.json", "app/layout.tsx", "app/page.tsx", "components/searchable-select.tsx", "README.md"]) {
+    // The shared header and footer are components/<part>; a page's own parts are in components/<page>/.
+    for (const file of ["package.json", "app/layout.tsx", "app/page.tsx", "components/header.tsx", "components/home/searchable-select.tsx", "README.md"]) {
       expect(bytes.includes(Buffer.from(file)), file).toBe(true);
     }
 
@@ -246,8 +315,10 @@ test.describe("what a page gives back", () => {
 
     const item = await (await request.get(`/r/pages/northwind.json?p=${p}`)).json();
     expect(item.type).toBe("registry:block");
-    expect(item.registryDependencies).toHaveLength(4);
-    expect(item.files[0].content).toContain('import { SearchableSelect } from "@/components/searchable-select";');
+    expect(item.files.map((file: { target: string }) => file.target)).toEqual(
+      expect.arrayContaining(["app/page.tsx", "components/header.tsx", "components/home/searchable-select.tsx", "components/home/faq.tsx", "components/footer.tsx"]),
+    );
+    expect(item.files[0].content).toContain('import { SearchableSelect } from "@/components/home/searchable-select";');
   });
 
   test("a link it cannot vouch for is refused", async ({ request }) => {

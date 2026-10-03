@@ -9,8 +9,17 @@ Last updated: 2026-10-04 (session 16, on dev, not shipped)
 - **Builder fixes (D84):** one thin scroll per pane, no gap under the footer, section width and spacing,
   footers at the bottom of short pages in every output, click text to edit, links stay in the preview,
   full-screen preview and open in a new tab. 466 tests pass against a production build.
-- **Next (Adesh's larger list):** multi-page websites, a theme builder (fonts, buttons, colours, radius, a
-  visitor dark/light toggle), images and embeds (YouTube), more sections. Plan and questions sent.
+- **Adesh chose** (2026-10-03): pictures in the browser and the downloads; the full theme builder across all
+  parts; websites and images first, then the theme builder (demo first), then more sections.
+- **Video and pictures (D85):** YouTube/Vimeo links play as copied; pictures dropped on a section or chosen
+  in its Pictures box show on the page (a service worker serves them) and go out in both downloads; the hero
+  has a picture option.
+- **Websites (D86):** pages sharing one header and footer, a menu that lists them, links between them in the
+  preview, a route per page in the Next.js project, an HTML file per page. 272 tests pass against a
+  production build; the downloaded three-page project builds.
+- **Next:** the theme builder: a demo of 2–4 directions for its panel first (design-demo), then shared theme
+  settings (fonts, colours, radius, buttons, spacing, a visitor light/dark toggle) read by all 125 parts in
+  both outputs. Then more sections. Not shipped: everything since D83 is on dev.
 
 ## Shipped (2026-10-03)
 Adesh said ship. `main` was fast-forwarded to `dev` (7a5d67e) and pushed; Vercel served it in about

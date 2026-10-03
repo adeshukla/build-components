@@ -34,7 +34,13 @@ export function templateInstallCommand(template: Template, options: TemplateOpti
  * them (see partInstallUrls), so the page only arranges them. `exportNames` maps a slug to the name its
  * file exports, read from the source on the server.
  */
-export function templateReactSource(template: Template, options: TemplateOptions, exportNames: Record<string, string>) {
+export function templateReactSource(
+  template: Template,
+  options: TemplateOptions,
+  exportNames: Record<string, string>,
+  /** Where each part's file is imported from; a website keeps each page's parts in a folder of its own. */
+  importFrom: (slug: string) => string = (slug) => `@/components/${slug}`,
+) {
   const sections = resolve(template, options);
   const name = (slug: string) => exportNames[slug] ?? slug;
   const dark = options.theme === "dark";
@@ -50,7 +56,7 @@ export function templateReactSource(template: Template, options: TemplateOptions
   const main = sections.filter((s) => s.region === "main").map(render);
   const bottom = sections.filter((s) => s.region === "bottom").map(render);
   const imports = [...new Set(sections.map((s) => s.slug))]
-    .map((slug) => `import { ${name(slug)} } from "@/components/${slug}";`)
+    .map((slug) => `import { ${name(slug)} } from "${importFrom(slug)}";`)
     .join("\n");
   const surface = options.theme === "system" ? "bg-white text-[#16121f] dark:bg-[#141019] dark:text-[#f6f5fa]" : dark ? "bg-[#141019] text-[#f6f5fa]" : "bg-white text-[#16121f]";
   const mainBlock = `<main id="main" tabIndex={-1} className="flex-1 outline-none">\n        ${main.join("\n        ")}\n      </main>`;
