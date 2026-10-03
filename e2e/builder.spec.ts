@@ -104,7 +104,8 @@ test.describe("building", () => {
   test("a template carries on in the builder with its parts", async ({ page }) => {
     await page.goto("/templates/contact");
     await page.getByRole("link", { name: "Keep building it" }).click();
-    await expect(rows(page).first()).toContainText("Site header");
+    // The link is read (and its page decompressed) before the builder shows: allow it the time.
+    await expect(rows(page).first()).toContainText("Site header", { timeout: 15_000 });
     await expect(rows(page).last()).toContainText("Site footer");
   });
 });

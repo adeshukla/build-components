@@ -448,6 +448,8 @@ export const components: Record<
     variants: {
       default: "",
       wide: "mobileBreakpoint=sm&ctaButton=false&sticky=true&height=compact&theme=dark&skipLink=false&logoText=Harbour",
+      // The visitor's light and dark switch, on a header that follows the system (D87).
+      switch: "schemeSwitch=true&theme=system",
     },
   },
   cart: {

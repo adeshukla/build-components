@@ -73,7 +73,7 @@ export function pageTemplate(page: BuiltPage): { template: Template; options: Te
         config: () => section.config,
       })),
     },
-    options: { name: page.name, brand: page.brand, theme: page.theme, sections: [] },
+    options: { name: page.name, brand: page.brand, theme: page.theme, sections: [], look: page.look },
   };
 }
 

@@ -4,6 +4,7 @@ import { siteTemplates, type BuiltSite } from "@/lib/site-builder";
 import { readComponentSources, readTemplateSources } from "@/lib/sources";
 import { templateHtml, templateReactSource } from "@/lib/template-output";
 import { resolve } from "@/lib/templates";
+import { themeCss } from "@/lib/theme";
 
 /*
  * What a website from the builder goes out as (D80, D86). Server only: it reads the parts from /registry.
@@ -18,13 +19,16 @@ const htmlFile = (path: string) => (path === "/" ? "index.html" : `${path.slice(
 const partFile = (pageId: string, slug: string) => (regionOf(slug) === "main" ? `components/${pageId}/${slug}.tsx` : `components/${slug}.tsx`);
 
 /** Each page's file, and each part's file with its options in place. */
-function siteSources(site: BuiltSite) {
+/** Each page's file, and each part's file with its options in place. A page imports the theme itself only
+ * when no layout of ours does it for it (the shadcn install). */
+function siteSources(site: BuiltSite, pagesImportTheme = false) {
   const pages = siteTemplates(site);
   const { exportNames } = readTemplateSources(pages.flatMap(({ template }) => template.sections.map((section) => section.slug)));
   const pageFiles: Record<string, string> = {};
   const partFiles: Record<string, string> = {};
   for (const { page, template, options } of pages) {
-    pageFiles[pageFile(page.path)] = templateReactSource(template, options, exportNames, (slug) => `@/${partFile(page.id, slug).replace(/\.tsx$/, "")}`);
+    const themeImport = pagesImportTheme ? (page.path === "/" ? "./bc-theme.css" : "../bc-theme.css") : undefined;
+    pageFiles[pageFile(page.path)] = templateReactSource(template, options, exportNames, (slug) => `@/${partFile(page.id, slug).replace(/\.tsx$/, "")}`, themeImport);
     for (const section of resolve(template, options)) {
       partFiles[partFile(page.id, section.slug)] = applyConfig(readComponentSources(section.slug).react, section.config);
     }
@@ -39,12 +43,16 @@ export function siteHtml(site: BuiltSite) {
   // A link to one of the site's pages goes to that page's file, so the files work opened from a folder.
   const local = (html: string) =>
     html.replace(/href="(\/[a-z0-9-]*)"/g, (link, path: string) => (site.pages.some((page) => page.path === path) ? `href="${htmlFile(path)}"` : link));
-  return Object.fromEntries(pages.map(({ page, template, options }) => [htmlFile(page.path), local(templateHtml(template, options, sources))]));
+  const restore = `<script>try{var s=localStorage.getItem("bc-scheme");if(s==="dark"||s==="light")document.documentElement.dataset.bcScheme=s}catch(e){}</script>`;
+  return Object.fromEntries(
+    pages.map(({ page, template, options }) => [htmlFile(page.path), local(templateHtml(template, options, sources)).replace("</head>", `    ${restore}\n  </head>`)]),
+  );
 }
 
 /** The site as one shadcn registry item: every page at its route, every part at its file. */
 export function siteRegistryItem(site: BuiltSite) {
-  const { pageFiles, partFiles } = siteSources(site);
+  const { pageFiles, partFiles } = siteSources(site, true);
+  const theme = site.look ? [{ path: "app/bc-theme.css", type: "registry:file", target: "app/bc-theme.css", content: themeCss(site.look) }] : [];
   return {
     $schema: "https://ui.shadcn.com/schema/registry-item.json",
     name: site.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "site",
@@ -54,6 +62,7 @@ export function siteRegistryItem(site: BuiltSite) {
     files: [
       ...Object.entries(pageFiles).map(([path, content]) => ({ path, type: "registry:page", target: path, content })),
       ...Object.entries(partFiles).map(([path, content]) => ({ path, type: "registry:component", target: path, content })),
+      ...theme,
     ],
   };
 }
@@ -128,8 +137,11 @@ export default config;
 `;
   files[".gitignore"] = "node_modules\n.next\nnext-env.d.ts\n*.tsbuildinfo\n";
   files["app/globals.css"] = `@import "tailwindcss";\n`;
+  if (site.look) files["app/bc-theme.css"] = themeCss(site.look);
+  // A visitor's light/dark choice (the header's switch) is put back before the page paints.
+  const restore = `try{var s=localStorage.getItem("bc-scheme");if(s==="dark"||s==="light")document.documentElement.dataset.bcScheme=s}catch(e){}`;
   files["app/layout.tsx"] = `import type { Metadata } from "next";
-import "./globals.css";
+import "./globals.css";${site.look ? '\nimport "./bc-theme.css";' : ""}
 
 export const metadata: Metadata = {
   title: ${JSON.stringify(options.name)},
@@ -137,7 +149,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: ${JSON.stringify(restore)} }} />
+      </head>
       <body>{children}</body>
     </html>
   );

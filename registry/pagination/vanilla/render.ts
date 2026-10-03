@@ -1,5 +1,16 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
-import { pagesFor, type PaginationConfig } from "../react/pagination";
+import { type PaginationConfig } from "../react/pagination";
+
+// A copy of the React file's own: that is a client module, so the server only gets a reference to it.
+function pagesFor(current: number, total: number, siblings: number) {
+  const pages: (number | "gap")[] = [];
+  for (let page = 1; page <= total; page++) {
+    const near = Math.abs(page - current) <= siblings;
+    if (page === 1 || page === total || near) pages.push(page);
+    else if (pages[pages.length - 1] !== "gap") pages.push("gap");
+  }
+  return pages;
+}
 
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4", hover: "#f4f3f8" },

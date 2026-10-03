@@ -1,6 +1,7 @@
 import { fullBleed } from "@/lib/parts";
 import { registry, type RegistrySlug } from "@/lib/registry";
 import { parseConfig } from "@/lib/schema";
+import type { Look } from "@/lib/theme";
 
 /*
  * Templates (D75): whole pages made from the parts in the catalogue. A template is a list of parts, each
@@ -18,6 +19,8 @@ export type TemplateOptions = {
   theme: "light" | "dark" | "system";
   /** Which optional sections are on, by slug. */
   sections: string[];
+  /** The site theme (D87), for pages made in the builder; templates leave every part its own look. */
+  look?: Look;
 };
 
 type Section = {
@@ -52,7 +55,8 @@ export function sectionFrame(section: { bleed: boolean; narrow?: boolean; width?
   const width = section.width ?? (section.bleed ? "full" : section.narrow ? "narrow" : undefined);
   const space = section.space ?? (section.bleed ? "none" : "medium");
   const padX = width === "full" ? "" : "px-6 sm:px-8";
-  const padY = { none: "", small: "py-6", medium: "py-10", large: "py-20" }[space];
+  // Scaled by the theme's spacing (--bc-space), 1 without a theme.
+  const padY = { none: "", small: "py-[calc(1.5rem*var(--bc-space,1))]", medium: "py-[calc(2.5rem*var(--bc-space,1))]", large: "py-[calc(5rem*var(--bc-space,1))]" }[space];
   const cap = width && width !== "full" ? { wide: "max-w-6xl", medium: "max-w-4xl", narrow: "max-w-2xl" }[width] : "";
   return { outer: [padX, padY].filter(Boolean).join(" "), inner: cap ? `mx-auto ${cap}` : "", width: width ?? "auto", space };
 }

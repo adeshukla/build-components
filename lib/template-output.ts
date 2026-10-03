@@ -2,6 +2,7 @@ import { applyConfig } from "@/lib/export";
 import { registry, type RegistrySlug } from "@/lib/registry";
 import { toSearchParams } from "@/lib/schema";
 import { resolve, sectionFrame, type Template, type TemplateOptions } from "@/lib/templates";
+import { themeCss } from "@/lib/theme";
 
 /*
  * What a template exports. Pure functions, used by the editor in the browser and by the registry route and
@@ -40,6 +41,8 @@ export function templateReactSource(
   exportNames: Record<string, string>,
   /** Where each part's file is imported from; a website keeps each page's parts in a folder of its own. */
   importFrom: (slug: string) => string = (slug) => `@/components/${slug}`,
+  /** With a theme: where the page imports bc-theme.css from, when no layout does it for it. */
+  themeImport?: string,
 ) {
   const sections = resolve(template, options);
   const name = (slug: string) => exportNames[slug] ?? slug;
@@ -57,8 +60,11 @@ export function templateReactSource(
   const bottom = sections.filter((s) => s.region === "bottom").map(render);
   const imports = [...new Set(sections.map((s) => s.slug))]
     .map((slug) => `import { ${name(slug)} } from "${importFrom(slug)}";`)
-    .join("\n");
-  const surface = options.theme === "system" ? "bg-white text-[#16121f] dark:bg-[#141019] dark:text-[#f6f5fa]" : dark ? "bg-[#141019] text-[#f6f5fa]" : "bg-white text-[#16121f]";
+    .join("\n")
+    .concat(options.look && themeImport ? `\nimport "${themeImport}";` : "");
+  const surface = options.look
+    ? `bc-page bc-page--${options.theme}`
+    : options.theme === "system" ? "bg-white text-[#16121f] dark:bg-[#141019] dark:text-[#f6f5fa]" : dark ? "bg-[#141019] text-[#f6f5fa]" : "bg-white text-[#16121f]";
   const mainBlock = `<main id="main" tabIndex={-1} className="flex-1 outline-none">\n        ${main.join("\n        ")}\n      </main>`;
   const body = side.length
     ? `<div className="flex-1 md:grid md:grid-cols-[auto_1fr]">\n        <div>\n          ${side.join("\n          ")}\n        </div>\n        ${mainBlock.replace(/\n/g, "\n  ")}\n      </div>`
@@ -128,11 +134,12 @@ export function templateHtml(
     .map((section) => applyConfig(sources[section.slug].js, section.config))
     .join("\n");
   const { light, dark } = surfaces;
-  const page =
-    options.theme === "dark"
+  const page = options.look
+    ? ""
+    : options.theme === "dark"
       ? `background:${dark.bg};color:${dark.fg}`
       : `background:${light.bg};color:${light.fg}`;
-  const system = options.theme === "system" ? `@media (prefers-color-scheme: dark){body{background:${dark.bg};color:${dark.fg}}}` : "";
+  const system = options.look ? themeCss(options.look) : options.theme === "system" ? `@media (prefers-color-scheme: dark){body{background:${dark.bg};color:${dark.fg}}}` : "";
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -147,9 +154,9 @@ main{flex:1}
 main:focus{outline:none}
 .tpl-px{padding-inline:24px}
 @media (min-width:640px){.tpl-px{padding-inline:32px}}
-.tpl-py-small{padding-block:24px}
-.tpl-py-medium{padding-block:40px}
-.tpl-py-large{padding-block:80px}
+.tpl-py-small{padding-block:calc(24px*var(--bc-space,1))}
+.tpl-py-medium{padding-block:calc(40px*var(--bc-space,1))}
+.tpl-py-large{padding-block:calc(80px*var(--bc-space,1))}
 .tpl-max-wide,.tpl-max-medium,.tpl-max-narrow{margin-inline:auto}
 .tpl-max-wide{max-width:72rem}
 .tpl-max-medium{max-width:56rem}
@@ -159,7 +166,7 @@ main:focus{outline:none}
 ${css}
     </style>
   </head>
-  <body>
+  <body${options.look ? ` class="bc-page bc-page--${options.theme}"` : ""}>
 ${region("top")}
 ${side ? `<div class="tpl-split">\n<div>\n${side}\n</div>\n${main}\n</div>` : main}
 ${region("bottom")}

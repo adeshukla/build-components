@@ -53,7 +53,11 @@ ${config.skipLink ? `      <a class="hd-skip" href="#main">Skip to content</a>\n
 ${links}
           </ul>
 ${cta}        </nav>
-        <button class="hd-toggle" type="button" data-toggle aria-expanded="false" aria-controls="hd-menu">
+${config.schemeSwitch ? `        <button class="hd-scheme" type="button" data-scheme aria-label="Dark theme" aria-pressed="false">
+          <svg class="hd-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+          <svg class="hd-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+` : ""}        <button class="hd-toggle" type="button" data-toggle aria-expanded="false" aria-controls="hd-menu">
           <svg class="hd-icon-open" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
           <svg class="hd-icon-close" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
           ${escapeHtml(config.menuLabel)}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Part } from "@/components/preview-client";
 import { partBySlug } from "@/lib/parts";
 import { decodePage, pageTemplate, type BuiltPage } from "@/lib/page-builder";
+import { themeCss } from "@/lib/theme";
 import { resolve, sectionFrame, templateById, type Template, type TemplateOptions } from "@/lib/templates";
 
 const surfaces = { light: { background: "#ffffff", color: "#16121f" }, dark: { background: "#141019", color: "#f6f5fa" } };
@@ -55,7 +56,13 @@ export function TemplatePage({ template, options, xray = false }: { template: Te
 
   return (
     // A column, so the footer sits at the bottom of a page shorter than the screen.
-    <div style={surfaces[dark ? "dark" : "light"]} className="flex min-h-dvh flex-col">
+    // With a theme (pages from the builder) the page's background and fonts are the theme's, and its light
+    // or dark follows the visitor's choice; a template keeps its plain surface.
+    <div
+      style={options.look ? undefined : surfaces[dark ? "dark" : "light"]}
+      className={`flex min-h-dvh flex-col ${options.look ? `bc-page bc-page--${options.theme}` : ""}`}
+    >
+      {options.look && <style>{themeCss(options.look)}</style>}
       {region("top")}
       {side.length > 0 ? (
         <div className="flex-1 md:grid md:grid-cols-[auto_1fr]">

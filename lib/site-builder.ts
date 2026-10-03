@@ -1,3 +1,4 @@
+import { lookFrom, lookOf } from "@/lib/theme";
 import {
   basicsFrom,
   blankPage,
@@ -35,6 +36,7 @@ export function siteFromPage(page: BuiltPage): BuiltSite {
     name: page.name,
     brand: page.brand,
     theme: page.theme,
+    look: page.look,
     menu: true,
     top: page.sections.filter((section) => regionOf(section.slug) === "top"),
     bottom: page.sections.filter((section) => regionOf(section.slug) === "bottom"),
@@ -42,7 +44,8 @@ export function siteFromPage(page: BuiltPage): BuiltSite {
   };
 }
 
-export const blankSite = () => siteFromPage(blankPage());
+/** A new site starts on the Clean theme: every part then shares one look from the first part on. */
+export const blankSite = (): BuiltSite => ({ ...siteFromPage(blankPage()), look: lookOf("clean") });
 
 /** The links a menu shows: every page but the home page, eight at most (what a header holds). */
 export const menuLinks = (site: BuiltSite) =>
@@ -54,7 +57,13 @@ export function pageView(site: BuiltSite, id: string): BuiltPage {
   const links = site.menu && site.pages.length > 1 ? menuLinks(site) : null;
   const linked = (section: BuiltSection) =>
     links && (section.slug === "header" || section.slug === "footer") ? { ...section, config: { ...section.config, links } } : section;
-  return { name: site.name, brand: site.brand, theme: site.theme, sections: [...site.top.map(linked), ...page.sections, ...site.bottom.map(linked)] };
+  return {
+    name: site.name,
+    brand: site.brand,
+    theme: site.theme,
+    look: site.look,
+    sections: [...site.top.map(linked), ...page.sections, ...site.bottom.map(linked)],
+  };
 }
 
 /** An edited view put back: its banner and footer are the site's, the rest is the page's. */
@@ -65,6 +74,7 @@ export function fromView(site: BuiltSite, id: string, view: BuiltPage): BuiltSit
     name: view.name,
     brand: view.brand,
     theme: view.theme,
+    look: view.look,
     top: sections.filter((section) => regionOf(section.slug) === "top"),
     bottom: sections.filter((section) => regionOf(section.slug) === "bottom"),
     pages: site.pages.map((page) => (page.id === id ? { ...page, sections: sections.filter((section) => regionOf(section.slug) === "main") } : page)),
@@ -96,6 +106,7 @@ export function siteData(site: BuiltSite) {
     b: site.brand,
     t: site.theme,
     m: site.menu,
+    l: site.look,
     top: site.top.map(sectionEntry),
     bottom: site.bottom.map(sectionEntry),
     pages: site.pages.map((page) => ({ i: page.id, t: page.title, p: page.path, s: page.sections.map(sectionEntry) })),
@@ -125,6 +136,7 @@ export function siteFrom(data: unknown): BuiltSite | null {
   return {
     ...basicsFrom(raw),
     menu: raw.m !== false,
+    look: lookFrom(raw.l),
     top: sectionsFromEntries(raw.top, shared).filter((section) => regionOf(section.slug) === "top"),
     bottom: sectionsFromEntries(raw.bottom, shared).filter((section) => regionOf(section.slug) === "bottom"),
     pages,

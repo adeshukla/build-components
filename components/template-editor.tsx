@@ -98,7 +98,7 @@ export function PageFields({ options, onChange }: { options: PageFieldValues; on
       </div>
       <Segmented
         name={`${uid}-theme`}
-        legend="Theme"
+        legend="Colour scheme"
         value={options.theme}
         columns={3}
         choices={[

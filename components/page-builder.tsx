@@ -20,6 +20,7 @@ import {
 } from "@/lib/page-builder";
 import { inStock, partBySlug, type Category } from "@/lib/parts";
 import { registry, type RegistrySlug } from "@/lib/registry";
+import { buttonShapes, colourFamilies, cornerScales, fonts, lookOf, presets, spacings, type Look, type PresetId } from "@/lib/theme";
 import { addressFor, blankSite, decodeSite, encodeSite, fromView, MAX_PAGES, newPage, pageView, siteData, siteFrom, siteFromPage, type BuiltSite } from "@/lib/site-builder";
 import { ACCEPTED_PICTURES, loadPicture, pictureName, picturesIn, savePicture, swapPictures } from "@/lib/pictures";
 import type { Schema } from "@/lib/schema";
@@ -1193,7 +1194,9 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
                     option.key !== "accentColor" &&
                     option.key !== "theme" &&
                     // The menu lists the site's pages; it is turned off in Website settings to write it by hand.
-                    !(menuFollows && option.key === "links" && (chosen.slug === "header" || chosen.slug === "footer")),
+                    !(menuFollows && option.key === "links" && (chosen.slug === "header" || chosen.slug === "footer")) &&
+                    // Under a theme, corners are the theme's (Website settings), on every part alike.
+                    !(site.look && option.key === "radius"),
                 )}
                 config={chosen.config}
                 onChange={(key, value) => setOption(chosen.slug, { [key]: value })}
@@ -1238,6 +1241,24 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
 
             <h2 className="mt-2 border-t border-rule pt-5 font-display text-2xl leading-none">Website</h2>
             <PageFields options={page} onChange={(patch) => setPage({ ...page, ...patch })} />
+            <ThemePanel
+              look={site.look}
+              hasHeader={site.top.some((section) => section.slug === "header")}
+              schemeSwitch={Boolean(site.top.find((section) => section.slug === "header")?.config.schemeSwitch)}
+              onPreset={(preset) => {
+                setSite({ ...site, brand: presets[preset].brand, look: lookOf(preset) });
+                setSaid(`Theme: ${presets[preset].label}`);
+              }}
+              onTune={(patch) => site.look && setSite({ ...site, look: { ...site.look, ...patch } })}
+              onSchemeSwitch={(on) =>
+                setSite({
+                  ...site,
+                  // A switch only moves parts that follow the system, so turning it on makes the site follow it.
+                  theme: on ? "system" : site.theme,
+                  top: site.top.map((section) => (section.slug === "header" ? { ...section, config: { ...section.config, schemeSwitch: on } } : section)),
+                })
+              }
+            />
             <label className="flex cursor-pointer items-start gap-2.5 text-sm">
               <input type="checkbox" checked={site.menu} onChange={(event) => setSite({ ...site, menu: event.target.checked })} className="mt-1 size-4 accent-(--color-accent)" />
               <span>
@@ -1342,6 +1363,104 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
           </ul>
         </div>
       </dialog>
+    </div>
+  );
+}
+
+/**
+ * The theme (D87, direction A: presets first). Six finished themes; picking one sets the brand colour too.
+ * "Fine-tune" changes one thing at a time. The light and dark switch is the header's, turned on from here.
+ */
+function ThemePanel({
+  look,
+  hasHeader,
+  schemeSwitch,
+  onPreset,
+  onTune,
+  onSchemeSwitch,
+}: {
+  look: Look | undefined;
+  hasHeader: boolean;
+  schemeSwitch: boolean;
+  onPreset: (preset: PresetId) => void;
+  onTune: (patch: Partial<Look>) => void;
+  onSchemeSwitch: (on: boolean) => void;
+}) {
+  const choice = <K extends keyof Look>(key: K, label: string, options: Record<string, { label: string }>) => (
+    <label className="grid min-w-0 gap-1 text-sm font-medium">
+      {label}
+      <select
+        value={look?.[key] as string}
+        onChange={(event) => onTune({ [key]: event.target.value } as Partial<Look>)}
+        className="min-h-10 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-2 font-normal"
+      >
+        {Object.entries(options).map(([value, option]) => (
+          <option key={value} value={value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+  return (
+    <div className="grid gap-3">
+      <div>
+        <p className="text-sm font-medium">Theme</p>
+        <p className="text-xs text-ink-muted">{look ? "Every part on every page takes it." : "None yet: every part keeps its own look. Pick one to give the site one look."}</p>
+      </div>
+      <div role="group" aria-label="Themes" className="grid grid-cols-2 gap-2">
+        {(Object.keys(presets) as PresetId[]).map((id) => {
+          const preset = presets[id];
+          const family = colourFamilies[preset.look.colours];
+          return (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={look?.preset === id}
+              onClick={() => onPreset(id)}
+              className="cursor-pointer rounded-xl border border-rule bg-paper p-2.5 text-left transition-colors hover:border-accent aria-pressed:border-accent aria-pressed:shadow-[inset_0_0_0_1px_var(--color-accent)]"
+            >
+              <span aria-hidden="true" className="flex gap-1">
+                {[preset.brand, family.light.sunk, family.light.text].map((colour, index) => (
+                  <span key={index} className="size-4 rounded-full border border-black/10" style={{ background: colour }} />
+                ))}
+              </span>
+              <span className="mt-1.5 block text-sm font-semibold" style={{ fontFamily: fonts[preset.look.headingFont].stack }}>
+                {preset.label}
+              </span>
+              <span className="block text-xs text-ink-muted">{preset.note}</span>
+            </button>
+          );
+        })}
+      </div>
+      {look && (
+        <details className="rounded-lg border border-rule px-3">
+          <summary className="min-h-10 cursor-pointer py-2.5 text-sm font-semibold">Fine-tune</summary>
+          <div className="grid grid-cols-2 gap-2 pb-3">
+            {choice("headingFont", "Headings", fonts)}
+            {choice("bodyFont", "Text", fonts)}
+            {choice("colours", "Colours", colourFamilies)}
+            {choice("corners", "Corners", cornerScales)}
+            {choice("buttons", "Buttons", buttonShapes)}
+            {choice("space", "Spacing", spacings)}
+          </div>
+        </details>
+      )}
+      <label className={`flex items-start gap-2.5 text-sm ${hasHeader ? "cursor-pointer" : "text-ink-muted"}`}>
+        <input
+          type="checkbox"
+          checked={schemeSwitch}
+          disabled={!hasHeader}
+          onChange={(event) => onSchemeSwitch(event.target.checked)}
+          className="mt-1 size-4 accent-(--color-accent)"
+        />
+        <span>
+          Visitors can switch light and dark
+          <span className="block text-xs text-ink-muted">
+            {hasHeader ? "A switch in the header. The site then starts from each visitor's own setting." : "Needs a site header: add one from the parts."}
+          </span>
+        </span>
+      </label>
     </div>
   );
 }

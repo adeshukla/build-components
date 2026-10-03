@@ -4,6 +4,31 @@
  * Escape closes the menu and puts focus back on the button.
  */
 (function () {
+  // The light and dark switch: the visitor's choice for the whole page, remembered (<html data-bc-scheme>).
+  function createSchemeSwitch(button) {
+    const system = window.matchMedia("(prefers-color-scheme: dark)");
+    const page = document.documentElement;
+    const isDark = function () {
+      return page.dataset.bcScheme ? page.dataset.bcScheme === "dark" : system.matches;
+    };
+    const show = function () {
+      button.setAttribute("aria-pressed", String(isDark()));
+    };
+    button.addEventListener("click", function () {
+      const scheme = isDark() ? "light" : "dark";
+      page.dataset.bcScheme = scheme;
+      try {
+        localStorage.setItem("bc-scheme", scheme);
+      } catch {
+        // Storage blocked: the choice lasts this visit.
+      }
+    });
+    system.addEventListener("change", show);
+    new MutationObserver(show).observe(page, { attributes: true, attributeFilter: ["data-bc-scheme"] });
+    show();
+  }
+  document.querySelectorAll("[data-scheme]").forEach(createSchemeSwitch);
+
   function createHeader(header) {
     const toggle = header.querySelector("[data-toggle]");
     const menu = header.querySelector(".hd-menu");

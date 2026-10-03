@@ -29,6 +29,23 @@ for (const target of targets("header")) {
       }
     });
 
+    test("the light and dark switch sets the whole page, says so, and is remembered", async ({ page }) => {
+      await page.emulateMedia({ colorScheme: "light" });
+      await open(page, target.url("switch"));
+      const toggle = page.getByRole("button", { name: "Dark theme" });
+      const background = () => page.locator("header").first().evaluate((el) => getComputedStyle(el).backgroundColor);
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      const light = await background();
+      await toggle.click();
+      await expect(page.locator("html")).toHaveAttribute("data-bc-scheme", "dark");
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect.poll(background).not.toBe(light);
+      expect(await page.evaluate(() => localStorage.getItem("bc-scheme"))).toBe("dark");
+      await toggle.click();
+      await expect(page.locator("html")).toHaveAttribute("data-bc-scheme", "light");
+      await expect.poll(background).toBe(light);
+    });
+
     test("wide screens: links sit in the bar and there is no menu button", async ({ page }) => {
       await open(page, target.url("default"));
       await page.setViewportSize({ width: 1280, height: 800 });

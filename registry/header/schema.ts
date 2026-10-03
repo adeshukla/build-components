@@ -86,6 +86,14 @@ export const headerSchema = [
     dependsOn: { key: "ctaButton", equals: true },
   },
   {
+    key: "schemeSwitch",
+    label: "Light and dark switch",
+    description: "A button for visitors to choose light or dark. Every part on the page follows it, and it is remembered.",
+    group: "Add-ons",
+    type: "boolean",
+    default: false,
+  },
+  {
     key: "skipLink",
     label: "Skip to content link",
     description: "Hidden until focused. Lets keyboard users jump past the navigation.",

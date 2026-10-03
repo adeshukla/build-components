@@ -1,5 +1,20 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
-import { parseTable, type TableConfig } from "../react/table";
+import { type TableConfig } from "../react/table";
+
+// A copy of the React file's own: that is a client module, so the server only gets a reference to it.
+function parseTable(data: string) {
+  const lines = data
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
+  if (lines.length === 0) return { columns: [] as string[], rows: [] as string[][] };
+  const columns = lines[0].split(",").map((cell) => cell.trim());
+  const rows = lines.slice(1).map((line) => {
+    const cells = line.split(",").map((cell) => cell.trim());
+    return columns.map((_, index) => cells[index] ?? "");
+  });
+  return { columns, rows };
+}
 
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f7f7fb", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4", hover: "#f0eff6" },

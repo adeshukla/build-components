@@ -1,5 +1,10 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
-import { fieldName, type FormConfig, type FormField } from "../react/form";
+import { type FormConfig, type FormField } from "../react/form";
+
+// A copy of the React file's own: that is a client module, so the server only gets a reference to it.
+function fieldName(label: string) {
+  return label.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "field";
+}
 
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#8d8a99", sunk: "#f4f3f8", error: "#b4232b" },
