@@ -81,6 +81,32 @@ export function safeUrl(value: string) {
   }
 }
 
+/**
+ * A YouTube or Vimeo page link (what people copy from the address bar) becomes its embed address, on
+ * YouTube's no-cookie host. Anything else is used as given. Ids are checked, so nothing else gets through.
+ */
+export function toEmbedUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^(www|m)\./, "");
+    const id = (candidate: string | null | undefined) => (candidate && /^[\w-]{6,20}$/.test(candidate) ? candidate : "");
+    const youtube = (videoId: string) => (videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : value);
+    if (host === "youtu.be") return youtube(id(url.pathname.slice(1)));
+    if (host === "youtube.com" || host === "youtube-nocookie.com") {
+      if (url.searchParams.get("v")) return youtube(id(url.searchParams.get("v")));
+      const [, kind, videoId] = url.pathname.split("/");
+      if (kind === "shorts" || kind === "live") return youtube(id(videoId));
+    }
+    if (host === "vimeo.com") {
+      const videoId = url.pathname.split("/")[1];
+      if (/^\d{4,12}$/.test(videoId)) return `https://player.vimeo.com/video/${videoId}`;
+    }
+  } catch {
+    // Not a full address: used as given, and safeUrl decides.
+  }
+  return value;
+}
+
 export function VideoEmbed({ config = defaultConfig }: { config?: VideoEmbedConfig }) {
   const id = useId();
   const [playing, setPlaying] = useState(false);
@@ -99,7 +125,7 @@ export function VideoEmbed({ config = defaultConfig }: { config?: VideoEmbedConf
     "--vid-line": palette.line,
   } as CSSProperties;
 
-  const embed = safeUrl(config.embedUrl);
+  const embed = safeUrl(toEmbedUrl(config.embedUrl));
   const watch = safeUrl(config.watchUrl);
   const poster = safeUrl(config.posterSrc);
 

@@ -7,10 +7,12 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  // Pages built here show people's own images from wherever they host them (D85); images cannot run code.
+  "img-src 'self' data: blob: https:",
   "font-src 'self'",
   "connect-src 'self'",
-  "frame-src 'self'",
+  // A built page's video part plays YouTube (no-cookie host) and Vimeo, only once its button is pressed.
+  "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com",
   "frame-ancestors 'self'",
   "object-src 'none'",
   "base-uri 'self'",

@@ -46,6 +46,13 @@ for (const target of targets("video-embed")) {
       await expect(frame).toHaveAttribute("allowfullscreen", /.*/);
     });
 
+    test("a YouTube page link plays from YouTube's no-cookie embed", async ({ page }) => {
+      await page.route(/youtube-nocookie.com/, (route) => route.abort());
+      await open(page, target.url("youtube"));
+      await play(page).click();
+      await expect(page.locator("iframe")).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/aqzQ1-wAbcd");
+    });
+
     test("there is a direct link as well, for where a frame is blocked", async ({ page }) => {
       await open(page, target.url("loaded"));
       await expect(page.getByRole("link", { name: /^Watch on / })).toBeVisible();

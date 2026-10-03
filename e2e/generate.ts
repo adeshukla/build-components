@@ -1471,6 +1471,8 @@ export const components: Record<
     variants: {
       default: "",
       loaded: "embedUrl=https%3A%2F%2Fbuild-components.devstash.me%2F&watchUrl=https%3A%2F%2Fbuild-components.devstash.me%2F&providerName=devstash&theme=dark",
+      // A YouTube page link, as people copy it from the address bar.
+      youtube: "embedUrl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DaqzQ1-wAbcd%26t%3D42",
     },
   },
   "pull-quote": {
