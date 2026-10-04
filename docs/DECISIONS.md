@@ -788,3 +788,28 @@ follows the system again as it changes, with no third button to explain.
 **Found on the way:** the header renders the control twice (desktop, and inside the phone menu), and both
 radio groups were named `theme`, so the browser made them one group and only one radio across both could
 be checked. Each now gets its own name from `useId()`. `e2e/site-pages.spec.ts` covers it.
+
+## 2026-10-04 — D90. Versions, a test record per part, a report link, and counting what is taken
+**Adesh asked** for the four cheap improvements: fixes reaching people who copied a part, the testing claim
+made checkable, known debt paid, and knowing what people use. He chose our own counter (no third party) and
+a report link by email to hello@devstash.me.
+**Versions** (`lib/versions.ts`): a dated history per part; numbers are worked out from it (added = minor,
+fixed = patch), not typed. 1.0.0 is what was live when versions began (3 October 2026); every part then took
+the site theme (1.1.0); hero, video embed and header gained options; feature grid, notification list and
+toolbar had their duplicate-key bug fixed. Fixes to things that never shipped (the site downloads) are not
+listed: a reader's copy never had them. The six parts from D88 start at 1.0.0. Every file a part gives out
+names the part, its version and its changes link on its first line (`stamp` in `lib/sources.ts`, so the
+editor, the registry, templates and every download carry it; a whole HTML document keeps its doctype first).
+**Test record** (`scripts/test-results.mjs` → `lib/test-results.json`): the script runs the parts' own specs
+with Playwright's JSON reporter and writes, per part, the day, the commit (with "+" if it held uncommitted
+changes) and passed/failed per browser. Only a run writes it. Shown under the editor with the changes and
+the report link (`components/part-record.tsx`). Not CI yet: a public repo and Actions are Adesh's call.
+**Debt:** the twenty hard-coded ids were already fixed in D69 (CLAUDE.md still said otherwise; corrected).
+The builder's blank frames under eight workers are the dev server's load, not the product: the page always
+reaches the frame (the worker handshake only holds back pictures).
+**Counting** (`lib/counter.ts`): installs (the registry routes) and downloads (the download route) are
+counted where they are served; copies and a template's HTML download (made in the browser) by a beacon to
+`/api/count`, which takes only known names. One Upstash Redis hash per month, a field per event and name
+(`install:date-picker`), sent with `after()` so nothing waits on it. Nothing about who. Without the store's
+variables nothing is counted. Checked against a stand-in store on a production build. A template install
+also counts each part it pulls in, as the CLI fetches them. The About page says what is counted.

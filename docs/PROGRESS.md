@@ -32,6 +32,13 @@ Last updated: 2026-10-04 (session 16, on dev, not shipped)
   React (the feature grid had the same bug, fixed).
 - **Next:** Adesh tries /templates and /build; then ship when he says so. No shop website yet: there is no
   product list template (a product card is one card).
+- **Versions, test record, report link, counting (D90):** every part has a version, stamped on the first line
+  of every file it gives out, and its page lists the changes, its last test run (written by
+  `scripts/test-results.mjs`) and a "Report a problem" email link. Installs, downloads and copies are counted
+  per part and template, nothing about who.
+- **Needs Adesh before the counter counts:** in Vercel, add an Upstash Redis database from the Marketplace
+  and connect it to this project (it sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`). Read counts in the
+  Upstash console: `HGETALL counts:2026-10`. Also: does hello@devstash.me receive mail?
 - **Not shipped:** everything since D83 is on dev, waiting for "ship".
 
 ## Shipped (2026-10-03)
