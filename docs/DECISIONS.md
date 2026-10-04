@@ -813,3 +813,35 @@ counted where they are served; copies and a template's HTML download (made in th
 (`install:date-picker`), sent with `after()` so nothing waits on it. Nothing about who. Without the store's
 variables nothing is counted. Checked against a stand-in store on a production build. A template install
 also counts each part it pulls in, as the CLI fetches them. The About page says what is counted.
+
+## 2026-10-04 — D91. A registry index and llms.txt, for the shadcn CLI, its MCP server and AI assistants
+`/r/registry.json` lists every part (served by the part route), so a components.json namespace
+(`"@build-components": "<site>/r/{name}.json"`) can view, search and add parts by name; checked with the real
+CLI. `/llms.txt` and `/llms-full.txt` are generated from the registry and schemas (`lib/ai-index.ts`): every
+part, template and option, so they cannot drift. By name a part comes with its defaults; options go in the URL.
+
+## 2026-10-04 — D92. Framework outputs: thin native files on the tested plain output (decision 6 settled)
+**Chosen over Mitosis and over a rewrite per framework:** each part's plain script becomes
+`<slug>.core.js`, a module whose `mount(container)` starts it inside one container and returns what undoes
+it. Vue (SFC), Svelte 5, Angular (standalone, `ViewEncapsulation.None`), Solid and a Web Component (one file,
+its stylesheet inside) each hold the markup for the chosen options in a `display: contents` wrapper and
+mount the core in their own lifecycle. Nothing is rewritten per framework, so a framework is exactly as good
+as the plain output. Options are baked in at export, as in the HTML output.
+**Clean-up:** `mount` notes what the part attaches outside its markup while starting (listeners on document,
+window and media queries, intervals, observers) and takes it off on unmount. ponytail: an interval started
+later (a carousel's autoplay) outlives an unmount; listeners added later are removed by the part itself.
+**Tested:** `e2e/frameworks.ts` compiles every output with its framework's own compiler (vue/compiler-sfc,
+svelte/compiler, babel-preset-solid, Angular JIT), bundles it with esbuild (runtimes shared) and every part's
+spec runs on it (`targets` in `e2e/helpers.ts`, `FW_PARTS`). Full sweep: 12,176 passed; the 15 failures were
+the header's second start-up line, fixed. `e2e/frameworks.spec.ts` checks an unmounted component leaves no
+interval, observer or page listener (and fails when the clean-up is removed). The part editor's third output
+shows each framework's files and downloads them as a zip. Dev dependencies only: users install nothing.
+
+## 2026-10-04 — D93. Right to left
+`e2e/rtl.spec.ts` renders every part left to right and right to left in both outputs and fails on any box
+that did not mirror (inline pieces of an English sentence excepted: English stays left to right inside an
+RTL page). 24 parts did not; their left/right styles became start/end (`scripts/rtl-codemod.py`, run on those
+parts only; class lists and rules that also move along x stay physical, as half-logical would split them).
+The switch knob and the tree's chevron turn the other way. The nine parts whose scripts read the arrow keys
+swap Left and Right in RTL (`keyOf`); `e2e/rtl-keys.spec.ts` checks Left in RTL leaves each part exactly where
+Right leaves it in LTR. All 262 mirror; the changed parts' own specs pass in three browsers.

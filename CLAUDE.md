@@ -17,7 +17,7 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 3. Schema-driven: ONE options schema per component drives the editor panel, URL state, live preview and every exporter.
 4. No runtime dependency for users: copy code, or install by URL through a shadcn-compatible registry (`/r/<name>.json`). No hosted render API or embed script.
 5. MVP outputs: React + Tailwind v4, and vanilla HTML/CSS/JS.
-6. Multi-framework path undecided (Mitosis vs Web Components). Decide with a spike on a complex component. Never list a framework as supported unless its output passes the same tests.
+6. Frameworks (D92): Vue, Svelte, Angular, Solid and a Web Component, each a thin file around the plain output's core (`lib/framework-output.ts`), all tested with every part's spec. Never list a framework as supported unless its output passes the same tests.
 7. Accessible by default: WAI-ARIA APG patterns. Test every generated output (not just the preview) with Playwright + axe + keyboard-only flows.
 
 ## How it's built
@@ -44,6 +44,8 @@ Owner: Adesh Shukla (UI developer). Future case study on devstash.me. Repo lives
 - Site pages beyond the home page and the part pages: `/build` (builder), `/parts` (the whole catalogue, search and filter in the address bar), `/in-use` (three screens composed from real parts, with an X-ray that names each one), `/tested` (the test regime, plus a tab-order tracer and the contrast correction running), `/start` (how to take a part). `e2e/site-pages.spec.ts` covers all four.
 - `app/r/[name]/route.ts` — shadcn registry item for every slug in `lib/registry.ts`.
 - Versions (D90): `lib/versions.ts` holds each part's dated history; **when a change alters what a part gives out, add an entry there** (a new part: `firstReleased`). `readSource` in `lib/sources.ts` stamps the part, its version and its changes link on every file's first line. The part page shows changes, the last run from `lib/test-results.json` (write it only with `node scripts/test-results.mjs [slug...]`, E2E_PORT=3000) and a report link (`problemEmail` in `lib/site.ts`): `components/part-record.tsx`.
+- Frameworks (D92): `lib/framework-output.ts` (`coreModule`, `frameworkFiles`); tests in `e2e/frameworks.ts` (compiled in global setup) and `FW_PARTS` ("all", "none" or slugs) in `e2e/helpers.ts`. A part's script must stay one IIFE ending in `document.querySelectorAll("[data-x]").forEach(...)` lines.
+- Right to left (D93): every part must mirror (`e2e/rtl.spec.ts`), and scripts read arrow keys through `keyOf(event)`. Use start/end, not left/right, unless the same rule also moves along x.
 - Counting (D90): `count()` in `lib/counter.ts` for anything served by a route; `countInBrowser()` (`lib/count-beacon.ts` → `app/api/count`) for what happens in the browser. Names must be known slugs, `template:<id>` or `built-site`. No store variables, no counting.
 - Tests:
   - `e2e/generate.ts` holds the `components` map (schema, variants, optional `renderHtml`). Writes React output to `app/(bare)/harness/<slug>-<variant>` and vanilla output to `e2e/.generated/<slug>/<variant>`. Both gitignored.
