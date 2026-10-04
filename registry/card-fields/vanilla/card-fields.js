@@ -4,6 +4,13 @@
  * when you leave it. Demo only: real card numbers belong in your payment provider's hosted fields.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The card type from its first digits. Named in words: no logos, no trademarks to license. */
   function brandOf(digits) {
     if (/^3[47]/.test(digits)) return "American Express";
@@ -42,6 +49,7 @@
     const cvcHint = form.querySelector("#card-cvc-hint");
     const done = form.querySelector("[data-done]");
     const keys = Array.from(form.querySelectorAll("[data-field]")).map((field) => field.dataset.field);
+    const words = JSON.parse(form.dataset.words);
 
     function digitsOf(key) {
       return input(key).value.replace(/\D/g, "");
@@ -55,21 +63,21 @@
     function problem(key) {
       const value = input(key).value;
       const digits = value.replace(/\D/g, "");
-      if (key === "name") return value.trim() ? "" : "Enter the name on the card.";
-      if (key === "postcode") return value.trim() ? "" : "Enter the postcode.";
+      if (key === "name") return value.trim() ? "" : words.nameMissingText;
+      if (key === "postcode") return value.trim() ? "" : words.postcodeMissingText;
       if (key === "number") {
-        if (!digits) return "Enter the card number.";
+        if (!digits) return words.numberMissingText;
         const lengths = brandOf(digits) === "American Express" ? [15] : [13, 16, 19];
-        return lengths.indexOf(digits.length) !== -1 && luhn(digits) ? "" : "Enter a valid card number. Check for a typo.";
+        return lengths.indexOf(digits.length) !== -1 && luhn(digits) ? "" : words.numberBadText;
       }
       if (key === "expiry") {
-        if (!digits) return "Enter the expiry date.";
+        if (!digits) return words.expiryMissingText;
         const month = Number(digits.slice(0, 2));
-        if (digits.length !== 4 || month < 1 || month > 12) return "Enter the expiry date as MM/YY, for example 04/29.";
+        if (digits.length !== 4 || month < 1 || month > 12) return words.expiryBadText;
         // A card works until the end of its expiry month.
-        return new Date(2000 + Number(digits.slice(2)), month, 1) <= new Date() ? "This card has expired." : "";
+        return new Date(2000 + Number(digits.slice(2)), month, 1) <= new Date() ? words.expiredText : "";
       }
-      if (key === "cvc") return digits.length === cvcLength() ? "" : "Enter the " + cvcLength() + "-digit security code.";
+      if (key === "cvc") return digits.length === cvcLength() ? "" : fill(words.cvcBadText, { count: cvcLength() });
       return "";
     }
 
@@ -92,7 +100,7 @@
       if (message) {
         const prefix = document.createElement("span");
         prefix.className = "cf-sr";
-        prefix.textContent = "Error: ";
+        prefix.textContent = words.errorPrefix + " ";
         error.append(prefix, message);
       }
       if (message) field.setAttribute("aria-invalid", "true");
@@ -117,7 +125,7 @@
       reformat("number", formatNumber);
       const brand = brandOf(digitsOf("number"));
       brandText.textContent = brand;
-      cvcHint.textContent = brand === "American Express" ? "4 digits on the front" : "3 digits on the back";
+      cvcHint.textContent = brand === "American Express" ? words.cvcFrontHint : words.cvcBackHint;
       describe("number", !form.querySelector("#card-number-error").hidden);
       done.textContent = "";
     });
@@ -154,7 +162,7 @@
         return;
       }
       // Demo only: a real form hands the details to the payment provider here.
-      done.textContent = "Card details look right. This demo sends nothing.";
+      done.textContent = words.doneText;
     });
   }
 

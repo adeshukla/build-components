@@ -19,6 +19,24 @@ export type CardFieldsConfig = {
   showPostcode: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  nameLabel: string;
+  numberLabel: string;
+  expiryLabel: string;
+  expiryHint: string;
+  cvcLabel: string;
+  cvcBackHint: string;
+  cvcFrontHint: string;
+  postcodeLabel: string;
+  nameMissingText: string;
+  postcodeMissingText: string;
+  numberMissingText: string;
+  numberBadText: string;
+  expiryMissingText: string;
+  expiryBadText: string;
+  expiredText: string;
+  cvcBadText: string;
+  errorPrefix: string;
+  doneText: string;
 };
 
 // @config-start
@@ -30,6 +48,24 @@ const defaultConfig: CardFieldsConfig = {
   showPostcode: true,
   theme: "light",
   accentColor: "#2563eb",
+  nameLabel: "Name on card",
+  numberLabel: "Card number",
+  expiryLabel: "Expiry date",
+  expiryHint: "MM/YY",
+  cvcLabel: "Security code",
+  cvcBackHint: "3 digits on the back",
+  cvcFrontHint: "4 digits on the front",
+  postcodeLabel: "Postcode",
+  nameMissingText: "Enter the name on the card.",
+  postcodeMissingText: "Enter the postcode.",
+  numberMissingText: "Enter the card number.",
+  numberBadText: "Enter a valid card number. Check for a typo.",
+  expiryMissingText: "Enter the expiry date.",
+  expiryBadText: "Enter the expiry date as MM/YY, for example 04/29.",
+  expiredText: "This card has expired.",
+  cvcBadText: "Enter the {count}-digit security code.",
+  errorPrefix: "Error:",
+  doneText: "Card details look right. This demo sends nothing.",
 };
 // @config-end
 
@@ -113,25 +149,28 @@ function formatExpiry(digits: string) {
 }
 
 /** Checked on leaving a field and on submit, never on every key press. `now` is passed in. */
-function problem(field: Field, value: string, now: Date) {
+function problem(field: Field, value: string, now: Date, words: CardFieldsConfig) {
   const digits = value.replace(/\D/g, "");
-  if (field === "name") return value.trim() ? "" : "Enter the name on the card.";
-  if (field === "postcode") return value.trim() ? "" : "Enter the postcode.";
+  if (field === "name") return value.trim() ? "" : words.nameMissingText;
+  if (field === "postcode") return value.trim() ? "" : words.postcodeMissingText;
   if (field === "number") {
-    if (!digits) return "Enter the card number.";
+    if (!digits) return words.numberMissingText;
     const length = brandOf(digits) === "American Express" ? [15] : [13, 16, 19];
-    return length.includes(digits.length) && luhn(digits) ? "" : "Enter a valid card number. Check for a typo.";
+    return length.includes(digits.length) && luhn(digits) ? "" : words.numberBadText;
   }
   if (field === "expiry") {
-    if (!digits) return "Enter the expiry date.";
+    if (!digits) return words.expiryMissingText;
     const month = Number(digits.slice(0, 2));
-    if (digits.length !== 4 || month < 1 || month > 12) return "Enter the expiry date as MM/YY, for example 04/29.";
+    if (digits.length !== 4 || month < 1 || month > 12) return words.expiryBadText;
     const year = 2000 + Number(digits.slice(2));
     // A card works until the end of its expiry month.
-    return new Date(year, month, 1) <= now ? "This card has expired." : "";
+    return new Date(year, month, 1) <= now ? words.expiredText : "";
   }
   return "";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function CardFields({ config = defaultConfig }: { config?: CardFieldsConfig }) {
   const id = useId();
@@ -191,8 +230,8 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
       field === "cvc"
         ? value.length === cvcLength
           ? ""
-          : `Enter the ${cvcLength}-digit security code.`
-        : problem(field, value, new Date());
+          : fill(config.cvcBadText, { count: cvcLength })
+        : problem(field, value, new Date(), config);
     setErrors((before) => ({ ...before, [field]: message }));
     return message;
   }
@@ -220,16 +259,16 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
   }
 
   const labels: Record<Field, { label: string; hint?: string; autoComplete: string; inputMode?: "numeric" }> = {
-    name: { label: "Name on card", autoComplete: "cc-name" },
-    number: { label: "Card number", autoComplete: "cc-number", inputMode: "numeric" },
-    expiry: { label: "Expiry date", hint: "MM/YY", autoComplete: "cc-exp", inputMode: "numeric" },
+    name: { label: config.nameLabel, autoComplete: "cc-name" },
+    number: { label: config.numberLabel, autoComplete: "cc-number", inputMode: "numeric" },
+    expiry: { label: config.expiryLabel, hint: config.expiryHint, autoComplete: "cc-exp", inputMode: "numeric" },
     cvc: {
-      label: "Security code",
-      hint: brand === "American Express" ? "4 digits on the front" : "3 digits on the back",
+      label: config.cvcLabel,
+      hint: brand === "American Express" ? config.cvcFrontHint : config.cvcBackHint,
       autoComplete: "cc-csc",
       inputMode: "numeric",
     },
-    postcode: { label: "Postcode", autoComplete: "postal-code" },
+    postcode: { label: config.postcodeLabel, autoComplete: "postal-code" },
   };
 
   function input(field: Field) {
@@ -280,7 +319,7 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
         </div>
         {error && (
           <p id={`${id}-${field}-error`} className="mt-1 text-sm font-medium text-(--cf-error)">
-            <span className="sr-only">Error: </span>
+            <span className="sr-only">{config.errorPrefix} </span>
             {error}
           </p>
         )}
@@ -301,7 +340,7 @@ export function CardFields({ config = defaultConfig }: { config?: CardFieldsConf
         {config.buttonText} {config.amount}
       </button>
       <p role="status" className="mt-3 text-sm font-medium text-(--cf-success) empty:hidden">
-        {done ? "Card details look right. This demo sends nothing." : ""}
+        {done ? config.doneText : ""}
       </p>
     </form>
   );

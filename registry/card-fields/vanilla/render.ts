@@ -33,20 +33,20 @@ export function renderCardFieldsMarkup(config: CardFieldsConfig) {
     ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cf-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
   const fields: Field[] = [
-    ...(config.showName ? [{ key: "name", label: "Name on card", autocomplete: "cc-name", numeric: false }] : []),
-    { key: "number", label: "Card number", autocomplete: "cc-number", numeric: true },
-    { key: "expiry", label: "Expiry date", hint: "MM/YY", autocomplete: "cc-exp", numeric: true, half: true },
-    { key: "cvc", label: "Security code", hint: "3 digits on the back", autocomplete: "cc-csc", numeric: true, half: true },
-    ...(config.showPostcode ? [{ key: "postcode", label: "Postcode", autocomplete: "postal-code", numeric: false }] : []),
+    ...(config.showName ? [{ key: "name", label: config.nameLabel, autocomplete: "cc-name", numeric: false }] : []),
+    { key: "number", label: config.numberLabel, autocomplete: "cc-number", numeric: true },
+    { key: "expiry", label: config.expiryLabel, hint: config.expiryHint, autocomplete: "cc-exp", numeric: true, half: true },
+    { key: "cvc", label: config.cvcLabel, hint: config.cvcBackHint, autocomplete: "cc-csc", numeric: true, half: true },
+    ...(config.showPostcode ? [{ key: "postcode", label: config.postcodeLabel, autocomplete: "postal-code", numeric: false }] : []),
   ];
 
   const inputs = fields
     .map((field) => {
-      const hint = field.hint ? `\n          <p class="cf-hint" id="card-${field.key}-hint" data-hint>${field.hint}</p>` : "";
+      const hint = field.hint ? `\n          <p class="cf-hint" id="card-${field.key}-hint" data-hint>${escapeHtml(field.hint)}</p>` : "";
       const describedBy = field.hint ? ` aria-describedby="card-${field.key}-hint"` : "";
       const brand = field.key === "number" ? `\n            <span class="cf-brand" id="card-brand" data-brand></span>` : "";
       return `        <div class="cf-field${field.half ? " cf-field--half" : ""}" data-field="${field.key}">
-          <label class="cf-label" for="card-${field.key}">${field.label}</label>${hint}
+          <label class="cf-label" for="card-${field.key}">${escapeHtml(field.label)}</label>${hint}
           <div class="cf-control">
             <input class="cf-input" id="card-${field.key}" name="${field.key}" type="text" autocomplete="${field.autocomplete}"${field.numeric ? ' inputmode="numeric"' : ""} spellcheck="false"${describedBy}>${brand}
           </div>
@@ -55,7 +55,7 @@ export function renderCardFieldsMarkup(config: CardFieldsConfig) {
     })
     .join("\n");
 
-  return `    <form class="cf cf--theme-${config.theme}" style="${vars}" novalidate data-card-fields>
+  return `    <form class="cf cf--theme-${config.theme}" style="${vars}" novalidate data-card-fields data-words="${escapeHtml(JSON.stringify({ nameLabel: config.nameLabel, numberLabel: config.numberLabel, expiryLabel: config.expiryLabel, expiryHint: config.expiryHint, cvcLabel: config.cvcLabel, cvcBackHint: config.cvcBackHint, cvcFrontHint: config.cvcFrontHint, postcodeLabel: config.postcodeLabel, nameMissingText: config.nameMissingText, postcodeMissingText: config.postcodeMissingText, numberMissingText: config.numberMissingText, numberBadText: config.numberBadText, expiryMissingText: config.expiryMissingText, expiryBadText: config.expiryBadText, expiredText: config.expiredText, cvcBadText: config.cvcBadText, errorPrefix: config.errorPrefix, doneText: config.doneText }))}">
       <fieldset class="cf-fieldset">
         <legend class="cf-title">${escapeHtml(config.title)}</legend>
         <div class="cf-grid">
