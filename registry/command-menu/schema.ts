@@ -41,6 +41,24 @@ export const commandMenuSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#7c3aed" },
+  {
+    key: "ranText",
+    label: "After a command",
+    description: "Announced once a command runs. {command} is its name.",
+    group: "Words",
+    type: "text",
+    default: "Ran: {command}",
+    maxLength: 80,
+  },
+  {
+    key: "ctrlKeyName",
+    label: "Ctrl key",
+    description: "The Control key's name on the button's shortcut hint (Strg on a German keyboard).",
+    group: "Words",
+    type: "text",
+    default: "Ctrl",
+    maxLength: 12,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

@@ -4,6 +4,13 @@
  * The hidden input submits the time as HH:MM, 24-hour.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** Minutes after midnight from what someone typed: "14:30", "1430", "9", "2:30 pm", "2pm". */
   function parseTime(raw) {
     const match = String(raw).trim().toLowerCase().replace(/[\s.]/g, "").match(/^(\d{1,2})(?::?(\d{2}))?(am|pm|a|p)?$/);
@@ -40,6 +47,7 @@
     const errorText = root.querySelector("[data-error]");
     const status = root.querySelector("[data-status]");
     const hidden = root.querySelector("[data-value]");
+    const words = JSON.parse(root.dataset.words);
     const format = root.dataset.format === "12h" ? "12h" : "24h";
     const earliest = Number(root.dataset.earliest) || 0;
     const latest = Number(root.dataset.latest) || 23 * 60 + 59;
@@ -103,8 +111,8 @@
       status.textContent =
         open && query
           ? matches.length
-            ? matches.length + (matches.length === 1 ? " time" : " times") + " listed."
-            : "No listed time matches; you can still type one."
+            ? fill(matches.length === 1 ? words.one : words.many, { count: matches.length })
+            : words.none
           : "";
     }
 
@@ -194,11 +202,11 @@
       if (time === null) {
         value = null;
         if (hidden) hidden.value = "";
-        setError("Enter a time like " + example + ".");
+        setError(fill(words.bad, { example: example }));
       } else if (time < earliest || time > latest) {
         value = null;
         if (hidden) hidden.value = "";
-        setError("Choose a time between " + formatTime(earliest, format) + " and " + formatTime(latest, format) + ".");
+        setError(fill(words.range, { earliest: formatTime(earliest, format), latest: formatTime(latest, format) }));
       } else {
         choose(time);
       }

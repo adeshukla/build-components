@@ -4,6 +4,13 @@
  * Follows the WAI-ARIA APG "Editable Combobox With List Autocomplete" pattern.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const defaultConfig = {
     label: "Country",
@@ -36,6 +43,11 @@
     accentColor: "#2563eb",
     radius: 6,
     size: "md",
+    showOptionsLabel: "Show {name} options",
+    clearLabel: "Clear {name}",
+    notInListText: "Choose one from the list.",
+    resultOneText: "{count} result available.",
+    resultsText: "{count} results available.",
   };
   // @config-end
 
@@ -185,8 +197,8 @@
     find(".ss-label").textContent = config.label;
     input.placeholder = config.placeholder;
     noResults.textContent = config.noResultsText;
-    toggle.setAttribute("aria-label", `Show ${noun} options`);
-    if (clearButton) clearButton.setAttribute("aria-label", `Clear ${noun}`);
+    toggle.setAttribute("aria-label", fill(config.showOptionsLabel, { name: noun }));
+    if (clearButton) clearButton.setAttribute("aria-label", fill(config.clearLabel, { name: noun }));
     if (showHelper) find(".ss-helper").textContent = config.helperTextContent;
     if (valueInput) valueInput.name = config.name;
 
@@ -255,7 +267,7 @@
       status.textContent =
         open && filtering
           ? matches.length
-            ? `${matches.length} ${matches.length === 1 ? "result" : "results"} available.`
+            ? fill(matches.length === 1 ? config.resultOneText : config.resultsText, { count: matches.length })
             : config.noResultsText
           : "";
       if (clearButton) clearButton.hidden = text === "";
@@ -336,7 +348,7 @@
         choose(match);
       } else {
         selected = "";
-        setError(`Choose ${/^[aeiou]/.test(noun) ? "an" : "a"} ${noun} from the list.`);
+        setError(config.notInListText);
         render();
       }
     });

@@ -21,6 +21,16 @@ export type TimePickerConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  showOptionsLabel: string;
+  format24Text: string;
+  format12Text: string;
+  placeholder24: string;
+  placeholder12: string;
+  badTimeText: string;
+  outOfRangeText: string;
+  timeOneText: string;
+  timesText: string;
+  noneListedText: string;
 };
 
 // @config-start
@@ -35,6 +45,16 @@ const defaultConfig: TimePickerConfig = {
   name: "start-time",
   theme: "light",
   accentColor: "#2563eb",
+  showOptionsLabel: "Show {name} options",
+  format24Text: "Format: 24-hour, for example 14:30.",
+  format12Text: "Format: 12-hour, for example 2:30 pm.",
+  placeholder24: "hh:mm",
+  placeholder12: "h:mm am",
+  badTimeText: "Enter a time like {example}.",
+  outOfRangeText: "Choose a time between {earliest} and {latest}.",
+  timeOneText: "{count} time listed.",
+  timesText: "{count} times listed.",
+  noneListedText: "No listed time matches; you can still type one.",
 };
 // @config-end
 
@@ -109,6 +129,9 @@ function formatTime(total: number, format: "24h" | "12h") {
 }
 
 const squash = (value: string) => value.toLowerCase().replace(/[^0-9a-z]/g, "");
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function TimePicker({ config = defaultConfig }: { config?: TimePickerConfig }) {
   const id = useId();
@@ -222,10 +245,10 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
     const time = parseTime(raw);
     if (time === null) {
       setValue(null);
-      setError(`Enter a time like ${example}.`);
+      setError(fill(config.badTimeText, { example }));
     } else if (time < earliest || time > latest) {
       setValue(null);
-      setError(`Choose a time between ${formatTime(earliest, config.format)} and ${formatTime(latest, config.format)}.`);
+      setError(fill(config.outOfRangeText, { earliest: formatTime(earliest, config.format), latest: formatTime(latest, config.format) }));
     } else {
       choose(time);
     }
@@ -258,7 +281,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
             aria-activedescendant={expanded && active >= 0 ? `${id}-option-${active}` : undefined}
             aria-invalid={error ? true : undefined}
             aria-describedby={describedBy}
-            placeholder={config.format === "24h" ? "hh:mm" : "h:mm am"}
+            placeholder={config.format === "24h" ? config.placeholder24 : config.placeholder12}
             value={text}
             onChange={(event) => {
               setText(event.target.value);
@@ -274,7 +297,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
           <button
             type="button"
             tabIndex={-1}
-            aria-label={`Show ${config.label.toLowerCase() || "time"} options`}
+            aria-label={fill(config.showOptionsLabel, { name: config.label.toLowerCase() })}
             aria-expanded={expanded}
             aria-controls={`${id}-listbox`}
             onMouseDown={(event) => event.preventDefault()}
@@ -292,7 +315,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
           </button>
         </div>
         <span id={`${id}-format`} className="sr-only">
-          {`Format: ${config.format === "24h" ? "24-hour, for example 14:30" : "12-hour, for example 2:30 pm"}.`}
+          {config.format === "24h" ? config.format24Text : config.format12Text}
         </span>
 
         <ul
@@ -332,7 +355,7 @@ export function TimePicker({ config = defaultConfig }: { config?: TimePickerConf
         {error}
       </p>
       <p aria-live="polite" className="sr-only">
-        {open && typed ? (matches.length ? `${matches.length} ${matches.length === 1 ? "time" : "times"} listed.` : "No listed time matches; you can still type one.") : ""}
+        {open && typed ? (matches.length ? fill(matches.length === 1 ? config.timeOneText : config.timesText, { count: matches.length }) : config.noneListedText) : ""}
       </p>
       {config.name !== "" && <input type="hidden" name={config.name} value={value === null ? "" : formatTime(value, "24h")} />}
     </div>

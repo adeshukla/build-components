@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SearchConfig } from "../react/search";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4", hover: "#eeecf5" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", hover: "#2a2438" },
@@ -57,7 +60,7 @@ export function renderSearchMarkup(config: SearchConfig) {
         </div>
         <p class="se-sr" aria-live="polite" data-announce></p>
         <p class="se-empty" data-empty hidden>${escapeHtml(config.emptyText)}</p>
-        <div class="se-results" id="search-results" role="listbox" aria-label="${escapeHtml(config.label)}, results" data-results hidden></div>`;
+        <div class="se-results" id="search-results" role="listbox" aria-label="${escapeHtml(fill(config.resultsLabel, { label: config.label }))}" data-results hidden></div>`;
 
   const settings = [
     "data-search",
@@ -69,13 +72,14 @@ export function renderSearchMarkup(config: SearchConfig) {
     `data-highlight="${config.highlight}"`,
     `data-shortcut="${config.shortcut}"`,
     `data-empty-text="${escapeHtml(config.emptyText)}"`,
+    `data-words="${escapeHtml(JSON.stringify({ one: config.resultOneText, many: config.resultsText, other: config.otherGroupText }))}"`,
   ].join(" ");
 
   const body = dialog
     ? `      <button class="se-trigger" type="button" data-trigger>
         ${icon}
         <span class="se-trigger-text">${escapeHtml(config.label)}</span>
-${config.shortcut ? `        <kbd class="se-kbd" data-kbd>Ctrl K</kbd>\n` : ""}      </button>
+${config.shortcut ? `        <kbd class="se-kbd" data-kbd>${escapeHtml(config.ctrlKeyName)} K</kbd>\n` : ""}      </button>
       <dialog class="se-dialog" aria-label="${escapeHtml(config.label)}" data-dialog>
 ${panel}
       </dialog>`

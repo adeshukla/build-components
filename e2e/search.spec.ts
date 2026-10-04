@@ -62,7 +62,7 @@ for (const target of targets("search")) {
       await box(page).fill("accessibility audit");
       await expect(result(page, /Sam Okafor/)).toBeVisible();
       await expect(result(page, /Keyboard support/)).toHaveCount(0);
-      await expect(page.getByText("1 results.")).toBeAttached();
+      await expect(page.getByText("1 result.")).toBeAttached();
     });
 
     test("the arrows point at a result while the caret stays in the box", async ({ page }) => {

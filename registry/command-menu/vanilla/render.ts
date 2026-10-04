@@ -66,7 +66,7 @@ ${items}
   return `    <div class="cmd cmd--theme-${config.theme}" style="${vars}" data-command-menu>
       <button class="cmd-trigger" type="button" data-trigger>
         ${escapeHtml(config.triggerLabel)}
-        ${config.showHint && hotkey !== "" ? `<kbd class="cmd-kbd">Ctrl ${escapeHtml(hotkey)}</kbd>` : ""}
+        ${config.showHint && hotkey !== "" ? `<kbd class="cmd-kbd">${escapeHtml(config.ctrlKeyName)} ${escapeHtml(hotkey)}</kbd>` : ""}
       </button>
 
       <p class="cmd-status" role="status" data-status></p>

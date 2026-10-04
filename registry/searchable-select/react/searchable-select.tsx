@@ -18,6 +18,11 @@ export type SearchableSelectConfig = {
   accentColor: string;
   radius: number;
   size: "sm" | "md" | "lg";
+  showOptionsLabel: string;
+  clearLabel: string;
+  notInListText: string;
+  resultOneText: string;
+  resultsText: string;
 };
 
 // @config-start
@@ -52,6 +57,11 @@ const defaultConfig: SearchableSelectConfig = {
   accentColor: "#2563eb",
   radius: 6,
   size: "md",
+  showOptionsLabel: "Show {name} options",
+  clearLabel: "Clear {name}",
+  notInListText: "Choose one from the list.",
+  resultOneText: "{count} result available.",
+  resultsText: "{count} results available.",
 };
 // @config-end
 
@@ -145,6 +155,9 @@ function Highlight({ label, query }: { label: string; query: string }) {
     </>
   );
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function SearchableSelect({ config = defaultConfig }: { config?: SearchableSelectConfig }) {
   const id = useId();
@@ -260,7 +273,7 @@ export function SearchableSelect({ config = defaultConfig }: { config?: Searchab
       choose(match);
     } else {
       setSelected("");
-      setError(`Choose ${/^[aeiou]/.test(noun) ? "an" : "a"} ${noun} from the list.`);
+      setError(config.notInListText);
     }
   }
 
@@ -301,7 +314,7 @@ export function SearchableSelect({ config = defaultConfig }: { config?: Searchab
           {config.clearButton && text !== "" && (
             <button
               type="button"
-              aria-label={`Clear ${noun}`}
+              aria-label={fill(config.clearLabel, { name: noun })}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
                 setText("");
@@ -319,7 +332,7 @@ export function SearchableSelect({ config = defaultConfig }: { config?: Searchab
           <button
             type="button"
             tabIndex={-1}
-            aria-label={`Show ${noun} options`}
+            aria-label={fill(config.showOptionsLabel, { name: noun })}
             aria-expanded={expanded}
             aria-controls={`${id}-listbox`}
             onMouseDown={(event) => event.preventDefault()}
@@ -395,7 +408,7 @@ export function SearchableSelect({ config = defaultConfig }: { config?: Searchab
       <p aria-live="polite" className="sr-only">
         {open && filtering
           ? matches.length
-            ? `${matches.length} ${matches.length === 1 ? "result" : "results"} available.`
+            ? fill(matches.length === 1 ? config.resultOneText : config.resultsText, { count: matches.length })
             : config.noResultsText
           : ""}
       </p>

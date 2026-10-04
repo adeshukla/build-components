@@ -66,7 +66,7 @@ for (const target of targets("searchable-select")) {
       await field.fill("Atlantis");
       await field.press("Tab");
       await expect(field).toHaveAttribute("aria-invalid", "true");
-      await expect(field).toHaveAccessibleDescription("Choose a country from the list.");
+      await expect(field).toHaveAccessibleDescription("Choose one from the list.");
       await expect(page.locator('input[name="country"]')).toHaveValue("");
 
       await field.fill("france");

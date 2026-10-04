@@ -5,6 +5,13 @@
  * its breadcrumb. Every word typed has to match somewhere.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** Relative, fragment, http(s), mailto and tel links only. */
   function safeHref(value) {
     return /^(\/|#|https?:\/\/|mailto:|tel:)/i.test(String(value).trim()) ? String(value).trim() : "#";
@@ -63,6 +70,7 @@
   function createSearch(root) {
     const input = root.querySelector("[data-input]");
     const results = root.querySelector("[data-results]");
+    const words = JSON.parse(root.dataset.words);
     const announce = root.querySelector("[data-announce]");
     const empty = root.querySelector("[data-empty]");
     const source = root.querySelector("[data-source]");
@@ -154,7 +162,7 @@
       // Results in the order they are shown, grouped under the top of their breadcrumb.
       const groups = [];
       found.forEach(function (entry) {
-        const name = grouped ? entry.path[0] || "Results" : "";
+        const name = grouped ? entry.path[0] || words.other : "";
         let group = groups.find(function (existing) {
           return existing.name === name;
         });
@@ -213,7 +221,7 @@
       results.hidden = found.length === 0;
       input.setAttribute("aria-expanded", String(typed));
       if (empty) empty.hidden = !typed || found.length > 0;
-      if (announce) announce.textContent = !typed ? "" : found.length === 0 ? root.dataset.emptyText : found.length + " results.";
+      if (announce) announce.textContent = !typed ? "" : found.length === 0 ? root.dataset.emptyText : fill(found.length === 1 ? words.one : words.many, { count: found.length });
       active = 0;
       paintActive();
     }

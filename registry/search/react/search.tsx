@@ -26,6 +26,11 @@ export type SearchConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  resultsLabel: string;
+  resultOneText: string;
+  resultsText: string;
+  otherGroupText: string;
+  ctrlKeyName: string;
 };
 
 // @config-start
@@ -76,6 +81,11 @@ const defaultConfig: SearchConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 12,
+  resultsLabel: "{label}, results",
+  resultOneText: "{count} result.",
+  resultsText: "{count} results.",
+  otherGroupText: "Results",
+  ctrlKeyName: "Ctrl",
 };
 // @config-end
 
@@ -208,6 +218,9 @@ function parse(data: string): unknown {
   }
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
   const id = useId();
   const fields = config.fields
@@ -303,7 +316,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
   // Results in the order they are shown, grouped under the top of their breadcrumb.
   const grouped = config.groups
     ? results.reduce<{ name: string; items: SearchEntry[] }[]>((groups, entry) => {
-        const name = entry.path[0] ?? "Results";
+        const name = entry.path[0] ?? config.otherGroupText;
         const group = groups.find((existing) => existing.name === name);
         if (group) group.items.push(entry);
         else groups.push({ name, items: [entry] });
@@ -351,7 +364,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
       </div>
 
       <p aria-live="polite" className="sr-only">
-        {query.trim() === "" ? "" : results.length === 0 ? config.emptyText : `${results.length} results.`}
+        {query.trim() === "" ? "" : results.length === 0 ? config.emptyText : fill(results.length === 1 ? config.resultOneText : config.resultsText, { count: results.length })}
       </p>
 
       {query.trim() !== "" && results.length === 0 && (
@@ -361,7 +374,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
       <div
         id={`${id}-search-results`}
         role="listbox"
-        aria-label={`${config.label}, results`}
+        aria-label={fill(config.resultsLabel, { label: config.label })}
         hidden={results.length === 0}
         className="max-h-96 overflow-y-auto"
       >
@@ -432,7 +445,7 @@ export function Search({ config = defaultConfig }: { config?: SearchConfig }) {
         </svg>
         <span className="flex-1 text-left">{config.label}</span>
         {config.shortcut && (
-          <kbd className="rounded-[var(--bc-radius-xs,0.25rem)] border border-(--se-line) px-1.5 text-xs">{apple ? "⌘K" : "Ctrl K"}</kbd>
+          <kbd className="rounded-[var(--bc-radius-xs,0.25rem)] border border-(--se-line) px-1.5 text-xs">{apple ? "⌘K" : `${config.ctrlKeyName} K`}</kbd>
         )}
       </button>
 

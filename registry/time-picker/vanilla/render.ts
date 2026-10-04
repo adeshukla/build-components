@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TimePickerConfig } from "../react/time-picker";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 // The same two helpers as the React file (which is a client module, so its functions can't be
 // imported here) and the plain JS.
 function parseTime(raw: string): number | null {
@@ -61,18 +64,19 @@ export function renderTimePickerMarkup(config: TimePickerConfig) {
   ].join("; ");
   const hasHint = config.hint.trim() !== "";
   const describedBy = ["time-picker-format", hasHint && "time-picker-hint", "time-picker-error"].filter(Boolean).join(" ");
-  const noun = config.label.toLowerCase() || "time";
+  const noun = config.label.toLowerCase();
+  const words = { bad: config.badTimeText, range: config.outOfRangeText, one: config.timeOneText, many: config.timesText, none: config.noneListedText };
 
-  return `    <div class="tp tp--theme-${config.theme}" style="${vars}" data-time-picker data-format="${config.format}" data-interval="${Number(config.interval) || 30}" data-earliest="${earliest}" data-latest="${latest}">
+  return `    <div class="tp tp--theme-${config.theme}" style="${vars}" data-time-picker data-words="${escapeHtml(JSON.stringify(words))}" data-format="${config.format}" data-interval="${Number(config.interval) || 30}" data-earliest="${earliest}" data-latest="${latest}">
       <label class="tp-label" id="time-picker-label" for="time-picker-input">${escapeHtml(config.label)}</label>
 ${hasHint ? `      <p class="tp-hint" id="time-picker-hint">${escapeHtml(config.hint)}</p>\n` : ""}      <div class="tp-control">
         <div class="tp-field">
-          <input class="tp-input" id="time-picker-input" type="text" role="combobox" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="time-picker-listbox" aria-describedby="${describedBy}" placeholder="${config.format === "24h" ? "hh:mm" : "h:mm am"}" value="${startValue === null ? "" : formatTime(startValue, config.format)}" data-input>
-          <button class="tp-toggle" type="button" tabindex="-1" aria-label="Show ${escapeHtml(noun)} options" aria-expanded="false" aria-controls="time-picker-listbox" data-toggle>
+          <input class="tp-input" id="time-picker-input" type="text" role="combobox" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="time-picker-listbox" aria-describedby="${describedBy}" placeholder="${escapeHtml(config.format === "24h" ? config.placeholder24 : config.placeholder12)}" value="${startValue === null ? "" : formatTime(startValue, config.format)}" data-input>
+          <button class="tp-toggle" type="button" tabindex="-1" aria-label="${escapeHtml(fill(config.showOptionsLabel, { name: noun }))}" aria-expanded="false" aria-controls="time-picker-listbox" data-toggle>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           </button>
         </div>
-        <span class="tp-sr" id="time-picker-format">Format: ${config.format === "24h" ? "24-hour, for example 14:30" : "12-hour, for example 2:30 pm"}.</span>
+        <span class="tp-sr" id="time-picker-format">${escapeHtml(config.format === "24h" ? config.format24Text : config.format12Text)}</span>
         <ul class="tp-list" id="time-picker-listbox" role="listbox" aria-labelledby="time-picker-label" hidden data-list></ul>
       </div>
       <p class="tp-error" id="time-picker-error" role="alert" data-error></p>

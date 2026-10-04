@@ -4,10 +4,19 @@
  * time; aria-activedescendant is what moves, which is how a combobox is supposed to work.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     hotkey: "k",
     emptyText: "No command matches that.",
+    ranText: "Ran: {command}",
+    ctrlKeyName: "Ctrl",
   };
   // @config-end
 
@@ -98,7 +107,7 @@
     }
 
     function run(option) {
-      if (status) status.textContent = "Ran: " + (option.dataset.label || option.textContent.trim());
+      if (status) status.textContent = fill(config.ranText, { command: option.dataset.label || option.textContent.trim() });
       close();
     }
 

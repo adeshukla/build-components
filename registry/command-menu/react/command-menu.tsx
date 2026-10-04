@@ -12,6 +12,8 @@ export type CommandMenuConfig = {
   showHint: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  ranText: string;
+  ctrlKeyName: string;
 };
 
 // @config-start
@@ -33,6 +35,8 @@ const defaultConfig: CommandMenuConfig = {
   showHint: true,
   theme: "light",
   accentColor: "#7c3aed",
+  ranText: "Ran: {command}",
+  ctrlKeyName: "Ctrl",
 };
 // @config-end
 
@@ -88,6 +92,9 @@ export function matchesQuery(command: { group: string; label: string }, query: s
   const haystack = `${command.label} ${command.group}`.toLowerCase();
   return words.every((word) => haystack.includes(word));
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function CommandMenu({ config = defaultConfig }: { config?: CommandMenuConfig }) {
   const id = useId();
@@ -167,13 +174,13 @@ export function CommandMenu({ config = defaultConfig }: { config?: CommandMenuCo
         {config.triggerLabel}
         {config.showHint && hotkey !== "" && (
           <kbd className="rounded-[var(--bc-radius-xs,0.25rem)] border border-(--cmd-line) px-1.5 py-0.5 font-mono text-xs text-(--cmd-muted)">
-            Ctrl {hotkey.toUpperCase()}
+            {config.ctrlKeyName} {hotkey.toUpperCase()}
           </kbd>
         )}
       </button>
 
       <p role="status" className="mt-3 text-sm text-(--cmd-muted)">
-        {ran === "" ? "" : `Ran: ${ran}`}
+        {ran === "" ? "" : fill(config.ranText, { command: ran })}
       </p>
 
       <dialog
