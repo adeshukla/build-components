@@ -218,13 +218,14 @@ test.describe("controlling the page", () => {
     await page.getByLabel("Width").selectOption("narrow");
     await page.getByLabel("Space above and below").selectOption("large");
     const grid = frameOf(page).locator('[data-part="feature-grid"] > div');
-    await expect(grid).toHaveClass(/py-20/);
+    // Large spacing, scaled by the theme's spacing (D87).
+    await expect(grid).toHaveClass(/py-\[calc\(5rem\*var\(--bc-space,1\)\)\]/);
     await expect(grid.locator("> div")).toHaveClass(/max-w-2xl/);
 
     // The same choice in what is taken home, through the page's link.
     await page.getByRole("button", { name: /Get the code/ }).click();
     await page.getByRole("radio", { name: "page.tsx" }).check({ force: true });
-    await expect(page.getByLabel("Code, scrollable")).toContainText('<div className="px-6 sm:px-8 py-20">');
+    await expect(page.getByLabel("Code, scrollable")).toContainText('<div className="px-6 sm:px-8 py-[calc(5rem*var(--bc-space,1))]">');
     const zipHref = await page.getByRole("link", { name: "Download one HTML file" }).getAttribute("href");
     const html = await (await request.get(zipHref!)).text();
     expect(html).toContain('<div class="tpl-px tpl-py-large"><div class="tpl-max-narrow">');
