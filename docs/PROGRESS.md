@@ -13,7 +13,13 @@ Last updated: 2026-10-05 (session 17, on dev, not shipped)
   languages; a Language picker in the editor's Words tab; previews take the language's lang and direction.
   `e2e/languages.spec.ts` passes for every part in both outputs. The translations are unreviewed:
   [TODO: have each language checked by a native speaker].
-- **Regression:** [TODO: fill in when the full run ends]
+- **Regression (2026-10-05, FW_PARTS=none, three browsers):** 9,124 passed, 49 failed, 1,687 skipped. All 49 pass
+  on a rerun with the fixes, except one known WebKit flake (sticky header), which then passed 51 of 51 on its own.
+  Real bugs it found, now fixed: rating's plain script lost its words in pick mode (my D94 batch); the text
+  section's link was 21px (D88); the part page's version, tested-for and report links were 18px (D90). The
+  builder spec passes with two workers. The full test record (frameworks included) is running.
+- **Open questions for Adesh:** did "languages" mean human languages (built) or programming languages? Name
+  Next.js, Nuxt and SvelteKit on the part page, each with a test that server-renders a part in it?
 - **Not shipped:** on dev, waiting for "ship". The counter still needs the Upstash database (session 16).
 
 ## Session 16
