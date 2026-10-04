@@ -40,6 +40,24 @@ export const selectFieldSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "Focus ring.", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "neededText",
+    label: "Needed",
+    description: "Shown after the label when a choice is needed.",
+    group: "Words",
+    type: "text",
+    default: "(needed)",
+    maxLength: 40,
+  },
+  {
+    key: "continueText",
+    label: "Button",
+    description: "The button that checks the choice.",
+    group: "Words",
+    type: "text",
+    default: "Carry on",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

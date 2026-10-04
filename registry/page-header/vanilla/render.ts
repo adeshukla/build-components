@@ -45,7 +45,7 @@ export function renderPageHeaderMarkup(config: PageHeaderConfig) {
     !config.showTrail || config.crumbs.length === 0
       ? ""
       : `        <!-- The trail belongs in the header, and it is a nav of its own with its own name. -->
-        <nav class="pgh-crumbs" aria-label="Breadcrumb">
+        <nav class="pgh-crumbs" aria-label="${escapeHtml(config.breadcrumbLabel)}">
           <ol class="pgh-trail">
 ${config.crumbs
   .map(

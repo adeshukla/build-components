@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { InvoiceSummaryConfig } from "../react/invoice-summary";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -89,7 +92,7 @@ ${rows}
           </tr>
           <tr>
             <!-- The rate is in the label, so nobody has to work out where the number came from. -->
-            <th class="inv-foot-label" scope="row" colspan="3">${escapeHtml(`${config.taxLabel} at ${config.taxPercent}%`)}</th>
+            <th class="inv-foot-label" scope="row" colspan="3">${escapeHtml(fill(config.taxRowText, { tax: config.taxLabel, percent: config.taxPercent }))}</th>
             <td class="inv-number" data-tax>${escapeHtml(money(tax, config.currency))}</td>
           </tr>
           <tr class="inv-total-row">

@@ -45,6 +45,42 @@ export const textareaCounterSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "leftOne",
+    label: "One left",
+    description: "Said with one character to go.",
+    group: "Words",
+    type: "text",
+    default: "{count} character left",
+    maxLength: 80,
+  },
+  {
+    key: "leftMany",
+    label: "Several left",
+    description: "Said with more to go. {count} is how many.",
+    group: "Words",
+    type: "text",
+    default: "{count} characters left",
+    maxLength: 80,
+  },
+  {
+    key: "overOne",
+    label: "One over",
+    description: "Said one character over the limit.",
+    group: "Words",
+    type: "text",
+    default: "{count} character over the limit",
+    maxLength: 80,
+  },
+  {
+    key: "overMany",
+    label: "Several over",
+    description: "Said more than one over. {count} is how many.",
+    group: "Words",
+    type: "text",
+    default: "{count} characters over the limit",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

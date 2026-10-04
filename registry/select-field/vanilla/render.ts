@@ -46,7 +46,7 @@ export function renderSelectFieldMarkup(config: SelectFieldConfig) {
     .join("\n");
 
   return `    <div class="sf sf--theme-${config.theme} sf--${config.width} sf--${config.size}" style="${vars}" data-select-field data-required="${config.required}">
-      <label class="sf-label" for="sf-field">${escapeHtml(config.label)}${config.required ? `<span class="sf-needed">(needed)</span>` : ""}</label>
+      <label class="sf-label" for="sf-field">${escapeHtml(config.label)}${config.required ? `<span class="sf-needed">${escapeHtml(config.neededText)}</span>` : ""}</label>
 ${config.hint.trim() === "" ? "" : `      <p class="sf-hint" id="sf-hint">${escapeHtml(config.hint)}</p>\n`}      <!-- A native select: the phone shows its own picker, the keyboard works, and type-ahead is free. -->
       <select class="sf-field" id="sf-field" name="${escapeHtml(config.name)}"${config.required ? " required" : ""}${config.hint.trim() === "" ? "" : ' aria-describedby="sf-hint"'} data-field>
         <option value="">${escapeHtml(config.placeholder)}</option>
@@ -54,7 +54,7 @@ ${body}
       </select>
 
       <p class="sf-error" id="sf-error" role="alert" hidden data-error>${escapeHtml(config.errorText)}</p>
-      <button class="sf-go" type="button" data-go>Carry on</button>
+      <button class="sf-go" type="button" data-go>${escapeHtml(config.continueText)}</button>
       <p class="sf-status" role="status" data-status></p>
     </div>`;
 }

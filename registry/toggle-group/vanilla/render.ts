@@ -40,7 +40,7 @@ export function renderToggleGroupMarkup(config: ToggleGroupConfig) {
     )
     .join("\n");
 
-  return `    <div class="tg tg--theme-${config.theme} tg--${config.size}" style="${vars}" data-toggle-group data-min-one="${config.minOne}">
+  return `    <div class="tg tg--theme-${config.theme} tg--${config.size}" style="${vars}" data-toggle-group data-min-one="${config.minOne}" data-none="${escapeHtml(config.noneText)}" data-picked="${escapeHtml(config.pickedText)}">
       <!-- Checkboxes, not buttons: several answers to one question, and the form sends them itself. -->
       <fieldset class="tg-set"${config.hint.trim() === "" ? "" : ' aria-describedby="tg-hint"'}>
         <legend class="tg-legend">${escapeHtml(config.legend)}</legend>
@@ -48,7 +48,7 @@ ${config.hint.trim() === "" ? "" : `        <p class="tg-hint" id="tg-hint">${es
 ${options}
         </div>
       </fieldset>
-${config.showCount ? `      <p class="tg-status" role="status" data-status>Nothing picked</p>\n` : ""}    </div>`;
+${config.showCount ? `      <p class="tg-status" role="status" data-status>${escapeHtml(config.noneText)}</p>\n` : ""}    </div>`;
 }
 
 export function renderToggleGroupHtml(config: ToggleGroupConfig) {

@@ -4,8 +4,11 @@
  * repeat the whole number for every letter typed.
  */
 (function () {
-  function plural(n) {
-    return n + " character" + (n === 1 ? "" : "s");
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
   }
 
   function createTextareaCounter(root) {
@@ -22,7 +25,9 @@
     function refresh() {
       const left = max - field.value.length;
       const over = left < 0;
-      counter.textContent = over ? plural(-left) + " over the limit" : plural(left) + " left";
+      counter.textContent = over
+        ? fill(left === -1 ? root.dataset.overOne : root.dataset.overMany, { count: -left })
+        : fill(left === 1 ? root.dataset.leftOne : root.dataset.leftMany, { count: left });
       counter.classList.toggle("tc-counter--over", over);
       counter.classList.toggle("tc-counter--warn", !over && left <= warnAt);
       if (raw) raw.textContent = field.value.length + " / " + max;

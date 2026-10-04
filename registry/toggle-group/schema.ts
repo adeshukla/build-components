@@ -40,6 +40,24 @@ export const toggleGroupSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "noneText",
+    label: "Nothing picked",
+    description: "Said while nothing is on.",
+    group: "Words",
+    type: "text",
+    default: "Nothing picked",
+    maxLength: 80,
+  },
+  {
+    key: "pickedText",
+    label: "Picked",
+    description: "Said while some are on. {count} is how many, {choices} which.",
+    group: "Words",
+    type: "text",
+    default: "{count} picked: {choices}",
+    maxLength: 120,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

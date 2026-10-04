@@ -9,6 +9,7 @@ export type AnnouncementBarConfig = {
   tone: "accent" | "dark" | "subtle";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  regionLabel: string;
 };
 
 // @config-start
@@ -19,6 +20,7 @@ const defaultConfig: AnnouncementBarConfig = {
   tone: "accent",
   theme: "light",
   accentColor: "#2563eb",
+  regionLabel: "Announcement",
 };
 // @config-end
 
@@ -76,7 +78,7 @@ export function AnnouncementBar({ config = defaultConfig }: { config?: Announcem
 
   return (
     // A landmark of its own, so it is named and can be skipped; it sits above the site's header.
-    <aside aria-label="Announcement" style={style} className={`px-4 py-2.5 text-center text-sm ${config.tone === "subtle" ? "border-b border-(--ab-line)" : ""}`}>
+    <aside aria-label={config.regionLabel} style={style} className={`px-4 py-2.5 text-center text-sm ${config.tone === "subtle" ? "border-b border-(--ab-line)" : ""}`}>
       <p className="m-0">
         {config.message}
         {config.linkText.trim() !== "" && (

@@ -8,6 +8,15 @@ export const announcementBarSchema = [
   { key: "tone", label: "Look", description: "Your accent colour, near-black, or a quiet grey band.", group: "Style", type: "select", default: "accent", options: ["accent", "dark", "subtle"] },
   { key: "theme", label: "Theme", description: "For the quiet look: light, dark, or the visitor's.", group: "Style", type: "select", default: "light", options: ["light", "dark", "system"] },
   { key: "accentColor", label: "Accent colour", description: "Text on it is black or white, whichever reads.", group: "Style", type: "color", default: "#2563eb" },
+  {
+    key: "regionLabel",
+    label: "Announcement area",
+    description: "Names the bar, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Announcement",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

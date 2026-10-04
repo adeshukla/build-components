@@ -69,7 +69,7 @@ export function renderStatComparisonMarkup(config: StatComparisonConfig) {
             -->
             <th class="stc-corner" scope="col">${
               config.metricHeader.trim() === ""
-                ? '<span class="stc-sr">Measure</span>'
+                ? `<span class="stc-sr">${escapeHtml(config.measureHeader)}</span>`
                 : escapeHtml(config.metricHeader)
             }</th>
             <th class="stc-option" scope="col">${escapeHtml(config.leftHeader)}</th>

@@ -21,6 +21,15 @@ export const pinPadSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "progressText",
+    label: "Progress",
+    description: "Said as digits go in. {entered} and {length} are counts.",
+    group: "Words",
+    type: "text",
+    default: "{entered} of {length} digits entered",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

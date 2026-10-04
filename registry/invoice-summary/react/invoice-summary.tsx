@@ -17,6 +17,7 @@ export type InvoiceSummaryConfig = {
   note: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  taxRowText: string;
 };
 
 // @config-start
@@ -39,6 +40,7 @@ const defaultConfig: InvoiceSummaryConfig = {
   note: "Payable within 30 days. Bank details are on the last page.",
   theme: "light",
   accentColor: "#1d4ed8",
+  taxRowText: "{tax} at {percent}%",
 };
 // @config-end
 
@@ -101,6 +103,9 @@ export function money(pence: number, currency: string) {
 
 const pence = (value: string) => Math.round(Number.parseFloat(value.replace(/[^0-9.-]/g, "")) * 100) || 0;
 const count = (value: string) => Math.round(Number.parseFloat(value.replace(/[^0-9.-]/g, ""))) || 0;
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function InvoiceSummary({ config = defaultConfig }: { config?: InvoiceSummaryConfig }) {
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -176,7 +181,7 @@ export function InvoiceSummary({ config = defaultConfig }: { config?: InvoiceSum
           <tr>
             <th scope="row" colSpan={3} className="px-0 py-1 text-right font-normal">
               {/* The rate is in the label, so nobody has to work out where the number came from. */}
-              {`${config.taxLabel} at ${config.taxPercent}%`}
+              {fill(config.taxRowText, { tax: config.taxLabel, percent: config.taxPercent })}
             </th>
             <td className={`${rowNumber} py-1`} data-tax>
               {money(tax, config.currency)}

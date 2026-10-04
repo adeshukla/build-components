@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TextareaCounterConfig } from "../react/textarea-counter";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6", error: "#b42318" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
@@ -31,13 +34,13 @@ export function renderTextareaCounterMarkup(config: TextareaCounterConfig) {
 
   const describedBy = [config.hint.trim() === "" ? "" : "tc-hint", "tc-counter"].filter(Boolean).join(" ");
 
-  return `    <div class="tc tc--theme-${config.theme}" style="${vars}" data-textarea-counter data-max="${config.maxLength}" data-warn="${config.warnAt}">
+  return `    <div class="tc tc--theme-${config.theme}" style="${vars}" data-textarea-counter data-max="${config.maxLength}" data-warn="${config.warnAt}" data-left-one="${escapeHtml(config.leftOne)}" data-left-many="${escapeHtml(config.leftMany)}" data-over-one="${escapeHtml(config.overOne)}" data-over-many="${escapeHtml(config.overMany)}">
       <label class="tc-label" for="tc-field">${escapeHtml(config.label)}</label>
 ${config.hint.trim() === "" ? "" : `      <p class="tc-hint" id="tc-hint">${escapeHtml(config.hint)}</p>\n`}      <!-- With the hard limit the browser stops the typing; without it people can paste and then trim. -->
       <textarea class="tc-field" id="tc-field" name="${escapeHtml(config.name)}" rows="${Math.max(2, config.rows)}"${config.placeholder.trim() === "" ? "" : ` placeholder="${escapeHtml(config.placeholder)}"`}${config.allowOver ? "" : ` maxlength="${config.maxLength}"`} aria-describedby="${describedBy}" data-field></textarea>
 
       <div class="tc-foot">
-        <p class="tc-counter" id="tc-counter" data-counter>${config.maxLength} characters left</p>
+        <p class="tc-counter" id="tc-counter" data-counter>${escapeHtml(fill(config.maxLength === 1 ? config.leftOne : config.leftMany, { count: config.maxLength }))}</p>
         <p class="tc-raw" data-raw>0 / ${config.maxLength}</p>
       </div>
 

@@ -12,6 +12,8 @@ export type ToggleGroupConfig = {
   size: "sm" | "md";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  noneText: string;
+  pickedText: string;
 };
 
 // @config-start
@@ -33,6 +35,8 @@ const defaultConfig: ToggleGroupConfig = {
   size: "md",
   theme: "light",
   accentColor: "#0f766e",
+  noneText: "Nothing picked",
+  pickedText: "{count} picked: {choices}",
 };
 // @config-end
 
@@ -80,6 +84,9 @@ function readableAccent(hex: string, onDark: boolean) {
   }
   return onDark ? "#ffffff" : "#000000";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ToggleGroup({ config = defaultConfig }: { config?: ToggleGroupConfig }) {
   const id = useId();
@@ -145,11 +152,14 @@ export function ToggleGroup({ config = defaultConfig }: { config?: ToggleGroupCo
       {config.showCount && (
         <p role="status" className="mt-3 text-sm text-(--tg-muted)">
           {on.length === 0
-            ? "Nothing picked"
-            : `${on.length} picked: ${options
-                .filter((option) => on.includes(option.value || option.label))
-                .map((option) => option.label)
-                .join(", ")}`}
+            ? config.noneText
+            : fill(config.pickedText, {
+                count: on.length,
+                choices: options
+                  .filter((option) => on.includes(option.value || option.label))
+                  .map((option) => option.label)
+                  .join(", "),
+              })}
         </p>
       )}
     </div>

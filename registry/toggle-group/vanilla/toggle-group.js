@@ -4,6 +4,13 @@
  * says what is picked.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createToggleGroup(root) {
     const boxes = Array.from(root.querySelectorAll("[data-option]"));
     const status = root.querySelector("[data-status]");
@@ -29,7 +36,7 @@
         });
       }
       if (status) {
-        status.textContent = on.length ? on.length + " picked: " + on.map(label).join(", ") : "Nothing picked";
+        status.textContent = on.length ? fill(root.dataset.picked, { count: on.length, choices: on.map(label).join(", ") }) : root.dataset.none;
       }
     }
 

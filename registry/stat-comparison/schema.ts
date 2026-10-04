@@ -41,6 +41,15 @@ export const statComparisonSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "measureHeader",
+    label: "First column heading",
+    description: "Read out for the empty corner cell when the visible heading is blank.",
+    group: "Words",
+    type: "text",
+    default: "Measure",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

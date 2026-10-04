@@ -16,6 +16,7 @@ export type PageHeaderConfig = {
   align: "left" | "centre";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  breadcrumbLabel: string;
 };
 
 // @config-start
@@ -36,6 +37,7 @@ const defaultConfig: PageHeaderConfig = {
   align: "left",
   theme: "light",
   accentColor: "#1d4ed8",
+  breadcrumbLabel: "Breadcrumb",
 };
 // @config-end
 
@@ -125,7 +127,7 @@ export function PageHeader({ config = defaultConfig }: { config?: PageHeaderConf
         <div className={`mx-auto w-full max-w-4xl ${centred ? "" : "max-w-3xl"}`}>
           {config.showTrail && config.crumbs.length > 0 && (
             // The trail belongs in the header, and it is a nav of its own with its own name.
-            <nav aria-label="Breadcrumb" className="mb-4">
+            <nav aria-label={config.breadcrumbLabel} className="mb-4">
               <ol className={`m-0 flex list-none flex-wrap items-center gap-x-2 p-0 text-sm ${centred ? "justify-center" : ""}`}>
                 {config.crumbs.map((crumb) => (
                   <li key={crumb.href} className="flex items-center gap-x-2">

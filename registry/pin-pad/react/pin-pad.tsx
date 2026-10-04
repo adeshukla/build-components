@@ -14,6 +14,7 @@ export type PinPadConfig = {
   showClear: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  progressText: string;
 };
 
 // @config-start
@@ -29,6 +30,7 @@ const defaultConfig: PinPadConfig = {
   showClear: true,
   theme: "light",
   accentColor: "#0f766e",
+  progressText: "{entered} of {length} digits entered",
 };
 // @config-end
 
@@ -90,6 +92,9 @@ export const keypadRows = (layout: "phone" | "calculator") =>
         ["4", "5", "6"],
         ["1", "2", "3"],
       ];
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function PinPad({ config = defaultConfig }: { config?: PinPadConfig }) {
   const id = useId();
@@ -177,7 +182,7 @@ export function PinPad({ config = defaultConfig }: { config?: PinPadConfig }) {
         </div>
 
         <p role="status" className="mt-3 text-sm text-(--pp-muted)">
-          {full ? config.completeText : `${value.length} of ${config.length} digits entered`}
+          {full ? config.completeText : fill(config.progressText, { entered: value.length, length: config.length })}
         </p>
       </div>
     </div>

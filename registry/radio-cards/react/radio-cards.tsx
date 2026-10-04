@@ -11,6 +11,9 @@ export type RadioCardsConfig = {
   showTick: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  unavailableText: string;
+  noneText: string;
+  pickedText: string;
 };
 
 // @config-start
@@ -28,6 +31,9 @@ const defaultConfig: RadioCardsConfig = {
   showTick: true,
   theme: "light",
   accentColor: "#0f766e",
+  unavailableText: "Not available",
+  noneText: "Nothing picked yet",
+  pickedText: "{choice} picked",
 };
 // @config-end
 
@@ -75,6 +81,9 @@ function readableAccent(hex: string, onDark: boolean) {
   }
   return onDark ? "#ffffff" : "#000000";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function RadioCards({ config = defaultConfig }: { config?: RadioCardsConfig }) {
   const id = useId();
@@ -145,7 +154,7 @@ export function RadioCards({ config = defaultConfig }: { config?: RadioCardsConf
                 </span>
                 {option.note.trim() !== "" && <span className="mt-1 text-sm text-(--rc-muted)">{option.note}</span>}
                 {/* Unavailable is said, not only drawn as a dashed border. */}
-                {off && <span className="mt-1 text-xs">Not available</span>}
+                {off && <span className="mt-1 text-xs">{config.unavailableText}</span>}
               </label>
             );
           })}
@@ -153,7 +162,7 @@ export function RadioCards({ config = defaultConfig }: { config?: RadioCardsConf
       </fieldset>
 
       <p role="status" className="mt-3 text-sm text-(--rc-muted)">
-        {picked === "" ? "Nothing picked yet" : `${picked} picked`}
+        {picked === "" ? config.noneText : fill(config.pickedText, { choice: picked })}
       </p>
     </div>
   );

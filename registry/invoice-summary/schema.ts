@@ -42,6 +42,15 @@ export const invoiceSummarySchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "taxRowText",
+    label: "Tax row",
+    description: "The tax row's label. {tax} is the tax's name, {percent} its rate.",
+    group: "Words",
+    type: "text",
+    default: "{tax} at {percent}%",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

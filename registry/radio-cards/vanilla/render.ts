@@ -39,18 +39,18 @@ export function renderRadioCardsMarkup(config: RadioCardsConfig) {
             <span class="rc-top">
               <span class="rc-label">${config.showTick ? `<span class="rc-tick" aria-hidden="true" hidden data-tick="${escapeHtml(option.label)}">✓</span>` : ""}<span>${escapeHtml(option.label)}</span></span>
 ${option.meta.trim() === "" ? "" : `              <span class="rc-meta">${escapeHtml(option.meta)}</span>\n`}            </span>
-${option.note.trim() === "" ? "" : `            <span class="rc-note">${escapeHtml(option.note)}</span>\n`}${off ? `            <!-- Unavailable is said, not only drawn as a dashed border. -->\n            <span class="rc-off">Not available</span>\n` : ""}          </label>`;
+${option.note.trim() === "" ? "" : `            <span class="rc-note">${escapeHtml(option.note)}</span>\n`}${off ? `            <!-- Unavailable is said, not only drawn as a dashed border. -->\n            <span class="rc-off">${escapeHtml(config.unavailableText)}</span>\n` : ""}          </label>`;
     })
     .join("\n");
 
-  return `    <div class="rc rc--theme-${config.theme} rc--${config.columns}" style="${vars}" data-radio-cards>
+  return `    <div class="rc rc--theme-${config.theme} rc--${config.columns}" style="${vars}" data-radio-cards data-none="${escapeHtml(config.noneText)}" data-picked="${escapeHtml(config.pickedText)}">
       <fieldset class="rc-set"${config.hint.trim() === "" ? "" : ' aria-describedby="rc-hint"'}>
         <legend class="rc-legend">${escapeHtml(config.legend)}</legend>
 ${config.hint.trim() === "" ? "" : `        <p class="rc-hint" id="rc-hint">${escapeHtml(config.hint)}</p>\n`}        <div class="rc-grid">
 ${cards}
         </div>
       </fieldset>
-      <p class="rc-status" role="status" data-status>Nothing picked yet</p>
+      <p class="rc-status" role="status" data-status>${escapeHtml(config.noneText)}</p>
     </div>`;
 }
 

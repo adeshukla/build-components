@@ -14,6 +14,10 @@ export type TextareaCounterConfig = {
   overText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  leftOne: string;
+  leftMany: string;
+  overOne: string;
+  overMany: string;
 };
 
 // @config-start
@@ -29,6 +33,10 @@ const defaultConfig: TextareaCounterConfig = {
   overText: "That is over the limit. Shorten it before sending.",
   theme: "light",
   accentColor: "#1d4ed8",
+  leftOne: "{count} character left",
+  leftMany: "{count} characters left",
+  overOne: "{count} character over the limit",
+  overMany: "{count} characters over the limit",
 };
 // @config-end
 
@@ -77,7 +85,12 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const plural = (n: number) => `${n} character${n === 1 ? "" : "s"}`;
+/** How many characters are left, or over, in the words the options give (D94). */
+const say = (n: number, config: TextareaCounterConfig) =>
+  n < 0 ? fill(n === -1 ? config.overOne : config.overMany, { count: -n }) : fill(n === 1 ? config.leftOne : config.leftMany, { count: n });
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function TextareaCounter({ config = defaultConfig }: { config?: TextareaCounterConfig }) {
   const id = useId();
@@ -101,7 +114,7 @@ export function TextareaCounter({ config = defaultConfig }: { config?: TextareaC
   const left = config.maxLength - value.length;
   const over = left < 0;
   const warning = !over && left <= config.warnAt;
-  const counter = over ? `${plural(-left)} over the limit` : `${plural(left)} left`;
+  const counter = say(left, config);
 
   return (
     <div style={style} className="bg-(--tc-surface) text-(--tc-text)">
@@ -132,7 +145,7 @@ export function TextareaCounter({ config = defaultConfig }: { config?: TextareaC
           // whole number out again for every letter typed.
           const remaining = config.maxLength - next.length;
           const phrase =
-            remaining < 0 ? `${plural(-remaining)} over the limit` : remaining <= config.warnAt ? `${plural(remaining)} left` : "";
+            remaining < 0 || remaining <= config.warnAt ? say(remaining, config) : "";
           const mark = remaining < 0 ? "over" : remaining === 0 ? "none" : remaining <= config.warnAt ? "warn" : "fine";
           if (mark !== lastSaid.current) {
             lastSaid.current = mark;

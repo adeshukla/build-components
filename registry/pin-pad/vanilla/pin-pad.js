@@ -4,10 +4,18 @@
  * never are.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     length: 4,
     completeText: "PIN complete.",
+    progressText: "{entered} of {length} digits entered",
   };
   // @config-end
 
@@ -25,7 +33,7 @@
       });
       if (status) {
         status.textContent =
-          value.length === config.length ? config.completeText : value.length + " of " + config.length + " digits entered";
+          value.length === config.length ? config.completeText : fill(config.progressText, { entered: value.length, length: config.length });
       }
     }
 

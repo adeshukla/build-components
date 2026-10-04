@@ -39,6 +39,15 @@ export const pageHeaderSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "breadcrumbLabel",
+    label: "Breadcrumb trail",
+    description: "Names the trail of links, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Breadcrumb",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

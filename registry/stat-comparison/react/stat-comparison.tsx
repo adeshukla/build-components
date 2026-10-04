@@ -13,6 +13,7 @@ export type StatComparisonConfig = {
   note: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  measureHeader: string;
 };
 
 // @config-start
@@ -33,6 +34,7 @@ const defaultConfig: StatComparisonConfig = {
   note: "Better depends on the project. This is what differs, not which one you should pick.",
   theme: "light",
   accentColor: "#0f766e",
+  measureHeader: "Measure",
 };
 // @config-end
 
@@ -120,7 +122,7 @@ export function StatComparison({ config = defaultConfig }: { config?: StatCompar
                 table, and a blank th with no scope leaves the column headers unanchored.
               */}
               <th scope="col" className={`${cell} font-medium`}>
-                {config.metricHeader.trim() === "" ? <span className="sr-only">Measure</span> : config.metricHeader}
+                {config.metricHeader.trim() === "" ? <span className="sr-only">{config.measureHeader}</span> : config.metricHeader}
               </th>
               <th scope="col" className={`${cell} font-semibold`}>
                 {config.leftHeader}

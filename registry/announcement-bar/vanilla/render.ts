@@ -19,7 +19,7 @@ export function renderAnnouncementBarMarkup(config: AnnouncementBarConfig) {
   const link = config.linkText.trim()
     ? ` <a class="ab-link" href="${escapeHtml(safeHref(config.linkHref))}">${escapeHtml(config.linkText)}<span aria-hidden="true"> →</span></a>`
     : "";
-  return `    <aside class="ab ab--${config.tone} ab--theme-${config.theme}" style="${vars}" aria-label="Announcement">
+  return `    <aside class="ab ab--${config.tone} ab--theme-${config.theme}" style="${vars}" aria-label="${escapeHtml(config.regionLabel)}">
       <p class="ab-text">${escapeHtml(config.message)}${link}</p>
     </aside>`;
 }

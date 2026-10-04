@@ -14,6 +14,8 @@ export type SelectFieldConfig = {
   width: "full" | "auto";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  neededText: string;
+  continueText: string;
 };
 
 // @config-start
@@ -35,6 +37,8 @@ const defaultConfig: SelectFieldConfig = {
   width: "full",
   theme: "light",
   accentColor: "#1d4ed8",
+  neededText: "(needed)",
+  continueText: "Carry on",
 };
 // @config-end
 
@@ -110,7 +114,7 @@ export function SelectField({ config = defaultConfig }: { config?: SelectFieldCo
     <div style={style} className="bg-(--sf-surface) text-(--sf-text)">
       <label htmlFor={`${id}-field`} className="block font-medium">
         {config.label}
-        {config.required && <span className="ml-1 font-normal text-(--sf-muted)">(needed)</span>}
+        {config.required && <span className="ml-1 font-normal text-(--sf-muted)">{config.neededText}</span>}
       </label>
       {config.hint.trim() !== "" && (
         <p id={`${id}-hint`} className="text-sm text-(--sf-muted)">
@@ -177,7 +181,7 @@ export function SelectField({ config = defaultConfig }: { config?: SelectFieldCo
         }}
         className="mt-3 min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--sf-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sf-accent-text)"
       >
-        Carry on
+        {config.continueText}
       </button>
 
       <p role="status" className="mt-2 text-sm text-(--sf-muted)">

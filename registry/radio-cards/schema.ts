@@ -38,6 +38,33 @@ export const radioCardsSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "unavailableText",
+    label: "Unavailable",
+    description: "Said under a choice that cannot be picked.",
+    group: "Words",
+    type: "text",
+    default: "Not available",
+    maxLength: 60,
+  },
+  {
+    key: "noneText",
+    label: "Nothing picked",
+    description: "Said before a choice is made.",
+    group: "Words",
+    type: "text",
+    default: "Nothing picked yet",
+    maxLength: 80,
+  },
+  {
+    key: "pickedText",
+    label: "Picked",
+    description: "Said once one is picked. {choice} is the choice.",
+    group: "Words",
+    type: "text",
+    default: "{choice} picked",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
