@@ -536,12 +536,14 @@ export const templates: Template[] = [
         slug: "author-byline",
         region: "main",
         narrow: true,
-        config: () => ({ name: "[TODO: author's name]", nameHref: "", role: "", date: "2026-09-14", updatedDate: "", readingMinutes: 5 }),
+        // No initials circle: it would take its letters from the placeholder.
+        config: () => ({ name: "[TODO: author's name]", nameHref: "", role: "", date: "2026-09-14", updatedDate: "", readingMinutes: 5, showAvatar: false }),
       },
       { slug: "picture-section", region: "main", config: () => ({ alt: "The team's board on a Monday morning", caption: "" }) },
       {
         slug: "text-section",
         region: "main",
+        narrow: true,
         config: () => ({
           eyebrow: "",
           heading: "Three columns, no more",
@@ -553,13 +555,24 @@ export const templates: Template[] = [
         slug: "pull-quote",
         region: "main",
         optional: true,
+        narrow: true,
         config: () => ({ quote: "A list everyone can see is a list nobody has to ask about.", attribution: "[TODO: who said it]", source: "", sourceHref: "" }),
       },
       {
         slug: "post-list",
         region: "main",
         optional: true,
-        config: () => ({ heading: "Read next", layout: "list", showExcerpts: false }),
+        narrow: true,
+        // Not this post: the part's own first post is the one this page shows.
+        config: () => ({
+          heading: "Read next",
+          layout: "list",
+          showExcerpts: false,
+          posts: [
+            { title: "Writing decisions down, once", date: "2026-08-30", excerpt: "", href: "/blog/decisions" },
+            { title: "Keyboard shortcuts worth learning first", date: "2026-08-02", excerpt: "", href: "/blog/shortcuts" },
+          ],
+        }),
       },
       footer,
     ],
@@ -701,7 +714,17 @@ export const templates: Template[] = [
       header({ ctaButton: false }),
       pageHeader("Something new is coming", "A simpler way for small teams to plan their week."),
       { slug: "countdown", region: "main", narrow: true, config: () => ({ label: "Opens in", target: "2027-01-15T09:00", finishedText: "We are open." }) },
-      { slug: "newsletter", region: "main", narrow: true, config: () => ({ heading: "Hear the moment it opens" }) },
+      {
+        slug: "newsletter",
+        region: "main",
+        narrow: true,
+        config: () => ({
+          heading: "Hear the moment it opens",
+          copy: "One email on the day it opens, and nothing else.",
+          consentText: "Yes, email me when it opens.",
+          note: "One email, then we stop.",
+        }),
+      },
       footer,
     ],
   },

@@ -111,8 +111,8 @@ export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridCo
 
       {/* A list, so a screen reader says how many features there are before reading them. */}
       <ul className={`mt-5 grid list-none gap-5 p-0 ${columns}`}>
-        {items.map((item) => (
-          <li key={item.title} className={config.showRule ? "border-t border-(--fg-line) pt-4" : ""}>
+        {items.map((item, index) => (
+          <li key={index} className={config.showRule ? "border-t border-(--fg-line) pt-4" : ""}>
             {item.glyph.trim() !== "" && (
               // Decoration: the heading next to it carries the meaning.
               <p aria-hidden="true" className="text-lg text-(--fg-accent-text)">

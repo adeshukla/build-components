@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PartDrawing } from "@/components/part-drawing";
 import { partBySlug } from "@/lib/parts";
+import { starters } from "@/lib/site-builder";
 import { templates } from "@/lib/templates";
 
 export const metadata: Metadata = {
@@ -37,8 +38,36 @@ export default function TemplatesPage() {
           ))}
         </ul>
 
-        <h2 className="sr-only">Every template</h2>
-        <ul className="grid-gap mt-[clamp(4rem,8vw,6rem)] grid sm:grid-cols-2 xl:grid-cols-4">
+        <h2 className="mt-[clamp(4rem,8vw,6rem)] font-display text-[clamp(2rem,4vw,3rem)] leading-none">Whole websites</h2>
+        <p className="mt-3 max-w-2xl text-pretty text-ink-muted">
+          Every page of a site at once, sharing one header and footer, its menu linking the pages. It opens in the builder, ready to change.
+        </p>
+        <ul className="grid-gap mt-8 grid sm:grid-cols-2 xl:grid-cols-3">
+          {starters.map((starter) => (
+            <li
+              key={starter.id}
+              className="glass spot relative flex flex-col rounded-2xl p-6 outline-offset-3 outline-accent transition-[translate,scale] duration-500 ease-spring has-[a:focus-visible]:outline-2 hover:-translate-y-1 active:scale-[0.97]"
+            >
+              <h3 className="text-base font-semibold">
+                <Link href={`/build?site=${starter.id}`} className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">
+                  {`${starter.name} website`}
+                </Link>
+              </h3>
+              <p className="mt-0.5 font-mono text-xs text-ink-muted">{`${starter.pages.length} pages · opens in the builder`}</p>
+              <p className="mt-2 text-sm text-pretty text-ink-muted">{starter.summary}</p>
+              <ul aria-label="Its pages" className="mt-4 flex flex-wrap gap-1.5">
+                {starter.pages.map(([title]) => (
+                  <li key={title} className="rounded-full border border-rule px-2.5 py-0.5 text-xs">
+                    {title}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+
+        <h2 className="mt-[clamp(4rem,8vw,6rem)] font-display text-[clamp(2rem,4vw,3rem)] leading-none">Pages</h2>
+        <ul className="grid-gap mt-8 grid sm:grid-cols-2 xl:grid-cols-4">
           {templates.map((template) => {
             const slugs = [...new Set(template.sections.map((section) => section.slug))];
             return (

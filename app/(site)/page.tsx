@@ -93,7 +93,7 @@ export default function Home() {
             </p>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2">
-            {templates.map((template) => (
+            {templates.slice(0, 8).map((template) => (
               <li
                 key={template.id}
                 className="glass spot relative rounded-2xl p-6 transition-[translate,scale] duration-500 ease-spring hover:-translate-y-1 active:scale-[0.97]"

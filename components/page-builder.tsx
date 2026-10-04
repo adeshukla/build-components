@@ -65,6 +65,19 @@ async function initialSite(): Promise<BuiltSite> {
   const shared = new URLSearchParams(window.location.hash.slice(1)).get("p");
   const fromLink = shared ? await decodeSite(shared) : null;
   if (fromLink) return fromLink;
+  // A whole website from the templates page (D88), once: the address is cleaned so a reload keeps the work.
+  const starter = new URLSearchParams(window.location.search).get("site");
+  const started = starter ? siteFromStarter(starter, blankSite()) : null;
+  if (started) {
+    // Kept first: this can run twice (Strict Mode), and the second run, with the address cleaned, reads storage.
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData(started)));
+    } catch {
+      // Storage blocked: the site still opens, it just is not kept.
+    }
+    history.replaceState(null, "", window.location.pathname);
+    return started;
+  }
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     const site = saved ? siteFrom(JSON.parse(saved)) : null;

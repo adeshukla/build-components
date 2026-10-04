@@ -37,9 +37,13 @@ for (const template of templates) {
       test(`the React page is a page, ${variant.name}`, async ({ page }) => {
         const options = { ...defaultOptions(template), ...variant.options(template.id) };
         const query = new URLSearchParams({ name: options.name, brand: options.brand, theme: options.theme, sections: options.sections.join(",") });
+        // React's own complaints (two items with one key, a hydration mismatch) arrive as console errors.
+        const errors: string[] = [];
+        page.on("console", (message) => message.type() === "error" && errors.push(message.text()));
         await page.goto(`/preview-template/${template.id}?${query}`);
         await page.locator("[data-ready]").waitFor({ state: "attached", timeout: 20_000 });
         await expectAPage(page);
+        expect(errors).toEqual([]);
       });
 
       test(`the HTML page is a page, ${variant.name}`, async ({ page }) => {
