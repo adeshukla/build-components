@@ -18,6 +18,16 @@ export type CarouselConfig = {
   accentColor: string;
   radius: number;
   aspect: "16/9" | "4/3" | "1/1";
+  carouselRole: string;
+  slideRole: string;
+  trackLabel: string;
+  slideLabel: string;
+  stopText: string;
+  startText: string;
+  previousText: string;
+  nextText: string;
+  dotText: string;
+  counterText: string;
 };
 
 // @config-start
@@ -40,6 +50,16 @@ const defaultConfig: CarouselConfig = {
   accentColor: "#2563eb",
   radius: 12,
   aspect: "16/9",
+  carouselRole: "carousel",
+  slideRole: "slide",
+  trackLabel: "{label} slides",
+  slideLabel: "{index} of {total}",
+  stopText: "Stop automatic slide changes",
+  startText: "Start automatic slide changes",
+  previousText: "Previous slide",
+  nextText: "Next slide",
+  dotText: "Slide {index}: {title}",
+  counterText: "Slide {index} of {total}",
 };
 // @config-end
 
@@ -102,6 +122,9 @@ function readableAccent(hex: string, onDark: boolean) {
 function safeImage(value: string) {
   return /^(\/|https?:\/\/)/i.test(value.trim()) ? value.trim() : "";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }) {
   const slides = config.slides.filter((slide) => slide.title.trim() !== "" || slide.text.trim() !== "");
@@ -187,7 +210,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
 
   return (
     <section
-      aria-roledescription="carousel"
+      aria-roledescription={config.carouselRole}
       aria-label={config.label}
       style={style}
       className="bg-(--cr-surface) text-(--cr-text)"
@@ -203,7 +226,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
         // A scrollable region has to be reachable by keyboard, so the track itself takes focus.
         tabIndex={0}
         role="group"
-        aria-label={`${config.label} slides`}
+        aria-label={fill(config.trackLabel, { label: config.label })}
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cr-accent-text) motion-reduce:scroll-auto [scrollbar-width:thin]"
       >
         {slides.map((slide, index) => {
@@ -212,8 +235,8 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
             <div
               key={index}
               role="group"
-              aria-roledescription="slide"
-              aria-label={`${index + 1} of ${slides.length}`}
+              aria-roledescription={config.slideRole}
+              aria-label={fill(config.slideLabel, { index: index + 1, total: slides.length })}
               // Each slide is a fraction of the track, minus its share of the gaps.
               style={{ width: `calc((100% - ${perView - 1} * 1rem) / ${perView})` }}
               className="shrink-0 snap-start overflow-hidden rounded-(--cr-radius) bg-(--cr-slide)"
@@ -236,7 +259,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
       <div className="mt-4 flex flex-wrap items-center gap-3">
         {config.autoRotate && (
           <button type="button" onClick={() => setPlaying(!playing)} className={control}>
-            <span className="sr-only">{playing ? "Stop automatic slide changes" : "Start automatic slide changes"}</span>
+            <span className="sr-only">{playing ? config.stopText : config.startText}</span>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-4">
               {playing ? <path d="M7 5h4v14H7zM13 5h4v14h-4z" /> : <path d="M8 5v14l11-7z" />}
             </svg>
@@ -246,7 +269,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
         {config.arrows && (
           <>
             <button type="button" onClick={() => goTo(current - 1)} disabled={!config.loop && current === 0} className={control}>
-              <span className="sr-only">Previous slide</span>
+              <span className="sr-only">{config.previousText}</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                 <path d="M15 6l-6 6 6 6" />
               </svg>
@@ -257,7 +280,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
               disabled={!config.loop && current >= lastIndex}
               className={control}
             >
-              <span className="sr-only">Next slide</span>
+              <span className="sr-only">{config.nextText}</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                 <path d="M9 6l6 6-6 6" />
               </svg>
@@ -283,7 +306,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
                   }`}
                 />
                 <span className="sr-only">
-                  Slide {index + 1}: {slide.title}
+                  {fill(config.dotText, { index: index + 1, title: slide.title })}
                 </span>
               </button>
             ))}
@@ -292,7 +315,7 @@ export function Carousel({ config = defaultConfig }: { config?: CarouselConfig }
 
         {config.counter && (
           <p aria-live="polite" className="ml-auto text-sm text-(--cr-muted)">
-            Slide {current + 1} of {lastIndex + 1}
+            {fill(config.counterText, { index: current + 1, total: lastIndex + 1 })}
           </p>
         )}
       </div>

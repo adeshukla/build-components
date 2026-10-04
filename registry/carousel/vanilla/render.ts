@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CarouselConfig } from "../react/carousel";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", slide: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4" },
   dark: { surface: "#141019", slide: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
@@ -62,7 +65,7 @@ export function renderCarouselMarkup(config: CarouselConfig) {
       // No image means no picture area at all, rather than an empty box.
       const media = image !== "" ? `          <img class="cr-image" src="${escapeHtml(image)}" alt="${escapeHtml(slide.alt)}">
 ` : "";
-      return `        <div class="cr-slide" role="group" aria-roledescription="slide" aria-label="${index + 1} of ${slides.length}">
+      return `        <div class="cr-slide" role="group" aria-roledescription="${escapeHtml(config.slideRole)}" aria-label="${escapeHtml(fill(config.slideLabel, { index: index + 1, total: slides.length }))}">
 ${media}          <div class="cr-body">
 ${slide.title.trim() ? `            <p class="cr-title">${escapeHtml(slide.title)}</p>\n` : ""}${slide.text.trim() ? `            <p class="cr-text">${escapeHtml(slide.text)}</p>\n` : ""}          </div>
         </div>`;
@@ -72,24 +75,24 @@ ${slide.title.trim() ? `            <p class="cr-title">${escapeHtml(slide.title
   const dots = Array.from({ length: lastIndex + 1 })
     .map(
       (_, index) =>
-        `          <button class="cr-dot" type="button" data-dot="${index}"${index === 0 ? ' aria-current="true"' : ""}><span class="cr-sr">Slide ${index + 1}: ${escapeHtml(slides[index]?.title ?? "")}</span></button>`,
+        `          <button class="cr-dot" type="button" data-dot="${index}"${index === 0 ? ' aria-current="true"' : ""}><span class="cr-sr">${escapeHtml(fill(config.dotText, { index: index + 1, title: slides[index]?.title ?? "" }))}</span></button>`,
     )
     .join("\n");
 
   const play = config.autoRotate
-    ? `        <button class="cr-control" type="button" data-play aria-pressed="true"><span class="cr-sr" data-play-label>Stop automatic slide changes</span>${icons.pause}${icons.play}</button>\n`
+    ? `        <button class="cr-control" type="button" data-play aria-pressed="true"><span class="cr-sr" data-play-label>${escapeHtml(config.stopText)}</span>${icons.pause}${icons.play}</button>\n`
     : "";
   const arrows = config.arrows
-    ? `        <button class="cr-control" type="button" data-previous${config.loop ? "" : " disabled"}><span class="cr-sr">Previous slide</span>${icons.previous}</button>
-        <button class="cr-control" type="button" data-next><span class="cr-sr">Next slide</span>${icons.next}</button>\n`
+    ? `        <button class="cr-control" type="button" data-previous${config.loop ? "" : " disabled"}><span class="cr-sr">${escapeHtml(config.previousText)}</span>${icons.previous}</button>
+        <button class="cr-control" type="button" data-next><span class="cr-sr">${escapeHtml(config.nextText)}</span>${icons.next}</button>\n`
     : "";
   const dotRow = config.dots ? `        <div class="cr-dots">\n${dots}\n        </div>\n` : "";
   const counter = config.counter
-    ? `        <p class="cr-counter" aria-live="polite" data-counter>Slide 1 of ${lastIndex + 1}</p>\n`
+    ? `        <p class="cr-counter" aria-live="polite" data-counter>${escapeHtml(fill(config.counterText, { index: 1, total: lastIndex + 1 }))}</p>\n`
     : "";
 
-  return `    <section class="cr cr--theme-${config.theme}" style="${vars}" aria-roledescription="carousel" aria-label="${escapeHtml(config.label)}" data-carousel data-interval="${config.interval}" data-auto="${config.autoRotate}" data-per-view="${perView}" data-loop="${config.loop}">
-      <div class="cr-track" role="group" aria-label="${escapeHtml(config.label)} slides" tabindex="0" data-track>
+  return `    <section class="cr cr--theme-${config.theme}" style="${vars}" aria-roledescription="${escapeHtml(config.carouselRole)}" aria-label="${escapeHtml(config.label)}" data-carousel data-counter="${escapeHtml(config.counterText)}" data-start="${escapeHtml(config.startText)}" data-stop="${escapeHtml(config.stopText)}" data-interval="${config.interval}" data-auto="${config.autoRotate}" data-per-view="${perView}" data-loop="${config.loop}">
+      <div class="cr-track" role="group" aria-label="${escapeHtml(fill(config.trackLabel, { label: config.label }))}" tabindex="0" data-track>
 ${items}
       </div>
       <div class="cr-controls">

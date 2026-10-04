@@ -16,6 +16,16 @@ import { open, targets } from "./helpers";
  * can change.
  */
 
+test("no part's files hold a stray control character", () => {
+  // One slipped into seven files once, as an escaped regex backreference: it shows on the page as a box.
+  const fs = require("node:fs") as typeof import("node:fs");
+  const bad = fs
+    .readdirSync("registry", { recursive: true, encoding: "utf8" })
+    .filter((file) => /\.(tsx?|js|css|html)$/.test(file))
+    .filter((file) => /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(fs.readFileSync(`registry/${file}`, "utf8")));
+  expect(bad).toEqual([]);
+});
+
 test("the dictionary has every Words option in every language", () => {
   const missing: string[] = [];
   for (const [slug, item] of Object.entries(registry)) {

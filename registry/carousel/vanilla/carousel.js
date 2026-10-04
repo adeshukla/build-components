@@ -4,6 +4,13 @@
  * previous/next buttons, the dots, the counter and optional automatic rotation.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createCarousel(root) {
     const track = root.querySelector("[data-track]");
     const slides = Array.from(root.querySelectorAll(".cr-slide"));
@@ -46,7 +53,7 @@
         if (i === index) dot.setAttribute("aria-current", "true");
         else dot.removeAttribute("aria-current");
       });
-      if (counter) counter.textContent = "Slide " + (index + 1) + " of " + (lastIndex + 1);
+      if (counter) counter.textContent = fill(root.dataset.counter, { index: index + 1, total: lastIndex + 1 });
     }
 
     // The scroll position is the source of truth: swiping keeps the dots and buttons honest.
@@ -86,8 +93,8 @@
         const playing = play.getAttribute("aria-pressed") === "true";
         play.setAttribute("aria-pressed", String(!playing));
         play.querySelector("[data-play-label]").textContent = playing
-          ? "Start automatic slide changes"
-          : "Stop automatic slide changes";
+          ? root.dataset.start
+          : root.dataset.stop;
         if (playing) stop();
         else start();
       });

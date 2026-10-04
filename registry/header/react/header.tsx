@@ -17,6 +17,9 @@ export type HeaderConfig = {
   accentColor: string;
   radius: number;
   height: "compact" | "regular";
+  skipText: string;
+  navLabel: string;
+  schemeLabel: string;
 };
 
 // @config-start
@@ -40,6 +43,9 @@ const defaultConfig: HeaderConfig = {
   accentColor: "#2563eb",
   radius: 8,
   height: "regular",
+  skipText: "Skip to content",
+  navLabel: "Main",
+  schemeLabel: "Dark theme",
 };
 // @config-end
 
@@ -173,7 +179,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
           href="#main"
           className={`absolute start-4 z-50 -translate-y-20 rounded-(--hd-radius) bg-(--hd-accent) px-4 py-2 font-semibold text-(--hd-on-accent) no-underline transition-transform focus:translate-y-3 ${focusRing}`}
         >
-          Skip to content
+          {config.skipText}
         </a>
       )}
       <div className={`mx-auto flex w-full max-w-7xl items-center gap-6 px-4 sm:px-6 ${heights[config.height]}`}>
@@ -181,7 +187,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
           {config.logoText}
         </a>
 
-        <nav aria-label="Main" className={`ms-auto items-center gap-1 ${breakpoint.inline}`}>
+        <nav aria-label={config.navLabel} className={`ms-auto items-center gap-1 ${breakpoint.inline}`}>
           <ul className="flex items-center gap-1">
             {links.map((link) => (
               <li key={`${link.label}-${link.href}`}>
@@ -206,7 +212,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
           // A toggle: "Dark theme", pressed while the page is dark. The page's own choice, or the system's.
           <button
             type="button"
-            aria-label="Dark theme"
+            aria-label={config.schemeLabel}
             aria-pressed={systemDark}
             onClick={() => chooseScheme(systemDark ? "light" : "dark")}
             className={`ms-1 inline-grid size-11 shrink-0 cursor-pointer place-items-center rounded-(--hd-radius) text-(--hd-muted) hover:bg-(--hd-hover) hover:text-(--hd-text) ${breakpoint.scheme} ${focusRing}`}
@@ -238,7 +244,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
         hidden={!open}
         className={`border-t border-(--hd-line) ${breakpoint.panel}`}
       >
-        <nav aria-label="Main" className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6">
+        <nav aria-label={config.navLabel} className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6">
           <ul className="flex flex-col">
             {links.map((link) => (
               <li key={`${link.label}-${link.href}`}>

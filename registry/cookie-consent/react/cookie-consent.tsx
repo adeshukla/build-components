@@ -13,6 +13,16 @@ export type CookieConsentConfig = {
   showReopen: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  acceptText: string;
+  rejectText: string;
+  chooseText: string;
+  reopenText: string;
+  dialogTitle: string;
+  dialogBody: string;
+  necessaryName: string;
+  necessaryNote: string;
+  cancelText: string;
+  saveText: string;
 };
 
 /** What is saved, and what the "cookie-consent" event carries: one true/false per category. */
@@ -33,6 +43,16 @@ const defaultConfig: CookieConsentConfig = {
   showReopen: true,
   theme: "light",
   accentColor: "#2563eb",
+  acceptText: "Accept all",
+  rejectText: "Reject all",
+  chooseText: "Choose cookies",
+  reopenText: "Cookie settings",
+  dialogTitle: "Cookie preferences",
+  dialogBody: "Choose which cookies you allow. You can change this at any time.",
+  necessaryName: "Necessary",
+  necessaryNote: "Needed for the site to work, such as remembering this choice. Always on.",
+  cancelText: "Cancel",
+  saveText: "Save choices",
 };
 // @config-end
 
@@ -217,14 +237,14 @@ export function CookieConsent({
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <button type="button" onClick={() => save(every(true))} className={choiceButton}>
-                Accept all
+                {config.acceptText}
               </button>
               <button type="button" onClick={() => save(every(false))} className={choiceButton}>
-                Reject all
+                {config.rejectText}
               </button>
               {categories.length > 0 && (
                 <button type="button" aria-haspopup="dialog" onClick={openPreferences} className={quietButton}>
-                  Choose cookies
+                  {config.chooseText}
                 </button>
               )}
             </div>
@@ -234,7 +254,7 @@ export function CookieConsent({
 
       {saved && config.showReopen && (
         <button ref={reopenRef} type="button" aria-haspopup="dialog" onClick={openPreferences} className={quietButton}>
-          Cookie settings
+          {config.reopenText}
         </button>
       )}
 
@@ -256,17 +276,17 @@ export function CookieConsent({
           className="p-6"
         >
           <h2 ref={titleRef} id={`${id}-title`} tabIndex={-1} className="text-lg font-semibold outline-none">
-            Cookie preferences
+            {config.dialogTitle}
           </h2>
-          <p className="mt-1 text-sm text-(--cc-muted)">Choose which cookies you allow. You can change this at any time.</p>
+          <p className="mt-1 text-sm text-(--cc-muted)">{config.dialogBody}</p>
           <ul className="mt-4 divide-y divide-(--cc-line) border-y border-(--cc-line)">
             <li>
               <label className="flex items-start gap-3 py-3">
                 <input type="checkbox" checked readOnly disabled aria-describedby={`${id}-necessary-note`} className="mt-1 size-5 shrink-0 accent-(--cc-accent)" />
                 <span>
-                  <span className="block font-medium">Necessary</span>
+                  <span className="block font-medium">{config.necessaryName}</span>
                   <span id={`${id}-necessary-note`} className="block text-sm text-(--cc-muted)">
-                    Needed for the site to work, such as remembering this choice. Always on.
+                    {config.necessaryNote}
                   </span>
                 </span>
               </label>
@@ -293,10 +313,10 @@ export function CookieConsent({
           </ul>
           <div className="mt-5 flex flex-wrap justify-end gap-2">
             <button type="button" onClick={() => dialogRef.current?.close()} className={quietButton}>
-              Cancel
+              {config.cancelText}
             </button>
             <button type="submit" className={choiceButton}>
-              Save choices
+              {config.saveText}
             </button>
           </div>
         </form>

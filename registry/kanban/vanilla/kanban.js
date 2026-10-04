@@ -29,7 +29,7 @@
         const to = index + Number(button.dataset.move);
         button.hidden = to < 0 || to >= columns.length;
         const sr = button.querySelector(".kb-sr");
-        if (sr) sr.textContent = fill(root.dataset.move, { card: card.dataset.title, column: names[to] || "" });
+        if (sr) sr.textContent = fill(root.dataset.moveLabel, { card: card.dataset.title, column: names[to] || "" });
       });
     }
 

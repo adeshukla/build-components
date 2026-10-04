@@ -117,7 +117,7 @@ export function ColorPicker({ config = defaultConfig }: { config?: ColorPickerCo
       {config.allowCustom && (
         <p className="mt-3 flex items-center gap-2">
           <label htmlFor={`${id}-custom`} className="text-sm font-medium">
-{config.otherText}
+            {config.otherText}
           </label>
           {/* The browser's own colour picker: it comes with a keyboard and an eyedropper. */}
           <input

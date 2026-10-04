@@ -137,7 +137,7 @@ export function CodeBlock({ config = defaultConfig }: { config?: CodeBlockConfig
               onClick={() => setWrap((current) => !current)}
               className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--cb-line) px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cb-accent-text)"
             >
-{config.wrapText}
+              {config.wrapText}
             </button>
           )}
           <button

@@ -17,6 +17,11 @@ export type TourConfig = {
   showDemo: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  skipText: string;
+  backText: string;
+  nextText: string;
+  finishText: string;
+  progressText: string;
 };
 
 // @config-start
@@ -32,6 +37,11 @@ const defaultConfig: TourConfig = {
   showDemo: true,
   theme: "light",
   accentColor: "#2563eb",
+  skipText: "Skip tour",
+  backText: "Back",
+  nextText: "Next",
+  finishText: "Finish",
+  progressText: "Step {current} of {total}",
 };
 // @config-end
 
@@ -107,6 +117,9 @@ function place(target: HTMLElement, ring: HTMLElement, popup: HTMLElement) {
   const left = Math.min(Math.max(8, box.left), window.innerWidth - width - 8);
   Object.assign(popup.style, { top: `${top}px`, left: `${left}px` });
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
   const id = useId();
@@ -187,7 +200,7 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
     <div style={style} className="text-(--to-text)">
       {config.showDemo && (
         // Example page to point the tour at. Delete it and point each step's target at your own elements.
-        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-[var(--bc-radius-md,0.5rem)] border border-(--to-line) bg-(--to-sunk) p-3">
+        <div data-demo className="mb-4 flex flex-wrap items-center gap-2 rounded-[var(--bc-radius-md,0.5rem)] border border-(--to-line) bg-(--to-sunk) p-3">
           <label htmlFor="tour-search" className="sr-only">
             Search
           </label>
@@ -224,7 +237,7 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
           >
             {config.showProgress && (
               <p className="text-xs font-medium tracking-wide text-(--to-muted) uppercase">
-                Step {index + 1} of {steps.length}
+                {fill(config.progressText, { current: index + 1, total: steps.length })}
               </p>
             )}
             <p ref={titleRef} id={`${id}-title`} tabIndex={-1} className="mt-1 font-semibold outline-none">
@@ -235,12 +248,12 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
               <button type="button" onClick={end} className={`${button} -ml-2 bg-transparent px-2 text-(--to-accent-text) underline underline-offset-2`}>
-                Skip tour
+                {config.skipText}
               </button>
               <span className="flex gap-2">
                 {index > 0 && (
                   <button type="button" onClick={() => setIndex(index - 1)} className={quiet}>
-                    Back
+                    {config.backText}
                   </button>
                 )}
                 <button
@@ -248,7 +261,7 @@ export function Tour({ config = defaultConfig }: { config?: TourConfig }) {
                   onClick={() => (index === steps.length - 1 ? end() : setIndex(index + 1))}
                   className={`${button} bg-(--to-accent) text-(--to-on-accent)`}
                 >
-                  {index === steps.length - 1 ? "Finish" : "Next"}
+                  {index === steps.length - 1 ? config.finishText : config.nextText}
                 </button>
               </span>
             </div>

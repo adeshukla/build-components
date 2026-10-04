@@ -244,7 +244,7 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
                 }}
                 className={`inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 py-1 text-sm underline ${focus}`}
               >
-{config.clearText}
+                {config.clearText}
               </button>
             </li>
           )}

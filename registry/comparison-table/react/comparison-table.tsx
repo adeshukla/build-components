@@ -120,7 +120,7 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
           <thead>
             <tr>
               <th scope="col" className="w-2/5 border-b border-(--cp-line) p-3 text-start align-bottom">
-{config.featureHeader}
+                {config.featureHeader}
               </th>
               {plans.map((plan) => {
                 const featured = plan.name === config.highlight;

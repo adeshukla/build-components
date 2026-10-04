@@ -5,6 +5,13 @@
  * The root fires "tour-end" with event.detail.finished (true when the last step was reached).
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** A step's target, or nothing if the selector is invalid or matches nothing on this page. */
   function find(selector) {
     try {
@@ -54,11 +61,11 @@
       index = at;
       const step = steps[at];
       target = find(step.target);
-      count.textContent = showProgress ? "Step " + (at + 1) + " of " + steps.length : "";
+      count.textContent = showProgress ? fill(root.dataset.progressText, { current: at + 1, total: steps.length }) : "";
       title.textContent = step.title;
       body.textContent = step.body;
       back.hidden = at === 0;
-      next.textContent = at === steps.length - 1 ? "Finish" : "Next";
+      next.textContent = at === steps.length - 1 ? root.dataset.finish : root.dataset.next;
       ring.hidden = false;
       popup.hidden = false;
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

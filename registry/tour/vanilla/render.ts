@@ -37,7 +37,7 @@ export function renderTourMarkup(config: TourConfig) {
 
   const demo = config.showDemo
     ? `      <!-- Example page to point the tour at. Delete it and point each step's target at your own elements. -->
-      <div class="to-demo">
+      <div class="to-demo" data-demo>
         <label class="to-sr" for="tour-search">Search</label>
         <input class="to-search" id="tour-search" type="search" placeholder="Search">
         <button class="to-button to-button--main" id="tour-new" type="button">New project</button>
@@ -47,7 +47,7 @@ export function renderTourMarkup(config: TourConfig) {
 `
     : "";
 
-  return `    <div class="to to--theme-${config.theme}" style="${vars}" data-tour data-progress="${config.showProgress}">
+  return `    <div class="to to--theme-${config.theme}" style="${vars}" data-tour data-progress-text="${escapeHtml(config.progressText)}" data-next="${escapeHtml(config.nextText)}" data-finish="${escapeHtml(config.finishText)}" data-progress="${config.showProgress}">
 ${demo}      <button class="to-button to-button--quiet" type="button" aria-haspopup="dialog" data-start>${escapeHtml(config.startText)}</button>
       <div class="to-ring" aria-hidden="true" hidden data-ring></div>
       <div class="to-step" role="dialog" aria-modal="false" aria-labelledby="tour-title" aria-describedby="tour-body" hidden data-step>
@@ -55,10 +55,10 @@ ${demo}      <button class="to-button to-button--quiet" type="button" aria-haspo
         <p class="to-title" id="tour-title" tabindex="-1"></p>
         <p class="to-body" id="tour-body"></p>
         <div class="to-actions">
-          <button class="to-button to-skip" type="button" data-skip>Skip tour</button>
+          <button class="to-button to-skip" type="button" data-skip>${escapeHtml(config.skipText)}</button>
           <span class="to-nav">
-            <button class="to-button to-button--quiet" type="button" data-back>Back</button>
-            <button class="to-button to-button--main" type="button" data-next>Next</button>
+            <button class="to-button to-button--quiet" type="button" data-back>${escapeHtml(config.backText)}</button>
+            <button class="to-button to-button--main" type="button" data-next>${escapeHtml(config.nextText)}</button>
           </span>
         </div>
       </div>

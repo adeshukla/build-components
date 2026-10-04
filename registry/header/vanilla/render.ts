@@ -46,14 +46,14 @@ export function renderHeaderMarkup(config: HeaderConfig) {
     : "";
 
   return `    <header class="${classes}" style="${vars}" data-header data-breakpoint="${config.mobileBreakpoint}">
-${config.skipLink ? `      <a class="hd-skip" href="#main">Skip to content</a>\n` : ""}      <div class="hd-bar">
+${config.skipLink ? `      <a class="hd-skip" href="#main">${escapeHtml(config.skipText)}</a>\n` : ""}      <div class="hd-bar">
         <a class="hd-logo" href="/">${escapeHtml(config.logoText)}</a>
-        <nav class="hd-nav" aria-label="Main">
+        <nav class="hd-nav" aria-label="${escapeHtml(config.navLabel)}">
           <ul class="hd-list">
 ${links}
           </ul>
 ${cta}        </nav>
-${config.schemeSwitch ? `        <button class="hd-scheme" type="button" data-scheme aria-label="Dark theme" aria-pressed="false">
+${config.schemeSwitch ? `        <button class="hd-scheme" type="button" data-scheme aria-label="${escapeHtml(config.schemeLabel)}" aria-pressed="false">
           <svg class="hd-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
           <svg class="hd-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         </button>
@@ -64,14 +64,14 @@ ${config.schemeSwitch ? `        <button class="hd-scheme" type="button" data-sc
         </button>
       </div>
       <div class="hd-menu" id="hd-menu" hidden>
-        <nav class="hd-menu-inner" aria-label="Main">
+        <nav class="hd-menu-inner" aria-label="${escapeHtml(config.navLabel)}">
           <ul class="hd-list hd-list--stacked">
 ${links}
           </ul>
 ${cta}        </nav>
       </div>
     </header>
-    <main id="main" class="hd-demo-main">
+    <main id="main" class="hd-demo-main" data-demo>
       <h1>Page heading</h1>
       <p>The header sits above your page. This block is only here so the skip link has somewhere to go.</p>
     </main>`;

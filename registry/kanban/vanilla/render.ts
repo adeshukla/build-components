@@ -68,7 +68,7 @@ ${items}
     })
     .join("\n");
 
-  return `    <div class="kb kb--theme-${config.theme}" style="${vars}" data-kanban data-move="${escapeHtml(config.moveLabel)}" data-moved="${escapeHtml(config.movedText)}"${config.allowDrag ? ' data-drag="true"' : ""}>
+  return `    <div class="kb kb--theme-${config.theme}" style="${vars}" data-kanban data-move-label="${escapeHtml(config.moveLabel)}" data-moved="${escapeHtml(config.movedText)}"${config.allowDrag ? ' data-drag="true"' : ""}>
       <div class="kb-board" aria-label="${escapeHtml(config.label)}">
 ${board}
       </div>

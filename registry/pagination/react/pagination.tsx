@@ -224,10 +224,10 @@ export function Pagination({
         {config.firstLast && config.look === "numbers" && (
           <div className="flex gap-1">
             <button type="button" onClick={() => go(1)} disabled={current === 1} className={step}>
-{config.firstText}
+              {config.firstText}
             </button>
             <button type="button" onClick={() => go(total)} disabled={current === total} className={step}>
-{config.lastText}
+              {config.lastText}
             </button>
           </div>
         )}

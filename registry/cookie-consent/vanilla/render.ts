@@ -56,27 +56,27 @@ export function renderCookieConsentMarkup(config: CookieConsentConfig) {
             <p class="cc-body">${escapeHtml(config.body)}${policy}</p>
           </div>
           <div class="cc-actions">
-            <button class="cc-button cc-button--choice" type="button" data-accept>Accept all</button>
-            <button class="cc-button cc-button--choice" type="button" data-reject>Reject all</button>
-${categories.length ? `            <button class="cc-button cc-button--quiet" type="button" aria-haspopup="dialog" data-choose>Choose cookies</button>\n` : ""}          </div>
+            <button class="cc-button cc-button--choice" type="button" data-accept>${escapeHtml(config.acceptText)}</button>
+            <button class="cc-button cc-button--choice" type="button" data-reject>${escapeHtml(config.rejectText)}</button>
+${categories.length ? `            <button class="cc-button cc-button--quiet" type="button" aria-haspopup="dialog" data-choose>${escapeHtml(config.chooseText)}</button>\n` : ""}          </div>
         </div>
       </section>
-${config.showReopen ? `      <button class="cc-button cc-button--quiet" type="button" aria-haspopup="dialog" hidden data-reopen>Cookie settings</button>\n` : ""}      <dialog class="cc-dialog" aria-labelledby="cookie-dialog-title">
+${config.showReopen ? `      <button class="cc-button cc-button--quiet" type="button" aria-haspopup="dialog" hidden data-reopen>${escapeHtml(config.reopenText)}</button>\n` : ""}      <dialog class="cc-dialog" aria-labelledby="cookie-dialog-title">
         <form method="dialog" data-form>
-          <h2 class="cc-title" id="cookie-dialog-title" tabindex="-1">Cookie preferences</h2>
-          <p class="cc-body">Choose which cookies you allow. You can change this at any time.</p>
+          <h2 class="cc-title" id="cookie-dialog-title" tabindex="-1">${escapeHtml(config.dialogTitle)}</h2>
+          <p class="cc-body">${escapeHtml(config.dialogBody)}</p>
           <ul class="cc-options">
             <li>
               <label class="cc-option">
                 <input type="checkbox" checked disabled aria-describedby="cookie-note-necessary">
-                <span><span class="cc-option-name">Necessary</span><span class="cc-note" id="cookie-note-necessary">Needed for the site to work, such as remembering this choice. Always on.</span></span>
+                <span><span class="cc-option-name">${escapeHtml(config.necessaryName)}</span><span class="cc-note" id="cookie-note-necessary">${escapeHtml(config.necessaryNote)}</span></span>
               </label>
             </li>
 ${rows}
           </ul>
           <div class="cc-dialog-actions">
-            <button class="cc-button cc-button--quiet" type="button" data-cancel>Cancel</button>
-            <button class="cc-button cc-button--choice" type="submit">Save choices</button>
+            <button class="cc-button cc-button--quiet" type="button" data-cancel>${escapeHtml(config.cancelText)}</button>
+            <button class="cc-button cc-button--choice" type="submit">${escapeHtml(config.saveText)}</button>
           </div>
         </form>
       </dialog>

@@ -208,10 +208,10 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
           )}
           <div className="mt-2 flex gap-2">
             <button type="button" onClick={save} className={`${button} bg-(--ie-accent) text-(--ie-on-accent)`}>
-{config.saveText}
+              {config.saveText}
             </button>
             <button type="button" onClick={cancel} className={`${button} border border-(--ie-border) text-(--ie-text)`}>
-{config.cancelText}
+              {config.cancelText}
             </button>
           </div>
         </div>
@@ -228,7 +228,7 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
               <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z" />
             </svg>
-{config.editText}
+              {config.editText}
             <span className="sr-only">
               {" "}
               {fill(config.currentlyText, { label: config.label, value: value === "" ? config.notSetText.toLowerCase() : value })}

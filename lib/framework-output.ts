@@ -107,7 +107,7 @@ export function markupOf(page: string) {
   const inner = page.slice(page.indexOf("<body>") + "<body>".length, page.lastIndexOf("</body>"));
   return inner
     .replace(/\s*<script src="[^"]+"><\/script>/g, "")
-    .replace(/\s*<main id="main" class="hd-demo-main">[\s\S]*?<\/main>/, "")
+    .replace(/\s*<main id="main" class="hd-demo-main"[^>]*>[\s\S]*?<\/main>/, "")
     .trim()
     .replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
 }

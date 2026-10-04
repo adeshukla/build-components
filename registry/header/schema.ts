@@ -137,6 +137,33 @@ export const headerSchema = [
     default: "regular",
     options: ["compact", "regular"],
   },
+  {
+    key: "skipText",
+    label: "Skip link",
+    description: "The first link on the page, to jump past the header.",
+    group: "Words",
+    type: "text",
+    default: "Skip to content",
+    maxLength: 40,
+  },
+  {
+    key: "navLabel",
+    label: "Links label",
+    description: "Names the main links, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Main",
+    maxLength: 30,
+  },
+  {
+    key: "schemeLabel",
+    label: "Theme switch",
+    description: "Read out for the light and dark switch; pressed means dark.",
+    group: "Words",
+    type: "text",
+    default: "Dark theme",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
