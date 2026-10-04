@@ -51,6 +51,9 @@ Adesh said ship. `main` was fast-forwarded to `dev` (7a5d67e) and pushed; Vercel
   cards light where you point, on focus, under a finger and as they scroll through the middle of a phone
   screen; buttons glow. `e2e/spotlight.spec.ts`.
 - **Responsive:** every site page tested at 300–1920px in three browsers; three 300px overflows fixed.
+- **Fix:** notification list and toolbar keyed items (and kept read/pressed state) by their text, so two
+  items with one title logged a duplicate-key error and marking one marked both. Now by position; `duplicates`
+  variants test it.
 
 
 ## Session 14: wider layout to try, live reel, more templates, page builder

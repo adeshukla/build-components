@@ -99,6 +99,7 @@ Next.js 16.3.5 (App Router, Turbopack default) · React 19.2.8 · TypeScript 5.9
 - Never gate a document-level `keydown` listener on component state if anything else in the same component moves focus. Attach it once and check the state inside; two effects racing is how Escape stopped working on the iPhone.
 - `requestAnimationFrame` is not "after React has rendered". To focus something that appears with a state change, put the request in a ref and move focus in an effect with no dependency array — it runs after every commit. rAF cost half an hour of WebKit failures in the menu bar.
 - `parseConfig` reads an empty list (`[]`) as "not specified" and falls back to the default, so **a list cannot be emptied from a URL**. Use a boolean to hide an optional block (`showTrail`, `showLine2`, `showDetails`).
+- Never key list items, or keep per-item state, by a text field the user can edit: two items with one title give a duplicate key and share state. Use the index (feature grid, notification list, toolbar).
 - A hard-coded element id in a React component breaks the moment two of that part share a page. Use `useId()`. About twenty of the older parts still hard-code theirs — see PROGRESS.
 - Playwright cannot click a visually hidden radio or checkbox: its own label covers it. Use `check({ force: true })`, or click the label.
 - `aria-hidden` does not excuse an axe colour-contrast failure — contrast is a visual requirement, and axe is right. To show text that deliberately fails, draw it as SVG `<text>`.
