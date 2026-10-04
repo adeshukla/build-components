@@ -27,6 +27,28 @@ export type DatePickerConfig = {
   accentColor: string;
   radius: number;
   size: "sm" | "md" | "lg";
+  afterText: string;
+  beforeText: string;
+  formatHint: string;
+  badMonthText: string;
+  badDayText: string;
+  rangeFormatText: string;
+  startErrorText: string;
+  endErrorText: string;
+  backwardsText: string;
+  chooseDateLabel: string;
+  chooseDatesLabel: string;
+  clearDateLabel: string;
+  clearDatesLabel: string;
+  previousLabel: string;
+  nextLabel: string;
+  monthWord: string;
+  yearWord: string;
+  yearsWord: string;
+  chooseYearLabel: string;
+  chooseMonthLabel: string;
+  endPromptText: string;
+  todayText: string;
 };
 
 // @config-start
@@ -47,6 +69,28 @@ const defaultConfig: DatePickerConfig = {
   accentColor: "#2563eb",
   radius: 6,
   size: "md",
+  afterText: "Choose a date on or after {date}.",
+  beforeText: "Choose a date on or before {date}.",
+  formatHint: "Enter the date as {format}.",
+  badMonthText: "{month} isn't a valid month. Use 01 to 12.",
+  badDayText: "Day {day} doesn't exist — that month has {max} days.",
+  rangeFormatText: "Enter the dates as {format} – {format}.",
+  startErrorText: "Start date: {error}",
+  endErrorText: "End date: {error}",
+  backwardsText: "The end date is before the start date.",
+  chooseDateLabel: "Choose date",
+  chooseDatesLabel: "Choose dates",
+  clearDateLabel: "Clear date",
+  clearDatesLabel: "Clear dates",
+  previousLabel: "Previous {step}",
+  nextLabel: "Next {step}",
+  monthWord: "month",
+  yearWord: "year",
+  yearsWord: "12 years",
+  chooseYearLabel: "Choose year",
+  chooseMonthLabel: "Choose month",
+  endPromptText: "Now choose the end date.",
+  todayText: "Today",
 };
 // @config-end
 
@@ -149,13 +193,14 @@ function isYearDisabled(year: number, config: DatePickerConfig) {
 function limitError(date: Date, config: DatePickerConfig) {
   const min = fromIso(config.minDate);
   const max = fromIso(config.maxDate);
-  if (min && date < min) return `Choose a date on or after ${formatDate(min, config.format)}.`;
-  if (max && date > max) return `Choose a date on or before ${formatDate(max, config.format)}.`;
+  if (min && date < min) return fill(config.afterText, { date: formatDate(min, config.format) });
+  if (max && date > max) return fill(config.beforeText, { date: formatDate(max, config.format) });
   return "";
 }
 
-function parseDate(text: string, format: Format): { date: Date } | { error: string } {
-  const hint = `Enter the date as ${format}.`;
+function parseDate(text: string, config: DatePickerConfig): { date: Date } | { error: string } {
+  const format: Format = config.format;
+  const hint = fill(config.formatHint, { format: config.format });
   const parts = text.trim().split(/[^0-9]+/);
   if (parts.length !== 3) return { error: hint };
   const value = Object.fromEntries(format.split(/[^A-Z]+/).map((token, i) => [token, parts[i]]));
@@ -165,9 +210,9 @@ function parseDate(text: string, format: Format): { date: Date } | { error: stri
   const year = Number(value.YYYY);
   const month = Number(value.MM);
   const day = Number(value.DD);
-  if (month < 1 || month > 12) return { error: `${value.MM} isn't a valid month. Use 01 to 12.` };
+  if (month < 1 || month > 12) return { error: fill(config.badMonthText, { month: value.MM }) };
   const max = daysInMonth(year, month - 1);
-  if (day < 1 || day > max) return { error: `Day ${value.DD} doesn't exist — that month has ${max} days.` };
+  if (day < 1 || day > max) return { error: fill(config.badDayText, { day: value.DD, max }) };
   return { date: new Date(year, month - 1, day) };
 }
 
@@ -175,22 +220,22 @@ function parseValue(text: string, config: DatePickerConfig): { dates: Date[] } |
   const trimmed = text.trim();
   if (!trimmed) return { dates: [] };
   if (config.mode === "single") {
-    const result = parseDate(trimmed, config.format);
+    const result = parseDate(trimmed, config);
     if ("error" in result) return result;
     const limit = limitError(result.date, config);
     return limit ? { error: limit } : { dates: [result.date] };
   }
   const parts = trimmed.split(/\s*–\s*|\s+-\s+|\s+to\s+/);
-  if (parts.length !== 2) return { error: `Enter the dates as ${config.format} – ${config.format}.` };
-  const start = parseDate(parts[0], config.format);
-  if ("error" in start) return { error: `Start date: ${start.error}` };
+  if (parts.length !== 2) return { error: fill(config.rangeFormatText, { format: config.format }) };
+  const start = parseDate(parts[0], config);
+  if ("error" in start) return { error: fill(config.startErrorText, { error: start.error }) };
   const startLimit = limitError(start.date, config);
-  if (startLimit) return { error: `Start date: ${startLimit}` };
-  const end = parseDate(parts[1], config.format);
-  if ("error" in end) return { error: `End date: ${end.error}` };
+  if (startLimit) return { error: fill(config.startErrorText, { error: startLimit }) };
+  const end = parseDate(parts[1], config);
+  if ("error" in end) return { error: fill(config.endErrorText, { error: end.error }) };
   const endLimit = limitError(end.date, config);
-  if (endLimit) return { error: `End date: ${endLimit}` };
-  if (end.date < start.date) return { error: "The end date is before the start date." };
+  if (endLimit) return { error: fill(config.endErrorText, { error: endLimit }) };
+  if (end.date < start.date) return { error: config.backwardsText };
   return { dates: [start.date, end.date] };
 }
 
@@ -263,6 +308,9 @@ function keyOf(event: { key: string; target: EventTarget | null }) {
   return rtl ? (swapped[event.key] ?? event.key) : event.key;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function DatePicker({ config = defaultConfig }: { config?: DatePickerConfig }) {
   const id = useId();
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -289,7 +337,9 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const range = config.mode === "range";
   const size = ios ? iosSizes : sizes[config.size];
   const startIdx = config.weekStartsOn === "monday" ? 1 : 0;
-  const chooseLabel = range ? "Choose dates" : "Choose date";
+  // Month and day names in the page's language (<html lang>), on the client only, as before.
+  const locale = typeof document === "undefined" ? undefined : document.documentElement.lang || undefined;
+  const chooseLabel = range ? config.chooseDatesLabel : config.chooseDateLabel;
   const placeholder = range ? `${config.format} – ${config.format}` : config.format;
   const showHelper = config.helperText && config.helperTextContent !== "";
   const describedBy =
@@ -424,12 +474,12 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
   const yearStart = year - (year % 12);
   const heading =
     view === "days"
-      ? focused.toLocaleDateString(undefined, { month: "long", year: "numeric" })
+      ? focused.toLocaleDateString(locale, { month: "long", year: "numeric" })
       : view === "months"
         ? String(year)
         : `${yearStart} – ${yearStart + 11}`;
   const stepMonths = view === "days" ? 1 : view === "months" ? 12 : 144;
-  const stepName = view === "days" ? "month" : view === "months" ? "year" : "12 years";
+  const stepName = view === "days" ? config.monthWord : view === "months" ? config.yearWord : config.yearsWord;
 
   function onGridKeyDown(event: KeyboardEvent) {
     const by = (months: number) => () => addMonths(focused, months);
@@ -522,8 +572,8 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
     const date = addMonths(focused, i - month);
     return {
       date,
-      label: date.toLocaleDateString(undefined, { month: "short" }),
-      name: date.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
+      label: date.toLocaleDateString(locale, { month: "short" }),
+      name: date.toLocaleDateString(locale, { month: "long", year: "numeric" }),
       focus: i === month,
       selected: !!selStart && selStart.getFullYear() === year && selStart.getMonth() === i,
       current: year === now.getFullYear() && i === now.getMonth(),
@@ -570,7 +620,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
         {config.clearButton && text !== "" && (
           <button
             type="button"
-            aria-label={range ? "Clear dates" : "Clear date"}
+            aria-label={range ? config.clearDatesLabel : config.clearDateLabel}
             onClick={() => {
               commit([]);
               inputRef.current?.focus();
@@ -636,7 +686,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
             <div className="mb-2 flex items-center justify-between gap-1">
               <button
                 type="button"
-                aria-label={`Previous ${stepName}`}
+                aria-label={fill(config.previousLabel, { step: stepName })}
                 onClick={() => setFocused(addMonths(focused, -stepMonths))}
                 className={`${navButton} ${ios ? "text-(--dp-accent-text)" : ""}`}
               >
@@ -666,7 +716,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               </button>
               <button
                 type="button"
-                aria-label={`Next ${stepName}`}
+                aria-label={fill(config.nextLabel, { step: stepName })}
                 onClick={() => setFocused(addMonths(focused, stepMonths))}
                 className={`${navButton} ${ios ? "text-(--dp-accent-text)" : ""}`}
               >
@@ -695,10 +745,10 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                         <th
                           key={i}
                           scope="col"
-                          abbr={day.toLocaleDateString(undefined, { weekday: "long" })}
+                          abbr={day.toLocaleDateString(locale, { weekday: "long" })}
                           className="h-8 cursor-default text-xs font-medium text-(--dp-muted)"
                         >
-                          {day.toLocaleDateString(undefined, { weekday: "short" })}
+                          {day.toLocaleDateString(locale, { weekday: "short" })}
                         </th>
                       );
                     })}
@@ -721,7 +771,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                             aria-selected={isEnd || inRange}
                             aria-disabled={disabled || undefined}
                             aria-current={isToday ? "date" : undefined}
-                            aria-label={date.toLocaleDateString(undefined, {
+                            aria-label={date.toLocaleDateString(locale, {
                               weekday: "long",
                               day: "numeric",
                               month: "long",
@@ -742,7 +792,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               <table
                 ref={gridRef}
                 role="grid"
-                aria-label={view === "years" ? "Choose year" : "Choose month"}
+                aria-label={view === "years" ? config.chooseYearLabel : config.chooseMonthLabel}
                 onKeyDown={onGridKeyDown}
                 className="w-full border-collapse"
               >
@@ -770,7 +820,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
             )}
 
             <p aria-live="polite" className="mt-2 min-h-5 text-sm text-(--dp-muted)">
-              {rangeStart ? "Now choose the end date." : ""}
+              {rangeStart ? config.endPromptText : ""}
             </p>
             {config.todayButton && (
               <div className="mt-2 flex justify-end">
@@ -782,7 +832,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
                   }}
                   className={`cursor-pointer rounded-(--dp-radius) px-3 py-1 text-sm hover:bg-(--dp-hover) ${focusRing} ${ios ? "font-semibold text-(--dp-accent-text)" : "border border-(--dp-border)"}`}
                 >
-                  Today
+                  {config.todayText}
                 </button>
               </div>
             )}

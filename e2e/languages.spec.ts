@@ -114,6 +114,16 @@ for (const slug of Object.keys(components)) {
       const english = await context.newPage();
       await open(english, target.url(firstVariant));
       const german = await context.newPage();
+      // A German page says so (<html lang="de">): parts that name months and days take them from it.
+      await german.addInitScript(() => {
+        const set = () => document.documentElement?.setAttribute("lang", "de");
+        if (document.documentElement) return set();
+        new MutationObserver((_, observer) => {
+          if (!document.documentElement) return;
+          set();
+          observer.disconnect();
+        }).observe(document, { childList: true });
+      });
       await open(german, target.url("de"));
       const [inEnglish, inGerman] = [await said(english), new Set(await said(german))];
       await context.close();

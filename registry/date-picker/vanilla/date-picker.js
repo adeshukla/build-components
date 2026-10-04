@@ -4,6 +4,13 @@
  * Keyboard and ARIA follow the WAI-ARIA APG "Date Picker Dialog" pattern.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
   function keyOf(event) {
     const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
@@ -29,6 +36,28 @@
     accentColor: "#2563eb",
     radius: 6,
     size: "md",
+    afterText: "Choose a date on or after {date}.",
+    beforeText: "Choose a date on or before {date}.",
+    formatHint: "Enter the date as {format}.",
+    badMonthText: "{month} isn't a valid month. Use 01 to 12.",
+    badDayText: "Day {day} doesn't exist — that month has {max} days.",
+    rangeFormatText: "Enter the dates as {format} – {format}.",
+    startErrorText: "Start date: {error}",
+    endErrorText: "End date: {error}",
+    backwardsText: "The end date is before the start date.",
+    chooseDateLabel: "Choose date",
+    chooseDatesLabel: "Choose dates",
+    clearDateLabel: "Clear date",
+    clearDatesLabel: "Clear dates",
+    previousLabel: "Previous {step}",
+    nextLabel: "Next {step}",
+    monthWord: "month",
+    yearWord: "year",
+    yearsWord: "12 years",
+    chooseYearLabel: "Choose year",
+    chooseMonthLabel: "Choose month",
+    endPromptText: "Now choose the end date.",
+    todayText: "Today",
   };
   // @config-end
 
@@ -86,13 +115,14 @@
   function limitError(date, config) {
     const min = fromIso(config.minDate);
     const max = fromIso(config.maxDate);
-    if (min && date < min) return `Choose a date on or after ${formatDate(min, config.format)}.`;
-    if (max && date > max) return `Choose a date on or before ${formatDate(max, config.format)}.`;
+    if (min && date < min) return fill(config.afterText, { date: formatDate(min, config.format) });
+    if (max && date > max) return fill(config.beforeText, { date: formatDate(max, config.format) });
     return "";
   }
 
-  function parseDate(text, format) {
-    const hint = `Enter the date as ${format}.`;
+  function parseDate(text, config) {
+    const format = config.format;
+    const hint = fill(config.formatHint, { format: config.format });
     const parts = text.trim().split(/[^0-9]+/);
     if (parts.length !== 3) return { error: hint };
     const value = Object.fromEntries(format.split(/[^A-Z]+/).map((token, i) => [token, parts[i]]));
@@ -102,9 +132,9 @@
     const year = Number(value.YYYY);
     const month = Number(value.MM);
     const day = Number(value.DD);
-    if (month < 1 || month > 12) return { error: `${value.MM} isn't a valid month. Use 01 to 12.` };
+    if (month < 1 || month > 12) return { error: fill(config.badMonthText, { month: value.MM }) };
     const max = daysInMonth(year, month - 1);
-    if (day < 1 || day > max) return { error: `Day ${value.DD} doesn't exist — that month has ${max} days.` };
+    if (day < 1 || day > max) return { error: fill(config.badDayText, { day: value.DD, max }) };
     return { date: new Date(year, month - 1, day) };
   }
 
@@ -112,22 +142,22 @@
     const trimmed = text.trim();
     if (!trimmed) return { dates: [] };
     if (config.mode === "single") {
-      const result = parseDate(trimmed, config.format);
+      const result = parseDate(trimmed, config);
       if (result.error) return result;
       const limit = limitError(result.date, config);
       return limit ? { error: limit } : { dates: [result.date] };
     }
     const parts = trimmed.split(/\s*–\s*|\s+-\s+|\s+to\s+/);
-    if (parts.length !== 2) return { error: `Enter the dates as ${config.format} – ${config.format}.` };
-    const start = parseDate(parts[0], config.format);
-    if (start.error) return { error: `Start date: ${start.error}` };
+    if (parts.length !== 2) return { error: fill(config.rangeFormatText, { format: config.format }) };
+    const start = parseDate(parts[0], config);
+    if (start.error) return { error: fill(config.startErrorText, { error: start.error }) };
     const startLimit = limitError(start.date, config);
-    if (startLimit) return { error: `Start date: ${startLimit}` };
-    const end = parseDate(parts[1], config.format);
-    if (end.error) return { error: `End date: ${end.error}` };
+    if (startLimit) return { error: fill(config.startErrorText, { error: startLimit }) };
+    const end = parseDate(parts[1], config);
+    if (end.error) return { error: fill(config.endErrorText, { error: end.error }) };
     const endLimit = limitError(end.date, config);
-    if (endLimit) return { error: `End date: ${endLimit}` };
-    if (end.date < start.date) return { error: "The end date is before the start date." };
+    if (endLimit) return { error: fill(config.endErrorText, { error: endLimit }) };
+    if (end.date < start.date) return { error: config.backwardsText };
     return { dates: [start.date, end.date] };
   }
 
@@ -206,10 +236,12 @@
   let count = 0;
 
   function createDatePicker(root, config) {
+    // Month and day names in the page's language (the nearest lang), not the browser's.
+    const locale = root.closest("[lang]")?.getAttribute("lang") || undefined;
     const id = `date-picker-${++count}`;
     const range = config.mode === "range";
     const startIdx = config.weekStartsOn === "monday" ? 1 : 0;
-    const chooseLabel = range ? "Choose dates" : "Choose date";
+    const chooseLabel = range ? config.chooseDatesLabel : config.chooseDateLabel;
     const placeholder = range ? `${config.format} – ${config.format}` : config.format;
     const showHelper = config.helperText && config.helperTextContent !== "";
     let dates = [];
@@ -283,7 +315,7 @@
             <tbody></tbody>
           </table>
           <p class="dp-status" aria-live="polite"></p>
-          ${config.todayButton ? '<div class="dp-footer"><button type="button" class="dp-text-button" data-today>Today</button></div>' : ""}
+          ${config.todayButton ? '<div class="dp-footer"><button type="button" class="dp-text-button" data-today></button></div>' : ""}
         </div>
       </dialog>`;
 
@@ -310,7 +342,7 @@
     openButton.setAttribute("aria-label", chooseLabel);
     dialog.setAttribute("aria-label", chooseLabel);
     if (showHelper) find(".dp-helper").textContent = config.helperTextContent;
-    if (clearButton) clearButton.setAttribute("aria-label", range ? "Clear dates" : "Clear date");
+    if (clearButton) clearButton.setAttribute("aria-label", range ? config.clearDatesLabel : config.clearDateLabel);
     if (valueInputs.length === 1) valueInputs[0].name = config.name;
     if (valueInputs.length === 2) {
       valueInputs[0].name = `${config.name}-start`;
@@ -322,8 +354,8 @@
       const day = new Date(2026, 0, 4 + startIdx + i); // 4 Jan 2026 was a Sunday
       const th = document.createElement("th");
       th.scope = "col";
-      th.abbr = day.toLocaleDateString(undefined, { weekday: "long" });
-      th.textContent = day.toLocaleDateString(undefined, { weekday: "short" });
+      th.abbr = day.toLocaleDateString(locale, { weekday: "long" });
+      th.textContent = day.toLocaleDateString(locale, { weekday: "short" });
       headRow.append(th);
     }
 
@@ -383,21 +415,21 @@
       const now = today();
       const heading =
         view === "days"
-          ? focused.toLocaleDateString(undefined, { month: "long", year: "numeric" })
+          ? focused.toLocaleDateString(locale, { month: "long", year: "numeric" })
           : view === "months"
             ? String(year)
             : `${yearStart} – ${yearStart + 11}`;
-      const stepName = view === "days" ? "month" : view === "months" ? "year" : "12 years";
+      const stepName = view === "days" ? config.monthWord : view === "months" ? config.yearWord : config.yearsWord;
 
       find("[data-heading-text]").textContent = heading;
       find("[data-heading-hint]").textContent =
         view === "days" ? ", change month and year" : view === "years" ? ", back to calendar" : ", change year";
       headingButton.toggleAttribute("data-open-view", view !== "days");
-      prevButton.setAttribute("aria-label", `Previous ${stepName}`);
-      nextButton.setAttribute("aria-label", `Next ${stepName}`);
+      prevButton.setAttribute("aria-label", fill(config.previousLabel, { step: stepName }));
+      nextButton.setAttribute("aria-label", fill(config.nextLabel, { step: stepName }));
       live.textContent = heading;
       grid.classList.toggle("dp-grid--picker", view !== "days");
-      grid.setAttribute("aria-label", view === "days" ? heading : view === "years" ? "Choose year" : "Choose month");
+      grid.setAttribute("aria-label", view === "days" ? heading : view === "years" ? config.chooseYearLabel : config.chooseMonthLabel);
       thead.hidden = view !== "days";
       tbody.replaceChildren();
 
@@ -415,7 +447,7 @@
           const date = new Date(year, month, day);
           const cell = addCell(row, {
             label: String(day),
-            name: date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+            name: date.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
             focus: sameDay(date, focused),
             selected: sameDay(date, selStart) || sameDay(date, selEnd),
             inRange: !!selStart && !!selEnd && date > selStart && date < selEnd,
@@ -444,8 +476,8 @@
                   current: date.getFullYear() === now.getFullYear(),
                 }
               : {
-                  label: date.toLocaleDateString(undefined, { month: "short" }),
-                  name: date.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
+                  label: date.toLocaleDateString(locale, { month: "short" }),
+                  name: date.toLocaleDateString(locale, { month: "long", year: "numeric" }),
                   focus: i === month,
                   selected: !!selStart && selStart.getFullYear() === year && selStart.getMonth() === i,
                   inRange: false,
@@ -456,7 +488,7 @@
           cell.dataset.offset = String(view === "years" ? (yearStart + i - year) * 12 : i - month);
         }
       }
-      status.textContent = rangeStart ? "Now choose the end date." : "";
+      status.textContent = rangeStart ? config.endPromptText : "";
       position();
     }
 
@@ -550,6 +582,7 @@
       changeView(view === "days" ? "years" : view === "years" ? "days" : "years"),
     );
     const todayButton = find("[data-today]");
+    if (todayButton) todayButton.textContent = config.todayText;
     if (todayButton) {
       todayButton.addEventListener("click", () => {
         view = "days";
