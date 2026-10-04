@@ -148,7 +148,7 @@ export function Changelog({ config = defaultConfig }: { config?: ChangelogConfig
                   cannot tell them apart, and none at all to a screen reader.
                 */}
                 <p className="font-mono text-xs tracking-wide text-(--chg-muted) uppercase">{group.kind}</p>
-                <ul className="mt-1 list-disc pl-5">
+                <ul className="mt-1 list-disc ps-5">
                   {group.items.map((text) => (
                     <li key={text} className="mt-1">
                       {text}

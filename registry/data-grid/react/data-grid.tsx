@@ -152,7 +152,7 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
         style={config.maxHeight > 0 ? { maxHeight: `${config.maxHeight}px` } : undefined}
       >
         <table className="w-full table-fixed border-collapse text-sm">
-          <caption id={`${id}-caption`} className="p-3 text-left font-medium">
+          <caption id={`${id}-caption`} className="p-3 text-start font-medium">
             {config.caption}
           </caption>
           <colgroup>
@@ -167,7 +167,7 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
                   key={column.key}
                   scope="col"
                   aria-sort={config.sortable ? (sort?.key === column.key ? sort.direction : "none") : undefined}
-                  className={`relative border-b border-(--dg-line) bg-(--dg-sunk) p-0 text-left align-bottom ${
+                  className={`relative border-b border-(--dg-line) bg-(--dg-sunk) p-0 text-start align-bottom ${
                     config.stickyHeader ? "sticky top-0 z-10" : ""
                   }`}
                 >
@@ -175,7 +175,7 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
                     <button
                       type="button"
                       onClick={() => toggleSort(column.key)}
-                      className="flex min-h-11 w-full cursor-pointer items-center gap-1 px-3 text-left font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--dg-accent-text)"
+                      className="flex min-h-11 w-full cursor-pointer items-center gap-1 px-3 text-start font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--dg-accent-text)"
                     >
                       {column.label}
                       <span aria-hidden="true" className="text-(--dg-muted)">
@@ -208,7 +208,7 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
                       onPointerUp={() => {
                         drag.current = null;
                       }}
-                      className="absolute top-0 right-0 h-full w-2 cursor-col-resize touch-none bg-(--dg-line) opacity-0 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-(--dg-accent-text)"
+                      className="absolute top-0 end-0 h-full w-2 cursor-col-resize touch-none bg-(--dg-line) opacity-0 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-(--dg-accent-text)"
                     />
                   )}
                 </th>
@@ -218,7 +218,7 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
           <tbody>
             {sorted.map((row) => (
               <tr key={row.name} className="border-b border-(--dg-line) last:border-0">
-                <th scope="row" className="truncate p-3 text-left font-medium">
+                <th scope="row" className="truncate p-3 text-start font-medium">
                   {row.name}
                 </th>
                 <td className="truncate p-3">{row.owner}</td>

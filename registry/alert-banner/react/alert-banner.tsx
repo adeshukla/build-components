@@ -86,7 +86,7 @@ export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerCo
       style={style}
       // An error interrupts; anything else waits its turn.
       role={config.tone === "error" ? "alert" : "status"}
-      className="flex max-w-2xl items-start gap-3 rounded-[var(--bc-radius-md,0.5rem)] border-l-4 border-(--ab-tone) bg-(--ab-surface) p-4 text-(--ab-text)"
+      className="flex max-w-2xl items-start gap-3 rounded-[var(--bc-radius-md,0.5rem)] border-s-4 border-(--ab-tone) bg-(--ab-surface) p-4 text-(--ab-text)"
     >
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="mt-0.5 size-5 shrink-0 text-(--ab-tone)">
         <path d={tone.path} />

@@ -40,12 +40,40 @@ const own: Partial<Record<RegistrySlug, Change[]>> = {
   toolbar: [{ date: "2026-10-04", kind: "fixed", note: "Two buttons with the same label no longer break the React output." }],
 };
 
+/** Parts that did not mirror in a right-to-left page until D93 (e2e/rtl.spec.ts found them). */
+const mirrored: RegistrySlug[] = [
+  "alert-banner",
+  "avatar-group",
+  "back-to-top",
+  "changelog",
+  "code-block",
+  "comment-thread",
+  "comparison-table",
+  "cta",
+  "data-grid",
+  "dual-slider",
+  "header",
+  "hover-card",
+  "mega-menu",
+  "notification-list",
+  "order-tracker",
+  "pricing-table",
+  "pull-quote",
+  "slider",
+  "sticky-header",
+  "switch",
+  "table",
+  "tag-input",
+  "tree-view",
+];
+const rtlFix: Change = { date: "2026-10-04", kind: "fixed", note: "Mirrors in a right-to-left page (Arabic, Hebrew, Persian, Urdu)." };
+
 /** A part's changes with their version numbers, newest first. */
 export function changesOf(slug: RegistrySlug): VersionedChange[] {
   const released = firstReleased[slug];
   const start = released ? [{ date: released, kind: "first" as const, note: "" }] : [shipped, themed];
   // A stable sort: the theme, listed first, stays ahead of a part's own change on the same day.
-  const history = [...start, ...(own[slug] ?? [])].sort((a, b) => a.date.localeCompare(b.date));
+  const history = [...start, ...(own[slug] ?? []), ...(mirrored.includes(slug) ? [rtlFix] : [])].sort((a, b) => a.date.localeCompare(b.date));
   let [minor, patch] = [0, 0];
   const versioned = history.map((change) => {
     if (change.kind === "added") [minor, patch] = [minor + 1, 0];

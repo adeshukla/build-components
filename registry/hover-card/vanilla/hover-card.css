@@ -59,7 +59,7 @@
 
 .hc-card {
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   z-index: 30;
   display: block;
   width: 18rem;
@@ -67,7 +67,7 @@
   border: 1px solid var(--hc-line);
   border-radius: var(--bc-radius-md, 0.5rem);
   background: var(--hc-surface);
-  text-align: left;
+  text-align: start;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
 }
 .hc--below .hc-card { top: 100%; margin-top: 0.5rem; }

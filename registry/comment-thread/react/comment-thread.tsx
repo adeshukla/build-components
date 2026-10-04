@@ -142,7 +142,7 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
         {comments.map((comment, index) => (
           <li
             key={`${comment.author}-${index}`}
-            className={`rounded-[var(--bc-radius-md,0.5rem)] border border-(--ct-line) p-3 ${comment.reply ? "ml-6 bg-(--ct-sunk)" : ""}`}
+            className={`rounded-[var(--bc-radius-md,0.5rem)] border border-(--ct-line) p-3 ${comment.reply ? "ms-6 bg-(--ct-sunk)" : ""}`}
           >
             <p className="flex flex-wrap items-baseline gap-2 text-sm">
               <span className="font-medium">{comment.author}</span>

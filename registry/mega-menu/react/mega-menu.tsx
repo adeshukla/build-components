@@ -252,7 +252,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
     <a
       href={safeHref(config.ctaHref)}
       className={`rounded-(--mm-radius) bg-(--mm-accent) px-4 py-2 text-center font-semibold text-(--mm-on-accent) no-underline ${focus} ${
-        phone ? "w-full" : "ml-auto"
+        phone ? "w-full" : "ms-auto"
       }`}
     >
       {config.ctaText}
@@ -338,7 +338,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
       onMouseLeave={config.openOn === "hover" ? () => setOpen(null) : undefined}
     >
       <div className="flex flex-wrap items-center gap-2 border-b border-(--mm-line) px-4 py-3">
-        <span className="mr-2 font-semibold">{config.logoText}</span>
+        <span className="me-2 font-semibold">{config.logoText}</span>
 
         {menus.map((menu) => {
           const expanded = open === menu.name;
@@ -387,7 +387,7 @@ export function MegaMenu({ config = defaultConfig }: { config?: MegaMenuConfig }
                 // Below the whole bar by default, so a wrapped bar never gets covered; once there
                 // is room, an aligned panel drops under its own button instead.
                 className={`absolute inset-x-4 top-full z-10 mt-1 rounded-(--mm-radius) border border-(--mm-line) bg-(--mm-surface) p-5 shadow-lg ${
-                  config.panel === "full" ? "" : "sm:inset-x-auto sm:top-auto sm:left-0 sm:min-w-[34rem]"
+                  config.panel === "full" ? "" : "sm:inset-x-auto sm:top-auto sm:start-0 sm:min-w-[34rem]"
                 }`}
               >
                 {linkList(menu)}

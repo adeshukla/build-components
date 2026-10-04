@@ -42,7 +42,7 @@
       low.setAttribute("aria-valuetext", say(Number(low.value)));
       high.setAttribute("aria-valuetext", say(Number(high.value)));
       if (fill) {
-        fill.style.marginLeft = left + "%";
+        fill.style.marginInlineStart = left + "%";
         fill.style.width = Math.max(right - left, 1) + "%";
       }
       if (status) status.textContent = say(Number(low.value)) + " to " + say(Number(high.value));

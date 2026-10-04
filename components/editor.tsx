@@ -6,8 +6,10 @@ import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
 import { countInBrowser } from "@/lib/count-beacon";
 import { applyConfig } from "@/lib/export";
+import { frameworkFiles, frameworks, mainFile, markupOf, type FrameworkId } from "@/lib/framework-output";
 import { fullBleed, partBySlug } from "@/lib/parts";
 import { toSearchParams, type Schema } from "@/lib/schema";
+import { zipInBrowser } from "@/lib/zip-browser";
 
 export type Sources = { react: string; html: string; css: string; js: string };
 export type KeyboardRow = [keys: string[], action: string];
@@ -26,7 +28,7 @@ type Props = {
   vanillaHtml?: (config: Record<string, unknown>) => string;
 };
 
-type Output = "react" | "vanilla";
+type Output = "react" | "vanilla" | "frameworks";
 
 /*
  * Only ever narrower than the bench, never wider, so this works on a phone too — where 320 is the
@@ -46,6 +48,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
   const part = partBySlug(slug);
   const [config, setConfig] = useState(initialConfig);
   const [output, setOutput] = useState<Output>("react");
+  const [framework, setFramework] = useState<FrameworkId>("vue");
   const [width, setWidth] = useState("100%");
   const [benchTab, setBenchTab] = useState("keyboard");
   const [codeTab, setCodeTab] = useState("install");
@@ -58,21 +61,38 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
   const [initialQuery] = useState(() => toSearchParams(schema, initialConfig).toString());
   const js = sources.js === "" ? "" : applyConfig(sources.js, config);
   const html = vanillaHtml ? vanillaHtml(config) : sources.html;
+  // The component's name, as the React file exports it, names the framework files too (D92).
+  const componentName = /export function ([A-Z]\w*)\(/.exec(sources.react)?.[1] ?? "Part";
+  const frameworkName = frameworks.find((candidate) => candidate.id === framework)!.name;
   const files =
     output === "react"
       ? [{ name: `${slug}.tsx`, code: applyConfig(sources.react, config) }]
-      : [
-          { name: `${slug}.html`, code: html },
-          { name: `${slug}.css`, code: sources.css },
-          ...(js === "" ? [] : [{ name: `${slug}.js`, code: js }]),
-        ];
+      : output === "frameworks"
+        ? Object.entries(frameworkFiles(framework, slug, { name: componentName, markup: markupOf(html), css: sources.css, js }))
+            .map(([name, code]) => ({ name, code }))
+            // The component first: it is the file people open.
+            .sort((a, b) => Number(b.name === mainFile(framework, slug, componentName)) - Number(a.name === mainFile(framework, slug, componentName)))
+        : [
+            { name: `${slug}.html`, code: html },
+            { name: `${slug}.css`, code: sources.css },
+            ...(js === "" ? [] : [{ name: `${slug}.js`, code: js }]),
+          ];
   const codeTabs = [
     ...(output === "react" ? [{ id: "install", label: "Install" }] : []),
     ...files.map((file) => ({ id: file.name, label: file.name })),
   ];
   const activeCode = codeTabs.some((tab) => tab.id === codeTab) ? codeTab : codeTabs[0].id;
   const activeFile = files.find((file) => file.name === activeCode);
-  const outputName = output === "react" ? "React + Tailwind" : "HTML/CSS/JS";
+  const outputName = output === "react" ? "React + Tailwind" : output === "frameworks" ? frameworkName : "HTML/CSS/JS";
+
+  function downloadFiles() {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(zipInBrowser(Object.fromEntries(files.map((file) => [file.name, file.code]))));
+    link.download = `${slug}-${framework}.zip`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    countInBrowser("download", slug);
+  }
 
   function apply(next: Record<string, unknown>) {
     const changedKeys = schema.map((option) => option.key).filter((key) => next[key] !== config[key]);
@@ -104,7 +124,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
               <p className="mt-1 text-sm text-ink-muted">Runs the exported code, not a mock-up.</p>
             </div>
             <div className="flex w-full flex-wrap items-end gap-x-4 gap-y-3 sm:w-auto">
-              <div className="w-full max-w-full sm:w-72">
+              <div className="w-full max-w-full sm:w-[27rem]">
                 <Segmented
                   name={`${idBase}-output`}
                   legend={<span className="text-sm">Output</span>}
@@ -113,9 +133,27 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
                   choices={[
                     { value: "react", label: "React + Tailwind" },
                     { value: "vanilla", label: "HTML/CSS/JS" },
+                    { value: "frameworks", label: "Vue, Svelte, more" },
                   ]}
                 />
               </div>
+              {output === "frameworks" && (
+                <div className="grid w-full max-w-full gap-1 text-sm sm:w-48">
+                  <label htmlFor={`${idBase}-framework`}>Framework</label>
+                  <select
+                    id={`${idBase}-framework`}
+                    value={framework}
+                    onChange={(event) => setFramework(event.target.value as FrameworkId)}
+                    className="min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-2 text-base"
+                  >
+                    {frameworks.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="w-full max-w-full sm:w-72">
                 <Segmented
                   name={`${idBase}-width`}
@@ -143,6 +181,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
                 ) : (
                   <VanillaFrame
                     key={query}
+                    // Every framework file wraps this same markup and script, so it is what they run.
                     title={`${part.name}, HTML/CSS/JS output`}
                     srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark", fullBleed.includes(slug))}
                   />
@@ -190,12 +229,19 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
               <p className="mt-1 text-sm text-pretty text-ink-muted">
                 {output === "react"
                   ? "React + Tailwind CSS v4: install with one command, or copy the file. Your options are already in it."
-                  : js === ""
+                  : output === "frameworks"
+                    ? `A ${frameworkName} ${framework === "web-component" ? "custom element in one file" : "component"} with your options in it. It runs the HTML/CSS/JS output shown above, and passes the same tests. No library to install.`
+                    : js === ""
                     ? "Plain HTML and CSS, no JavaScript at all. Paste the markup, ship the stylesheet."
                     : "Three plain files and no library. The HTML file shows where the CSS and JS go."}
               </p>
             </div>
             {/* Every file at once, as the one page they make: paste it into a file and it runs. */}
+            {output === "frameworks" && (
+              <button type="button" onClick={downloadFiles} className="btn-glass cursor-pointer text-sm">
+                {files.length === 1 ? `Download ${files[0].name}` : `Download the ${files.length} files`}
+              </button>
+            )}
             {output === "vanilla" && (
               <CopyButton
                 text={() => onePage(html, sources.css, js)}

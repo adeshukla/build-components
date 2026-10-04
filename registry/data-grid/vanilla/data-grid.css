@@ -44,9 +44,9 @@
 .dg-scroll { overflow: auto; border: 1px solid var(--dg-line); border-radius: var(--bc-radius-md, 0.5rem); }
 .dg-scroll:focus-visible { outline: 2px solid var(--dg-accent-text); outline-offset: 2px; }
 .dg-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.875rem; }
-.dg-caption { padding: 0.75rem; font-weight: 500; text-align: left; }
+.dg-caption { padding: 0.75rem; font-weight: 500; text-align: start; }
 
-.dg-th { position: relative; padding: 0; border-bottom: 1px solid var(--dg-line); background: var(--dg-sunk); text-align: left; vertical-align: bottom; }
+.dg-th { position: relative; padding: 0; border-bottom: 1px solid var(--dg-line); background: var(--dg-sunk); text-align: start; vertical-align: bottom; }
 .dg--sticky .dg-th { position: sticky; top: 0; z-index: 10; }
 
 .dg-sort {
@@ -61,7 +61,7 @@
   color: inherit;
   font: inherit;
   font-weight: 600;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 .dg-sort:focus-visible { outline: 2px solid var(--dg-accent-text); outline-offset: -2px; }
@@ -71,7 +71,7 @@
 .dg-handle {
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   width: 0.5rem;
   height: 100%;
   background: var(--dg-line);
@@ -85,6 +85,6 @@
 .dg-row { border-bottom: 1px solid var(--dg-line); }
 .dg-row:last-child { border-bottom: 0; }
 .dg-cell { padding: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dg-cell--head { font-weight: 500; text-align: left; }
+.dg-cell--head { font-weight: 500; text-align: start; }
 
 .dg-status { margin: 0.5rem 0 0; color: var(--dg-muted); font-size: 0.875rem; }

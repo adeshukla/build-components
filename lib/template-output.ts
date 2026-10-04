@@ -1,3 +1,4 @@
+import { markupOf } from "@/lib/framework-output";
 import { applyConfig } from "@/lib/export";
 import { registry, type RegistrySlug } from "@/lib/registry";
 import { toSearchParams } from "@/lib/schema";
@@ -89,25 +90,10 @@ function componentName(name: string) {
   return words.at(-1) === "Page" ? words.join("") : `${words.join("")}Page`;
 }
 
-/** The markup a part's HTML output puts in <body>, without its script tag or any demo stand-in. */
-function bodyOf(page: string) {
-  const inner = page.slice(page.indexOf("<body>") + "<body>".length, page.lastIndexOf("</body>"));
-  return (
-    inner
-      .replace(/\s*<script src="[^"]+"><\/script>/g, "")
-      // The header ships a stand-in <main> so its skip link has somewhere to go; the page has a real one.
-      .replace(/\s*<main id="main" class="hd-demo-main">[\s\S]*?<\/main>/, "")
-      .trim()
-  );
-}
-
 /** A part's markup with these options, as its HTML output has it in <body> (also the framework outputs'). */
 export function partMarkup(slug: string, config: Record<string, unknown>, fixedHtml: string) {
   const render = registry[slug as RegistrySlug];
-  // Parts driven by their script ship fixed markup instead; its <main> is the demo page's, not ours.
-  return "renderHtml" in render && render.renderHtml
-    ? bodyOf(render.renderHtml(config))
-    : bodyOf(fixedHtml).replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
+  return markupOf("renderHtml" in render && render.renderHtml ? render.renderHtml(config) : fixedHtml);
 }
 
 /**

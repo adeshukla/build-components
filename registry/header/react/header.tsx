@@ -45,9 +45,9 @@ const defaultConfig: HeaderConfig = {
 
 // Static class pairs per breakpoint: Tailwind cannot build class names at runtime.
 const breakpoints = {
-  sm: { inline: "hidden sm:flex", trigger: "sm:hidden", panel: "sm:hidden", scheme: "max-sm:ml-auto" },
-  md: { inline: "hidden md:flex", trigger: "md:hidden", panel: "md:hidden", scheme: "max-md:ml-auto" },
-  lg: { inline: "hidden lg:flex", trigger: "lg:hidden", panel: "lg:hidden", scheme: "max-lg:ml-auto" },
+  sm: { inline: "hidden sm:flex", trigger: "sm:hidden", panel: "sm:hidden", scheme: "max-sm:ms-auto" },
+  md: { inline: "hidden md:flex", trigger: "md:hidden", panel: "md:hidden", scheme: "max-md:ms-auto" },
+  lg: { inline: "hidden lg:flex", trigger: "lg:hidden", panel: "lg:hidden", scheme: "max-lg:ms-auto" },
 };
 const heights = { compact: "h-14", regular: "h-16 sm:h-20" };
 
@@ -171,7 +171,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
       {config.skipLink && (
         <a
           href="#main"
-          className={`absolute left-4 z-50 -translate-y-20 rounded-(--hd-radius) bg-(--hd-accent) px-4 py-2 font-semibold text-(--hd-on-accent) no-underline transition-transform focus:translate-y-3 ${focusRing}`}
+          className={`absolute start-4 z-50 -translate-y-20 rounded-(--hd-radius) bg-(--hd-accent) px-4 py-2 font-semibold text-(--hd-on-accent) no-underline transition-transform focus:translate-y-3 ${focusRing}`}
         >
           Skip to content
         </a>
@@ -181,7 +181,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
           {config.logoText}
         </a>
 
-        <nav aria-label="Main" className={`ml-auto items-center gap-1 ${breakpoint.inline}`}>
+        <nav aria-label="Main" className={`ms-auto items-center gap-1 ${breakpoint.inline}`}>
           <ul className="flex items-center gap-1">
             {links.map((link) => (
               <li key={`${link.label}-${link.href}`}>
@@ -196,7 +196,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
             ))}
           </ul>
           {config.ctaButton && (
-            <a href={safeHref(config.ctaHref)} className={`ml-3 ${ctaClass}`}>
+            <a href={safeHref(config.ctaHref)} className={`ms-3 ${ctaClass}`}>
               {config.ctaText}
             </a>
           )}
@@ -209,7 +209,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
             aria-label="Dark theme"
             aria-pressed={systemDark}
             onClick={() => chooseScheme(systemDark ? "light" : "dark")}
-            className={`ml-1 inline-grid size-11 shrink-0 cursor-pointer place-items-center rounded-(--hd-radius) text-(--hd-muted) hover:bg-(--hd-hover) hover:text-(--hd-text) ${breakpoint.scheme} ${focusRing}`}
+            className={`ms-1 inline-grid size-11 shrink-0 cursor-pointer place-items-center rounded-(--hd-radius) text-(--hd-muted) hover:bg-(--hd-hover) hover:text-(--hd-text) ${breakpoint.scheme} ${focusRing}`}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="size-5">
               {systemDark ? <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></> : <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />}
@@ -223,7 +223,7 @@ export function SiteHeader({ config = defaultConfig }: { config?: HeaderConfig }
           aria-expanded={open}
           aria-controls={`${id}-menu`}
           onClick={() => setOpen(!open)}
-          className={`${config.schemeSwitch ? "ml-1" : "ml-auto"} inline-flex min-h-11 items-center gap-2 rounded-(--hd-radius) px-3 font-medium ${breakpoint.trigger} ${focusRing}`}
+          className={`${config.schemeSwitch ? "ms-1" : "ms-auto"} inline-flex min-h-11 items-center gap-2 rounded-(--hd-radius) px-3 font-medium ${breakpoint.trigger} ${focusRing}`}
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
             {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}

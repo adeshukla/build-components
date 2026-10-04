@@ -58,7 +58,7 @@
   min-height: 2rem;
   align-items: center;
   gap: 0.5rem;
-  padding-right: 0.5rem;
+  padding-inline-end: 0.5rem;
   border-radius: var(--bc-radius-sm, 0.375rem);
   font-size: 0.875rem;
   cursor: pointer;
@@ -72,6 +72,9 @@
 .tv-chevron svg { width: 0.875rem; height: 0.875rem; transition: rotate 150ms; }
 .tv-icon svg { width: 1rem; height: 1rem; }
 .tv-item[aria-expanded="true"] > .tv-row .tv-chevron svg { rotate: 90deg; }
+/* Right to left, a closed folder points left, and opening turns it the other way to point down. */
+.tv-chevron svg:dir(rtl) { scale: -1 1; }
+.tv-item[aria-expanded="true"] > .tv-row .tv-chevron svg:dir(rtl) { rotate: -90deg; }
 .tv-item[aria-expanded="true"] > .tv-row .tv-folder-closed,
 .tv-item[aria-expanded="false"] > .tv-row .tv-folder-open { display: none; }
 .tv-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

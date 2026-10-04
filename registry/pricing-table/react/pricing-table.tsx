@@ -178,7 +178,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
               <p className="mt-1 text-sm text-(--pt-muted)">{plan.blurb}</p>
               <p className="mt-3 text-2xl font-semibold">
                 <span>{`${config.currency}${yearly ? plan.yearly : plan.monthly}`}</span>
-                <span className="ml-1 text-sm font-normal text-(--pt-muted)">{period}</span>
+                <span className="ms-1 text-sm font-normal text-(--pt-muted)">{period}</span>
               </p>
               <ul className="mt-3 grid list-none gap-1 p-0 text-sm">
                 {featureList(plan.features).map((feature) => (

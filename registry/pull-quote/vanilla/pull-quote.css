@@ -46,7 +46,7 @@
  * not go inside the blockquote: that would make it part of what was said.
  */
 .pq-figure { max-width: 42rem; margin: 0; }
-.pq--left .pq-figure { padding-left: 1.25rem; border-left: 4px solid var(--pq-accent); }
+.pq--left .pq-figure { padding-inline-start: 1.25rem; border-inline-start: 4px solid var(--pq-accent); }
 .pq--centre .pq-figure { text-align: center; }
 
 .pq-quote { margin: 0; font-size: 1.5rem; font-weight: 500; line-height: 1.375; text-wrap: balance; }
@@ -60,8 +60,8 @@
  * left double quotation mark is noise.
  */
 .pq-mark { color: var(--pq-accent-text); }
-.pq-mark--open { margin-right: 0.25rem; }
-.pq-mark--close { margin-left: 0.25rem; }
+.pq-mark--open { margin-inline-end: 0.25rem; }
+.pq-mark--close { margin-inline-start: 0.25rem; }
 
 .pq-caption { margin-top: 1rem; color: var(--pq-muted); font-size: 0.875rem; }
 .pq-who { color: var(--pq-text); font-weight: 600; }

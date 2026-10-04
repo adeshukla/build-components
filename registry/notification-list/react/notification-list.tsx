@@ -127,14 +127,14 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
               key={index}
               data-unread={fresh ? "true" : "false"}
               className={`flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-(--ntf-line) py-3 ${
-                fresh ? "border-l-4 border-l-(--ntf-accent) pl-3" : "pl-4"
+                fresh ? "border-s-4 border-s-(--ntf-accent) ps-3" : "ps-4"
               }`}
             >
               <div className="min-w-48 flex-1">
                 <p className={`m-0 ${fresh ? "font-semibold" : ""}`}>
                   {item.title}
                   {/* Unread is a word as well as a bar, never colour or a dot alone. */}
-                  {fresh && <span className="ml-2 text-xs font-bold tracking-wide text-(--ntf-accent-text) uppercase">{config.unreadWord}</span>}
+                  {fresh && <span className="ms-2 text-xs font-bold tracking-wide text-(--ntf-accent-text) uppercase">{config.unreadWord}</span>}
                 </p>
                 <p className="mt-0.5 text-sm text-(--ntf-muted)">{item.meta}</p>
               </div>

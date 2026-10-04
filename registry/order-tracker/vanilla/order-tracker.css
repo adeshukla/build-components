@@ -61,12 +61,12 @@
 
 .ord-step { position: relative; }
 .ord-list[data-layout="vertical"] .ord-step {
-  padding: 0 0 1.5rem 1.5rem;
-  border-left: 2px solid var(--ord-accent);
+  padding-block: 0 1.5rem; padding-inline: 1.5rem 0;
+  border-inline-start: 2px solid var(--ord-accent);
 }
-.ord-list[data-layout="vertical"] .ord-step:last-child { padding-bottom: 0; border-left-color: transparent; }
-.ord-list[data-layout="vertical"] .ord-step[data-state="todo"] { border-left-color: var(--ord-line); }
-.ord-list[data-layout="horizontal"] .ord-step { flex: 1 1 10rem; min-width: 10rem; padding-right: 1rem; }
+.ord-list[data-layout="vertical"] .ord-step:last-child { padding-bottom: 0; border-inline-start-color: transparent; }
+.ord-list[data-layout="vertical"] .ord-step[data-state="todo"] { border-inline-start-color: var(--ord-line); }
+.ord-list[data-layout="horizontal"] .ord-step { flex: 1 1 10rem; min-width: 10rem; padding-inline-end: 1rem; }
 
 /* The marker is a picture of the state the words already give, so it is hidden. */
 .ord-mark {
@@ -83,8 +83,8 @@
   font-size: 0.6rem;
   font-weight: 700;
 }
-.ord-list[data-layout="vertical"] .ord-mark { left: -0.7rem; }
-.ord-list[data-layout="horizontal"] .ord-mark { left: 0; }
+.ord-list[data-layout="vertical"] .ord-mark { inset-inline-start: -0.7rem; }
+.ord-list[data-layout="horizontal"] .ord-mark { inset-inline-start: 0; }
 .ord-step[data-state="todo"] .ord-mark {
   border-color: var(--ord-line);
   background: var(--ord-surface);

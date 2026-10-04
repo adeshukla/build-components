@@ -49,7 +49,7 @@ export function renderDualSliderMarkup(config: DualSliderConfig) {
 
         ${
           config.showBar
-            ? `<div class="dsl-bar" aria-hidden="true"><div class="dsl-fill" style="margin-left: ${left}%; width: ${Math.max(right - left, 1)}%" data-fill></div></div>`
+            ? `<div class="dsl-bar" aria-hidden="true"><div class="dsl-fill" style="margin-inline-start: ${left}%; width: ${Math.max(right - left, 1)}%" data-fill></div></div>`
             : ""
         }
 

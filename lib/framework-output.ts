@@ -99,6 +99,19 @@ export function coreModule(slug: string, js: string) {
   ].join("\n");
 }
 
+/**
+ * A part's markup from its HTML output's page: what is in <body>, without the script tag, the header's
+ * stand-in <main> (there so its skip link has somewhere to go) or the demo <main> around a fixed fragment.
+ */
+export function markupOf(page: string) {
+  const inner = page.slice(page.indexOf("<body>") + "<body>".length, page.lastIndexOf("</body>"));
+  return inner
+    .replace(/\s*<script src="[^"]+"><\/script>/g, "")
+    .replace(/\s*<main id="main" class="hd-demo-main">[\s\S]*?<\/main>/, "")
+    .trim()
+    .replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
+}
+
 /** A part with no script still gets a core, so every framework file has the same shape. */
 const emptyCore = (stamp: string) =>
   `${stamp}\n\n/** This part has no script: its markup and stylesheet are the whole part. */\nexport function mount() {\n  return () => {};\n}\n`;
@@ -107,9 +120,9 @@ const declaration = "/** Starts the part in `container`; call what it returns to
 
 /**
  * Text as a JavaScript string that is safe inside a <script> block (a .vue or .svelte file, a page):
- * markup can hold "</script>" (the search part's data does), so "<" is written as \u003c.
+ * markup can hold "</script>" (the search part's data does), so "</" is written "<\/" and "<!--" "<\!--".
  */
-const asString = (text: string) => JSON.stringify(text).replace(/</g, "\\u003c");
+const asString = (text: string) => JSON.stringify(text).replace(/<\//g, "<\\/").replace(/<!--/g, "<\\!--");
 
 /** The first line of the CSS: which part and version (lib/sources.ts stamps every file). */
 const stampOf = (css: string) => css.split("\n")[0].replace(/^\/\* (.*) \*\/$/, "$1");

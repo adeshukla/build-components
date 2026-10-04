@@ -112,10 +112,10 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
     <div style={style} className="bg-(--cp-surface) text-(--cp-text)">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
-          <caption className="pb-3 text-left font-medium">{config.caption}</caption>
+          <caption className="pb-3 text-start font-medium">{config.caption}</caption>
           <thead>
             <tr>
-              <th scope="col" className="w-2/5 border-b border-(--cp-line) p-3 text-left align-bottom">
+              <th scope="col" className="w-2/5 border-b border-(--cp-line) p-3 text-start align-bottom">
                 Feature
               </th>
               {plans.map((plan) => {
@@ -124,7 +124,7 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
                   <th
                     key={plan.name}
                     scope="col"
-                    className={`border-b border-(--cp-line) p-3 text-left align-bottom ${featured ? "bg-(--cp-sunk)" : ""}`}
+                    className={`border-b border-(--cp-line) p-3 text-start align-bottom ${featured ? "bg-(--cp-sunk)" : ""}`}
                   >
                     <span className="block font-semibold">{plan.name}</span>
                     {plan.note.trim() !== "" && <span className="block text-xs font-normal text-(--cp-muted)">{plan.note}</span>}
@@ -138,7 +138,7 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
           <tbody>
             {rows.map((row) => (
               <tr key={row.feature} className="border-b border-(--cp-line) last:border-0">
-                <th scope="row" className="p-3 text-left font-medium">
+                <th scope="row" className="p-3 text-start font-medium">
                   {row.feature}
                 </th>
                 {[row.a, row.b, row.c].slice(0, plans.length).map((value, index) => {
@@ -147,7 +147,7 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
                   return (
                     <td key={plans[index].name} className={`p-3 ${featured ? "bg-(--cp-sunk)" : ""}`}>
                       {shown.mark !== "" && (
-                        <span aria-hidden="true" className={`mr-1 ${shown.tone === "yes" ? "text-(--cp-accent-text)" : "text-(--cp-muted)"}`}>
+                        <span aria-hidden="true" className={`me-1 ${shown.tone === "yes" ? "text-(--cp-accent-text)" : "text-(--cp-muted)"}`}>
                           {shown.mark}
                         </span>
                       )}

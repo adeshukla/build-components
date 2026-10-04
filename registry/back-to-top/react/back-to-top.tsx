@@ -111,7 +111,7 @@ export function BackToTop({ config = defaultConfig }: { config?: BackToTopConfig
         ref={buttonRef}
         type="button"
         onClick={toTop}
-        className={`fixed bottom-6 z-40 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-(--bt-accent) px-4 text-(--bt-on-accent) shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bt-accent) ${config.position === "right" ? "right-6" : "left-6"}`}
+        className={`fixed bottom-6 z-40 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-(--bt-accent) px-4 text-(--bt-on-accent) shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--bt-accent) ${config.position === "right" ? "end-6" : "start-6"}`}
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
           <path d="m6 15 6-6 6 6" />

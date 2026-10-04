@@ -107,7 +107,7 @@ export function PullQuote({ config = defaultConfig }: { config?: PullQuoteConfig
       */}
       <figure
         data-quote
-        className={`m-0 max-w-2xl ${config.align === "centre" ? "text-center" : "border-l-4 border-(--pq-accent) pl-5"}`}
+        className={`m-0 max-w-2xl ${config.align === "centre" ? "text-center" : "border-s-4 border-(--pq-accent) ps-5"}`}
       >
         <blockquote
           // cite is the URL the words came from, which is not the same thing as the visible source line.
@@ -117,13 +117,13 @@ export function PullQuote({ config = defaultConfig }: { config?: PullQuoteConfig
           {config.showMarks && (
             // The marks are decoration: a screen reader already says "quote" for a blockquote, and
             // reading a stray left double quotation mark is noise.
-            <span aria-hidden="true" className="mr-1 text-(--pq-accent-text)">
+            <span aria-hidden="true" className="me-1 text-(--pq-accent-text)">
               &ldquo;
             </span>
           )}
           <span>{config.quote}</span>
           {config.showMarks && (
-            <span aria-hidden="true" className="ml-1 text-(--pq-accent-text)">
+            <span aria-hidden="true" className="ms-1 text-(--pq-accent-text)">
               &rdquo;
             </span>
           )}

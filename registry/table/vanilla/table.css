@@ -56,8 +56,8 @@
 }
 .tl--sticky .tl-frame { max-height: 24rem; overflow-y: auto; }
 
-.tl-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left; }
-.tl-caption { padding: var(--tl-pad); font-weight: 600; text-align: left; }
+.tl-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: start; }
+.tl-caption { padding: var(--tl-pad); font-weight: 600; text-align: start; }
 .tl-table thead { background: var(--tl-sunk); }
 .tl--sticky .tl-table thead { position: sticky; top: 0; z-index: 1; }
 .tl-table th,
@@ -66,7 +66,7 @@
 .tl-table tbody tr { border-top: 1px solid var(--tl-line); }
 .tl-table tbody tr:hover { background: var(--tl-hover); }
 .tl--zebra .tl-table tbody tr.tl-odd { background: var(--tl-sunk); }
-.tl-number { text-align: right; font-variant-numeric: tabular-nums; }
+.tl-number { text-align: end; font-variant-numeric: tabular-nums; }
 .tl-pick { width: 3rem; }
 .tl-pick input { width: 1.5rem; height: 1.5rem; accent-color: var(--tl-accent); }
 
@@ -113,5 +113,5 @@ th[aria-sort="descending"] .tl-arrow { opacity: 1; }
     color: var(--tl-muted);
     font-weight: 500;
   }
-  .tl--stack .tl-number { text-align: left; }
+  .tl--stack .tl-number { text-align: start; }
 }

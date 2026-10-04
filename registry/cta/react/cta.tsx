@@ -157,7 +157,7 @@ export function Cta({ config = defaultConfig }: { config?: CtaConfig }) {
             />
             <span
               aria-hidden="true"
-              className="absolute -top-24 -right-16 -z-10 size-72 rounded-full opacity-25 blur-3xl"
+              className="absolute -top-24 -end-16 -z-10 size-72 rounded-full opacity-25 blur-3xl"
               style={{ background: onAccent }}
             />
           </>

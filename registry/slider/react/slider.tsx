@@ -143,7 +143,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
           <span
             aria-hidden="true"
             className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-(--sl-accent)"
-            style={{ left: 0, right: `calc(100% - var(--sl-to))` }}
+            style={{ insetInlineStart: 0, insetInlineEnd: `calc(100% - var(--sl-to))` }}
           />
           <input
             type="range"
@@ -164,7 +164,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
           <span
             aria-hidden="true"
             className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-(--sl-accent)"
-            style={{ left: "var(--sl-from)", right: `calc(100% - var(--sl-to))` }}
+            style={{ insetInlineStart: "var(--sl-from)", insetInlineEnd: `calc(100% - var(--sl-to))` }}
           />
           {/* Two real inputs, one per end: each keeps its own keyboard and its own announcement. */}
           <input

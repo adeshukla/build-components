@@ -53,8 +53,8 @@
   border-radius: 9999px;
   translate: 0 -50%;
 }
-.sl-rail { right: 0; left: 0; background: var(--sl-track); }
-.sl-fill { left: var(--sl-from); right: calc(100% - var(--sl-to)); background: var(--sl-accent); }
+.sl-rail { inset-inline: 0; background: var(--sl-track); }
+.sl-fill { inset-inline-start: var(--sl-from); inset-inline-end: calc(100% - var(--sl-to)); background: var(--sl-accent); }
 
 /* The native input keeps its keyboard and its announcements; only its look is changed. */
 .sl-input {

@@ -79,7 +79,7 @@
   position: absolute;
   z-index: -1;
   top: -6rem;
-  right: -4rem;
+  inset-inline-end: -4rem;
   width: 18rem;
   height: 18rem;
   border-radius: 9999px;

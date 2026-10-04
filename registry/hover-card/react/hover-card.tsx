@@ -161,7 +161,7 @@ export function HoverCard({ config = defaultConfig }: { config?: HoverCardConfig
             role="tooltip"
             data-card
             hidden={!open}
-            className={`absolute left-0 z-30 block w-72 rounded-[var(--bc-radius-md,0.5rem)] border border-(--hc-line) bg-(--hc-surface) p-3 text-left shadow-xl ${
+            className={`absolute start-0 z-30 block w-72 rounded-[var(--bc-radius-md,0.5rem)] border border-(--hc-line) bg-(--hc-surface) p-3 text-start shadow-xl ${
               config.placement === "above" ? "bottom-full mb-2" : "top-full mt-2"
             }`}
           >

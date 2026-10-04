@@ -71,6 +71,9 @@
 .sw-input:checked + .sw-track { background: var(--sw-accent); }
 .sw-input:checked + .sw-track .sw-thumb { translate: 1.25rem 0; }
 .sw--sm .sw-input:checked + .sw-track .sw-thumb { translate: 1rem 0; }
+/* Right to left, "on" is the other way. */
+.sw-input:checked + .sw-track .sw-thumb:dir(rtl) { translate: -1.25rem 0; }
+.sw--sm .sw-input:checked + .sw-track .sw-thumb:dir(rtl) { translate: -1rem 0; }
 .sw-input:focus-visible + .sw-track { outline: 2px solid var(--sw-accent-text); outline-offset: 2px; }
 
 @media (forced-colors: active) {

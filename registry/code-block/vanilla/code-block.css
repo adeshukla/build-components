@@ -65,6 +65,6 @@
 .cb-pre--wrap { white-space: pre-wrap; }
 .cb-line { display: block; }
 /* Numbers are decoration: copying must not drag them along. */
-.cb-number { display: inline-block; width: 1.5rem; margin-right: 0.75rem; color: var(--cb-muted); text-align: right; user-select: none; }
+.cb-number { display: inline-block; width: 1.5rem; margin-inline-end: 0.75rem; color: var(--cb-muted); text-align: end; user-select: none; }
 
 .cb-status { margin: 0; padding: 0 0.75rem 0.5rem; color: var(--cb-muted); font-size: 0.875rem; min-height: 1.5rem; }

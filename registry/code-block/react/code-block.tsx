@@ -156,7 +156,7 @@ export function CodeBlock({ config = defaultConfig }: { config?: CodeBlockConfig
               <span key={index} className="block">
                 {config.showLineNumbers && (
                   // Numbers are decoration: copying must not drag them along.
-                  <span aria-hidden="true" className="mr-3 inline-block w-6 text-right text-(--cb-muted) select-none">
+                  <span aria-hidden="true" className="me-3 inline-block w-6 text-end text-(--cb-muted) select-none">
                     {index + 1}
                   </span>
                 )}

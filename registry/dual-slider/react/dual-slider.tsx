@@ -138,7 +138,7 @@ export function DualSlider({ config = defaultConfig }: { config?: DualSliderConf
           <div aria-hidden="true" className="mt-4 h-2 w-full rounded-full bg-(--dsl-sunk)">
             <div
               className="h-2 rounded-full bg-(--dsl-accent)"
-              style={{ marginLeft: `${leftPercent}%`, width: `${Math.max(rightPercent - leftPercent, 1)}%` }}
+              style={{ marginInlineStart: `${leftPercent}%`, width: `${Math.max(rightPercent - leftPercent, 1)}%` }}
             />
           </div>
         )}

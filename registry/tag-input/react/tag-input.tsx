@@ -143,7 +143,7 @@ export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }
       <ul aria-label={`${config.label} added`} className="mt-2 flex flex-wrap gap-2 empty:hidden">
         {tags.map((tag, index) => (
           <li key={`${tag}-${index}`}>
-            <span className="inline-flex items-center gap-1 rounded-full bg-(--ti-sunk) py-1 pr-1 pl-3 text-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-(--ti-sunk) py-1 pe-1 ps-3 text-sm">
               {tag}
               <button
                 type="button"

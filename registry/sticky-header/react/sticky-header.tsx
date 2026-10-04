@@ -164,7 +164,7 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
           </nav>
           <button
             type="button"
-            className="ml-auto inline-flex min-h-11 items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--sth-accent) px-4 text-sm font-medium text-(--sth-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sth-accent-text)"
+            className="ms-auto inline-flex min-h-11 items-center rounded-[var(--bc-radius-button,0.375rem)] bg-(--sth-accent) px-4 text-sm font-medium text-(--sth-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sth-accent-text)"
           >
             {config.actionLabel}
           </button>

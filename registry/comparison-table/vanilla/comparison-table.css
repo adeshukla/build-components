@@ -42,9 +42,9 @@
 
 .cp-scroll { overflow-x: auto; }
 .cp-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-.cp-caption { padding-bottom: 0.75rem; font-weight: 500; text-align: left; }
-.cp-col { width: 40%; padding: 0.75rem; border-bottom: 1px solid var(--cp-line); text-align: left; vertical-align: bottom; }
-.cp-plan { padding: 0.75rem; border-bottom: 1px solid var(--cp-line); text-align: left; vertical-align: bottom; }
+.cp-caption { padding-bottom: 0.75rem; font-weight: 500; text-align: start; }
+.cp-col { width: 40%; padding: 0.75rem; border-bottom: 1px solid var(--cp-line); text-align: start; vertical-align: bottom; }
+.cp-plan { padding: 0.75rem; border-bottom: 1px solid var(--cp-line); text-align: start; vertical-align: bottom; }
 .cp-plan--featured,
 .cp-cell--featured { background: var(--cp-sunk); }
 .cp-name { display: block; font-weight: 600; }
@@ -54,8 +54,8 @@
 
 .cp-row { border-bottom: 1px solid var(--cp-line); }
 .cp-row:last-child { border-bottom: 0; }
-.cp-feature { padding: 0.75rem; font-weight: 500; text-align: left; }
+.cp-feature { padding: 0.75rem; font-weight: 500; text-align: start; }
 .cp-cell { padding: 0.75rem; }
-.cp-mark--yes { margin-right: 0.25rem; color: var(--cp-accent-text); }
-.cp-mark--no { margin-right: 0.25rem; color: var(--cp-muted); }
+.cp-mark--yes { margin-inline-end: 0.25rem; color: var(--cp-accent-text); }
+.cp-mark--no { margin-inline-end: 0.25rem; color: var(--cp-muted); }
 .cp-value--no { color: var(--cp-muted); }

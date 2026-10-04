@@ -72,7 +72,7 @@ export function renderTreeViewMarkup(config: TreeViewConfig) {
         first = false;
         const icon = config.showIcons ? `<span class="tv-icon" aria-hidden="true">${isParent ? icons.folder : icons.file}</span>` : "";
         return `${pad}<li class="tv-item" role="treeitem" aria-labelledby="${labelId}" aria-level="${node.level}" aria-setsize="${list.length}" aria-posinset="${position + 1}"${isParent ? ` aria-expanded="${open}"` : ""} aria-selected="false" tabindex="${tabindex}" data-path="${escapeHtml(node.id)}">
-${pad}  <div class="tv-row" style="padding-left: ${(node.level - 1) * 1.25 + 0.5}rem"><span class="tv-chevron" aria-hidden="true">${isParent ? icons.chevron : ""}</span>${icon}<span class="tv-name" id="${labelId}">${escapeHtml(node.name)}</span></div>
+${pad}  <div class="tv-row" style="padding-inline-start: ${(node.level - 1) * 1.25 + 0.5}rem"><span class="tv-chevron" aria-hidden="true">${isParent ? icons.chevron : ""}</span>${icon}<span class="tv-name" id="${labelId}">${escapeHtml(node.name)}</span></div>
 ${isParent ? `${pad}  <ul class="tv-group" role="group"${open ? "" : " hidden"}>\n${items(node.children, depth + 2)}\n${pad}  </ul>\n` : ""}${pad}</li>`;
       })
       .join("\n");

@@ -33,8 +33,8 @@ const palettes = {
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", track: "#6f6a7d" },
 };
 const sizes = {
-  sm: { track: "h-5 w-9", thumb: "size-4", travel: "translate-x-4" },
-  md: { track: "h-6 w-11", thumb: "size-5", travel: "translate-x-5" },
+  sm: { track: "h-5 w-9", thumb: "size-4", travel: "translate-x-4 rtl:-translate-x-4" },
+  md: { track: "h-6 w-11", thumb: "size-5", travel: "translate-x-5 rtl:-translate-x-5" },
 };
 
 // Follows the system, unless the page has a light/dark choice of its own: <html data-bc-scheme> (D87).

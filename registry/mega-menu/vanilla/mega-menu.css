@@ -53,7 +53,7 @@
 }
 .mm-items { display: contents; }
 
-.mm-logo { margin-right: 0.5rem; font-weight: 600; }
+.mm-logo { margin-inline-end: 0.5rem; font-weight: 600; }
 .mm-menu { position: static; }
 
 .mm-top {
@@ -95,8 +95,8 @@
   position: absolute;
   z-index: 10;
   top: 100%;
-  right: 1rem;
-  left: 1rem;
+  inset-inline-end: 1rem;
+  inset-inline-start: 1rem;
   margin-top: 0.25rem;
   padding: 1.25rem;
   border: 1px solid var(--mm-line);
@@ -128,7 +128,7 @@
 .mm-link-description { display: block; color: var(--mm-muted); font-size: 0.875rem; }
 
 .mm-cta {
-  margin-left: auto;
+  margin-inline-start: auto;
   padding: 0.5rem 1rem;
   border-radius: var(--mm-radius);
   background: var(--mm-accent);
@@ -141,7 +141,7 @@
 /* Panels sit under their own button once there is room; on phones they span the bar. */
 @media (min-width: 640px) {
   .mm--panel-aligned .mm-menu { position: relative; }
-  .mm--panel-aligned .mm-panel { top: auto; right: auto; left: 0; min-width: 34rem; }
+  .mm--panel-aligned .mm-panel { top: auto; inset-inline-end: auto; inset-inline-start: 0; min-width: 34rem; }
   .mm--cols-2 .mm-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mm--cols-3 .mm-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mm--cols-4 .mm-columns { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -163,7 +163,7 @@
   [data-breakpoint="sm"] .mm-button { width: 100%; justify-content: space-between; }
   [data-breakpoint="sm"] .mm-button .mm-chevron { display: none; }
   [data-breakpoint="sm"] .mm-top:not(.mm-toggle) { width: 100%; }
-  [data-breakpoint="sm"] .mm-cta { margin-left: 0; }
+  [data-breakpoint="sm"] .mm-cta { margin-inline-start: 0; }
   [data-breakpoint="sm"] .mm-panel {
     position: static;
     margin: 0;
@@ -186,7 +186,7 @@
   [data-breakpoint="md"] .mm-button { width: 100%; justify-content: space-between; }
   [data-breakpoint="md"] .mm-button .mm-chevron { display: none; }
   [data-breakpoint="md"] .mm-top:not(.mm-toggle) { width: 100%; }
-  [data-breakpoint="md"] .mm-cta { margin-left: 0; }
+  [data-breakpoint="md"] .mm-cta { margin-inline-start: 0; }
   [data-breakpoint="md"] .mm-panel {
     position: static;
     margin: 0;
@@ -209,7 +209,7 @@
   [data-breakpoint="lg"] .mm-button { width: 100%; justify-content: space-between; }
   [data-breakpoint="lg"] .mm-button .mm-chevron { display: none; }
   [data-breakpoint="lg"] .mm-top:not(.mm-toggle) { width: 100%; }
-  [data-breakpoint="lg"] .mm-cta { margin-left: 0; }
+  [data-breakpoint="lg"] .mm-cta { margin-inline-start: 0; }
   [data-breakpoint="lg"] .mm-panel {
     position: static;
     margin: 0;

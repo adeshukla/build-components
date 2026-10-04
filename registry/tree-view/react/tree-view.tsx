@@ -261,12 +261,12 @@ export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }
               setSelected(node.id);
               if (isParent) toggle(node.id, !isOpen);
             }}
-            style={{ paddingLeft: `${(node.level - 1) * 1.25 + 0.5}rem` }}
-            className={`flex min-h-8 cursor-pointer items-center gap-2 rounded-[var(--bc-radius-sm,0.375rem)] pr-2 text-sm select-none ${isSelected ? "bg-(--tv-selected) font-medium" : "hover:bg-(--tv-hover)"}`}
+            style={{ paddingInlineStart: `${(node.level - 1) * 1.25 + 0.5}rem` }}
+            className={`flex min-h-8 cursor-pointer items-center gap-2 rounded-[var(--bc-radius-sm,0.375rem)] pe-2 text-sm select-none ${isSelected ? "bg-(--tv-selected) font-medium" : "hover:bg-(--tv-hover)"}`}
           >
             <span aria-hidden="true" className="grid size-4 shrink-0 place-items-center text-(--tv-muted)">
               {isParent && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={`size-3.5 transition-transform motion-reduce:transition-none ${isOpen ? "rotate-90" : ""}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={`size-3.5 transition-transform motion-reduce:transition-none rtl:-scale-x-100 ${isOpen ? "rotate-90 rtl:-rotate-90" : ""}`}>
                   <path d="m9 6 6 6-6 6" />
                 </svg>
               )}

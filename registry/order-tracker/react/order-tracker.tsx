@@ -139,15 +139,15 @@ export function OrderTracker({ config = defaultConfig }: { config?: OrderTracker
               aria-current={state === "current" ? "step" : undefined}
               className={`relative ${
                 config.layout === "horizontal"
-                  ? "min-w-40 flex-1 pr-4"
-                  : "border-l-2 pb-6 pl-6 last:border-l-0 last:pb-0"
+                  ? "min-w-40 flex-1 pe-4"
+                  : "border-s-2 pb-6 ps-6 last:border-s-0 last:pb-0"
               } ${state === "todo" ? "border-(--ord-line)" : "border-(--ord-accent)"}`}
             >
               {/* The marker is a picture of the state the words already give, so it is hidden. */}
               <span
                 aria-hidden="true"
                 className={`absolute grid size-5 place-items-center rounded-full border-2 text-[0.6rem] font-bold ${
-                  config.layout === "horizontal" ? "top-0 left-0" : "top-0 -left-[0.7rem]"
+                  config.layout === "horizontal" ? "top-0 start-0" : "top-0 -start-[0.7rem]"
                 } ${
                   state === "todo"
                     ? "border-(--ord-line) bg-(--ord-surface) text-transparent"
