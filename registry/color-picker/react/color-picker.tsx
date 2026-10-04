@@ -10,6 +10,10 @@ export type ColorPickerConfig = {
   showHex: boolean;
   name: string;
   theme: "light" | "dark" | "system";
+  otherText: string;
+  chosenText: string;
+  namedText: string;
+  customText: string;
 };
 
 // @config-start
@@ -28,6 +32,10 @@ const defaultConfig: ColorPickerConfig = {
   showHex: true,
   name: "colour",
   theme: "light",
+  otherText: "Any other colour",
+  chosenText: "Chosen:",
+  namedText: "{name} chosen, {colour}.",
+  customText: "Colour {colour} chosen.",
 };
 // @config-end
 
@@ -55,6 +63,9 @@ const darkMedia = {
 };
 
 const isHex = (value: string) => /^#[0-9a-f]{6}$/i.test(value.trim());
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ColorPicker({ config = defaultConfig }: { config?: ColorPickerConfig }) {
   const id = useId();
@@ -106,7 +117,7 @@ export function ColorPicker({ config = defaultConfig }: { config?: ColorPickerCo
       {config.allowCustom && (
         <p className="mt-3 flex items-center gap-2">
           <label htmlFor={`${id}-custom`} className="text-sm font-medium">
-            Any other colour
+{config.otherText}
           </label>
           {/* The browser's own colour picker: it comes with a keyboard and an eyedropper. */}
           <input
@@ -121,12 +132,12 @@ export function ColorPicker({ config = defaultConfig }: { config?: ColorPickerCo
 
       {config.showHex && (
         <p className="mt-3 text-sm">
-          Chosen: <span className="font-mono">{value}</span>
+          {config.chosenText} <span className="font-mono">{value}</span>
           {named && <span className="text-(--cp-muted)"> · {named.name}</span>}
         </p>
       )}
       <p role="status" className="sr-only">
-        {named ? `${named.name} chosen, ${value}.` : `Colour ${value} chosen.`}
+        {named ? fill(config.namedText, { name: named.name, colour: value }) : fill(config.customText, { colour: value })}
       </p>
       {config.name !== "" && <input type="hidden" name={config.name} value={value} />}
     </div>

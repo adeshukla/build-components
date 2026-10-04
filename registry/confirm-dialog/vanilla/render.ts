@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ConfirmDialogConfig } from "../react/confirm-dialog";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#1c1826", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -32,14 +35,14 @@ export function renderConfirmDialogMarkup(config: ConfirmDialogConfig) {
 
   const field = config.requirePhrase
     ? `        <div class="cd-group">
-          <label class="cd-label" for="cd-field">Type ${escapeHtml(config.phrase)} to confirm</label>
+          <label class="cd-label" for="cd-field">${escapeHtml(fill(config.typeText, { phrase: config.phrase }))}</label>
           <input class="cd-field" id="cd-field" type="text" autocomplete="off" spellcheck="false" aria-describedby="cd-hint" data-field>
           <!-- Says why the button is off, rather than leaving a dead button to work out. -->
-          <p class="cd-hint" id="cd-hint" data-hint>${escapeHtml(config.confirmText)} stays off until the words match exactly.</p>
+          <p class="cd-hint" id="cd-hint" data-hint>${escapeHtml(fill(config.waitingText, { button: config.confirmText }))}</p>
         </div>\n`
     : "";
 
-  return `    <div class="cd cd--theme-${config.theme}" style="${vars}" data-confirm-dialog data-phrase="${config.requirePhrase ? escapeHtml(config.phrase) : ""}">
+  return `    <div class="cd cd--theme-${config.theme}" style="${vars}" data-confirm-dialog data-matched="${escapeHtml(config.matchedText)}" data-waiting="${escapeHtml(config.waitingText)}" data-phrase="${config.requirePhrase ? escapeHtml(config.phrase) : ""}">
       <button class="cd-trigger" type="button" aria-haspopup="dialog" data-trigger>${escapeHtml(config.triggerText)}</button>
 
       <dialog class="cd-dialog" aria-labelledby="cd-title" aria-describedby="cd-message" data-dialog>

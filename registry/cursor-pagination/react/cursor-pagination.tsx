@@ -16,6 +16,9 @@ export type CursorPaginationConfig = {
   showRange: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  showingText: string;
+  showingTotalText: string;
+  rangeText: string;
 };
 
 // @config-start
@@ -33,6 +36,9 @@ const defaultConfig: CursorPaginationConfig = {
   showRange: true,
   theme: "light",
   accentColor: "#0f766e",
+  showingText: "Showing {item} {range}",
+  showingTotalText: "Showing {item} {range} of {total}",
+  rangeText: "{start} to {end}",
 };
 // @config-end
 
@@ -81,6 +87,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function CursorPagination({ config = defaultConfig }: { config?: CursorPaginationConfig }) {
   const id = useId();
   const [start, setStart] = useState(0);
@@ -110,10 +119,10 @@ export function CursorPagination({ config = defaultConfig }: { config?: CursorPa
     requestAnimationFrame(() => heading.current?.focus());
   };
 
-  const range = `${start + 1} to ${start + rows.length}`;
+  const range = fill(config.rangeText, { start: start + 1, end: start + rows.length });
   const said = config.knowsTotal
-    ? `Showing ${config.itemNoun} ${range} of ${config.totalItems}`
-    : `Showing ${config.itemNoun} ${range}`;
+    ? fill(config.showingTotalText, { item: config.itemNoun, range, total: config.totalItems })
+    : fill(config.showingText, { item: config.itemNoun, range });
 
   const button =
     "inline-flex min-h-11 items-center gap-2 rounded-[var(--bc-radius-sm,0.375rem)] border border-(--cp-line) bg-(--cp-sunk) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cp-accent-text)";
@@ -140,8 +149,7 @@ export function CursorPagination({ config = defaultConfig }: { config?: CursorPa
           <li key={row} className="border-b border-(--cp-line) py-3">
             <span className="font-mono text-xs text-(--cp-muted)">#{row}</span>{" "}
             <span>
-              {config.itemNoun.charAt(0).toUpperCase()}
-              {config.itemNoun.slice(1)} {row}
+              {`${config.itemNoun.charAt(0).toUpperCase()}${config.itemNoun.slice(1)} ${row}`}
             </span>
           </li>
         ))}

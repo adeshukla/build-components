@@ -11,6 +11,8 @@ export type ShortcutHelpConfig = {
   shortcuts: { keys: string; action: string }[];
   theme: "light" | "dark" | "system";
   accentColor: string;
+  closeLabel: string;
+  thenWord: string;
 };
 
 // @config-start
@@ -31,6 +33,8 @@ const defaultConfig: ShortcutHelpConfig = {
   ],
   theme: "light",
   accentColor: "#0f766e",
+  closeLabel: "Close the shortcut list",
+  thenWord: "then",
 };
 // @config-end
 
@@ -190,7 +194,7 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
             onClick={close}
             className="-m-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-sm,0.375rem)] text-(--sh-muted) hover:bg-(--sh-sunk) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sh-accent-text)"
           >
-            <span className="sr-only">Close the shortcut list</span>
+            <span className="sr-only">{config.closeLabel}</span>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
               <path d="M6 6l12 12M18 6 6 18" />
             </svg>
@@ -204,7 +208,7 @@ export function ShortcutHelp({ config = defaultConfig }: { config?: ShortcutHelp
               <dt className="shrink-0">
                 {shortcut.keys.split(" then ").map((part, index) => (
                   <span key={part + index}>
-                    {index > 0 && <span className="mx-1 text-sm text-(--sh-muted)">then</span>}
+                    {index > 0 && <span className="mx-1 text-sm text-(--sh-muted)">{config.thenWord}</span>}
                     <kbd className="rounded-[var(--bc-radius-xs,0.25rem)] border border-(--sh-line) bg-(--sh-sunk) px-1.5 py-0.5 font-mono text-xs">{part}</kbd>
                   </span>
                 ))}

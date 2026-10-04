@@ -21,11 +21,11 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 /** "g then h" becomes two keys with the word between them, as it is written in the list. */
-function keys(value: string) {
+function keys(value: string, then: string) {
   return value
     .split(" then ")
     .map((part) => `<kbd class="sh-key">${escapeHtml(part)}</kbd>`)
-    .join('<span class="sh-then">then</span>');
+    .join(`<span class="sh-then">${escapeHtml(then)}</span>`);
 }
 
 export function renderShortcutHelpMarkup(config: ShortcutHelpConfig) {
@@ -42,7 +42,7 @@ export function renderShortcutHelpMarkup(config: ShortcutHelpConfig) {
     .filter((shortcut) => shortcut.action.trim() !== "")
     .map(
       (shortcut) => `          <div class="sh-row">
-            <dt>${keys(shortcut.keys)}</dt>
+            <dt>${keys(shortcut.keys, config.thenWord)}</dt>
             <dd>${escapeHtml(shortcut.action)}</dd>
           </div>`,
     )
@@ -58,7 +58,7 @@ ${
         <div class="sh-head">
           <h2 class="sh-title" id="sh-title">${escapeHtml(config.title)}</h2>
           <button class="sh-close" type="button" data-close>
-            <span class="sh-sr">Close the shortcut list</span>
+            <span class="sh-sr">${escapeHtml(config.closeLabel)}</span>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>

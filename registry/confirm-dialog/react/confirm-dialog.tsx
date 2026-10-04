@@ -12,6 +12,9 @@ export type ConfirmDialogConfig = {
   cancelText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  typeText: string;
+  matchedText: string;
+  waitingText: string;
 };
 
 // @config-start
@@ -25,6 +28,9 @@ const defaultConfig: ConfirmDialogConfig = {
   cancelText: "Keep it",
   theme: "light",
   accentColor: "#b42318",
+  typeText: "Type {phrase} to confirm",
+  matchedText: "That matches. The button below is now live.",
+  waitingText: "{button} stays off until the words match exactly.",
 };
 // @config-end
 
@@ -72,6 +78,9 @@ function readableAccent(hex: string, onDark: boolean) {
   }
   return onDark ? "#ffffff" : "#000000";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ConfirmDialog({ config = defaultConfig }: { config?: ConfirmDialogConfig }) {
   const id = useId();
@@ -157,7 +166,7 @@ export function ConfirmDialog({ config = defaultConfig }: { config?: ConfirmDial
         {config.requirePhrase && (
           <div className="mt-4">
             <label htmlFor={`${id}-field`} className="block text-sm font-medium">
-              {`Type ${config.phrase} to confirm`}
+              {fill(config.typeText, { phrase: config.phrase })}
             </label>
             <input
               ref={fieldRef}
@@ -172,7 +181,7 @@ export function ConfirmDialog({ config = defaultConfig }: { config?: ConfirmDial
             />
             {/* Says why the button is off, rather than leaving a dead button to work out. */}
             <p id={`${id}-hint`} className="mt-1 text-sm text-(--cd-muted)">
-              {matches ? "That matches. The button below is now live." : `${config.confirmText} stays off until the words match exactly.`}
+              {matches ? config.matchedText : fill(config.waitingText, { button: config.confirmText })}
             </p>
           </div>
         )}

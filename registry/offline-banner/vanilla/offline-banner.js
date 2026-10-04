@@ -31,7 +31,7 @@
 
     if (retry) {
       retry.addEventListener("click", function () {
-        if (note) note.textContent = isOffline() ? "Still nothing. The connection is not back yet." : "";
+        if (note) note.textContent = isOffline() ? root.dataset.stillOffline : "";
         render();
       });
     }

@@ -4,7 +4,16 @@
  * to its heading, and a step that is needed cannot be walked past.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createWizard(root) {
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
     const form = root.querySelector("[data-form]");
     const done = root.querySelector("[data-done]");
     const names = Array.from(root.querySelectorAll("[data-step-name]"));
@@ -29,12 +38,12 @@
       const item = names[at];
       title.textContent = item.dataset.stepTitle;
       title.append(of);
-      of.textContent = "Step " + (at + 1) + " of " + names.length;
+      of.textContent = fill(words.step, { current: at + 1, total: names.length });
       label.textContent = item.dataset.stepLabel;
       if (item.dataset.stepRequired === "yes") {
         const needed = document.createElement("span");
         needed.className = "wz-needed";
-        needed.textContent = "(needed)";
+        needed.textContent = words.needed;
         label.append(needed);
       }
       field.value = answered[at];
@@ -49,7 +58,7 @@
         if (index === at && !marker) {
           const sr = document.createElement("span");
           sr.className = "wz-sr";
-          sr.textContent = "Current step: ";
+          sr.textContent = words.current + " ";
           other.prepend(sr);
         }
         if (index !== at && marker) marker.remove();
@@ -86,7 +95,7 @@
     next.addEventListener("click", function () {
       answered[at] = field.value;
       if (names[at].dataset.stepRequired === "yes" && field.value.trim() === "") {
-        showError(names[at].dataset.stepLabel + " is needed before you can go on.");
+        showError(fill(words.neededError, { label: names[at].dataset.stepLabel }));
         return;
       }
       if (at < names.length - 1) {
@@ -94,7 +103,7 @@
         return;
       }
       answers.forEach(function (cell, index) {
-        cell.textContent = answered[index].trim() === "" ? "Not given" : answered[index];
+        cell.textContent = answered[index].trim() === "" ? words.notGiven : answered[index];
       });
       form.hidden = true;
       done.hidden = false;

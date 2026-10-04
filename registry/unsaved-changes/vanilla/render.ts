@@ -30,12 +30,12 @@ export function renderUnsavedChangesMarkup(config: UnsavedChangesConfig) {
     ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--uc-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
-  return `    <div class="uc uc--theme-${config.theme}" style="${vars}" data-unsaved-changes data-warn-on-reload="${config.warnOnReload}">
+  return `    <div class="uc uc--theme-${config.theme}" style="${vars}" data-unsaved-changes data-dirty-text="${escapeHtml(config.dirtyText)}" data-clean-text="${escapeHtml(config.cleanText)}" data-saved-text="${escapeHtml(config.savedText)}" data-left-text="${escapeHtml(config.leftText)}" data-warn-on-reload="${config.warnOnReload}">
       <label class="uc-label" for="uc-field">${escapeHtml(config.label)}</label>
       <textarea class="uc-field" id="uc-field" rows="3" placeholder="${escapeHtml(config.placeholder)}" aria-describedby="uc-dirty" data-field></textarea>
 
       <!-- Said once, when it changes, so nobody is told on every keystroke. -->
-      <p class="uc-dirty" id="uc-dirty" role="status" data-dirty>Nothing to save</p>
+      <p class="uc-dirty" id="uc-dirty" role="status" data-dirty>${escapeHtml(config.cleanText)}</p>
 
       <div class="uc-actions">
         <button class="uc-save" type="button" data-save>${escapeHtml(config.saveText)}</button>

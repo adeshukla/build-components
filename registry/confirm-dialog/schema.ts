@@ -34,6 +34,33 @@ export const confirmDialogSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The destructive button.", group: "Style", type: "color", default: "#b42318" },
+  {
+    key: "typeText",
+    label: "Type to confirm",
+    description: "Labels the field. {phrase} is what must be typed.",
+    group: "Words",
+    type: "text",
+    default: "Type {phrase} to confirm",
+    maxLength: 120,
+  },
+  {
+    key: "matchedText",
+    label: "Matched",
+    description: "Said once the typing matches.",
+    group: "Words",
+    type: "text",
+    default: "That matches. The button below is now live.",
+    maxLength: 120,
+  },
+  {
+    key: "waitingText",
+    label: "Not yet",
+    description: "Said until it matches. {button} is the button's text.",
+    group: "Words",
+    type: "text",
+    default: "{button} stays off until the words match exactly.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

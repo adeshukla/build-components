@@ -34,7 +34,7 @@ export function renderOfflineBannerMarkup(config: OfflineBannerConfig) {
     ? `\n          <button class="ob-retry" type="button" data-retry>${escapeHtml(config.retryText)}</button>`
     : "";
 
-  return `    <div class="ob ob--theme-${config.theme} ob--${config.position}" style="${vars}" data-offline-banner>
+  return `    <div class="ob ob--theme-${config.theme} ob--${config.position}" style="${vars}" data-offline-banner data-still-offline="${escapeHtml(config.stillOfflineText)}">
       <!-- Polite, not an alert: losing the connection is worth saying, not worth cutting someone off for. -->
       <div class="ob-region" role="status">
         <div class="ob-offline" hidden data-offline>
@@ -46,7 +46,7 @@ ${
   config.demoToggle
     ? `      <div class="ob-demo">
         <!-- For trying it out: the real thing runs off the browser's online and offline events. -->
-        <button class="ob-toggle" type="button" data-toggle>Pretend to go offline</button>
+        <button class="ob-toggle" type="button" data-toggle data-demo>Pretend to go offline</button>
       </div>\n`
     : ""
 }      <p class="ob-note" role="status" data-note></p>

@@ -35,6 +35,42 @@ export const unsavedChangesSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "dirtyText",
+    label: "Unsaved",
+    description: "Said while there are changes.",
+    group: "Words",
+    type: "text",
+    default: "Unsaved changes",
+    maxLength: 60,
+  },
+  {
+    key: "cleanText",
+    label: "All saved",
+    description: "Said while there are none.",
+    group: "Words",
+    type: "text",
+    default: "Nothing to save",
+    maxLength: 60,
+  },
+  {
+    key: "savedText",
+    label: "Saved",
+    description: "Said after saving.",
+    group: "Words",
+    type: "text",
+    default: "Saved",
+    maxLength: 40,
+  },
+  {
+    key: "leftText",
+    label: "Left",
+    description: "Said after leaving with nothing unsaved.",
+    group: "Words",
+    type: "text",
+    default: "Left with nothing unsaved",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

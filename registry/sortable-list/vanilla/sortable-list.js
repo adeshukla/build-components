@@ -5,6 +5,13 @@
  * After every move the root fires "sortable-change": event.detail.order is the labels in order.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createSortableList(root) {
     const list = root.querySelector("[data-list]");
     const status = root.querySelector("[data-status]");
@@ -14,7 +21,9 @@
 
     const rows = () => Array.from(list.children);
     const labelOf = (row) => row.dataset.label;
-    const position = (row) => "position " + (rows().indexOf(row) + 1) + " of " + rows().length;
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
+    const position = (row) => fill(words.position, { index: rows().indexOf(row) + 1, total: rows().length });
 
     function announce(message) {
       status.textContent = message;
@@ -66,19 +75,19 @@
         event.preventDefault();
         if (grabbed === row) {
           drop(row);
-          announce(labelOf(row) + " dropped at " + position(row) + ".");
+          announce(fill(words.dropped, { item: labelOf(row), position: position(row) }));
         } else {
           if (grabbed) drop(grabbed);
           grabbed = row;
           before = rows();
           row.setAttribute("data-active", "");
           handle.setAttribute("aria-pressed", "true");
-          announce("Picked up " + labelOf(row) + ", " + position(row) + ". Use the up and down arrows to move it, Space to drop, Escape to cancel.");
+          announce(fill(words.picked, { item: labelOf(row), position: position(row) }));
         }
       } else if (grabbed === row && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
         event.preventDefault();
         const index = rows().indexOf(row) + (event.key === "ArrowUp" ? -1 : 1);
-        if (moveTo(row, index, handle)) announce(labelOf(row) + " moved to " + position(row) + ".");
+        if (moveTo(row, index, handle)) announce(fill(words.moved, { item: labelOf(row), position: position(row) }));
       } else if (grabbed === row && event.key === "Escape") {
         event.preventDefault();
         moving = true;
@@ -89,7 +98,7 @@
         moving = false;
         refresh();
         drop(row);
-        announce("Cancelled. " + labelOf(row) + " is back at " + position(row) + ".");
+        announce(fill(words.cancelled, { item: labelOf(row), position: position(row) }));
       }
     });
 
@@ -105,7 +114,7 @@
       const row = button.closest(".so-item");
       const up = button.hasAttribute("data-up");
       if (moveTo(row, rows().indexOf(row) + (up ? -1 : 1), button)) {
-        announce(labelOf(row) + " moved to " + position(row) + ".");
+        announce(fill(words.moved, { item: labelOf(row), position: position(row) }));
       } else {
         announce(labelOf(row) + " is already " + (up ? "first" : "last") + ".");
       }
@@ -140,7 +149,7 @@
         window.removeEventListener("pointercancel", onUp);
         row.removeAttribute("data-dragging");
         if (grabbed !== row) row.removeAttribute("data-active");
-        if (rows().indexOf(row) !== start) announce(labelOf(row) + " dropped at " + position(row) + ".");
+        if (rows().indexOf(row) !== start) announce(fill(words.dropped, { item: labelOf(row), position: position(row) }));
       }
 
       // On the window, not the handle: moving the row's node would drop pointer capture.

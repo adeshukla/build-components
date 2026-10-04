@@ -44,6 +44,42 @@ export const colorPickerSchema = [
     default: "light",
     options: ["light", "dark", "system"],
   },
+  {
+    key: "otherText",
+    label: "Any other colour",
+    description: "Labels the custom colour well.",
+    group: "Words",
+    type: "text",
+    default: "Any other colour",
+    maxLength: 60,
+  },
+  {
+    key: "chosenText",
+    label: "Chosen",
+    description: "Shown before the chosen colour.",
+    group: "Words",
+    type: "text",
+    default: "Chosen:",
+    maxLength: 30,
+  },
+  {
+    key: "namedText",
+    label: "Named colour picked",
+    description: "Said for a named colour. {name} and {colour} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "{name} chosen, {colour}.",
+    maxLength: 80,
+  },
+  {
+    key: "customText",
+    label: "Own colour picked",
+    description: "Said for a custom colour. {colour} is its code.",
+    group: "Words",
+    type: "text",
+    default: "Colour {colour} chosen.",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

@@ -10,6 +10,13 @@ export type InlineEditConfig = {
   required: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  editText: string;
+  saveText: string;
+  cancelText: string;
+  notSetText: string;
+  currentlyText: string;
+  savedText: string;
+  cancelledText: string;
 };
 
 // @config-start
@@ -21,6 +28,13 @@ const defaultConfig: InlineEditConfig = {
   required: true,
   theme: "light",
   accentColor: "#2563eb",
+  editText: "Edit",
+  saveText: "Save",
+  cancelText: "Cancel",
+  notSetText: "Not set",
+  currentlyText: "{label}, currently {value}",
+  savedText: "Saved. {label} is now {value}.",
+  cancelledText: "Edit cancelled. Nothing changed.",
 };
 // @config-end
 
@@ -69,6 +83,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConfig }) {
   const id = useId();
   const [value, setValue] = useState(config.value);
@@ -114,7 +131,7 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
   function cancel() {
     returning.current = true;
     setEditing(false);
-    setMessage("Edit cancelled. Nothing changed.");
+    setMessage(config.cancelledText);
   }
 
   function save() {
@@ -127,7 +144,7 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
     returning.current = true;
     setValue(next);
     setEditing(false);
-    setMessage(`Saved. ${config.label} is now ${next}.`);
+    setMessage(fill(config.savedText, { label: config.label, value: next }));
   }
 
   function onKeyDown(event: KeyboardEvent) {
@@ -191,10 +208,10 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
           )}
           <div className="mt-2 flex gap-2">
             <button type="button" onClick={save} className={`${button} bg-(--ie-accent) text-(--ie-on-accent)`}>
-              Save
+{config.saveText}
             </button>
             <button type="button" onClick={cancel} className={`${button} border border-(--ie-border) text-(--ie-text)`}>
-              Cancel
+{config.cancelText}
             </button>
           </div>
         </div>
@@ -206,15 +223,15 @@ export function InlineEdit({ config = defaultConfig }: { config?: InlineEditConf
           onClick={start}
           className="mt-1 flex w-full cursor-pointer items-center justify-between gap-3 rounded-[var(--bc-radius-md,0.5rem)] px-3 py-2 text-left hover:bg-(--ie-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ie-accent-text)"
         >
-          <span className={`min-w-0 break-words ${value === "" ? "text-(--ie-muted)" : ""}`}>{value === "" ? "Not set" : value}</span>
+          <span className={`min-w-0 break-words ${value === "" ? "text-(--ie-muted)" : ""}`}>{value === "" ? config.notSetText : value}</span>
           <span className="flex shrink-0 items-center gap-1 text-sm text-(--ie-muted)">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
               <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z" />
             </svg>
-            Edit
+{config.editText}
             <span className="sr-only">
               {" "}
-              {config.label}, currently {value === "" ? "not set" : value}
+              {fill(config.currentlyText, { label: config.label, value: value === "" ? config.notSetText.toLowerCase() : value })}
             </span>
           </span>
         </button>

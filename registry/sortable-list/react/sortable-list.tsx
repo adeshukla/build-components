@@ -19,6 +19,15 @@ export type SortableListConfig = {
   numbered: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  howText: string;
+  positionText: string;
+  pickedText: string;
+  movedText: string;
+  droppedText: string;
+  cancelledText: string;
+  reorderLabel: string;
+  upLabel: string;
+  downLabel: string;
 };
 
 // @config-start
@@ -36,6 +45,15 @@ const defaultConfig: SortableListConfig = {
   numbered: true,
   theme: "light",
   accentColor: "#2563eb",
+  howText: "Press Space to pick up, the up and down arrows to move, Space again to drop, and Escape to cancel.",
+  positionText: "position {index} of {total}",
+  pickedText: "Picked up {item}, {position}. Use the up and down arrows to move it, Space to drop, Escape to cancel.",
+  movedText: "{item} moved to {position}.",
+  droppedText: "{item} dropped at {position}.",
+  cancelledText: "Cancelled. {item} is back at {position}.",
+  reorderLabel: "Reorder {item}",
+  upLabel: "Move {item} up",
+  downLabel: "Move {item} down",
 };
 // @config-end
 
@@ -96,6 +114,9 @@ function move(list: Item[], from: number, to: number) {
 const iconButton =
   "grid size-8 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-sm,0.375rem)] text-(--sl-muted) hover:bg-(--sl-hover) hover:text-(--sl-text) focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--sl-accent-text) aria-disabled:cursor-default aria-disabled:opacity-40 aria-disabled:hover:bg-transparent";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function SortableList({
   config = defaultConfig,
   onChange,
@@ -137,7 +158,7 @@ export function SortableList({
   }, [items]);
 
   const where = (list: Item[], itemId: number) => list.findIndex((item) => item.id === itemId);
-  const position = (index: number, list: Item[]) => `position ${index + 1} of ${list.length}`;
+  const position = (index: number, list: Item[]) => fill(config.positionText, { index: index + 1, total: list.length });
 
   function reorder(from: number, to: number, control: string) {
     if (to < 0 || to >= items.length || to === from) return false;
@@ -155,22 +176,22 @@ export function SortableList({
       event.preventDefault();
       if (grabbed === item.id) {
         setGrabbed(null);
-        setMessage(`${item.label} dropped at ${position(index, items)}.`);
+        setMessage(fill(config.droppedText, { item: item.label, position: position(index, items) }));
       } else {
         before.current = items;
         setGrabbed(item.id);
-        setMessage(`Picked up ${item.label}, ${position(index, items)}. Use the up and down arrows to move it, Space to drop, Escape to cancel.`);
+        setMessage(fill(config.pickedText, { item: item.label, position: position(index, items) }));
       }
     } else if (grabbed === item.id && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
       event.preventDefault();
       const to = index + (event.key === "ArrowUp" ? -1 : 1);
-      if (reorder(index, to, control)) setMessage(`${item.label} moved to ${position(to, items)}.`);
+      if (reorder(index, to, control)) setMessage(fill(config.movedText, { item: item.label, position: position(to, items) }));
     } else if (grabbed === item.id && event.key === "Escape") {
       event.preventDefault();
       refocus.current = control;
       setItems(before.current);
       setGrabbed(null);
-      setMessage(`Cancelled. ${item.label} is back at ${position(where(before.current, item.id), before.current)}.`);
+      setMessage(fill(config.cancelledText, { item: item.label, position: position(where(before.current, item.id), before.current) }));
     }
   }
 
@@ -178,7 +199,7 @@ export function SortableList({
     const index = where(items, item.id);
     const to = index + step;
     if (reorder(index, to, `${id}-${step < 0 ? "up" : "down"}-${item.id}`)) {
-      setMessage(`${item.label} moved to ${position(to, items)}.`);
+      setMessage(fill(config.movedText, { item: item.label, position: position(to, items) }));
     } else {
       setMessage(`${item.label} is already ${step < 0 ? "first" : "last"}.`);
     }
@@ -213,7 +234,7 @@ export function SortableList({
       const current = latest.current;
       const index = current.findIndex((item) => item.id === dragging);
       if (index === before.current.findIndex((item) => item.id === dragging)) return;
-      setMessage(`${current[index].label} dropped at position ${index + 1} of ${current.length}.`);
+      setMessage(fill(config.droppedText, { item: current[index].label, position: position(index, current) }));
       onChange?.(current.map((item) => item.label));
     }
     window.addEventListener("pointermove", onMove);
@@ -233,7 +254,7 @@ export function SortableList({
       </p>
       {config.hint.trim() !== "" && <p className="mt-0.5 text-sm text-(--sl-muted)">{config.hint}</p>}
       <p id={`${id}-how`} className="sr-only">
-        Press Space to pick up, the up and down arrows to move, Space again to drop, and Escape to cancel.
+        {config.howText}
       </p>
       <ol aria-labelledby={`${id}-label`} className="mt-3 space-y-2">
         {items.map((item, index) => {
@@ -250,7 +271,7 @@ export function SortableList({
               <button
                 id={`${id}-handle-${item.id}`}
                 type="button"
-                aria-label={`Reorder ${item.label}`}
+                aria-label={fill(config.reorderLabel, { item: item.label })}
                 aria-describedby={`${id}-how`}
                 aria-pressed={grabbed === item.id}
                 onKeyDown={(event) => onHandleKey(event, item)}
@@ -288,7 +309,7 @@ export function SortableList({
                         key={step}
                         id={`${id}-${step < 0 ? "up" : "down"}-${item.id}`}
                         type="button"
-                        aria-label={`Move ${item.label} ${step < 0 ? "up" : "down"}`}
+                        aria-label={fill(step < 0 ? config.upLabel : config.downLabel, { item: item.label })}
                         aria-disabled={atEnd || undefined}
                         onClick={() => onButton(item, step)}
                         className={iconButton}

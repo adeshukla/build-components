@@ -23,6 +23,33 @@ export const cursorPaginationSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "showingText",
+    label: "Showing",
+    description: "Said for the page shown. {item} is the noun, {range} the numbers.",
+    group: "Words",
+    type: "text",
+    default: "Showing {item} {range}",
+    maxLength: 80,
+  },
+  {
+    key: "showingTotalText",
+    label: "Showing, with a total",
+    description: "Said when the total is known. {item}, {range} and {total} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "Showing {item} {range} of {total}",
+    maxLength: 80,
+  },
+  {
+    key: "rangeText",
+    label: "Range",
+    description: "The numbers shown. {start} and {end} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "{start} to {end}",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

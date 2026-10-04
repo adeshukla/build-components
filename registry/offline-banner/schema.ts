@@ -40,6 +40,15 @@ export const offlineBannerSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Banner colour", group: "Style", type: "color", default: "#b45309" },
+  {
+    key: "stillOfflineText",
+    label: "Still offline",
+    description: "Said when Try again finds no connection.",
+    group: "Words",
+    type: "text",
+    default: "Still nothing. The connection is not back yet.",
+    maxLength: 120,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

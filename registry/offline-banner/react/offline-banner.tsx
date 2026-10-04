@@ -11,6 +11,7 @@ export type OfflineBannerConfig = {
   demoToggle: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  stillOfflineText: string;
 };
 
 // @config-start
@@ -23,6 +24,7 @@ const defaultConfig: OfflineBannerConfig = {
   demoToggle: true,
   theme: "light",
   accentColor: "#b45309",
+  stillOfflineText: "Still nothing. The connection is not back yet.",
 };
 // @config-end
 
@@ -127,7 +129,7 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
             {config.showRetry && (
               <button
                 type="button"
-                onClick={() => setNote(navigator.onLine && !pretend ? "" : "Still nothing. The connection is not back yet.")}
+                onClick={() => setNote(navigator.onLine && !pretend ? "" : config.stillOfflineText)}
                 className="min-h-11 shrink-0 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-current px-3 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
               >
                 {config.retryText}
@@ -144,6 +146,7 @@ export function OfflineBanner({ config = defaultConfig }: { config?: OfflineBann
           {/* For trying it out: the real thing runs off the browser's online and offline events. */}
           <button
             type="button"
+            data-demo
             onClick={() => {
               const next = !offline;
               setPretend(next);

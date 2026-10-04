@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { InlineEditConfig } from "../react/inline-edit";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", hover: "#eeecf5", text: "#16121f", muted: "#4d4a57", border: "#737373", error: "#b3261e" },
   dark: { surface: "#141019", hover: "#2a2438", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", error: "#ff6b6b" },
@@ -36,21 +39,21 @@ export function renderInlineEditMarkup(config: InlineEditConfig) {
     ? `<textarea class="ie-field" rows="3" aria-labelledby="inline-edit-label" aria-describedby="${describedBy}" data-field>${escapeHtml(value)}</textarea>`
     : `<input class="ie-field" type="text" value="${escapeHtml(value)}" aria-labelledby="inline-edit-label" aria-describedby="${describedBy}" data-field>`;
 
-  return `    <div class="ie ie--theme-${config.theme}" style="${vars}" data-inline-edit data-required="${config.required}" data-multiline="${config.multiline}" data-label="${escapeHtml(config.label)}">
+  return `    <div class="ie ie--theme-${config.theme}" style="${vars}" data-inline-edit data-words="${escapeHtml(JSON.stringify({ notSet: config.notSetText, currently: config.currentlyText, saved: config.savedText, cancelled: config.cancelledText }))}" data-required="${config.required}" data-multiline="${config.multiline}" data-label="${escapeHtml(config.label)}">
       <p class="ie-label" id="inline-edit-label">${escapeHtml(config.label)}</p>
       <button class="ie-show" type="button" data-show>
-        <span class="ie-value" data-value>${escapeHtml(value || "Not set")}</span>
+        <span class="ie-value" data-value>${escapeHtml(value || config.notSetText)}</span>
         <span class="ie-edit">
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg>
-          Edit<span class="ie-sr" data-sr> ${escapeHtml(config.label)}, currently ${escapeHtml(value || "not set")}</span>
+          ${escapeHtml(config.editText)}<span class="ie-sr" data-sr> ${escapeHtml(fill(config.currentlyText, { label: config.label, value: value || config.notSetText.toLowerCase() }))}</span>
         </span>
       </button>
       <div class="ie-form" hidden data-form>
         ${field}
         <p class="ie-error" id="inline-edit-error" role="alert" data-error></p>
 ${hint ? `        <p class="ie-hint" id="inline-edit-hint">${escapeHtml(hint)}</p>\n` : ""}        <div class="ie-actions">
-          <button class="ie-button ie-button--main" type="button" data-save>Save</button>
-          <button class="ie-button ie-button--quiet" type="button" data-cancel>Cancel</button>
+          <button class="ie-button ie-button--main" type="button" data-save>${escapeHtml(config.saveText)}</button>
+          <button class="ie-button ie-button--quiet" type="button" data-cancel>${escapeHtml(config.cancelText)}</button>
         </div>
       </div>
       <p class="ie-sr" role="status" data-status></p>

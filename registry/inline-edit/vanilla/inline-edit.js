@@ -4,6 +4,13 @@
  * into the field to edit, back to the button when done. The root fires "inline-save".
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createInlineEdit(root) {
     const show = root.querySelector("[data-show]");
     const form = root.querySelector("[data-form]");
@@ -17,9 +24,12 @@
     const multiline = root.dataset.multiline === "true";
     let value = field.value;
 
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
+
     function paint() {
-      valueText.textContent = value || "Not set";
-      srText.textContent = " " + label + ", currently " + (value || "not set");
+      valueText.textContent = value || words.notSet;
+      srText.textContent = " " + fill(words.currently, { label: label, value: value || words.notSet.toLowerCase() });
     }
 
     function edit() {
@@ -48,14 +58,14 @@
       }
       value = next;
       paint();
-      done("Saved. " + label + " is now " + next + ".");
+      done(fill(words.saved, { label: label, value: next }));
       root.dispatchEvent(new CustomEvent("inline-save", { detail: { value: next } }));
     }
 
     show.addEventListener("click", edit);
     root.querySelector("[data-save]").addEventListener("click", save);
     root.querySelector("[data-cancel]").addEventListener("click", function () {
-      done("Edit cancelled. Nothing changed.");
+      done(words.cancelled);
     });
     field.addEventListener("input", function () {
       if (error.textContent) {
@@ -66,7 +76,7 @@
     field.addEventListener("keydown", function (event) {
       if (event.key === "Escape") {
         event.preventDefault();
-        done("Edit cancelled. Nothing changed.");
+        done(words.cancelled);
       } else if (event.key === "Enter" && !multiline) {
         event.preventDefault();
         save();

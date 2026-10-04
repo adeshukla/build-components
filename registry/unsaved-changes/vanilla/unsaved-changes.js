@@ -25,7 +25,7 @@
 
     function refresh() {
       const dirty = isDirty();
-      if (dirtyLine) dirtyLine.textContent = dirty ? "Unsaved changes" : "Nothing to save";
+      if (dirtyLine) dirtyLine.textContent = dirty ? root.dataset.dirtyText : root.dataset.cleanText;
       // The browser's own warning, for closing the tab or reloading. It only gets to ask while there
       // is something to lose, and the browser writes the wording itself.
       window.removeEventListener("beforeunload", ask);
@@ -37,12 +37,12 @@
     save.addEventListener("click", function () {
       saved = field.value;
       refresh();
-      if (status) status.textContent = "Saved";
+      if (status) status.textContent = root.dataset.savedText;
     });
 
     leave.addEventListener("click", function () {
       if (!isDirty()) {
-        if (status) status.textContent = "Left with nothing unsaved";
+        if (status) status.textContent = root.dataset.leftText;
         return;
       }
       dialog.showModal();

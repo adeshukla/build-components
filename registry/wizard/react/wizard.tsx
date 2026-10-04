@@ -11,6 +11,12 @@ export type WizardConfig = {
   showProgress: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  stepText: string;
+  currentLabel: string;
+  neededText: string;
+  neededError: string;
+  sentText: string;
+  notGivenText: string;
 };
 
 // @config-start
@@ -28,6 +34,12 @@ const defaultConfig: WizardConfig = {
   showProgress: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  stepText: "Step {current} of {total}",
+  currentLabel: "Current step:",
+  neededText: "(needed)",
+  neededError: "{label} is needed before you can go on.",
+  sentText: "{heading}: sent",
+  notGivenText: "Not given",
 };
 // @config-end
 
@@ -76,6 +88,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Wizard({ config = defaultConfig }: { config?: WizardConfig }) {
   const id = useId();
   const steps = config.steps.filter((step) => step.title.trim() !== "");
@@ -119,7 +134,7 @@ export function Wizard({ config = defaultConfig }: { config?: WizardConfig }) {
 
   function forward() {
     if (step.required === "yes" && answers[at].trim() === "") {
-      setError(`${step.label} is needed before you can go on.`);
+      setError(fill(config.neededError, { label: step.label }));
       fieldRef.current?.focus();
       return;
     }
@@ -135,13 +150,13 @@ export function Wizard({ config = defaultConfig }: { config?: WizardConfig }) {
     return (
       <div style={style} className="bg-(--wz-surface) text-(--wz-text)">
         <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold outline-none">
-          {`${config.heading}: sent`}
+          {fill(config.sentText, { heading: config.heading })}
         </h2>
         <dl className="mt-3 grid gap-2 text-sm">
           {steps.map((entry, index) => (
             <div key={entry.title} className="flex flex-wrap justify-between gap-2 border-b border-(--wz-line) pb-1 last:border-0">
               <dt className="text-(--wz-muted)">{entry.label}</dt>
-              <dd className="m-0">{answers[index].trim() === "" ? "Not given" : answers[index]}</dd>
+              <dd className="m-0">{answers[index].trim() === "" ? config.notGivenText : answers[index]}</dd>
             </div>
           ))}
         </dl>
@@ -161,7 +176,7 @@ export function Wizard({ config = defaultConfig }: { config?: WizardConfig }) {
         <ol className="mt-1 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-sm">
           {steps.map((entry, index) => (
             <li key={entry.title} aria-current={index === at ? "step" : undefined} className={index === at ? "font-semibold" : "text-(--wz-muted)"}>
-              {index === at && <span className="sr-only">Current step: </span>}
+              {index === at && <span className="sr-only">{`${config.currentLabel} `}</span>}
               {`${index + 1}. ${entry.title}`}
             </li>
           ))}
@@ -170,13 +185,13 @@ export function Wizard({ config = defaultConfig }: { config?: WizardConfig }) {
 
       <h2 ref={headingRef} tabIndex={-1} className="mt-3 text-lg font-semibold outline-none">
         {step.title}
-        <span className="ml-2 text-sm font-normal text-(--wz-muted)">{`Step ${at + 1} of ${steps.length}`}</span>
+        <span className="ml-2 text-sm font-normal text-(--wz-muted)">{fill(config.stepText, { current: at + 1, total: steps.length })}</span>
       </h2>
 
       <div className="mt-3">
         <label htmlFor={`${id}-field`} className="block text-sm font-medium">
           {step.label}
-          {step.required === "yes" && <span className="ml-1 text-(--wz-muted)">(needed)</span>}
+          {step.required === "yes" && <span className="ml-1 text-(--wz-muted)">{config.neededText}</span>}
         </label>
         <input
           ref={fieldRef}

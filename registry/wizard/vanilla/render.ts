@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { WizardConfig } from "../react/wizard";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6", error: "#b42318" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
@@ -38,7 +41,7 @@ export function renderWizardMarkup(config: WizardConfig) {
       (step, index) =>
         // The step list is also where the script reads each step's field from, so it works with the
         // progress list turned off.
-        `          <li class="wz-step"${index === 0 ? ' aria-current="step"' : ""} data-step-name data-step-title="${escapeHtml(step.title)}" data-step-label="${escapeHtml(step.label)}" data-step-required="${step.required === "yes" ? "yes" : "no"}">${index === 0 ? `<span class="wz-sr">Current step: </span>` : ""}${index + 1}. ${escapeHtml(step.title)}</li>`,
+        `          <li class="wz-step"${index === 0 ? ' aria-current="step"' : ""} data-step-name data-step-title="${escapeHtml(step.title)}" data-step-label="${escapeHtml(step.label)}" data-step-required="${step.required === "yes" ? "yes" : "no"}">${index === 0 ? `<span class="wz-sr">${escapeHtml(config.currentLabel)} </span>` : ""}${index + 1}. ${escapeHtml(step.title)}</li>`,
     )
     .join("\n");
 
@@ -46,12 +49,12 @@ export function renderWizardMarkup(config: WizardConfig) {
     .map(
       (step) => `          <div class="wz-row">
             <dt>${escapeHtml(step.label)}</dt>
-            <dd data-answer>Not given</dd>
+            <dd data-answer>${escapeHtml(config.notGivenText)}</dd>
           </div>`,
     )
     .join("\n");
 
-  return `    <div class="wz wz--theme-${config.theme}" style="${vars}" data-wizard data-finish="${escapeHtml(config.finishText)}" data-next="${escapeHtml(config.nextText)}" data-heading="${escapeHtml(config.heading)}">
+  return `    <div class="wz wz--theme-${config.theme}" style="${vars}" data-wizard data-words="${escapeHtml(JSON.stringify({ step: config.stepText, needed: config.neededText, current: config.currentLabel, neededError: config.neededError, notGiven: config.notGivenText }))}" data-finish="${escapeHtml(config.finishText)}" data-next="${escapeHtml(config.nextText)}" data-heading="${escapeHtml(config.heading)}">
       <div class="wz-form" data-form>
         <p class="wz-heading">${escapeHtml(config.heading)}</p>
 
@@ -60,10 +63,10 @@ export function renderWizardMarkup(config: WizardConfig) {
 ${list}
         </ol>
 
-        <h2 class="wz-title" tabindex="-1" data-title>${escapeHtml(first ? first.title : "")}<span class="wz-of" data-of>Step 1 of ${steps.length}</span></h2>
+        <h2 class="wz-title" tabindex="-1" data-title>${escapeHtml(first ? first.title : "")}<span class="wz-of" data-of>${escapeHtml(fill(config.stepText, { current: 1, total: steps.length }))}</span></h2>
 
         <div class="wz-group">
-          <label class="wz-label" for="wz-field" data-label>${escapeHtml(first ? first.label : "")}${first && first.required === "yes" ? `<span class="wz-needed" data-needed>(needed)</span>` : ""}</label>
+          <label class="wz-label" for="wz-field" data-label>${escapeHtml(first ? first.label : "")}${first && first.required === "yes" ? `<span class="wz-needed" data-needed>${escapeHtml(config.neededText)}</span>` : ""}</label>
           <input class="wz-field" id="wz-field" type="text" data-field>
           <p class="wz-error" id="wz-error" role="alert" hidden data-error></p>
         </div>
@@ -75,7 +78,7 @@ ${list}
       </div>
 
       <div class="wz-done" hidden data-done>
-        <h2 class="wz-title" tabindex="-1" data-done-title>${escapeHtml(config.heading)}: sent</h2>
+        <h2 class="wz-title" tabindex="-1" data-done-title>${escapeHtml(fill(config.sentText, { heading: config.heading }))}</h2>
         <dl class="wz-summary">
 ${rows}
         </dl>

@@ -38,9 +38,9 @@ export function renderSessionTimeoutMarkup(config: SessionTimeoutConfig) {
 
   const countdown = Math.max(5, config.countdownSeconds);
 
-  return `    <div class="st st--theme-${config.theme}" style="${vars}" data-session-timeout data-idle="${Math.max(5, config.idleSeconds)}" data-countdown="${countdown}" data-watch="${config.watchActivity}">
+  return `    <div class="st st--theme-${config.theme}" style="${vars}" data-session-timeout data-left="${escapeHtml(config.leftText)}" data-signed-out="${escapeHtml(config.signedOutText)}" data-still-in="${escapeHtml(config.stillInText)}" data-idle="${Math.max(5, config.idleSeconds)}" data-countdown="${countdown}" data-watch="${config.watchActivity}">
 ${config.showTrigger ? `      <!-- Nobody wants to wait out the idle timer to see this: the button starts the warning now. -->
-      <button class="st-trigger" type="button" data-trigger>Show the warning now</button>\n` : ""}
+      <button class="st-trigger" type="button" data-trigger data-demo>Show the warning now</button>\n` : ""}
       <dialog class="st-dialog" aria-labelledby="st-title" aria-describedby="st-message" data-dialog>
         <h2 class="st-title" id="st-title">${escapeHtml(config.title)}</h2>
         <p class="st-message" id="st-message">${escapeHtml(config.message)}</p>

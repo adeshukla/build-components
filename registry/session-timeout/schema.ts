@@ -50,6 +50,33 @@ export const sessionTimeoutSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The stay signed in button.", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "leftText",
+    label: "Time left",
+    description: "Said at a few marks as time runs out. {seconds} is the number.",
+    group: "Words",
+    type: "text",
+    default: "{seconds} seconds left",
+    maxLength: 60,
+  },
+  {
+    key: "signedOutText",
+    label: "Signed out",
+    description: "Said when the time runs out or they sign out.",
+    group: "Words",
+    type: "text",
+    default: "Signed out",
+    maxLength: 60,
+  },
+  {
+    key: "stillInText",
+    label: "Still signed in",
+    description: "Said when they choose to stay.",
+    group: "Words",
+    type: "text",
+    default: "Still signed in",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

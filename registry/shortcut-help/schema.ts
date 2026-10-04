@@ -54,6 +54,24 @@ export const shortcutHelpSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "closeLabel",
+    label: "Close button",
+    description: "Read out for the ×.",
+    group: "Words",
+    type: "text",
+    default: "Close the shortcut list",
+    maxLength: 60,
+  },
+  {
+    key: "thenWord",
+    label: "Then",
+    description: "Shown between keys pressed one after the other. Write sequences in the list as g then h.",
+    group: "Words",
+    type: "text",
+    default: "then",
+    maxLength: 20,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

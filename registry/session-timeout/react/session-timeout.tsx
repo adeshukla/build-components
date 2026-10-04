@@ -13,6 +13,9 @@ export type SessionTimeoutConfig = {
   showTrigger: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  leftText: string;
+  signedOutText: string;
+  stillInText: string;
 };
 
 // @config-start
@@ -27,6 +30,9 @@ const defaultConfig: SessionTimeoutConfig = {
   showTrigger: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  leftText: "{seconds} seconds left",
+  signedOutText: "Signed out",
+  stillInText: "Still signed in",
 };
 // @config-end
 
@@ -83,6 +89,9 @@ function clock(seconds: number) {
 
 /** The marks worth saying out loud; every second would talk over the person. */
 const SPOKEN = [30, 20, 10, 5];
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function SessionTimeout({ config = defaultConfig }: { config?: SessionTimeoutConfig }) {
   const id = useId();
@@ -156,10 +165,10 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
     const tick = window.setInterval(() => {
       leftRef.current -= 1;
       setLeft(leftRef.current);
-      if (SPOKEN.includes(leftRef.current)) setSaid(`${leftRef.current} seconds left`);
+      if (SPOKEN.includes(leftRef.current)) setSaid(fill(config.leftText, { seconds: leftRef.current }));
       if (leftRef.current <= 0) {
         window.clearInterval(tick);
-        finish("Signed out");
+        finish(config.signedOutText);
       }
     }, 1000);
     return () => {
@@ -174,6 +183,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
         // Nobody wants to wait out the idle timer to see this: the button starts the warning now.
         <button
           type="button"
+          data-demo
           onClick={(event) => warn(event.currentTarget)}
           className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--st-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
         >
@@ -188,7 +198,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
         onCancel={(event) => {
           // Escape must not sign anyone out by accident: treat it as staying.
           event.preventDefault();
-          finish("Still signed in");
+          finish(config.stillInText);
         }}
         onKeyDown={(event) => {
           if (event.key !== "Tab") return;
@@ -219,7 +229,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
         <div className="mt-5 flex flex-wrap justify-end gap-2">
           <button
             type="button"
-            onClick={() => finish("Signed out")}
+            onClick={() => finish(config.signedOutText)}
             className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--st-line) px-4 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
           >
             {config.signOutText}
@@ -227,7 +237,7 @@ export function SessionTimeout({ config = defaultConfig }: { config?: SessionTim
           <button
             ref={stayRef}
             type="button"
-            onClick={() => finish("Still signed in")}
+            onClick={() => finish(config.stillInText)}
             className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--st-accent) px-4 font-medium text-(--st-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--st-accent-text)"
           >
             {config.stayText}

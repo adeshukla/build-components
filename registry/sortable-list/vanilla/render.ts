@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SortableListConfig } from "../react/sortable-list";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", raised: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4", hover: "#eeecf5" },
   dark: { surface: "#141019", raised: "#1f1a29", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", hover: "#2a2438" },
@@ -44,20 +47,20 @@ export function renderSortableListMarkup(config: SortableListConfig) {
       const buttons = config.moveButtons
         ? `
           <span class="so-moves">
-            <button class="so-icon" type="button" aria-label="Move ${label} up"${index === 0 ? ' aria-disabled="true"' : ""} data-up>${arrows.up}</button>
-            <button class="so-icon" type="button" aria-label="Move ${label} down"${index === items.length - 1 ? ' aria-disabled="true"' : ""} data-down>${arrows.down}</button>
+            <button class="so-icon" type="button" aria-label="${escapeHtml(fill(config.upLabel, { item: item.label }))}"${index === 0 ? ' aria-disabled="true"' : ""} data-up>${arrows.up}</button>
+            <button class="so-icon" type="button" aria-label="${escapeHtml(fill(config.downLabel, { item: item.label }))}"${index === items.length - 1 ? ' aria-disabled="true"' : ""} data-down>${arrows.down}</button>
           </span>`
         : "";
       return `        <li class="so-item" data-label="${label}">
-          <button class="so-icon so-handle" type="button" aria-label="Reorder ${label}" aria-describedby="sortable-list-how" aria-pressed="false" data-handle>${grip}</button>
+          <button class="so-icon so-handle" type="button" aria-label="${escapeHtml(fill(config.reorderLabel, { item: item.label }))}" aria-describedby="sortable-list-how" aria-pressed="false" data-handle>${grip}</button>
 ${config.numbered ? `          <span class="so-number" aria-hidden="true">${index + 1}</span>\n` : ""}          <span class="so-text">${label}</span>${buttons}
         </li>`;
     })
     .join("\n");
 
-  return `    <div class="so so--theme-${config.theme}" style="${vars}" data-sortable-list>
+  return `    <div class="so so--theme-${config.theme}" style="${vars}" data-sortable-list data-words="${escapeHtml(JSON.stringify({ position: config.positionText, picked: config.pickedText, moved: config.movedText, dropped: config.droppedText, cancelled: config.cancelledText }))}">
       <p class="so-label" id="sortable-list-label">${escapeHtml(config.label)}</p>
-${config.hint.trim() ? `      <p class="so-hint">${escapeHtml(config.hint)}</p>\n` : ""}      <p class="so-sr" id="sortable-list-how">Press Space to pick up, the up and down arrows to move, Space again to drop, and Escape to cancel.</p>
+${config.hint.trim() ? `      <p class="so-hint">${escapeHtml(config.hint)}</p>\n` : ""}      <p class="so-sr" id="sortable-list-how">${escapeHtml(config.howText)}</p>
       <ol class="so-list" aria-labelledby="sortable-list-label" data-list>
 ${rows}
       </ol>

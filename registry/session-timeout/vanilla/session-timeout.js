@@ -4,6 +4,13 @@
  * treats Escape as staying rather than as signing out.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The marks worth saying out loud; every second would talk over the person. */
   const SPOKEN = [30, 20, 10, 5];
 
@@ -47,8 +54,8 @@
       tick = window.setInterval(function () {
         left -= 1;
         if (face) face.textContent = clock(left);
-        if (SPOKEN.indexOf(left) !== -1 && status) status.textContent = left + " seconds left";
-        if (left <= 0) finish("Signed out");
+        if (SPOKEN.indexOf(left) !== -1 && status) status.textContent = fill(root.dataset.left, { seconds: left });
+        if (left <= 0) finish(root.dataset.signedOut);
       }, 1000);
     }
 
@@ -66,15 +73,15 @@
       });
     }
     stay.addEventListener("click", function () {
-      finish("Still signed in");
+      finish(root.dataset.stillIn);
     });
     out.addEventListener("click", function () {
-      finish("Signed out");
+      finish(root.dataset.signedOut);
     });
     // Escape must not sign anyone out by accident: treat it as staying.
     dialog.addEventListener("cancel", function (event) {
       event.preventDefault();
-      finish("Still signed in");
+      finish(root.dataset.stillIn);
     });
 
     // Keep Tab inside the dialog (APG dialog pattern).

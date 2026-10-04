@@ -4,6 +4,13 @@
  * and focus goes back to the button that opened it.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createConfirmDialog(root) {
     const dialog = root.querySelector("[data-dialog]");
     const trigger = root.querySelector("[data-trigger]");
@@ -21,8 +28,8 @@
       confirm.disabled = !matches;
       if (hint) {
         hint.textContent = matches
-          ? "That matches. The button below is now live."
-          : confirm.textContent + " stays off until the words match exactly.";
+          ? root.dataset.matched
+          : fill(root.dataset.waiting, { button: confirm.textContent });
       }
     }
 

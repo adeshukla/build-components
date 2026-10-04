@@ -4,6 +4,13 @@
  * colour is announced by name where it has one. The root fires "colour-change".
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createColorPicker(root) {
     const swatches = Array.from(root.querySelectorAll(".cp-input"));
     const custom = root.querySelector("[data-custom]");
@@ -21,7 +28,7 @@
       swatches.forEach(function (swatch) {
         swatch.checked = swatch.value.toLowerCase() === colour;
       });
-      status.textContent = label ? label + " chosen, " + colour + "." : "Colour " + colour + " chosen.";
+      status.textContent = label ? fill(root.dataset.named, { name: label, colour: colour }) : fill(root.dataset.custom, { colour: colour });
       root.dispatchEvent(new CustomEvent("colour-change", { detail: { value: colour, name: label || "" } }));
     }
 

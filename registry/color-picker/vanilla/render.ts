@@ -27,7 +27,7 @@ export function renderColorPickerMarkup(config: ColorPickerConfig) {
     })
     .join("\n");
 
-  return `    <div class="cp cp--theme-${config.theme}" style="${vars}" data-color-picker>
+  return `    <div class="cp cp--theme-${config.theme}" style="${vars}" data-color-picker data-named="${escapeHtml(config.namedText)}" data-custom="${escapeHtml(config.customText)}">
       <fieldset class="cp-fieldset">
         <legend class="cp-legend">${escapeHtml(config.label)}</legend>
         <div class="cp-swatches">
@@ -37,11 +37,11 @@ ${items}
 ${
     config.allowCustom
       ? `      <p class="cp-custom">
-        <label class="cp-custom-label" for="colour-custom">Any other colour</label>
+        <label class="cp-custom-label" for="colour-custom">${escapeHtml(config.otherText)}</label>
         <input class="cp-custom-input" id="colour-custom" type="color" value="${start}" data-custom>
       </p>\n`
       : ""
-  }${config.showHex ? `      <p class="cp-chosen">Chosen: <span class="cp-hex" data-hex>${start}</span><span class="cp-name" data-name>${named ? ` · ${escapeHtml(named.name)}` : ""}</span></p>\n` : ""}      <p class="cp-sr" role="status" data-status></p>
+  }${config.showHex ? `      <p class="cp-chosen">${escapeHtml(config.chosenText)} <span class="cp-hex" data-hex>${start}</span><span class="cp-name" data-name>${named ? ` · ${escapeHtml(named.name)}` : ""}</span></p>\n` : ""}      <p class="cp-sr" role="status" data-status></p>
 ${config.name ? `      <input type="hidden" name="${escapeHtml(config.name)}" value="${start}" data-value>\n` : ""}    </div>`;
 }
 

@@ -14,6 +14,10 @@ export type UnsavedChangesConfig = {
   warnOnReload: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  dirtyText: string;
+  cleanText: string;
+  savedText: string;
+  leftText: string;
 };
 
 // @config-start
@@ -29,6 +33,10 @@ const defaultConfig: UnsavedChangesConfig = {
   warnOnReload: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  dirtyText: "Unsaved changes",
+  cleanText: "Nothing to save",
+  savedText: "Saved",
+  leftText: "Left with nothing unsaved",
 };
 // @config-end
 
@@ -112,7 +120,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
 
   function leave() {
     if (!dirty) {
-      setResult("Left with nothing unsaved");
+      setResult(config.leftText);
       return;
     }
     dialogRef.current?.showModal();
@@ -148,7 +156,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
 
       {/* Said once, when it changes, so nobody is told on every keystroke. */}
       <p id={`${id}-dirty`} role="status" className="mt-1 text-sm text-(--uc-muted)">
-        {dirty ? "Unsaved changes" : "Nothing to save"}
+        {dirty ? config.dirtyText : config.cleanText}
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -156,7 +164,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
           type="button"
           onClick={() => {
             setSaved(text);
-            setResult("Saved");
+            setResult(config.savedText);
           }}
           className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--uc-accent) px-4 font-medium text-(--uc-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--uc-accent-text)"
         >

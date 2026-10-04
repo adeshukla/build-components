@@ -4,12 +4,22 @@
  * rows for your own request; the ends, the focus move and the announcement are the part worth keeping.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     itemNoun: "entry",
     pageSize: 5,
     totalItems: 23,
     knowsTotal: false,
+    showingText: "Showing {item} {range}",
+    showingTotalText: "Showing {item} {range} of {total}",
+    rangeText: "{start} to {end}",
   };
   // @config-end
 
@@ -69,8 +79,10 @@
       });
 
       if (range) {
-        const said = config.itemNoun + " " + (start + 1) + " to " + (start + count);
-        range.textContent = config.knowsTotal ? "Showing " + said + " of " + config.totalItems : "Showing " + said;
+        const numbers = fill(config.rangeText, { start: start + 1, end: start + count });
+        range.textContent = config.knowsTotal
+          ? fill(config.showingTotalText, { item: config.itemNoun, range: numbers, total: config.totalItems })
+          : fill(config.showingText, { item: config.itemNoun, range: numbers });
       }
 
       // Focus goes to the heading: the buttons are at the bottom, so without this the new rows are
