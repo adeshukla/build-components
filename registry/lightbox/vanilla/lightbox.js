@@ -4,6 +4,13 @@
  * focus kept inside, and focus back on the thumbnail of the picture you were on.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
   function keyOf(event) {
     const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
@@ -52,7 +59,7 @@
       }
       picture.appendChild(node);
       caption.textContent = captions ? opener.dataset.caption : "";
-      counter.textContent = index + 1 + " of " + openers.length;
+      counter.textContent = fill(root.dataset.counter, { index: index + 1, total: openers.length });
       // Without looping, the ends say so instead of doing nothing silently.
       [
         [prev, !loop && index === 0],

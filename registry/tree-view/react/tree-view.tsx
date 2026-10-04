@@ -18,6 +18,8 @@ export type TreeViewConfig = {
   showSelection: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  selectedText: string;
+  noneText: string;
 };
 
 // @config-start
@@ -39,6 +41,8 @@ const defaultConfig: TreeViewConfig = {
   showSelection: true,
   theme: "light",
   accentColor: "#2563eb",
+  selectedText: "Selected: {item}",
+  noneText: "Nothing selected yet.",
 };
 // @config-end
 
@@ -133,6 +137,9 @@ function keyOf(event: { key: string; target: EventTarget | null }) {
   const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
   return rtl ? (swapped[event.key] ?? event.key) : event.key;
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }) {
   const id = useId();
@@ -299,7 +306,7 @@ export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }
       </ul>
       {config.showSelection && (
         <p aria-live="polite" className="mt-2 text-sm text-(--tv-muted)">
-          {selected ? `Selected: ${selected}` : "Nothing selected yet."}
+          {selected ? fill(config.selectedText, { item: selected }) : config.noneText}
         </p>
       )}
     </div>

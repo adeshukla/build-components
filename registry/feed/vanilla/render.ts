@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { FeedConfig } from "../react/feed";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", raised: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4", border: "#737373", hover: "#eeecf5" },
   dark: { surface: "#141019", raised: "#1f1a29", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", border: "#8e8a99", hover: "#2a2438" },
@@ -45,15 +48,15 @@ ${item.summary.trim() ? `          <p class="fd-summary" id="feed-summary-${inde
     )
     .join("\n");
 
-  return `    <div class="fd fd--theme-${config.theme}" style="${vars}" data-feed data-mode="${config.mode}" data-page-size="${pageSize}">
+  return `    <div class="fd fd--theme-${config.theme}" style="${vars}" data-feed data-words="${escapeHtml(JSON.stringify({ loading: config.loadingText, more: config.moreText, loaded: config.loadedText, end: config.endText, count: config.countText }))}" data-mode="${config.mode}" data-page-size="${pageSize}">
       <p class="fd-label" id="feed-label">${escapeHtml(config.label)}</p>
       <div class="fd-list" role="feed" aria-labelledby="feed-label" aria-busy="false" data-list>
 ${articles}
       </div>
       <div class="fd-sentinel" aria-hidden="true" data-sentinel></div>
       <div class="fd-footer">
-${done ? `        <p class="fd-count">That's everything: ${all.length} of ${all.length}.</p>` : `        <button class="fd-more" type="button" data-more>Load more</button>
-        <p class="fd-count" data-count>Showing ${first.length} of ${all.length}</p>`}
+${done ? `        <p class="fd-count">${escapeHtml(fill(config.endText, { total: all.length }))}</p>` : `        <button class="fd-more" type="button" data-more>${escapeHtml(config.moreText)}</button>
+        <p class="fd-count" data-count>${escapeHtml(fill(config.countText, { shown: first.length, total: all.length }))}</p>`}
       </div>
       <p class="fd-sr" role="status" data-status></p>
       <script type="application/json" data-source>${JSON.stringify(all).replace(/</g, "\\u003c")}</script>

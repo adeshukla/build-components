@@ -19,6 +19,11 @@ export type LightboxConfig = {
   loop: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  viewerLabel: string;
+  closeLabel: string;
+  previousLabel: string;
+  nextLabel: string;
+  counterText: string;
 };
 
 // @config-start
@@ -37,6 +42,11 @@ const defaultConfig: LightboxConfig = {
   loop: true,
   theme: "light",
   accentColor: "#2563eb",
+  viewerLabel: "{label}, picture viewer",
+  closeLabel: "Close",
+  previousLabel: "Previous picture",
+  nextLabel: "Next picture",
+  counterText: "{index} of {total}",
 };
 // @config-end
 
@@ -139,6 +149,9 @@ function keyOf(event: { key: string; target: EventTarget | null }) {
   return rtl ? (swapped[event.key] ?? event.key) : event.key;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Lightbox({ config = defaultConfig }: { config?: LightboxConfig }) {
   const id = useId();
   const items = config.items.filter((item) => item.alt.trim() !== "" || item.src.trim() !== "");
@@ -235,7 +248,7 @@ export function Lightbox({ config = defaultConfig }: { config?: LightboxConfig }
 
       <dialog
         ref={dialogRef}
-        aria-label={`${config.label}, picture viewer`}
+        aria-label={fill(config.viewerLabel, { label: config.label })}
         onKeyDown={onKeyDown}
         onClose={() => {
           unlockScroll(overflow.current);
@@ -261,9 +274,9 @@ export function Lightbox({ config = defaultConfig }: { config?: LightboxConfig }
         {item && (
           <div data-backdrop className="flex h-full flex-col items-center justify-center gap-3 px-4 py-16 sm:px-20">
             <p aria-live="polite" className="absolute top-4 left-4 rounded-full bg-black/60 px-3 py-1 text-sm tabular-nums">
-              {current + 1} of {items.length}
+              {fill(config.counterText, { index: current + 1, total: items.length })}
             </p>
-            <button ref={closeRef} type="button" aria-label="Close" onClick={() => dialogRef.current?.close()} className={`${round} absolute top-3 right-3`}>
+            <button ref={closeRef} type="button" aria-label={config.closeLabel} onClick={() => dialogRef.current?.close()} className={`${round} absolute top-3 right-3`}>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-5">
                 <path d={icons.close} />
               </svg>
@@ -279,7 +292,7 @@ export function Lightbox({ config = defaultConfig }: { config?: LightboxConfig }
                 <button
                   key={step}
                   type="button"
-                  aria-label={step < 0 ? "Previous picture" : "Next picture"}
+                  aria-label={step < 0 ? config.previousLabel : config.nextLabel}
                   aria-disabled={(step < 0 ? atStart : atEnd) || undefined}
                   onClick={() => go(step)}
                   className={`${round} absolute top-1/2 -translate-y-1/2 ${step < 0 ? "left-3" : "right-3"}`}

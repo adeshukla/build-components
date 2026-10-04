@@ -4,6 +4,13 @@
  * focus follows the card to its new column.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createKanban(root) {
     const columns = Array.from(root.querySelectorAll("[data-column]"));
     const status = root.querySelector("[data-status]");
@@ -22,7 +29,7 @@
         const to = index + Number(button.dataset.move);
         button.hidden = to < 0 || to >= columns.length;
         const sr = button.querySelector(".kb-sr");
-        if (sr) sr.textContent = "Move " + card.dataset.title + " to " + (names[to] || "");
+        if (sr) sr.textContent = fill(root.dataset.move, { card: card.dataset.title, column: names[to] || "" });
       });
     }
 
@@ -43,7 +50,7 @@
       const siblings = Array.from(list.querySelectorAll("[data-card]"));
       if (status) {
         status.textContent =
-          card.dataset.title + " moved to " + names[index] + ", " + (siblings.indexOf(card) + 1) + " of " + siblings.length;
+          fill(root.dataset.moved, { card: card.dataset.title, column: names[index], index: siblings.indexOf(card) + 1, total: siblings.length });
       }
       // The button that was pressed may now be hidden, so focus the card's first usable one.
       const next = card.querySelector("[data-move]:not([hidden])");

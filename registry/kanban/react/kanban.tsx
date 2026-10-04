@@ -10,6 +10,8 @@ export type KanbanConfig = {
   allowDrag: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  moveLabel: string;
+  movedText: string;
 };
 
 // @config-start
@@ -27,6 +29,8 @@ const defaultConfig: KanbanConfig = {
   allowDrag: true,
   theme: "light",
   accentColor: "#7c3aed",
+  moveLabel: "Move {card} to {column}",
+  movedText: "{card} moved to {column}, {index} of {total}",
 };
 // @config-end
 
@@ -81,6 +85,9 @@ const slug = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
   const id = useId();
   const columns = config.columns.filter((column) => column.name.trim() !== "");
@@ -108,7 +115,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
     const next = cards.map((card) => (card.title === title ? { ...card, column } : card));
     const inColumn = next.filter((card) => card.column === column);
     setCards(next);
-    setSaid(`${title} moved to ${column}, ${inColumn.findIndex((card) => card.title === title) + 1} of ${inColumn.length}`);
+    setSaid(fill(config.movedText, { card: title, column, index: inColumn.findIndex((card) => card.title === title) + 1, total: inColumn.length }));
     // The button that was pressed belongs to the old column and is about to be re-rendered
     // elsewhere: remember the card so focus can follow it instead of falling back to the body.
     moved.current = title;
@@ -168,7 +175,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
                           onClick={() => moveTo(card.title, columns[columnIndex - 1].name)}
                           className="inline-flex size-8 cursor-pointer items-center justify-center rounded-[var(--bc-radius-xs,0.25rem)] border border-(--kb-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--kb-accent-text)"
                         >
-                          <span className="sr-only">{`Move ${card.title} to ${columns[columnIndex - 1].name}`}</span>
+                          <span className="sr-only">{fill(config.moveLabel, { card: card.title, column: columns[columnIndex - 1].name })}</span>
                           <span aria-hidden="true">←</span>
                         </button>
                       )}
@@ -178,7 +185,7 @@ export function Kanban({ config = defaultConfig }: { config?: KanbanConfig }) {
                           onClick={() => moveTo(card.title, columns[columnIndex + 1].name)}
                           className="inline-flex size-8 cursor-pointer items-center justify-center rounded-[var(--bc-radius-xs,0.25rem)] border border-(--kb-line) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--kb-accent-text)"
                         >
-                          <span className="sr-only">{`Move ${card.title} to ${columns[columnIndex + 1].name}`}</span>
+                          <span className="sr-only">{fill(config.moveLabel, { card: card.title, column: columns[columnIndex + 1].name })}</span>
                           <span aria-hidden="true">→</span>
                         </button>
                       )}

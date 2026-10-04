@@ -4,10 +4,19 @@
  * them, aria-busy while loading. Replace loadPage with a request to your server.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** Stands in for a network request in this demo. */
   const DEMO_DELAY = 500;
 
   function createFeed(root) {
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
     const list = root.querySelector("[data-list]");
     const more = root.querySelector("[data-more]");
     const count = root.querySelector("[data-count]");
@@ -60,7 +69,7 @@
       busy = true;
       list.setAttribute("aria-busy", "true");
       more.setAttribute("aria-disabled", "true");
-      more.textContent = "Loading…";
+      more.textContent = words.loading;
       loadPage(shown).then(function (items) {
         const firstNew = shown;
         items.forEach(function (item, offset) {
@@ -69,18 +78,18 @@
         shown += items.length;
         busy = false;
         list.setAttribute("aria-busy", "false");
-        status.textContent = items.length + " more loaded. Showing " + shown + " of " + all.length + ".";
+        status.textContent = fill(words.loaded, { count: items.length, shown: shown, total: all.length });
         if (shown >= all.length) {
           // The end is said in words, not just by the button going away.
           const end = document.createElement("p");
           end.className = "fd-count";
-          end.textContent = "That's everything: " + all.length + " of " + all.length + ".";
+          end.textContent = fill(words.end, { total: all.length });
           more.parentElement.replaceChildren(end);
           if (observer) observer.disconnect();
         } else {
           more.removeAttribute("aria-disabled");
-          more.textContent = "Load more";
-          count.textContent = "Showing " + shown + " of " + all.length;
+          more.textContent = words.more;
+          count.textContent = fill(words.count, { shown: shown, total: all.length });
         }
         // Someone who pressed the button goes on reading from the first new item; scrolling
         // never moves focus.

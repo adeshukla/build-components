@@ -52,6 +52,24 @@ export const kanbanSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "Focus rings.", group: "Style", type: "color", default: "#7c3aed" },
+  {
+    key: "moveLabel",
+    label: "Move button",
+    description: "Read out for the arrows. {card} and {column} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "Move {card} to {column}",
+    maxLength: 80,
+  },
+  {
+    key: "movedText",
+    label: "Moved",
+    description: "Said after a move. {card}, {column}, {index} and {total} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "{card} moved to {column}, {index} of {total}",
+    maxLength: 120,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

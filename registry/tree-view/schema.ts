@@ -73,6 +73,24 @@ export const treeViewSchema = [
     type: "color",
     default: "#2563eb",
   },
+  {
+    key: "selectedText",
+    label: "Selected",
+    description: "Said for the picked item. {item} is its path.",
+    group: "Words",
+    type: "text",
+    default: "Selected: {item}",
+    maxLength: 80,
+  },
+  {
+    key: "noneText",
+    label: "Nothing selected",
+    description: "Said before anything is picked.",
+    group: "Words",
+    type: "text",
+    default: "Nothing selected yet.",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

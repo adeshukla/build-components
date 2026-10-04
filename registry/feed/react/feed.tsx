@@ -17,6 +17,11 @@ export type FeedConfig = {
   mode: "button" | "scroll";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  moreText: string;
+  loadingText: string;
+  loadedText: string;
+  endText: string;
+  countText: string;
 };
 
 // @config-start
@@ -38,6 +43,11 @@ const defaultConfig: FeedConfig = {
   mode: "button",
   theme: "light",
   accentColor: "#2563eb",
+  moreText: "Load more",
+  loadingText: "Loading…",
+  loadedText: "{count} more loaded. Showing {shown} of {total}.",
+  endText: "That's everything: {total} of {total}.",
+  countText: "Showing {shown} of {total}",
 };
 // @config-end
 
@@ -88,6 +98,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
   const id = useId();
   const all = config.items.filter((item) => item.title.trim() !== "");
@@ -127,7 +140,7 @@ export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
       focusAfterLoad.current = moveFocus ? count : null;
       setCount(next);
       setBusy(false);
-      setMessage(`${next - count} more loaded. Showing ${next} of ${all.length}.`);
+      setMessage(fill(config.loadedText, { count: next - count, shown: next, total: all.length }));
     }, DEMO_DELAY);
   }
 
@@ -191,7 +204,7 @@ export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
       <div ref={sentinel} aria-hidden="true" data-sentinel className="h-px" />
       <div className="mt-4 flex flex-wrap items-center gap-3">
         {done ? (
-          <p className="text-sm text-(--fd-muted)">{`That's everything: ${all.length} of ${all.length}.`}</p>
+          <p className="text-sm text-(--fd-muted)">{fill(config.endText, { total: all.length })}</p>
         ) : (
           <>
             {/* Kept in scroll mode too, for keyboards and for when scrolling can't reach the end. */}
@@ -201,10 +214,10 @@ export function Feed({ config = defaultConfig }: { config?: FeedConfig }) {
               aria-disabled={busy || undefined}
               className="min-h-10 cursor-pointer rounded-[var(--bc-radius-md,0.5rem)] border border-(--fd-border) bg-(--fd-surface) px-4 font-medium hover:bg-(--fd-hover) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fd-accent-text) aria-disabled:cursor-wait"
             >
-              {busy ? "Loading…" : "Load more"}
+              {busy ? config.loadingText : config.moreText}
             </button>
             <p className="text-sm text-(--fd-muted)">
-              Showing {count} of {all.length}
+              {fill(config.countText, { shown: count, total: all.length })}
             </p>
           </>
         )}

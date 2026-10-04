@@ -4,6 +4,13 @@
  * Selecting an item fires a "tree-select" event on the root: event.detail.path is its full path.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
   function keyOf(event) {
     const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
@@ -35,7 +42,7 @@
 
     function select(item) {
       items.forEach((other) => other.setAttribute("aria-selected", String(other === item)));
-      if (selection) selection.textContent = "Selected: " + item.dataset.path;
+      if (selection) selection.textContent = fill(root.dataset.selected, { item: item.dataset.path });
       root.dispatchEvent(new CustomEvent("tree-select", { detail: { path: item.dataset.path } }));
     }
 

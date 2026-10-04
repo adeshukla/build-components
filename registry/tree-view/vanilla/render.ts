@@ -78,12 +78,12 @@ ${isParent ? `${pad}  <ul class="tv-group" role="group"${open ? "" : " hidden"}>
       .join("\n");
   }
 
-  return `    <div class="tv tv--theme-${config.theme}" style="${vars}" data-tree-view>
+  return `    <div class="tv tv--theme-${config.theme}" style="${vars}" data-tree-view data-selected="${escapeHtml(config.selectedText)}">
       <p class="tv-label" id="tree-view-label">${escapeHtml(config.label)}</p>
       <ul class="tv-tree" role="tree" aria-labelledby="tree-view-label">
 ${items(buildTree(config.items), 4)}
       </ul>
-${config.showSelection ? `      <p class="tv-selection" aria-live="polite" data-selection>Nothing selected yet.</p>\n` : ""}    </div>`;
+${config.showSelection ? `      <p class="tv-selection" aria-live="polite" data-selection>${escapeHtml(config.noneText)}</p>\n` : ""}    </div>`;
 }
 
 export function renderTreeViewHtml(config: TreeViewConfig) {

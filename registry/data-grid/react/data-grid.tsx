@@ -11,6 +11,16 @@ export type DataGridConfig = {
   maxHeight: number;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  sortedText: string;
+  ascendingText: string;
+  descendingText: string;
+  notSortedText: string;
+  widthLabel: string;
+  pixelsText: string;
+  nameHeader: string;
+  ownerHeader: string;
+  statusHeader: string;
+  updatedHeader: string;
 };
 
 // @config-start
@@ -32,14 +42,24 @@ const defaultConfig: DataGridConfig = {
   maxHeight: 320,
   theme: "light",
   accentColor: "#1d4ed8",
+  sortedText: "Sorted by {column}, {direction}",
+  ascendingText: "ascending",
+  descendingText: "descending",
+  notSortedText: "Not sorted",
+  widthLabel: "{column} column width",
+  pixelsText: "{width} pixels",
+  nameHeader: "Name",
+  ownerHeader: "Owner",
+  statusHeader: "Status",
+  updatedHeader: "Updated",
 };
 // @config-end
 
 const columns = [
-  { key: "name", label: "Name", width: 220 },
-  { key: "owner", label: "Owner", width: 140 },
-  { key: "status", label: "Status", width: 150 },
-  { key: "updated", label: "Updated", width: 150 },
+  { key: "name", width: 220 },
+  { key: "owner", width: 140 },
+  { key: "status", width: 150 },
+  { key: "updated", width: 150 },
 ] as const;
 
 type ColumnKey = (typeof columns)[number]["key"];
@@ -100,6 +120,9 @@ function keyOf(event: { key: string; target: EventTarget | null }) {
   return rtl ? (swapped[event.key] ?? event.key) : event.key;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }) {
   const id = useId();
   const rows = config.rows.filter((row) => row.name.trim() !== "");
@@ -145,7 +168,10 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
     event.preventDefault();
   }
 
-  const sortLabel = sort ? `Sorted by ${columns.find((column) => column.key === sort.key)?.label}, ${sort.direction}` : "Not sorted";
+  const heading = (key: ColumnKey) => ({ name: config.nameHeader, owner: config.ownerHeader, status: config.statusHeader, updated: config.updatedHeader })[key];
+  const sortLabel = sort
+    ? fill(config.sortedText, { column: heading(sort.key), direction: sort.direction === "ascending" ? config.ascendingText : config.descendingText })
+    : config.notSortedText;
 
   return (
     <div style={style} className="bg-(--dg-surface) text-(--dg-text)">
@@ -184,24 +210,24 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
                       onClick={() => toggleSort(column.key)}
                       className="flex min-h-11 w-full cursor-pointer items-center gap-1 px-3 text-start font-semibold focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--dg-accent-text)"
                     >
-                      {column.label}
+                      {heading(column.key)}
                       <span aria-hidden="true" className="text-(--dg-muted)">
                         {sort?.key === column.key ? (sort.direction === "ascending" ? "↑" : "↓") : "↕"}
                       </span>
                     </button>
                   ) : (
-                    <span className="flex min-h-11 items-center px-3 font-semibold">{column.label}</span>
+                    <span className="flex min-h-11 items-center px-3 font-semibold">{heading(column.key)}</span>
                   )}
 
                   {config.resizable && index < columns.length - 1 && (
                     <span
                       role="separator"
                       aria-orientation="vertical"
-                      aria-label={`${column.label} column width`}
+                      aria-label={fill(config.widthLabel, { column: heading(column.key) })}
                       aria-valuenow={widths[index]}
                       aria-valuemin={MIN_WIDTH}
                       aria-valuemax={MAX_WIDTH}
-                      aria-valuetext={`${widths[index]} pixels`}
+                      aria-valuetext={fill(config.pixelsText, { width: widths[index] })}
                       tabIndex={0}
                       onKeyDown={(event) => onHandleKeyDown(event, index)}
                       onPointerDown={(event) => {

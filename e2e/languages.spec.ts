@@ -58,8 +58,9 @@ function contentOf(schema: readonly Option[], config: Record<string, unknown>) {
   for (const option of schema) {
     if (option.group === "Words") continue;
     const value = config[option.key];
-    // Lists inside one field come apart at a new line, a comma or a semicolon (a plan's features).
-    const pieces = (text: string) => [text, ...text.split(/[\n,;]/)];
+    // Lists inside one field come apart at a new line, a comma, a semicolon (a plan's features) or a
+    // slash (a file path in the tree).
+    const pieces = (text: string) => [text, ...text.split(/[\n,;/]/)];
     if (typeof value === "string") values.push(...pieces(value));
     if (Array.isArray(value)) for (const item of value) values.push(...Object.values(item as Record<string, string>).flatMap(pieces));
   }

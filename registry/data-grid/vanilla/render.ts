@@ -1,16 +1,19 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { DataGridConfig } from "../react/data-grid";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
 };
 
 const columns = [
-  { key: "name", label: "Name", width: 220 },
-  { key: "owner", label: "Owner", width: 140 },
-  { key: "status", label: "Status", width: 150 },
-  { key: "updated", label: "Updated", width: 150 },
+  { key: "name", width: 220 },
+  { key: "owner", width: 140 },
+  { key: "status", width: 150 },
+  { key: "updated", width: 150 },
 ] as const;
 
 /** Darkens or lightens the accent until it clears 4.5:1 against the surface it sits on. */
@@ -28,6 +31,7 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 export function renderDataGridMarkup(config: DataGridConfig) {
+  const heading = (key: (typeof columns)[number]["key"]) => ({ name: config.nameHeader, owner: config.ownerHeader, status: config.statusHeader, updated: config.updatedHeader })[key];
   const dark = config.theme === "dark";
   const palette = dark ? palettes.dark : palettes.light;
   const vars = [
@@ -42,11 +46,11 @@ export function renderDataGridMarkup(config: DataGridConfig) {
     .map((column, index) => {
       const handle =
         config.resizable && index < columns.length - 1
-          ? `\n          <span class="dg-handle" role="separator" aria-orientation="vertical" aria-label="${escapeHtml(column.label)} column width" aria-valuenow="${column.width}" aria-valuemin="96" aria-valuemax="480" aria-valuetext="${column.width} pixels" tabindex="0" data-handle data-index="${index}"></span>`
+          ? `\n          <span class="dg-handle" role="separator" aria-orientation="vertical" aria-label="${escapeHtml(fill(config.widthLabel, { column: heading(column.key) }))}" aria-valuenow="${column.width}" aria-valuemin="96" aria-valuemax="480" aria-valuetext="${escapeHtml(fill(config.pixelsText, { width: column.width }))}" tabindex="0" data-handle data-index="${index}"></span>`
           : "";
       const inner = config.sortable
-        ? `<button class="dg-sort" type="button" data-sort="${column.key}">${escapeHtml(column.label)}<span class="dg-arrow" aria-hidden="true">↕</span></button>`
-        : `<span class="dg-plain">${escapeHtml(column.label)}</span>`;
+        ? `<button class="dg-sort" type="button" data-sort="${column.key}">${escapeHtml(heading(column.key))}<span class="dg-arrow" aria-hidden="true">↕</span></button>`
+        : `<span class="dg-plain">${escapeHtml(heading(column.key))}</span>`;
       return `        <th class="dg-th" scope="col"${config.sortable ? ' aria-sort="none"' : ""} data-column="${column.key}">${inner}${handle}
         </th>`;
     })
@@ -63,7 +67,7 @@ export function renderDataGridMarkup(config: DataGridConfig) {
     )
     .join("\n");
 
-  return `    <div class="dg dg--theme-${config.theme}" style="${vars}" data-data-grid>
+  return `    <div class="dg dg--theme-${config.theme}" style="${vars}" data-data-grid data-words="${escapeHtml(JSON.stringify({ sorted: config.sortedText, ascending: config.ascendingText, descending: config.descendingText, pixels: config.pixelsText }))}">
       <!-- A region that scrolls has to be reachable by keyboard, so it takes focus and carries the caption's name. -->
       <div class="dg-scroll${config.stickyHeader ? " dg--sticky" : ""}" role="region" aria-labelledby="dg-caption" tabindex="0"${config.maxHeight > 0 ? ` style="max-height: ${config.maxHeight}px"` : ""}>
         <table class="dg-table">
@@ -82,7 +86,7 @@ ${body}
         </table>
       </div>
       <!-- Sorting rearranges rows out of view of a screen reader: say what happened. -->
-      <p class="dg-status" role="status" data-status>Not sorted</p>
+      <p class="dg-status" role="status" data-status>${escapeHtml(config.notSortedText)}</p>
     </div>`;
 }
 

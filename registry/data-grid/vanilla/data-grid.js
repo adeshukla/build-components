@@ -4,6 +4,13 @@
  * columns that resize by drag or by arrow key.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
   function keyOf(event) {
     const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
@@ -26,6 +33,8 @@
       return header.dataset.column;
     });
     let sortKey = null;
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
     let direction = "ascending";
 
     function cellText(row, key) {
@@ -52,7 +61,7 @@
         if (arrow) arrow.textContent = here ? (direction === "ascending" ? "↑" : "↓") : "↕";
         if (here && status) {
           const label = header.textContent.replace(/[↕↑↓]/g, "").trim();
-          status.textContent = "Sorted by " + label + ", " + direction;
+          status.textContent = fill(words.sorted, { column: label, direction: direction === "ascending" ? words.ascending : words.descending });
         }
       });
     }
@@ -68,7 +77,7 @@
       const width = clamp(next);
       cols[index].style.width = width + "px";
       handle.setAttribute("aria-valuenow", String(width));
-      handle.setAttribute("aria-valuetext", width + " pixels");
+      handle.setAttribute("aria-valuetext", fill(words.pixels, { width: width }));
     }
 
     root.querySelectorAll("[data-handle]").forEach(function (handle) {

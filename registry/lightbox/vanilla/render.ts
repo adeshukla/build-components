@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { LightboxConfig } from "../react/lightbox";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
@@ -46,21 +49,21 @@ export function renderLightboxMarkup(config: LightboxConfig) {
     })
     .join("\n");
 
-  return `    <div class="lb lb--theme-${config.theme}" style="${vars}" data-lightbox data-loop="${config.loop}" data-captions="${config.showCaptions}">
+  return `    <div class="lb lb--theme-${config.theme}" style="${vars}" data-lightbox data-counter="${escapeHtml(config.counterText)}" data-loop="${config.loop}" data-captions="${config.showCaptions}">
       <p class="lb-label" id="lightbox-label">${escapeHtml(config.label)}</p>
       <ul class="lb-grid lb-grid--${config.columns}" aria-labelledby="lightbox-label">
 ${thumbs}
       </ul>
-      <dialog class="lb-viewer" aria-label="${escapeHtml(config.label)}, picture viewer">
+      <dialog class="lb-viewer" aria-label="${escapeHtml(fill(config.viewerLabel, { label: config.label }))}">
         <div class="lb-stage" data-backdrop>
           <p class="lb-counter" aria-live="polite" data-counter></p>
-          <button class="lb-round lb-close" type="button" aria-label="Close" data-close><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          <button class="lb-round lb-close" type="button" aria-label="${escapeHtml(config.closeLabel)}" data-close><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           <figure class="lb-figure">
             <span class="lb-picture" data-picture></span>
             <figcaption class="lb-caption" data-caption></figcaption>
           </figure>
-${items.length > 1 ? `          <button class="lb-round lb-prev" type="button" aria-label="Previous picture" data-prev><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
-          <button class="lb-round lb-next" type="button" aria-label="Next picture" data-next><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>\n` : ""}        </div>
+${items.length > 1 ? `          <button class="lb-round lb-prev" type="button" aria-label="${escapeHtml(config.previousLabel)}" data-prev><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
+          <button class="lb-round lb-next" type="button" aria-label="${escapeHtml(config.nextLabel)}" data-next><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>\n` : ""}        </div>
       </dialog>
     </div>`;
 }

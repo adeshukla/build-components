@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { KanbanConfig } from "../react/kanban";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", card: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", card: "#1c1826", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -50,8 +53,8 @@ export function renderKanbanMarkup(config: KanbanConfig) {
             <span>${escapeHtml(card.title)}</span>
             <!-- Dragging is optional; these buttons are what makes the board usable without a pointer. -->
             <span class="kb-moves">
-              <button class="kb-move" type="button" data-move="-1"${index > 0 ? "" : " hidden"}><span class="kb-sr">Move ${escapeHtml(card.title)} to ${escapeHtml(names[index - 1] ?? "")}</span><span aria-hidden="true">←</span></button>
-              <button class="kb-move" type="button" data-move="1"${index < columns.length - 1 ? "" : " hidden"}><span class="kb-sr">Move ${escapeHtml(card.title)} to ${escapeHtml(names[index + 1] ?? "")}</span><span aria-hidden="true">→</span></button>
+              <button class="kb-move" type="button" data-move="-1"${index > 0 ? "" : " hidden"}><span class="kb-sr">${escapeHtml(fill(config.moveLabel, { card: card.title, column: names[index - 1] ?? "" }))}</span><span aria-hidden="true">←</span></button>
+              <button class="kb-move" type="button" data-move="1"${index < columns.length - 1 ? "" : " hidden"}><span class="kb-sr">${escapeHtml(fill(config.moveLabel, { card: card.title, column: names[index + 1] ?? "" }))}</span><span aria-hidden="true">→</span></button>
             </span>
           </li>`,
         )
@@ -65,7 +68,7 @@ ${items}
     })
     .join("\n");
 
-  return `    <div class="kb kb--theme-${config.theme}" style="${vars}" data-kanban${config.allowDrag ? ' data-drag="true"' : ""}>
+  return `    <div class="kb kb--theme-${config.theme}" style="${vars}" data-kanban data-move="${escapeHtml(config.moveLabel)}" data-moved="${escapeHtml(config.movedText)}"${config.allowDrag ? ' data-drag="true"' : ""}>
       <div class="kb-board" aria-label="${escapeHtml(config.label)}">
 ${board}
       </div>
