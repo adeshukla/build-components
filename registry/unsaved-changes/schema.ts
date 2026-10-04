@@ -71,6 +71,15 @@ export const unsavedChangesSchema = [
     default: "Left with nothing unsaved",
     maxLength: 80,
   },
+  {
+    key: "discardedText",
+    label: "After discarding",
+    description: "Announced.",
+    group: "Words",
+    type: "text",
+    default: "Left, changes discarded",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

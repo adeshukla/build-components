@@ -18,6 +18,7 @@ export type UnsavedChangesConfig = {
   cleanText: string;
   savedText: string;
   leftText: string;
+  discardedText: string;
 };
 
 // @config-start
@@ -37,6 +38,7 @@ const defaultConfig: UnsavedChangesConfig = {
   cleanText: "Nothing to save",
   savedText: "Saved",
   leftText: "Left with nothing unsaved",
+  discardedText: "Left, changes discarded",
 };
 // @config-end
 
@@ -134,7 +136,7 @@ export function UnsavedChanges({ config = defaultConfig }: { config?: UnsavedCha
 
   function discard() {
     setText(saved);
-    setResult("Left, changes discarded");
+    setResult(config.discardedText);
     dialogRef.current?.close();
     leaveRef.current?.focus();
   }

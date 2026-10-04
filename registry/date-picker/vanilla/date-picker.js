@@ -58,6 +58,9 @@
     chooseMonthLabel: "Choose month",
     endPromptText: "Now choose the end date.",
     todayText: "Today",
+    headingDaysHint: "change month and year",
+    headingYearsHint: "back to calendar",
+    headingMonthsHint: "change year",
   };
   // @config-end
 
@@ -423,7 +426,7 @@
 
       find("[data-heading-text]").textContent = heading;
       find("[data-heading-hint]").textContent =
-        view === "days" ? ", change month and year" : view === "years" ? ", back to calendar" : ", change year";
+        ", " + (view === "days" ? config.headingDaysHint : view === "years" ? config.headingYearsHint : config.headingMonthsHint);
       headingButton.toggleAttribute("data-open-view", view !== "days");
       prevButton.setAttribute("aria-label", fill(config.previousLabel, { step: stepName }));
       nextButton.setAttribute("aria-label", fill(config.nextLabel, { step: stepName }));

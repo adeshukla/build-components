@@ -14,6 +14,7 @@ export type CurrencyInputConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   currencyText: string;
+  badAmountText: string;
 };
 
 // @config-start
@@ -29,6 +30,7 @@ const defaultConfig: CurrencyInputConfig = {
   theme: "light",
   accentColor: "#2563eb",
   currencyText: "in {symbol}",
+  badAmountText: "Enter an amount, for example 12.50.",
 };
 // @config-end
 
@@ -162,7 +164,7 @@ export function CurrencyInput({ config = defaultConfig }: { config?: CurrencyInp
               return;
             }
             if (typed === null) {
-              setError("Enter an amount, for example 12.50.");
+              setError(config.badAmountText);
               return;
             }
             setError("");

@@ -91,6 +91,15 @@ export const wizardSchema = [
     default: "Not given",
     maxLength: 40,
   },
+  {
+    key: "sentNoteText",
+    label: "After sending",
+    description: "Under the summary.",
+    group: "Words",
+    type: "text",
+    default: "Sent. Everything you filled in is listed above.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

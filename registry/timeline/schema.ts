@@ -48,6 +48,15 @@ export const timelineSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The dots.", group: "Style", type: "color", default: "#7c3aed" },
+  {
+    key: "allShownText",
+    label: "After showing all",
+    description: "Announced. {count} is how many entries.",
+    group: "Words",
+    type: "text",
+    default: "Showing all {count} entries",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

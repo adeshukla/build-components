@@ -38,7 +38,7 @@
           remove.className = "fb-pill-remove";
           remove.innerHTML =
             '<span class="fb-sr"></span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>';
-          remove.querySelector(".fb-sr").textContent = "Remove filter " + chipName(chip);
+          remove.querySelector(".fb-sr").textContent = fill(root.dataset.removeLabel, { name: chipName(chip) });
           // Removing a pill takes its own button away, so focus goes back to the chip it came from.
           remove.addEventListener("click", function () {
             chip.setAttribute("aria-pressed", "false");

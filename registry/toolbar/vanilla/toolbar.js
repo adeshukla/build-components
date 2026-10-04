@@ -4,6 +4,13 @@
  * and End to jump to the ends.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
   function keyOf(event) {
     const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
@@ -15,6 +22,7 @@
     const bar = root.querySelector("[data-bar]");
     const items = Array.from(root.querySelectorAll("[data-item]"));
     const status = root.querySelector("[data-status]");
+    const words = JSON.parse(root.dataset.words);
     if (!items.length) return;
     let here = 0;
 
@@ -50,9 +58,9 @@
         if (item.dataset.kind === "toggle") {
           const on = item.getAttribute("aria-pressed") !== "true";
           item.setAttribute("aria-pressed", String(on));
-          if (status) status.textContent = item.textContent + (on ? " on" : " off");
+          if (status) status.textContent = fill(on ? words.on : words.off, { label: item.textContent });
         } else if (status) {
-          status.textContent = item.textContent + " done";
+          status.textContent = fill(words.done, { label: item.textContent });
         }
       });
     });

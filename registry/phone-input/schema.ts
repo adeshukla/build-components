@@ -62,6 +62,14 @@ export const phoneInputSchema = [
     default: "Country code",
     maxLength: 60,
   },
+  {
+    key: "tooShortText",
+    label: "Too short",
+    group: "Words",
+    type: "text",
+    default: "That number looks too short. Check it and try again.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

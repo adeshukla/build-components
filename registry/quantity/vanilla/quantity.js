@@ -4,6 +4,13 @@
  * that say what happened. The root fires "quantity-change" with event.detail.value.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createQuantity(root) {
     const input = root.querySelector("[data-input]");
     const less = root.querySelector("[data-less]");
@@ -33,7 +40,7 @@
       const value = Number(input.value);
       const next = clamp(value + by);
       if (next === value) {
-        status.textContent = say(value) + ". That is the " + (by > 0 ? "most" : "fewest") + " you can have.";
+        status.textContent = fill(by > 0 ? root.dataset.most : root.dataset.fewest, { amount: say(value) });
         return;
       }
       input.value = String(next);
@@ -53,7 +60,7 @@
       const next = clamp(Number.isFinite(typed) ? typed : min);
       if (next !== typed) {
         input.value = String(next);
-        status.textContent = say(next) + ". Between " + min + " and " + max + " is allowed.";
+        status.textContent = fill(root.dataset.allowed, { amount: say(next), min: min, max: max });
       }
       paint();
     });

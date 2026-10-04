@@ -54,7 +54,7 @@ export function renderCurrencyInputMarkup(config: CurrencyInputConfig) {
   const hint = config.hint.trim();
   const mark = symbol ? `<span class="ci-symbol" aria-hidden="true">${escapeHtml(symbol)}</span>` : "";
 
-  return `    <div class="ci ci--theme-${config.theme}" style="${vars}" data-currency-input data-decimals="${decimals}" data-negative="${config.allowNegative}">
+  return `    <div class="ci ci--theme-${config.theme}" style="${vars}" data-currency-input data-bad-amount="${escapeHtml(config.badAmountText)}" data-decimals="${decimals}" data-negative="${config.allowNegative}">
       <label class="ci-label" for="currency-input">${escapeHtml(config.label)}${symbol ? `<span class="ci-sr"> ${escapeHtml(fill(config.currencyText, { symbol }))}</span>` : ""}</label>
 ${hint ? `      <p class="ci-hint" id="currency-hint">${escapeHtml(hint)}</p>\n` : ""}      <div class="ci-field">
 ${!config.symbolAfter && mark ? `        ${mark}\n` : ""}        <input class="ci-input" id="currency-input" type="text" inputmode="decimal" autocomplete="off" value="${start === null ? "" : escapeHtml(format(start, decimals))}"${hint ? ' aria-describedby="currency-hint"' : ""} data-input>

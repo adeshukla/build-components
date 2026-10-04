@@ -58,7 +58,7 @@ ${config.numbered ? `          <span class="so-number" aria-hidden="true">${inde
     })
     .join("\n");
 
-  return `    <div class="so so--theme-${config.theme}" style="${vars}" data-sortable-list data-words="${escapeHtml(JSON.stringify({ position: config.positionText, picked: config.pickedText, moved: config.movedText, dropped: config.droppedText, cancelled: config.cancelledText }))}">
+  return `    <div class="so so--theme-${config.theme}" style="${vars}" data-sortable-list data-words="${escapeHtml(JSON.stringify({ position: config.positionText, picked: config.pickedText, moved: config.movedText, dropped: config.droppedText, cancelled: config.cancelledText, first: config.alreadyFirstText, last: config.alreadyLastText }))}">
       <p class="so-label" id="sortable-list-label">${escapeHtml(config.label)}</p>
 ${config.hint.trim() ? `      <p class="so-hint">${escapeHtml(config.hint)}</p>\n` : ""}      <p class="so-sr" id="sortable-list-how">${escapeHtml(config.howText)}</p>
       <ol class="so-list" aria-labelledby="sortable-list-label" data-list>

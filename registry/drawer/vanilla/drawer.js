@@ -4,6 +4,13 @@
  * Pressing the main button fires "drawer-apply" on the root: event.detail.choices is what was ticked.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   /** How far a swipe has to travel, in pixels, to close the drawer. */
   const SWIPE_CLOSE = 80;
 
@@ -47,7 +54,7 @@
 
     dialog.querySelector("[data-apply]").addEventListener("click", function () {
       const picked = choices.filter((choice) => choice.checked).map((choice) => choice.value);
-      status.textContent = picked.length ? "Showing: " + picked.join(", ") + "." : "Showing everything.";
+      status.textContent = picked.length ? fill(root.dataset.showing, { list: picked.join(", ") }) : root.dataset.showingAll;
       root.dispatchEvent(new CustomEvent("drawer-apply", { detail: { choices: picked } }));
       dialog.close();
     });

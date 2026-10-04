@@ -54,7 +54,7 @@ export function renderWizardMarkup(config: WizardConfig) {
     )
     .join("\n");
 
-  return `    <div class="wz wz--theme-${config.theme}" style="${vars}" data-wizard data-words="${escapeHtml(JSON.stringify({ step: config.stepText, needed: config.neededText, current: config.currentLabel, neededError: config.neededError, notGiven: config.notGivenText }))}" data-finish="${escapeHtml(config.finishText)}" data-next="${escapeHtml(config.nextText)}" data-heading="${escapeHtml(config.heading)}">
+  return `    <div class="wz wz--theme-${config.theme}" style="${vars}" data-wizard data-words="${escapeHtml(JSON.stringify({ step: config.stepText, needed: config.neededText, current: config.currentLabel, neededError: config.neededError, notGiven: config.notGivenText, sent: config.sentNoteText }))}" data-finish="${escapeHtml(config.finishText)}" data-next="${escapeHtml(config.nextText)}" data-heading="${escapeHtml(config.heading)}">
       <div class="wz-form" data-form>
         <p class="wz-heading">${escapeHtml(config.heading)}</p>
 

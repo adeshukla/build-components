@@ -47,7 +47,7 @@ export function renderCodeBlockMarkup(config: CodeBlockConfig) {
       <div class="cb-bar">
         <p class="cb-title">${escapeHtml(config.title)}</p>
         <div class="cb-buttons">
-${wrapButton}          <button class="cb-button" type="button" data-copy data-copied="${escapeHtml(config.copiedText)}">${escapeHtml(config.copyText)}</button>
+${wrapButton}          <button class="cb-button" type="button" data-copy data-copied="${escapeHtml(config.copiedText)}" data-selected="${escapeHtml(config.selectedText)}">${escapeHtml(config.copyText)}</button>
         </div>
       </div>
 

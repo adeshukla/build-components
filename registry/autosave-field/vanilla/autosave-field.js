@@ -4,6 +4,13 @@
  * back from a failure — stays the same.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     pauseMs: 900,
@@ -12,6 +19,7 @@
     savedText: "Saved",
     errorText: "Could not save.",
     demoOutcome: "saves",
+    savedAtText: "{saved} at {time}",
   };
   // @config-end
 
@@ -49,7 +57,7 @@
       set("saving", config.savingText);
       saveDraft(field.value).then(
         function () {
-          set("saved", config.savedText + " at " + clockTime(new Date()));
+          set("saved", fill(config.savedAtText, { saved: config.savedText, time: clockTime(new Date()) }));
         },
         function () {
           set("error", config.errorText);

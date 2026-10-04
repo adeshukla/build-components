@@ -58,7 +58,7 @@
     discard.addEventListener("click", function () {
       field.value = saved;
       refresh();
-      if (status) status.textContent = "Left, changes discarded";
+      if (status) status.textContent = root.dataset.discardedText;
       close();
     });
     // Escape is the cautious choice: stay on the page and keep the text.

@@ -39,7 +39,7 @@ export function renderToolbarMarkup(config: ToolbarConfig) {
     )
     .join("\n");
 
-  return `    <div class="tb tb--theme-${config.theme}" style="${vars}" data-toolbar>
+  return `    <div class="tb tb--theme-${config.theme}" style="${vars}" data-toolbar data-words="${escapeHtml(JSON.stringify({ on: config.onText, off: config.offText, done: config.doneText }))}">
       <!-- One stop for the whole toolbar: Tab goes past it, the arrow keys move inside it. -->
       <div class="tb-bar" role="toolbar" aria-label="${escapeHtml(config.label)}" aria-orientation="${config.orientation}" data-bar>
 ${buttons}

@@ -53,7 +53,7 @@
         return;
       }
       if (digits.length < 6) {
-        error.textContent = "That number looks too short. Check it and try again.";
+        error.textContent = root.dataset.tooShort;
         number.setAttribute("aria-invalid", "true");
       } else {
         error.textContent = "";

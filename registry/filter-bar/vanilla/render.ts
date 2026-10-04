@@ -50,7 +50,7 @@ ${filters
     )
     .join("\n");
 
-  return `    <div class="fb fb--theme-${config.theme}" style="${vars}" data-filter-bar data-none="${escapeHtml(config.noneText)}" data-one="${escapeHtml(config.oneText)}" data-many="${escapeHtml(config.manyText)}">
+  return `    <div class="fb fb--theme-${config.theme}" style="${vars}" data-filter-bar data-remove-label="${escapeHtml(config.removeLabel)}" data-none="${escapeHtml(config.noneText)}" data-one="${escapeHtml(config.oneText)}" data-many="${escapeHtml(config.manyText)}">
       <div class="fb-head">
         <p class="fb-title">${escapeHtml(config.label)}</p>
 ${config.clearAll ? `        <button class="fb-clear" type="button" hidden data-clear>${escapeHtml(config.clearText)}</button>` : ""}

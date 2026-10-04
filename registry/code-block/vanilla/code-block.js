@@ -55,7 +55,7 @@
       const selection = window.getSelection();
       selection.removeAllRanges();
       selection.addRange(range);
-      say("Selected. Press Ctrl+C (Cmd+C on a Mac) to copy.");
+      say(copy.dataset.selected);
     }
 
     if (wrap) {

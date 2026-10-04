@@ -44,6 +44,14 @@ export const currencyInputSchema = [
     default: "in {symbol}",
     maxLength: 40,
   },
+  {
+    key: "badAmountText",
+    label: "Not an amount",
+    group: "Words",
+    type: "text",
+    default: "Enter an amount, for example 12.50.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

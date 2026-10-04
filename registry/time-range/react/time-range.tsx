@@ -17,6 +17,12 @@ export type TimeRangeConfig = {
   orderErrorText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  hourOneText: string;
+  hoursText: string;
+  minuteOneText: string;
+  minutesText: string;
+  noTimeText: string;
+  nextDayText: string;
 };
 
 // @config-start
@@ -35,6 +41,12 @@ const defaultConfig: TimeRangeConfig = {
   orderErrorText: "Closing time must be after opening time.",
   theme: "light",
   accentColor: "#1d4ed8",
+  hourOneText: "{count} hour",
+  hoursText: "{count} hours",
+  minuteOneText: "{count} minute",
+  minutesText: "{count} minutes",
+  noTimeText: "no time at all",
+  nextDayText: "{length}, finishing the next day",
 };
 // @config-end
 
@@ -89,14 +101,17 @@ const toMinutes = (value: string) => {
 };
 
 /** "3 hours 30 minutes", spelled out rather than shown as 3:30, which reads as a time of day. */
-export function sayLength(minutes: number) {
+export function sayLength(minutes: number, words: TimeRangeConfig) {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
   const parts = [];
-  if (hours > 0) parts.push(`${hours} ${hours === 1 ? "hour" : "hours"}`);
-  if (rest > 0) parts.push(`${rest} ${rest === 1 ? "minute" : "minutes"}`);
-  return parts.length === 0 ? "no time at all" : parts.join(" ");
+  if (hours > 0) parts.push(fill(hours === 1 ? words.hourOneText : words.hoursText, { count: hours }));
+  if (rest > 0) parts.push(fill(rest === 1 ? words.minuteOneText : words.minutesText, { count: rest }));
+  return parts.length === 0 ? words.noTimeText : parts.join(" ");
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function TimeRange({ config = defaultConfig }: { config?: TimeRangeConfig }) {
   const id = useId();
@@ -183,7 +198,7 @@ export function TimeRange({ config = defaultConfig }: { config?: TimeRangeConfig
 
         {config.showLength && (
           <p role="status" className="mt-3 text-sm text-(--tmr-muted)">
-            {length === null ? "" : `${sayLength(length)}${gap <= 0 ? ", finishing the next day" : ""}`}
+            {length === null ? "" : gap <= 0 ? fill(config.nextDayText, { length: sayLength(length, config) }) : sayLength(length, config)}
           </p>
         )}
       </fieldset>

@@ -11,6 +11,7 @@ export type PhoneInputConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   countryLabel: string;
+  tooShortText: string;
 };
 
 // @config-start
@@ -29,6 +30,7 @@ const defaultConfig: PhoneInputConfig = {
   theme: "light",
   accentColor: "#2563eb",
   countryLabel: "Country code",
+  tooShortText: "That number looks too short. Check it and try again.",
 };
 // @config-end
 
@@ -160,7 +162,7 @@ export function PhoneInput({ config = defaultConfig }: { config?: PhoneInputConf
           }}
           onBlur={() => {
             if (digits === "") return setError("");
-            setError(digits.length < 6 ? "That number looks too short. Check it and try again." : "");
+            setError(digits.length < 6 ? config.tooShortText : "");
           }}
           className="min-w-0 flex-1 bg-transparent px-3 tabular-nums outline-none"
         />

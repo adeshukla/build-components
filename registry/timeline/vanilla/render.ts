@@ -47,7 +47,7 @@ export function renderTimelineMarkup(config: TimelineConfig) {
     )
     .join("\n");
 
-  return `    <div class="tl tl--theme-${config.theme}" style="${vars}" data-timeline data-total="${ordered.length}">
+  return `    <div class="tl tl--theme-${config.theme}" style="${vars}" data-timeline data-all-shown="${escapeHtml(config.allShownText)}" data-total="${ordered.length}">
       <h2 class="tl-heading">${escapeHtml(config.heading)}</h2>
       <ol class="tl-list">
 ${items}

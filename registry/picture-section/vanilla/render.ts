@@ -33,7 +33,7 @@ export function renderPictureSectionMarkup(config: PictureSectionConfig) {
   const classes = `pc-box pc-box--${config.shape}${config.frame ? " pc-box--frame" : ""}`;
   const media = picture
     ? `<img class="${classes}" src="${escapeHtml(picture)}" alt="${escapeHtml(config.alt)}">`
-    : `<div class="${classes} pc-placeholder" role="img" aria-label="${escapeHtml(config.alt || "Picture to come")}"></div>`;
+    : `<div class="${classes} pc-placeholder" role="img" aria-label="${escapeHtml(config.alt || config.placeholderLabel)}"></div>`;
   return `    <figure class="pc pc--theme-${config.theme}" style="${vars}">
       ${media}
 ${config.caption.trim() ? `      <figcaption class="pc-caption">${escapeHtml(config.caption)}</figcaption>\n` : ""}    </figure>`;

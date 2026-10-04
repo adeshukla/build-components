@@ -39,7 +39,7 @@ export function renderQuantityMarkup(config: QuantityConfig) {
   const hint = config.hint.trim();
   const noun = config.label.toLowerCase();
 
-  return `    <div class="qt qt--theme-${config.theme}" style="${vars}" data-quantity data-unit="${escapeHtml(unit)}">
+  return `    <div class="qt qt--theme-${config.theme}" style="${vars}" data-quantity data-most="${escapeHtml(config.mostText)}" data-fewest="${escapeHtml(config.fewestText)}" data-allowed="${escapeHtml(config.allowedText)}" data-unit="${escapeHtml(unit)}">
       <label class="qt-label" for="quantity-input">${escapeHtml(config.label)}${unit ? ` <span class="qt-unit">(${escapeHtml(unit)})</span>` : ""}</label>
 ${hint ? `      <p class="qt-hint" id="quantity-hint">${escapeHtml(hint)}</p>\n` : ""}      <div class="qt-group">
         <button class="qt-step" type="button" aria-label="${escapeHtml(fill(config.fewerLabel, { label: noun }))}"${value <= min ? ' aria-disabled="true"' : ""} data-less>

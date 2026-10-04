@@ -49,6 +49,9 @@ export type DatePickerConfig = {
   chooseMonthLabel: string;
   endPromptText: string;
   todayText: string;
+  headingDaysHint: string;
+  headingYearsHint: string;
+  headingMonthsHint: string;
 };
 
 // @config-start
@@ -91,6 +94,9 @@ const defaultConfig: DatePickerConfig = {
   chooseMonthLabel: "Choose month",
   endPromptText: "Now choose the end date.",
   todayText: "Today",
+  headingDaysHint: "change month and year",
+  headingYearsHint: "back to calendar",
+  headingMonthsHint: "change year",
 };
 // @config-end
 
@@ -701,7 +707,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               >
                 {heading}
                 <span className="sr-only">
-                  {view === "days" ? ", change month and year" : view === "years" ? ", back to calendar" : ", change year"}
+                  {`, ${(view === "days" ? config.headingDaysHint : view === "years" ? config.headingYearsHint : config.headingMonthsHint)}`}
                 </span>
                 <svg
                   aria-hidden="true"

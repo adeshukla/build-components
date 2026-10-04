@@ -44,7 +44,7 @@
         return;
       }
       if (typed === null) {
-        error.textContent = "Enter an amount, for example 12.50.";
+        error.textContent = root.dataset.badAmount;
         input.setAttribute("aria-invalid", "true");
         if (hidden) hidden.value = "";
         return;

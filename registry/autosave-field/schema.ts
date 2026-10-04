@@ -24,6 +24,15 @@ export const autosaveFieldSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "savedAtText",
+    label: "Saved, with the time",
+    description: "{saved} is the Saved text, {time} the time.",
+    group: "Words",
+    type: "text",
+    default: "{saved} at {time}",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

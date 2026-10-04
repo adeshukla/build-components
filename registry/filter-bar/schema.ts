@@ -89,6 +89,15 @@ export const filterBarSchema = [
     default: "Applied filters",
     maxLength: 60,
   },
+  {
+    key: "removeLabel",
+    label: "Remove a filter",
+    description: "Read out on each pill's button. {name} is the filter.",
+    group: "Words",
+    type: "text",
+    default: "Remove filter {name}",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

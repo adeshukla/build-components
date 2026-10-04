@@ -17,6 +17,7 @@ export type AutosaveFieldConfig = {
   demoOutcome: "saves" | "fails";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  savedAtText: string;
 };
 
 // @config-start
@@ -35,6 +36,7 @@ const defaultConfig: AutosaveFieldConfig = {
   demoOutcome: "saves",
   theme: "light",
   accentColor: "#0f766e",
+  savedAtText: "{saved} at {time}",
 };
 // @config-end
 
@@ -90,6 +92,9 @@ export function clockTime(date: Date) {
 }
 
 type State = "clean" | "unsaved" | "saving" | "saved" | "error";
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function AutosaveField({
   config = defaultConfig,
@@ -158,7 +163,7 @@ export function AutosaveField({
         : state === "saving"
           ? config.savingText
           : state === "saved"
-            ? `${config.savedText} at ${savedAt}`
+            ? fill(config.savedAtText, { saved: config.savedText, time: savedAt })
             : config.errorText;
 
   return (

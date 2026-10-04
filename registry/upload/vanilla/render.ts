@@ -47,6 +47,7 @@ export function renderUploadMarkup(config: UploadConfig) {
 
   const settings = [
     "data-upload",
+    `data-words="${escapeHtml(JSON.stringify({ notAccepted: config.notAcceptedText, tooBig: config.tooBigText, tooManyOne: config.tooManyOneText, tooMany: config.tooManyText, attachedOne: config.attachedOneText, attached: config.attachedText, removed: config.removedText, noneLeft: config.noneLeftText, left: config.leftText, remove: config.removeLabel }))}"`,
     `data-accept="${escapeHtml(config.accept)}"`,
     `data-max-size="${config.maxSizeMb}"`,
     `data-max-files="${config.maxFiles}"`,

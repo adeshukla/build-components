@@ -9,6 +9,7 @@ export type PictureSectionConfig = {
   shape: "16-9" | "4-3" | "21-9" | "1-1";
   frame: boolean;
   theme: "light" | "dark" | "system";
+  placeholderLabel: string;
 };
 
 // @config-start
@@ -19,6 +20,7 @@ const defaultConfig: PictureSectionConfig = {
   shape: "16-9",
   frame: true,
   theme: "light",
+  placeholderLabel: "Picture to come",
 };
 // @config-end
 
@@ -82,7 +84,7 @@ export function PictureSection({ config = defaultConfig }: { config?: PictureSec
         // A place for a picture, drawn rather than loaded: the exported file carries no image of ours.
         <div
           role="img"
-          aria-label={config.alt || "Picture to come"}
+          aria-label={config.alt || config.placeholderLabel}
           style={shape}
           className={`${box} bg-(--pc-sunk) bg-[repeating-linear-gradient(135deg,transparent_0_18px,rgb(0_0_0/0.04)_18px_36px)]`}
         />

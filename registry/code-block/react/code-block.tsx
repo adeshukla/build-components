@@ -13,6 +13,7 @@ export type CodeBlockConfig = {
   accentColor: string;
   wrapText: string;
   regionLabel: string;
+  selectedText: string;
 };
 
 // @config-start
@@ -33,6 +34,7 @@ const defaultConfig: CodeBlockConfig = {
   accentColor: "#0f766e",
   wrapText: "Wrap lines",
   regionLabel: "{title} code",
+  selectedText: "Selected. Press Ctrl+C (Cmd+C on a Mac) to copy.",
 };
 // @config-end
 
@@ -119,7 +121,7 @@ export function CodeBlock({ config = defaultConfig }: { config?: CodeBlockConfig
         selection?.removeAllRanges();
         selection?.addRange(range);
       }
-      setSaid("Selected. Press Ctrl+C (Cmd+C on a Mac) to copy.");
+      setSaid(config.selectedText);
     }
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setSaid(""), 4000);

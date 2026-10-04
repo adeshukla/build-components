@@ -116,7 +116,7 @@
       if (moveTo(row, rows().indexOf(row) + (up ? -1 : 1), button)) {
         announce(fill(words.moved, { item: labelOf(row), position: position(row) }));
       } else {
-        announce(labelOf(row) + " is already " + (up ? "first" : "last") + ".");
+        announce(fill(up ? words.first : words.last, { item: labelOf(row) }));
       }
     });
 

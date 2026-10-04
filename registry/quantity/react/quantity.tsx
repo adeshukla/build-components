@@ -15,6 +15,9 @@ export type QuantityConfig = {
   accentColor: string;
   fewerLabel: string;
   moreLabel: string;
+  mostText: string;
+  fewestText: string;
+  allowedText: string;
 };
 
 // @config-start
@@ -31,6 +34,9 @@ const defaultConfig: QuantityConfig = {
   accentColor: "#2563eb",
   fewerLabel: "Fewer {label}",
   moreLabel: "More {label}",
+  mostText: "{amount}. That is the most you can have.",
+  fewestText: "{amount}. That is the fewest you can have.",
+  allowedText: "{amount}. Between {min} and {max} is allowed.",
 };
 // @config-end
 
@@ -108,7 +114,7 @@ export function Quantity({ config = defaultConfig }: { config?: QuantityConfig }
   function nudge(by: number) {
     const next = clamp(value + by);
     if (next === value) {
-      setMessage(`${say(value)}. That is the ${by > 0 ? "most" : "fewest"} you can have.`);
+      setMessage(fill(by > 0 ? config.mostText : config.fewestText, { amount: say(value) }));
       return;
     }
     setValue(next);
@@ -157,7 +163,7 @@ export function Quantity({ config = defaultConfig }: { config?: QuantityConfig }
             const typed = Number(event.target.value);
             const next = clamp(Number.isFinite(typed) ? typed : min);
             setValue(next);
-            if (next !== typed) setMessage(`${say(next)}. Between ${min} and ${max} is allowed.`);
+            if (next !== typed) setMessage(fill(config.allowedText, { amount: say(next), min, max }));
           }}
           className="w-16 border-x border-(--qt-border) bg-(--qt-surface) text-center tabular-nums outline-none [appearance:textfield] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--qt-accent-text) [&::-webkit-inner-spin-button]:appearance-none"
         />

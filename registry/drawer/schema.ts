@@ -125,6 +125,24 @@ export const drawerSchema = [
     default: "Close",
     maxLength: 40,
   },
+  {
+    key: "showingText",
+    label: "After applying",
+    description: "Announced. {list} is what was picked.",
+    group: "Words",
+    type: "text",
+    default: "Showing: {list}.",
+    maxLength: 160,
+  },
+  {
+    key: "showingAllText",
+    label: "After applying nothing",
+    description: "Announced.",
+    group: "Words",
+    type: "text",
+    default: "Showing everything.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

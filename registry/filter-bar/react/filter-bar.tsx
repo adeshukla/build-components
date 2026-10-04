@@ -14,6 +14,7 @@ export type FilterBarConfig = {
   manyText: string;
   clearText: string;
   pillsLabel: string;
+  removeLabel: string;
 };
 
 // @config-start
@@ -37,6 +38,7 @@ const defaultConfig: FilterBarConfig = {
   manyText: "{count} filters applied: {filters}",
   clearText: "Clear all",
   pillsLabel: "Applied filters",
+  removeLabel: "Remove filter {name}",
 };
 // @config-end
 
@@ -192,7 +194,7 @@ export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig
                 onClick={() => remove(filter)}
                 className="inline-flex size-6 cursor-pointer items-center justify-center rounded-full text-(--fb-muted) hover:text-(--fb-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fb-accent-text)"
               >
-                <span className="sr-only">{`Remove filter ${key(filter)}`}</span>
+                <span className="sr-only">{fill(config.removeLabel, { name: key(filter) })}</span>
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                   <path d="M6 6l12 12M18 6 6 18" />
                 </svg>

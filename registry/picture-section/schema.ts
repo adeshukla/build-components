@@ -8,6 +8,15 @@ export const pictureSectionSchema = [
   { key: "shape", label: "Shape", group: "Style", type: "select", default: "16-9", options: ["16-9", "4-3", "21-9", "1-1"] },
   { key: "frame", label: "Rounded with a hairline", group: "Style", type: "boolean", default: true },
   { key: "theme", label: "Theme", group: "Style", type: "select", default: "light", options: ["light", "dark", "system"] },
+  {
+    key: "placeholderLabel",
+    label: "Before a picture is set",
+    description: "Read out on the empty frame when there is no alt text.",
+    group: "Words",
+    type: "text",
+    default: "Picture to come",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

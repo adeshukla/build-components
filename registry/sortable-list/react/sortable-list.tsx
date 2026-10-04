@@ -28,6 +28,8 @@ export type SortableListConfig = {
   reorderLabel: string;
   upLabel: string;
   downLabel: string;
+  alreadyFirstText: string;
+  alreadyLastText: string;
 };
 
 // @config-start
@@ -54,6 +56,8 @@ const defaultConfig: SortableListConfig = {
   reorderLabel: "Reorder {item}",
   upLabel: "Move {item} up",
   downLabel: "Move {item} down",
+  alreadyFirstText: "{item} is already first.",
+  alreadyLastText: "{item} is already last.",
 };
 // @config-end
 
@@ -201,7 +205,7 @@ export function SortableList({
     if (reorder(index, to, `${id}-${step < 0 ? "up" : "down"}-${item.id}`)) {
       setMessage(fill(config.movedText, { item: item.label, position: position(to, items) }));
     } else {
-      setMessage(`${item.label} is already ${step < 0 ? "first" : "last"}.`);
+      setMessage(fill(step < 0 ? config.alreadyFirstText : config.alreadyLastText, { item: item.label }));
     }
   }
 

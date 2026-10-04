@@ -35,6 +35,33 @@ export const toolbarSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "Toggles that are on.", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "onText",
+    label: "Toggle on",
+    description: "Announced. {label} is the button.",
+    group: "Words",
+    type: "text",
+    default: "{label} on",
+    maxLength: 160,
+  },
+  {
+    key: "offText",
+    label: "Toggle off",
+    description: "Announced.",
+    group: "Words",
+    type: "text",
+    default: "{label} off",
+    maxLength: 160,
+  },
+  {
+    key: "doneText",
+    label: "Action done",
+    description: "Announced.",
+    group: "Words",
+    type: "text",
+    default: "{label} done",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

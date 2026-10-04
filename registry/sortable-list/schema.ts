@@ -151,6 +151,24 @@ export const sortableListSchema = [
     default: "Move {item} down",
     maxLength: 80,
   },
+  {
+    key: "alreadyFirstText",
+    label: "Already first",
+    description: "Announced. {item} is the item.",
+    group: "Words",
+    type: "text",
+    default: "{item} is already first.",
+    maxLength: 160,
+  },
+  {
+    key: "alreadyLastText",
+    label: "Already last",
+    description: "Announced.",
+    group: "Words",
+    type: "text",
+    default: "{item} is already last.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

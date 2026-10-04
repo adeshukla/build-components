@@ -45,7 +45,7 @@ ${options.map((option) => `              <label class="dr-choice"><input type="c
             </fieldset>`
     : "";
 
-  return `    <div class="dr dr--${config.side} dr--theme-${config.theme}" style="${vars}" data-drawer data-backdrop-close="${config.closeOnBackdrop}" data-swipe="${config.swipeToClose}">
+  return `    <div class="dr dr--${config.side} dr--theme-${config.theme}" style="${vars}" data-drawer data-showing="${escapeHtml(config.showingText)}" data-showing-all="${escapeHtml(config.showingAllText)}" data-backdrop-close="${config.closeOnBackdrop}" data-swipe="${config.swipeToClose}">
       <button class="dr-button dr-trigger" type="button" aria-haspopup="dialog" data-trigger>
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
         ${escapeHtml(config.triggerText)}

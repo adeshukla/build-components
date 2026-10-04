@@ -52,6 +52,15 @@ export const codeBlockSchema = [
     default: "{title} code",
     maxLength: 80,
   },
+  {
+    key: "selectedText",
+    label: "When copying is blocked",
+    description: "Announced after the code is selected for copying by hand.",
+    group: "Words",
+    type: "text",
+    default: "Selected. Press Ctrl+C (Cmd+C on a Mac) to copy.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

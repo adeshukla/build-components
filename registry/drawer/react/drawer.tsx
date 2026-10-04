@@ -25,6 +25,8 @@ export type DrawerConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   closeLabel: string;
+  showingText: string;
+  showingAllText: string;
 };
 
 // @config-start
@@ -43,6 +45,8 @@ const defaultConfig: DrawerConfig = {
   theme: "light",
   accentColor: "#2563eb",
   closeLabel: "Close",
+  showingText: "Showing: {list}.",
+  showingAllText: "Showing everything.",
 };
 // @config-end
 
@@ -102,6 +106,9 @@ const sides = {
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dr-accent-text)";
 /** How far a swipe has to travel, in pixels, to close the drawer. */
 const SWIPE_CLOSE = 80;
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Drawer({ config = defaultConfig }: { config?: DrawerConfig }) {
   const id = useId();
@@ -201,7 +208,7 @@ export function Drawer({ config = defaultConfig }: { config?: DrawerConfig }) {
         {config.triggerText}
       </button>
       <p role="status" className="mt-2 text-sm text-(--dr-muted) empty:hidden">
-        {applied === null ? "" : applied.length ? `Showing: ${applied.join(", ")}.` : "Showing everything."}
+        {applied === null ? "" : applied.length ? fill(config.showingText, { list: applied.join(", ") }) : config.showingAllText}
       </p>
 
       <dialog

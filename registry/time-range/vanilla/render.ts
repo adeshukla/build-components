@@ -35,7 +35,7 @@ export function renderTimeRangeMarkup(config: TimeRangeConfig) {
     ` step="${config.stepMinutes * 60}"`;
   const required = config.required ? " required" : "";
 
-  return `    <div class="tmr tmr--theme-${config.theme}" style="${vars}" data-time-range>
+  return `    <div class="tmr tmr--theme-${config.theme}" style="${vars}" data-time-range data-words="${escapeHtml(JSON.stringify({ hourOne: config.hourOneText, hours: config.hoursText, minuteOne: config.minuteOneText, minutes: config.minutesText, noTime: config.noTimeText, nextDay: config.nextDayText }))}">
       <fieldset class="tmr-set">
         <legend class="tmr-legend">${escapeHtml(config.legend)}</legend>
         ${config.hint.trim() === "" ? "" : `<p class="tmr-hint" id="tmr-hint">${escapeHtml(config.hint)}</p>`}

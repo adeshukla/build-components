@@ -15,6 +15,16 @@ export type UploadConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  notAcceptedText: string;
+  tooBigText: string;
+  tooManyOneText: string;
+  tooManyText: string;
+  attachedOneText: string;
+  attachedText: string;
+  removedText: string;
+  noneLeftText: string;
+  leftText: string;
+  removeLabel: string;
 };
 
 // @config-start
@@ -31,6 +41,16 @@ const defaultConfig: UploadConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 12,
+  notAcceptedText: "{name} is not a kind of file we accept. Accepted: {accept}.",
+  tooBigText: "{name} is {size}. The largest we can take is {max} MB.",
+  tooManyOneText: "You can attach {count} file at most.",
+  tooManyText: "You can attach {count} files at most.",
+  attachedOneText: "{names} attached. {count} file in all.",
+  attachedText: "{names} attached. {count} files in all.",
+  removedText: "{name} removed.",
+  noneLeftText: "No files attached.",
+  leftText: "{count} left.",
+  removeLabel: "Remove {name}",
 };
 // @config-end
 
@@ -88,22 +108,25 @@ export function fileSize(bytes: number) {
 }
 
 /** The same checks for both outputs: type first, then size, then how many. */
-export function fileProblem(file: { name: string; size: number }, accept: string, maxSizeMb: number) {
+export function fileProblem(file: { name: string; size: number }, accept: string, maxSizeMb: number, words: UploadConfig) {
   const kinds = accept
     .split(",")
     .map((kind) => kind.trim().toLowerCase())
     .filter(Boolean);
   const name = file.name.toLowerCase();
   if (kinds.length > 0 && !kinds.some((kind) => (kind.startsWith(".") ? name.endsWith(kind) : name.includes(kind)))) {
-    return `${file.name} is not a kind of file we accept. Accepted: ${accept}.`;
+    return fill(words.notAcceptedText, { name: file.name, accept });
   }
   if (maxSizeMb > 0 && file.size > maxSizeMb * 1024 * 1024) {
-    return `${file.name} is ${fileSize(file.size)}. The largest we can take is ${maxSizeMb} MB.`;
+    return fill(words.tooBigText, { name: file.name, size: fileSize(file.size), max: maxSizeMb });
   }
   return "";
 }
 
 type Chosen = { name: string; size: number };
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
   const id = useId();
@@ -121,11 +144,11 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
     const found: string[] = [];
     const kept: Chosen[] = [];
     for (const file of incoming) {
-      const problem = fileProblem(file, config.accept, config.maxSizeMb);
+      const problem = fileProblem(file, config.accept, config.maxSizeMb, config);
       if (problem !== "") found.push(problem);
       // One at a time means the new file replaces the old one, so the count starts from zero.
       else if ((config.multiple ? files.length : 0) + kept.length >= config.maxFiles) {
-        found.push(`You can attach ${config.maxFiles} file${config.maxFiles === 1 ? "" : "s"} at most.`);
+        found.push(fill(config.maxFiles === 1 ? config.tooManyOneText : config.tooManyText, { count: config.maxFiles }));
         break;
       } else kept.push(file);
     }
@@ -133,7 +156,7 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
     setFiles(all);
     setProblems(found);
     if (kept.length > 0) {
-      setMessage(`${kept.map((file) => file.name).join(", ")} attached. ${all.length} file${all.length === 1 ? "" : "s"} in all.`);
+      setMessage(fill(all.length === 1 ? config.attachedOneText : config.attachedText, { names: kept.map((file) => file.name).join(", "), count: all.length }));
     }
   }
 
@@ -141,7 +164,7 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
     const gone = files[index];
     const rest = files.filter((_, entry) => entry !== index);
     setFiles(rest);
-    setMessage(`${gone.name} removed. ${rest.length === 0 ? "No files attached." : `${rest.length} left.`}`);
+    setMessage(`${fill(config.removedText, { name: gone.name })} ${rest.length === 0 ? config.noneLeftText : fill(config.leftText, { count: rest.length })}`);
   }
 
   function onDrop(event: DragEvent<HTMLDivElement>) {
@@ -238,7 +261,7 @@ export function Upload({ config = defaultConfig }: { config?: UploadConfig }) {
                 onClick={() => remove(index)}
                 className={`grid size-8 shrink-0 cursor-pointer place-items-center rounded-full hover:bg-(--up-sunk) ${focus}`}
               >
-                <span className="sr-only">Remove {file.name}</span>
+                <span className="sr-only">{fill(config.removeLabel, { name: file.name })}</span>
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                   <path d="M6 6l12 12M18 6 6 18" />
                 </svg>

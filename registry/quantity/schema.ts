@@ -46,6 +46,33 @@ export const quantitySchema = [
     default: "More {label}",
     maxLength: 60,
   },
+  {
+    key: "mostText",
+    label: "At the most",
+    description: "Announced. {amount} is the quantity.",
+    group: "Words",
+    type: "text",
+    default: "{amount}. That is the most you can have.",
+    maxLength: 160,
+  },
+  {
+    key: "fewestText",
+    label: "At the fewest",
+    description: "Announced.",
+    group: "Words",
+    type: "text",
+    default: "{amount}. That is the fewest you can have.",
+    maxLength: 160,
+  },
+  {
+    key: "allowedText",
+    label: "Out of range",
+    description: "Announced when a typed number is pulled back.",
+    group: "Words",
+    type: "text",
+    default: "{amount}. Between {min} and {max} is allowed.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

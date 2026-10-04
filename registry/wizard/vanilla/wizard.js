@@ -107,7 +107,7 @@
       });
       form.hidden = true;
       done.hidden = false;
-      if (status) status.textContent = "Sent. Everything you filled in is listed above.";
+      if (status) status.textContent = words.sent;
       doneTitle.focus();
     });
 

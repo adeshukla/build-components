@@ -5,6 +5,13 @@
  * drop ignores the accept list.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function fileSize(bytes) {
     if (bytes < 1024) return bytes + " bytes";
     if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " KB";
@@ -13,6 +20,7 @@
 
   function createUpload(root) {
     const input = root.querySelector("[data-input]");
+    const words = JSON.parse(root.dataset.words);
     const drop = root.querySelector("[data-drop]");
     const list = root.querySelector("[data-files]");
     const problems = root.querySelector("[data-problems]");
@@ -38,9 +46,9 @@
         accept.some(function (kind) {
           return kind.charAt(0) === "." ? name.slice(-kind.length) === kind : name.indexOf(kind) !== -1;
         });
-      if (!ok) return file.name + " is not a kind of file we accept. Accepted: " + root.dataset.accept + ".";
+      if (!ok) return fill(words.notAccepted, { name: file.name, accept: root.dataset.accept });
       if (maxSize > 0 && file.size > maxSize * 1024 * 1024) {
-        return file.name + " is " + fileSize(file.size) + ". The largest we can take is " + maxSize + " MB.";
+        return fill(words.tooBig, { name: file.name, size: fileSize(file.size), max: maxSize });
       }
       return "";
     }
@@ -66,13 +74,13 @@
         remove.type = "button";
         remove.className = "up-remove";
         remove.innerHTML =
-          '<span class="up-sr">Remove ' +
-          file.name.replace(/[<>&]/g, "") +
+          '<span class="up-sr">' +
+          fill(words.remove, { name: file.name.replace(/[<>&]/g, "") }) +
           '</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>';
         remove.addEventListener("click", function () {
           files.splice(index, 1);
           paint();
-          say(file.name + " removed. " + (files.length === 0 ? "No files attached." : files.length + " left."));
+          say(fill(words.removed, { name: file.name }) + " " + (files.length === 0 ? words.noneLeft : fill(words.left, { count: files.length })));
         });
 
         item.appendChild(name);
@@ -104,7 +112,7 @@
         if (problem) found.push(problem);
         // One at a time means the new file replaces the old one, so the count starts from zero.
         else if ((multiple ? files.length : 0) + kept.length >= maxFiles) {
-          found.push("You can attach " + maxFiles + " file" + (maxFiles === 1 ? "" : "s") + " at most.");
+          found.push(fill(maxFiles === 1 ? words.tooManyOne : words.tooMany, { count: maxFiles }));
           break;
         } else kept.push(incoming[i]);
       }
@@ -117,7 +125,7 @@
             return file.name;
           })
           .join(", ");
-        say(names + " attached. " + files.length + " file" + (files.length === 1 ? "" : "s") + " in all.");
+        say(fill(files.length === 1 ? words.attachedOne : words.attached, { names: names, count: files.length }));
       }
     }
 

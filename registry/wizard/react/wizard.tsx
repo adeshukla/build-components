@@ -17,6 +17,7 @@ export type WizardConfig = {
   neededError: string;
   sentText: string;
   notGivenText: string;
+  sentNoteText: string;
 };
 
 // @config-start
@@ -40,6 +41,7 @@ const defaultConfig: WizardConfig = {
   neededError: "{label} is needed before you can go on.",
   sentText: "{heading}: sent",
   notGivenText: "Not given",
+  sentNoteText: "Sent. Everything you filled in is listed above.",
 };
 // @config-end
 
@@ -161,7 +163,7 @@ export function Wizard({ config = defaultConfig }: { config?: WizardConfig }) {
           ))}
         </dl>
         <p role="status" className="mt-3 text-sm text-(--wz-muted)">
-          Sent. Everything you filled in is listed above.
+          {config.sentNoteText}
         </p>
       </div>
     );

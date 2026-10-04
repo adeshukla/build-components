@@ -8,6 +8,9 @@ export type ToolbarConfig = {
   orientation: "horizontal" | "vertical";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  onText: string;
+  offText: string;
+  doneText: string;
 };
 
 // @config-start
@@ -24,6 +27,9 @@ const defaultConfig: ToolbarConfig = {
   orientation: "horizontal",
   theme: "light",
   accentColor: "#1d4ed8",
+  onText: "{label} on",
+  offText: "{label} off",
+  doneText: "{label} done",
 };
 // @config-end
 
@@ -79,6 +85,9 @@ function keyOf(event: { key: string; target: EventTarget | null }) {
   return rtl ? (swapped[event.key] ?? event.key) : event.key;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) {
   const items = config.items.filter((item) => item.label.trim() !== "");
   // One stop for the whole toolbar: Tab goes past it, the arrow keys move inside it (APG toolbar).
@@ -124,9 +133,9 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
     if (item.kind === "toggle") {
       const on = !pressed.includes(index);
       setPressed((current) => (on ? [...current, index] : current.filter((entry) => entry !== index)));
-      setSaid(`${item.label} ${on ? "on" : "off"}`);
+      setSaid(fill(on ? config.onText : config.offText, { label: item.label }));
     } else {
-      setSaid(`${item.label} done`);
+      setSaid(fill(config.doneText, { label: item.label }));
     }
   }
 

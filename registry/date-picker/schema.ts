@@ -339,6 +339,33 @@ export const datePickerSchema = [
     default: "Today",
     maxLength: 30,
   },
+  {
+    key: "headingDaysHint",
+    label: "Heading button, calendar",
+    description: "Read out after the month.",
+    group: "Words",
+    type: "text",
+    default: "change month and year",
+    maxLength: 160,
+  },
+  {
+    key: "headingYearsHint",
+    label: "Heading button, years",
+    description: "Read out after the years.",
+    group: "Words",
+    type: "text",
+    default: "back to calendar",
+    maxLength: 160,
+  },
+  {
+    key: "headingMonthsHint",
+    label: "Heading button, months",
+    description: "Read out after the year.",
+    group: "Words",
+    type: "text",
+    default: "change year",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
