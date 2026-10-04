@@ -1,0 +1,44 @@
+/* Picture — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.pc {
+  --pc-surface: var(--bc-light-surface, #ffffff);
+  --pc-sunk: var(--bc-light-sunk, #f4f3f8);
+  --pc-muted: var(--bc-light-muted, #4d4a57);
+  --pc-line: var(--bc-light-line, #d9d5e4);
+  display: block;
+  margin: 0;
+  background: var(--pc-surface);
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
+  line-height: 1.5;
+}
+
+.pc,
+.pc *,
+.pc *::before,
+.pc *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-bc-scheme="light"]) .pc--theme-system {
+    --pc-surface: var(--bc-dark-surface, #141019);
+    --pc-sunk: var(--bc-dark-sunk, #1c1726);
+    --pc-muted: var(--bc-dark-muted, #b6b3c2);
+    --pc-line: var(--bc-dark-line, #3a3448);
+  }
+}
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .pc--theme-system {
+    --pc-surface: var(--bc-dark-surface, #141019);
+    --pc-sunk: var(--bc-dark-sunk, #1c1726);
+    --pc-muted: var(--bc-dark-muted, #b6b3c2);
+    --pc-line: var(--bc-dark-line, #3a3448);
+  }
+
+
+.pc-box { display: block; width: 100%; object-fit: cover; }
+.pc-box--16-9 { aspect-ratio: 16 / 9; }
+.pc-box--4-3 { aspect-ratio: 4 / 3; }
+.pc-box--21-9 { aspect-ratio: 21 / 9; }
+.pc-box--1-1 { aspect-ratio: 1 / 1; }
+.pc-box--frame { border: 1px solid var(--pc-line); border-radius: var(--bc-radius-lg, 0.75rem); }
+.pc-placeholder { background: var(--pc-sunk) repeating-linear-gradient(135deg, transparent 0 18px, rgb(0 0 0 / 0.04) 18px 36px); }
+.pc-caption { margin-top: 0.75rem; color: var(--pc-muted); font-size: 0.875rem; }

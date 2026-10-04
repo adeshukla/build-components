@@ -1,0 +1,51 @@
+/* Testimonials — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.tm {
+  --tm-accent-text: #1b4ab0;
+  --tm-surface: var(--bc-light-surface, #ffffff);
+  --tm-sunk: var(--bc-light-sunk, #f4f3f8);
+  --tm-text: var(--bc-light-text, #16121f);
+  --tm-muted: var(--bc-light-muted, #4d4a57);
+  --tm-line: var(--bc-light-line, #d9d5e4);
+  display: block;
+  background: var(--tm-surface);
+  color: var(--tm-text);
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
+  line-height: 1.5;
+}
+
+.tm,
+.tm *,
+.tm *::before,
+.tm *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-bc-scheme="light"]) .tm--theme-system {
+    --tm-surface: var(--bc-dark-surface, #141019);
+    --tm-sunk: var(--bc-dark-sunk, #1c1726);
+    --tm-text: var(--bc-dark-text, #f6f5fa);
+    --tm-muted: var(--bc-dark-muted, #b6b3c2);
+    --tm-line: var(--bc-dark-line, #3a3448);
+  }
+}
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .tm--theme-system {
+    --tm-surface: var(--bc-dark-surface, #141019);
+    --tm-sunk: var(--bc-dark-sunk, #1c1726);
+    --tm-text: var(--bc-dark-text, #f6f5fa);
+    --tm-muted: var(--bc-dark-muted, #b6b3c2);
+    --tm-line: var(--bc-dark-line, #3a3448);
+  }
+
+
+.tm-heading { margin: 0; font-size: 1.875rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.tm-intro { margin: 0.75rem 0 0; max-width: 42rem; color: var(--tm-muted); font-size: 1.125rem; }
+.tm-list { display: grid; gap: 1rem; margin: 2rem 0 0; padding: 0; list-style: none; }
+@media (min-width: 640px) { .tm-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .tm-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tm-card { display: flex; flex-direction: column; height: 100%; margin: 0; padding: 1.5rem; border: 1px solid var(--tm-line); border-radius: var(--bc-radius-lg, 0.75rem); background: var(--tm-sunk); }
+.tm-mark { color: var(--tm-accent-text); font-family: Georgia, serif; font-size: 3rem; line-height: 1; }
+.tm-quote { flex: 1; margin: 0.5rem 0 0; font-size: 1.125rem; text-wrap: pretty; }
+.tm-who { margin-top: 1.25rem; font-size: 0.875rem; }
+.tm-name { display: block; font-weight: 600; }
+.tm-role { display: block; color: var(--tm-muted); }

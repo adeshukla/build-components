@@ -203,6 +203,12 @@ import { ToggleGroup, type ToggleGroupConfig } from "@/registry/toggle-group/rea
 import { UnitInput, type UnitInputConfig } from "@/registry/unit-input/react/unit-input";
 
 import { MaskedInput, type MaskedInputConfig } from "@/registry/masked-input/react/masked-input";
+import { TextSection, type TextSectionConfig } from "@/registry/text-section/react/text-section";
+import { PictureSection, type PictureSectionConfig } from "@/registry/picture-section/react/picture-section";
+import { Testimonials, type TestimonialsConfig } from "@/registry/testimonials/react/testimonials";
+import { ContactDetails, type ContactDetailsConfig } from "@/registry/contact-details/react/contact-details";
+import { PostList, type PostListConfig } from "@/registry/post-list/react/post-list";
+import { AnnouncementBar, type AnnouncementBarConfig } from "@/registry/announcement-bar/react/announcement-bar";
 
 type Config = Record<string, unknown>;
 
@@ -417,6 +423,12 @@ export function Part({ slug, config }: { slug: string; config: Config }) {
       {slug === "form" && <ContactForm config={config as unknown as FormConfig} />}
       {slug === "searchable-select" && <SearchableSelect config={config as unknown as SearchableSelectConfig} />}
       {slug === "tabs" && <Tabs config={config as unknown as TabsConfig} />}
+      {slug === "text-section" && <TextSection config={config as unknown as TextSectionConfig} />}
+      {slug === "picture-section" && <PictureSection config={config as unknown as PictureSectionConfig} />}
+      {slug === "testimonials" && <Testimonials config={config as unknown as TestimonialsConfig} />}
+      {slug === "contact-details" && <ContactDetails config={config as unknown as ContactDetailsConfig} />}
+      {slug === "post-list" && <PostList config={config as unknown as PostListConfig} />}
+      {slug === "announcement-bar" && <AnnouncementBar config={config as unknown as AnnouncementBarConfig} />}
     </>
   );
 }

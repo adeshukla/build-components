@@ -1408,10 +1408,76 @@ export const parts: Part[] = [
     accent: "#5eead4",
     status: "in-stock",
   },
+  {
+    slug: "text-section",
+    category: "Page sections",
+    group: "Heroes & features",
+    aka: ["text", "paragraph", "rich text", "content block", "about section", "copy"],
+    name: "Text section",
+    summary: "A heading and paragraphs at a reading width, with an optional link.",
+    pattern: "Landmark section",
+    accent: "#93c5fd",
+    status: "in-stock",
+  },
+  {
+    slug: "picture-section",
+    category: "Page sections",
+    group: "Heroes & features",
+    aka: ["image", "photo", "picture", "figure", "graphic", "banner image"],
+    name: "Picture",
+    summary: "One picture with a description and an optional caption. A drawn placeholder until you set one.",
+    pattern: "Figure",
+    accent: "#a5b4fc",
+    status: "in-stock",
+  },
+  {
+    slug: "testimonials",
+    category: "Page sections",
+    group: "Conversion",
+    aka: ["reviews", "quotes", "customer quotes", "social proof", "feedback"],
+    name: "Testimonials",
+    summary: "Real quotes from real people, with who said them. Placeholders until they are real.",
+    pattern: "Figure + blockquote",
+    accent: "#f9a8d4",
+    status: "in-stock",
+  },
+  {
+    slug: "contact-details",
+    category: "Page sections",
+    group: "Conversion",
+    aka: ["contact", "address", "phone", "email", "opening hours", "location", "map"],
+    name: "Contact details",
+    summary: "Email, phone, address and opening hours, labelled, with links that call and write.",
+    pattern: "Address + description list",
+    accent: "#86efac",
+    status: "in-stock",
+  },
+  {
+    slug: "post-list",
+    category: "Content",
+    group: "Articles & text",
+    aka: ["blog", "news", "articles", "posts", "blog list", "latest posts"],
+    name: "Post list",
+    summary: "Blog posts as cards or a list: a title that links, a date in words and a summary.",
+    pattern: "List of articles",
+    accent: "#fdba74",
+    status: "in-stock",
+  },
+  {
+    slug: "announcement-bar",
+    category: "Page sections",
+    group: "Headers & footers",
+    aka: ["banner", "promo bar", "notice", "top bar", "news bar"],
+    name: "Announcement bar",
+    summary: "One line of news across the top of every page, with an optional link.",
+    pattern: "Complementary landmark",
+    accent: "#fcd34d",
+    status: "in-stock",
+  },
 ];
 
 /** Parts that span the whole width, so both preview frames show them without page padding. */
-export const fullBleed = ["cta", "header", "footer", "mega-menu"];
+export const fullBleed = ["cta", "header", "footer", "mega-menu", "announcement-bar"];
 
 export const inStock = parts.filter((part) => part.status === "in-stock");
 export const partBySlug = (slug: string) => parts.find((part) => part.slug === slug)!;

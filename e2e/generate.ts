@@ -1,6 +1,24 @@
 import fs from "node:fs";
 import path from "node:path";
 import { applyConfig } from "../lib/export";
+import { renderTextSectionHtml } from "../registry/text-section/vanilla/render";
+import { textSectionSchema } from "../registry/text-section/schema";
+import type { TextSectionConfig } from "../registry/text-section/react/text-section";
+import { renderPictureSectionHtml } from "../registry/picture-section/vanilla/render";
+import { pictureSectionSchema } from "../registry/picture-section/schema";
+import type { PictureSectionConfig } from "../registry/picture-section/react/picture-section";
+import { renderTestimonialsHtml } from "../registry/testimonials/vanilla/render";
+import { testimonialsSchema } from "../registry/testimonials/schema";
+import type { TestimonialsConfig } from "../registry/testimonials/react/testimonials";
+import { renderContactDetailsHtml } from "../registry/contact-details/vanilla/render";
+import { contactDetailsSchema } from "../registry/contact-details/schema";
+import type { ContactDetailsConfig } from "../registry/contact-details/react/contact-details";
+import { renderPostListHtml } from "../registry/post-list/vanilla/render";
+import { postListSchema } from "../registry/post-list/schema";
+import type { PostListConfig } from "../registry/post-list/react/post-list";
+import { renderAnnouncementBarHtml } from "../registry/announcement-bar/vanilla/render";
+import { announcementBarSchema } from "../registry/announcement-bar/schema";
+import type { AnnouncementBarConfig } from "../registry/announcement-bar/react/announcement-bar";
 import { renderCarouselHtml } from "../registry/carousel/vanilla/render";
 import { carouselSchema } from "../registry/carousel/schema";
 import type { CarouselConfig } from "../registry/carousel/react/carousel";
@@ -1534,6 +1552,63 @@ export const components: Record<
     variants: {
       default: "",
       plain: "showBetter=false&metricHeader=What+differs&note=&theme=dark",
+    },
+  },
+  "text-section": {
+    exportName: "TextSection",
+    schema: textSectionSchema,
+    renderHtml: (config) => renderTextSectionHtml(config as unknown as TextSectionConfig),
+    variants: {
+      default: "",
+      centred: "align=centre&linkText=&eyebrow=&theme=dark&headingLevel=h3",
+    },
+  },
+  "picture-section": {
+    exportName: "PictureSection",
+    schema: pictureSectionSchema,
+    renderHtml: (config) => renderPictureSectionHtml(config as unknown as PictureSectionConfig),
+    variants: {
+      default: "",
+      picture: "imageSrc=%2Fopengraph-image&caption=The+board+on+a+Monday+morning&shape=4-3&theme=dark",
+      bare: "frame=false&shape=1-1",
+    },
+  },
+  "testimonials": {
+    exportName: "Testimonials",
+    schema: testimonialsSchema,
+    renderHtml: (config) => renderTestimonialsHtml(config as unknown as TestimonialsConfig),
+    variants: {
+      default: "",
+      dark: "theme=dark&intro=In+their+own+words&headingLevel=h3",
+    },
+  },
+  "contact-details": {
+    exportName: "ContactDetails",
+    schema: contactDetailsSchema,
+    renderHtml: (config) => renderContactDetailsHtml(config as unknown as ContactDetailsConfig),
+    variants: {
+      default: "",
+      short: "phone=&address=&hours=&mapHref=https%3A%2F%2Fwww.openstreetmap.org%2F&theme=dark&headingLevel=h3",
+    },
+  },
+  "post-list": {
+    exportName: "PostList",
+    schema: postListSchema,
+    renderHtml: (config) => renderPostListHtml(config as unknown as PostListConfig),
+    variants: {
+      default: "",
+      list: "layout=list&showExcerpts=false&theme=dark&headingLevel=h3",
+    },
+  },
+  "announcement-bar": {
+    exportName: "AnnouncementBar",
+    schema: announcementBarSchema,
+    renderHtml: (config) => renderAnnouncementBarHtml(config as unknown as AnnouncementBarConfig),
+    variants: {
+      default: "",
+      dark: "tone=dark&linkText=",
+      subtle: "tone=subtle&theme=dark",
+      pale: "accentColor=%23fde047",
     },
   },
 };

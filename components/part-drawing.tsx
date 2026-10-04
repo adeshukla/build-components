@@ -169,6 +169,12 @@ const drawings: Record<string, ReactNode> = {
   "page-header": [r(24, 20, 50, 4), r(24, 32, 96, 12, "k"), r(24, 52, 110, 5), r(24, 62, 80, 5), r(24, 76, 112, 1.5, "a")],
   "split-feature": [r(18, 18, 60, 64, "a", undefined, 8), r(88, 26, 54, 8, "k"), ...lines(88, 42, 54, 3, 9), button(88, 70, 30, "f", { lt: 0 })],
   "stat-comparison": [r(34, 50, 36, 34, "l", undefined, 4), r(90, 20, 36, 64, "a", { mv: [0, -4] }, 4), r(38, 40, 28, 5, "k"), r(94, 10, 28, 5, "k", { mv: [0, -4] })],
+  "text-section": [r(30, 16, 30, 4, "a"), r(30, 26, 92, 9, "k"), ...lines(30, 44, 100, 4, 8), r(30, 80, 40, 4, "a", { lt: 0 })],
+  "picture-section": [r(20, 10, 120, 68, "f", undefined, 6), p("M28 70l26-26 18 18 12-12 28 20", "sa", { dr: true }), c(112, 30, 7, "a", { mv: [0, -2] }), r(20, 86, 60, 4)],
+  testimonials: [0, 1, 2].flatMap((i) => [r(12 + i * 47, 20, 42, 60, "s", undefined, 5), t(22 + i * 47, 40, "“", 18, "a", i === 1 ? { lt: 0 } : undefined), ...lines(18 + i * 47, 46, 30, 2, 7), r(18 + i * 47, 68, 18, 3, "k")]),
+  "contact-details": [r(20, 14, 60, 8, "k"), ...[0, 1].flatMap((row) => [0, 1].flatMap((col) => [r(20 + col * 64, 34 + row * 28, 56, 1.5), r(20 + col * 64, 40 + row * 28, 24, 3), r(20 + col * 64, 47 + row * 28, 44, 5, col === 0 && row === 0 ? "a" : "k", col === 0 && row === 0 ? { lt: 0 } : undefined)]))],
+  "post-list": [0, 1, 2].flatMap((i) => [r(12 + i * 47, 22, 42, 56, "s", undefined, 5), r(18 + i * 47, 30, 30, 5, i === 0 ? "a" : "k", i === 0 ? { mv: [0, -2] } : undefined), r(18 + i * 47, 40, 18, 3), ...lines(18 + i * 47, 50, 30, 2, 7)]),
+  "announcement-bar": [r(0, 14, 160, 18, "a", undefined, 0), r(38, 21, 56, 4, "s"), r(98, 21, 24, 4, "s", { lt: 0 }), r(14, 44, 40, 6, "k"), ...lines(14, 60, 132, 3, 9)],
 
   /* ---- Content ---- */
   cart: [r(38, 6, 84, 88, "s", undefined, 8), ...[0, 1, 2].flatMap((i) => [r(46, 16 + i * 18, 14, 14, "l", undefined, 3), r(66, 19 + i * 18, 40, 4, "k"), r(66, 26 + i * 18, 24, 3)]), r(46, 72, 68, 1.5), button(46, 78, 68, "a", { lt: 0 })],

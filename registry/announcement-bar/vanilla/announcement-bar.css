@@ -1,0 +1,44 @@
+/* Announcement bar — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.ab {
+  --ab-accent: #2563eb;
+  --ab-on-accent: #ffffff;
+  --ab-sunk: var(--bc-light-sunk, #f4f3f8);
+  --ab-text: var(--bc-light-text, #16121f);
+  --ab-line: var(--bc-light-line, #d9d5e4);
+  display: block;
+  padding: 0.625rem 1rem;
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.ab,
+.ab *,
+.ab *::before,
+.ab *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system (it matters for the quiet look). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-bc-scheme="light"]) .ab--theme-system {
+    --ab-sunk: var(--bc-dark-sunk, #1c1726);
+    --ab-text: var(--bc-dark-text, #f6f5fa);
+    --ab-line: var(--bc-dark-line, #3a3448);
+  }
+}
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .ab--theme-system {
+    --ab-sunk: var(--bc-dark-sunk, #1c1726);
+    --ab-text: var(--bc-dark-text, #f6f5fa);
+    --ab-line: var(--bc-dark-line, #3a3448);
+  }
+
+
+/* On the accent, text is black or white, whichever reads; dark is near-black with white text. */
+.ab--accent { background: var(--ab-accent); color: var(--ab-on-accent); }
+.ab--dark { background: #16121f; color: #ffffff; }
+.ab--subtle { background: var(--ab-sunk); color: var(--ab-text); border-bottom: 1px solid var(--ab-line); }
+.ab-text { margin: 0; }
+.ab-link { color: inherit; font-weight: 600; white-space: nowrap; text-decoration: underline; text-underline-offset: 4px; }
+.ab-link:hover { text-decoration: none; }
+.ab-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

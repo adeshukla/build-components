@@ -1,0 +1,45 @@
+/* Text section — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.tx {
+  --tx-accent-text: #1b4ab0;
+  --tx-surface: var(--bc-light-surface, #ffffff);
+  --tx-text: var(--bc-light-text, #16121f);
+  --tx-muted: var(--bc-light-muted, #4d4a57);
+  display: block;
+  background: var(--tx-surface);
+  color: var(--tx-text);
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
+  line-height: 1.5;
+}
+
+.tx,
+.tx *,
+.tx *::before,
+.tx *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-bc-scheme="light"]) .tx--theme-system {
+    --tx-surface: var(--bc-dark-surface, #141019);
+    --tx-text: var(--bc-dark-text, #f6f5fa);
+    --tx-muted: var(--bc-dark-muted, #b6b3c2);
+  }
+}
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .tx--theme-system {
+    --tx-surface: var(--bc-dark-surface, #141019);
+    --tx-text: var(--bc-dark-text, #f6f5fa);
+    --tx-muted: var(--bc-dark-muted, #b6b3c2);
+  }
+
+
+/* A reading width: about 65 characters a line. */
+.tx-inner { max-width: 65ch; }
+.tx--centre .tx-inner { margin-inline: auto; text-align: center; }
+.tx-eyebrow { margin: 0 0 0.75rem; color: var(--tx-accent-text); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.tx-heading { margin: 0; font-size: 1.875rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; text-wrap: balance; }
+@media (min-width: 640px) { .tx-heading { font-size: 2.25rem; } }
+.tx-body { margin: 1rem 0 0; color: var(--tx-muted); font-size: 1.125rem; line-height: 1.625; text-wrap: pretty; }
+.tx-more { margin: 1.5rem 0 0; }
+.tx-link { color: var(--tx-accent-text); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.tx-link:hover { text-decoration: none; }
+.tx-link:focus-visible { outline: 2px solid var(--tx-accent-text); outline-offset: 2px; }

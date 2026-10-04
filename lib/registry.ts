@@ -380,6 +380,24 @@ import { renderSplitFeatureHtml } from "@/registry/split-feature/vanilla/render"
 import { statComparisonSchema } from "@/registry/stat-comparison/schema";
 import * as statComparisonDocs from "@/registry/stat-comparison/docs";
 import { renderStatComparisonHtml } from "@/registry/stat-comparison/vanilla/render";
+import { textSectionSchema } from "@/registry/text-section/schema";
+import * as textSectionDocs from "@/registry/text-section/docs";
+import { renderTextSectionHtml } from "@/registry/text-section/vanilla/render";
+import { pictureSectionSchema } from "@/registry/picture-section/schema";
+import * as pictureSectionDocs from "@/registry/picture-section/docs";
+import { renderPictureSectionHtml } from "@/registry/picture-section/vanilla/render";
+import { testimonialsSchema } from "@/registry/testimonials/schema";
+import * as testimonialsDocs from "@/registry/testimonials/docs";
+import { renderTestimonialsHtml } from "@/registry/testimonials/vanilla/render";
+import { contactDetailsSchema } from "@/registry/contact-details/schema";
+import * as contactDetailsDocs from "@/registry/contact-details/docs";
+import { renderContactDetailsHtml } from "@/registry/contact-details/vanilla/render";
+import { postListSchema } from "@/registry/post-list/schema";
+import * as postListDocs from "@/registry/post-list/docs";
+import { renderPostListHtml } from "@/registry/post-list/vanilla/render";
+import { announcementBarSchema } from "@/registry/announcement-bar/schema";
+import * as announcementBarDocs from "@/registry/announcement-bar/docs";
+import { renderAnnouncementBarHtml } from "@/registry/announcement-bar/vanilla/render";
 
 export type RegistryEntry = {
   title: string;
@@ -1263,6 +1281,48 @@ export const registry = {
     schema: statComparisonSchema,
     ...statComparisonDocs,
     renderHtml: (config) => renderStatComparisonHtml(config as never),
+  },
+  "text-section": {
+    title: "Text section",
+    description: "A heading and paragraphs at a reading width, with an optional link.",
+    schema: textSectionSchema,
+    ...textSectionDocs,
+    renderHtml: (config) => renderTextSectionHtml(config as never),
+  },
+  "picture-section": {
+    title: "Picture",
+    description: "One picture, described, with an optional caption; a drawn placeholder until one is set.",
+    schema: pictureSectionSchema,
+    ...pictureSectionDocs,
+    renderHtml: (config) => renderPictureSectionHtml(config as never),
+  },
+  "testimonials": {
+    title: "Testimonials",
+    description: "Quotations from real people, as a list of figures; placeholders until they are real.",
+    schema: testimonialsSchema,
+    ...testimonialsDocs,
+    renderHtml: (config) => renderTestimonialsHtml(config as never),
+  },
+  "contact-details": {
+    title: "Contact details",
+    description: "Email, phone, address and opening hours, each labelled, as one address block.",
+    schema: contactDetailsSchema,
+    ...contactDetailsDocs,
+    renderHtml: (config) => renderContactDetailsHtml(config as never),
+  },
+  "post-list": {
+    title: "Post list",
+    description: "Blog posts as cards or a list: each an article whose title is a heading and a link.",
+    schema: postListSchema,
+    ...postListDocs,
+    renderHtml: (config) => renderPostListHtml(config as never),
+  },
+  "announcement-bar": {
+    title: "Announcement bar",
+    description: "One line of news across the top of every page, as a labelled landmark.",
+    schema: announcementBarSchema,
+    ...announcementBarDocs,
+    renderHtml: (config) => renderAnnouncementBarHtml(config as never),
   },
 } satisfies Record<string, RegistryEntry>;
 

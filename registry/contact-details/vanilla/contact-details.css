@@ -1,0 +1,49 @@
+/* Contact details — plain CSS, no JavaScript. Colours come from the inline custom properties. */
+.cd {
+  --cd-accent-text: #1b4ab0;
+  --cd-surface: var(--bc-light-surface, #ffffff);
+  --cd-text: var(--bc-light-text, #16121f);
+  --cd-muted: var(--bc-light-muted, #4d4a57);
+  --cd-line: var(--bc-light-line, #d9d5e4);
+  display: block;
+  background: var(--cd-surface);
+  color: var(--cd-text);
+  font-family: var(--bc-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
+  line-height: 1.5;
+}
+
+.cd,
+.cd *,
+.cd *::before,
+.cd *::after { box-sizing: border-box; }
+
+/* Only the "follow the device" theme flips with the operating system. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-bc-scheme="light"]) .cd--theme-system {
+    --cd-surface: var(--bc-dark-surface, #141019);
+    --cd-text: var(--bc-dark-text, #f6f5fa);
+    --cd-muted: var(--bc-dark-muted, #b6b3c2);
+    --cd-line: var(--bc-dark-line, #3a3448);
+  }
+}
+/* The same, when the page itself is set to dark. */
+:root[data-bc-scheme="dark"] .cd--theme-system {
+    --cd-surface: var(--bc-dark-surface, #141019);
+    --cd-text: var(--bc-dark-text, #f6f5fa);
+    --cd-muted: var(--bc-dark-muted, #b6b3c2);
+    --cd-line: var(--bc-dark-line, #3a3448);
+  }
+
+
+.cd-heading { margin: 0; font-size: 1.875rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.cd-intro { margin: 0.75rem 0 0; max-width: 42rem; color: var(--cd-muted); font-size: 1.125rem; }
+.cd-address { margin-top: 1.5rem; font-style: normal; }
+.cd-list { display: grid; gap: 1.25rem 2rem; margin: 0; }
+@media (min-width: 640px) { .cd-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cd-row { min-width: 0; padding-top: 1rem; border-top: 1px solid var(--cd-line); }
+.cd-row dt { color: var(--cd-muted); font-size: 0.875rem; font-weight: 600; }
+.cd-row dd { margin: 0.25rem 0 0; font-size: 1.125rem; overflow-wrap: anywhere; }
+.cd-link { color: var(--cd-accent-text); font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
+.cd-link:hover { text-decoration: none; }
+.cd-link:focus-visible { outline: 2px solid var(--cd-accent-text); outline-offset: 2px; }
+.cd-map { margin: 1.5rem 0 0; }

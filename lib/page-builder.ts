@@ -21,7 +21,7 @@ export const MAX_SECTIONS = 30;
 
 /** The page's banner and content info sit outside <main>, wherever they were dropped. */
 export function regionOf(slug: string): "top" | "main" | "bottom" {
-  if (slug === "header" || slug === "mega-menu") return "top";
+  if (slug === "header" || slug === "mega-menu" || slug === "announcement-bar") return "top";
   if (slug === "footer") return "bottom";
   return "main";
 }
