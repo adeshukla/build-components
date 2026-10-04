@@ -1039,6 +1039,7 @@ export const components: Record<
     variants: {
       default: "",
       vertical: "orientation=vertical&theme=dark&label=Drawing+tools",
+      duplicates: "items=%5B%7B%22label%22%3A%22Bold%22%2C%22kind%22%3A%22toggle%22%7D%2C%7B%22label%22%3A%22Bold%22%2C%22kind%22%3A%22toggle%22%7D%2C%7B%22label%22%3A%22Undo%22%2C%22kind%22%3A%22action%22%7D%5D",
     },
   },
   "countdown": {

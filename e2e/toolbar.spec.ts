@@ -62,6 +62,19 @@ for (const target of targets("toolbar")) {
       await expect(page.getByRole("status")).toHaveText("Undo done");
     });
 
+    test("two items with one label: no console errors, and pressing the second leaves the first", async ({ page }) => {
+      // React's own complaints (two items with one key) arrive as console errors.
+      const errors: string[] = [];
+      page.on("console", (message) => message.type() === "error" && errors.push(message.text()));
+      await open(page, target.url("duplicates"));
+      const bolds = page.getByRole("button", { name: "Bold", exact: true });
+      await expect(bolds).toHaveCount(2);
+      await bolds.nth(1).click();
+      await expect(bolds.nth(1)).toHaveAttribute("aria-pressed", "true");
+      await expect(bolds.nth(0)).toHaveAttribute("aria-pressed", "false");
+      expect(errors).toEqual([]);
+    });
+
     test("vertical variant: up and down move instead", async ({ page }) => {
       await open(page, target.url("vertical"));
       await expect(bar(page)).toHaveAttribute("aria-orientation", "vertical");

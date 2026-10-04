@@ -76,7 +76,8 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
   const items = config.items.filter((item) => item.label.trim() !== "");
   // One stop for the whole toolbar: Tab goes past it, the arrow keys move inside it (APG toolbar).
   const [here, setHere] = useState(0);
-  const [pressed, setPressed] = useState<string[]>([]);
+  // Pressed state is kept by position, not by label: two items can share a label.
+  const [pressed, setPressed] = useState<number[]>([]);
   const [said, setSaid] = useState("");
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -112,10 +113,10 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
     event.preventDefault();
   }
 
-  function activate(item: { label: string; kind: string }) {
+  function activate(item: { label: string; kind: string }, index: number) {
     if (item.kind === "toggle") {
-      const on = !pressed.includes(item.label);
-      setPressed((current) => (on ? [...current, item.label] : current.filter((entry) => entry !== item.label)));
+      const on = !pressed.includes(index);
+      setPressed((current) => (on ? [...current, index] : current.filter((entry) => entry !== index)));
       setSaid(`${item.label} ${on ? "on" : "off"}`);
     } else {
       setSaid(`${item.label} done`);
@@ -133,10 +134,10 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
       >
         {items.map((item, index) => {
           const toggle = item.kind === "toggle";
-          const on = pressed.includes(item.label);
+          const on = pressed.includes(index);
           return (
             <button
-              key={item.label}
+              key={index}
               ref={(node) => {
                 buttons.current[index] = node;
               }}
@@ -145,7 +146,7 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
               tabIndex={index === here ? 0 : -1}
               aria-pressed={toggle ? on : undefined}
               onFocus={() => setHere(index)}
-              onClick={() => activate(item)}
+              onClick={() => activate(item, index)}
               className={`min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tb-accent-text) ${
                 on ? "border-(--tb-accent) bg-(--tb-accent) text-(--tb-on-accent)" : "border-transparent"
               }`}
