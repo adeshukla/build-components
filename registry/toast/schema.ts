@@ -119,6 +119,24 @@ export const toastSchema = [
     min: 0,
     max: 24,
   },
+  {
+    key: "regionLabel",
+    label: "Notifications area",
+    description: "Names the place messages appear, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Notifications",
+    maxLength: 60,
+  },
+  {
+    key: "closeLabel",
+    label: "Close button",
+    description: "Read out for the × on each message.",
+    group: "Words",
+    type: "text",
+    default: "Close this message",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

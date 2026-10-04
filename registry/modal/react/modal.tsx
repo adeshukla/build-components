@@ -19,6 +19,7 @@ export type ModalConfig = {
   accentColor: string;
   radius: number;
   size: "sm" | "md" | "lg";
+  closeLabel: string;
 };
 
 export type ModalAction = "primary" | "secondary" | "dismiss";
@@ -41,6 +42,7 @@ const defaultConfig: ModalConfig = {
   accentColor: "#2563eb",
   radius: 8,
   size: "md",
+  closeLabel: "Close",
 };
 // @config-end
 
@@ -235,7 +237,7 @@ export function Modal({
             {config.closeButton && (
               <button
                 type="button"
-                aria-label="Close"
+                aria-label={config.closeLabel}
                 onClick={() => close("dismiss")}
                 className={`-m-1 grid shrink-0 cursor-pointer place-items-center rounded-(--modal-radius) text-(--modal-muted) hover:bg-(--modal-hover) ${focusRing} ${ios ? "size-11" : "size-8"}`}
               >

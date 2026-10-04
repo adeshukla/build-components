@@ -12,6 +12,8 @@ export type SwitchConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  onText: string;
+  offText: string;
 };
 
 // @config-start
@@ -25,6 +27,8 @@ const defaultConfig: SwitchConfig = {
   name: "notifications",
   theme: "light",
   accentColor: "#2563eb",
+  onText: "On",
+  offText: "Off",
 };
 // @config-end
 
@@ -115,7 +119,7 @@ export function Switch({ config = defaultConfig }: { config?: SwitchConfig }) {
         <span className="flex shrink-0 items-center gap-2">
           {config.showState && (
             <span aria-hidden="true" className="text-sm text-(--sw-muted) tabular-nums">
-              {on ? "On" : "Off"}
+              {on ? config.onText : config.offText}
             </span>
           )}
           <span className="relative inline-flex">

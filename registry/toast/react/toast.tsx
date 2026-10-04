@@ -16,6 +16,8 @@ export type ToastConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  regionLabel: string;
+  closeLabel: string;
 };
 
 // @config-start
@@ -33,6 +35,8 @@ const defaultConfig: ToastConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 12,
+  regionLabel: "Notifications",
+  closeLabel: "Close this message",
 };
 // @config-end
 
@@ -156,7 +160,7 @@ export function Toast({ config = defaultConfig }: { config?: ToastConfig }) {
           message is often announced too late, or not at all. */}
       <div
         role="region"
-        aria-label="Notifications"
+        aria-label={config.regionLabel}
         onMouseEnter={canHover ? () => setHeld(true) : undefined}
         onMouseLeave={canHover ? () => setHeld(false) : undefined}
         onFocusCapture={() => setHeld(true)}
@@ -208,7 +212,7 @@ export function Toast({ config = defaultConfig }: { config?: ToastConfig }) {
                   onClick={() => setToasts((current) => current.filter((entry) => entry.id !== toast.id))}
                   className={`-m-1 grid size-8 shrink-0 cursor-pointer place-items-center rounded-full ${focus}`}
                 >
-                  <span className="sr-only">Close this message</span>
+                  <span className="sr-only">{config.closeLabel}</span>
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                     <path d="M6 6l12 12M18 6 6 18" />
                   </svg>

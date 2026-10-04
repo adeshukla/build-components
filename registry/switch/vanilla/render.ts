@@ -37,7 +37,7 @@ export function renderSwitchMarkup(config: SwitchConfig) {
           <span class="sw-label">${escapeHtml(config.label)}</span>
 ${hint ? `          <span class="sw-hint" id="switch-hint">${escapeHtml(hint)}</span>\n` : ""}        </span>
         <span class="sw-controls">
-${config.showState ? `          <span class="sw-state" aria-hidden="true" data-state>${config.startOn ? "On" : "Off"}</span>\n` : ""}          <span class="sw-switch">
+${config.showState ? `          <span class="sw-state" aria-hidden="true" data-state data-on="${escapeHtml(config.onText)}" data-off="${escapeHtml(config.offText)}">${escapeHtml(config.startOn ? config.onText : config.offText)}</span>\n` : ""}          <span class="sw-switch">
             <input class="sw-input" id="switch-control" type="checkbox" role="switch"${config.name ? ` name="${escapeHtml(config.name)}"` : ""}${config.startOn ? " checked" : ""}${hint ? ' aria-describedby="switch-hint"' : ""}>
             <span class="sw-track" aria-hidden="true"><span class="sw-thumb"></span></span>
           </span>

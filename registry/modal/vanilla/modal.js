@@ -24,6 +24,7 @@
     accentColor: "#2563eb",
     radius: 8,
     size: "md",
+    closeLabel: "Close",
   };
   // @config-end
 
@@ -146,6 +147,7 @@
     find(".mdl-body").textContent = config.body;
     primary.textContent = config.primaryText;
     if (secondary) secondary.textContent = config.secondaryText;
+    find("[data-close]")?.setAttribute("aria-label", config.closeLabel);
 
     function close(nextAction) {
       action = nextAction;

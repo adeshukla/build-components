@@ -41,7 +41,7 @@ export function renderPhoneInputMarkup(config: PhoneInputConfig) {
   return `    <div class="ph ph--theme-${config.theme}" style="${vars}" data-phone-input>
       <label class="ph-label" for="phone-number">${escapeHtml(config.label)}</label>
 ${hint ? `      <p class="ph-hint" id="phone-hint">${escapeHtml(hint)}</p>\n` : ""}      <div class="ph-field">
-        <select class="ph-country" aria-label="Country code" data-country>
+        <select class="ph-country" aria-label="${escapeHtml(config.countryLabel)}" data-country>
 ${options}
         </select>
         <input class="ph-number" id="phone-number" type="tel" inputmode="tel" autocomplete="tel-national"${hint ? ' aria-describedby="phone-hint"' : ""} data-number>

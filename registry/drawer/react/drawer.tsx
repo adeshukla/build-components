@@ -24,6 +24,7 @@ export type DrawerConfig = {
   swipeToClose: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  closeLabel: string;
 };
 
 // @config-start
@@ -41,6 +42,7 @@ const defaultConfig: DrawerConfig = {
   swipeToClose: true,
   theme: "light",
   accentColor: "#2563eb",
+  closeLabel: "Close",
 };
 // @config-end
 
@@ -229,7 +231,7 @@ export function Drawer({ config = defaultConfig }: { config?: DrawerConfig }) {
             </h2>
             <button
               type="button"
-              aria-label="Close"
+              aria-label={config.closeLabel}
               onClick={() => dialogRef.current?.close()}
               className={`-m-1.5 grid size-9 shrink-0 cursor-pointer place-items-center rounded-[var(--bc-radius-md,0.5rem)] text-(--dr-muted) hover:bg-(--dr-hover) ${focusRing}`}
             >

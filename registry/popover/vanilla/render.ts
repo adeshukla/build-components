@@ -50,7 +50,7 @@ export function renderPopoverMarkup(config: PopoverConfig) {
       <div class="pv-panel" id="popover-panel" role="dialog" aria-label="${escapeHtml(config.heading)}" hidden>
 ${config.arrow ? `        <span class="pv-arrow" aria-hidden="true"></span>\n` : ""}        <div class="pv-head">
           <p class="pv-heading">${escapeHtml(config.heading)}</p>
-${config.closeButton ? `          <button class="pv-close" type="button" data-close><span class="pv-sr">Close</span>${closeIcon}</button>\n` : ""}        </div>
+${config.closeButton ? `          <button class="pv-close" type="button" data-close><span class="pv-sr">${escapeHtml(config.closeLabel)}</span>${closeIcon}</button>\n` : ""}        </div>
 ${config.body.trim() ? `        <p class="pv-body">${escapeHtml(config.body)}</p>\n` : ""}        <div class="pv-actions">
 ${primary}
 ${config.secondaryButton ? `          <button class="pv-button pv-button--secondary" type="button">${escapeHtml(config.secondaryText)}</button>\n` : ""}        </div>

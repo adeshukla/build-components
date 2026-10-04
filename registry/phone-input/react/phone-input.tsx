@@ -10,6 +10,7 @@ export type PhoneInputConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  countryLabel: string;
 };
 
 // @config-start
@@ -27,6 +28,7 @@ const defaultConfig: PhoneInputConfig = {
   name: "phone",
   theme: "light",
   accentColor: "#2563eb",
+  countryLabel: "Country code",
 };
 // @config-end
 
@@ -133,7 +135,7 @@ export function PhoneInput({ config = defaultConfig }: { config?: PhoneInputConf
       >
         {/* A real select: the country is a choice, and the dial code is part of its name. */}
         <select
-          aria-label="Country code"
+          aria-label={config.countryLabel}
           value={countryName}
           onChange={(event) => setCountryName(event.target.value)}
           className="min-w-0 border-r border-(--ph-border) bg-(--ph-sunk) px-2 text-sm outline-none"

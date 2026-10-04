@@ -116,6 +116,15 @@ export const drawerSchema = [
     type: "color",
     default: "#2563eb",
   },
+  {
+    key: "closeLabel",
+    label: "Close button",
+    description: "Read out for the × in the corner.",
+    group: "Words",
+    type: "text",
+    default: "Close",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

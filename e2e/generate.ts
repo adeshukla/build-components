@@ -380,6 +380,7 @@ import { statComparisonSchema } from "../registry/stat-comparison/schema";
 import type { StatComparisonConfig } from "../registry/stat-comparison/react/stat-comparison";
 import { renderStatComparisonHtml } from "../registry/stat-comparison/vanilla/render";
 import { parseConfig, type Schema } from "../lib/schema";
+import { translate } from "../lib/languages";
 import { readComponentSources } from "../lib/sources";
 import { datePickerSchema } from "../registry/date-picker/schema";
 import { renderMegaMenuHtml } from "../registry/mega-menu/vanilla/render";
@@ -1644,8 +1645,9 @@ function write(file: string, content: string) {
 export function generateOutputs() {
   for (const [slug, component] of Object.entries(components)) {
     const sources = readComponentSources(slug);
-    for (const [variant, query] of Object.entries(component.variants)) {
-      const config = parseConfig(component.schema, new URLSearchParams(query));
+    const configs = Object.entries(component.variants).map(([variant, query]) => [variant, parseConfig(component.schema, new URLSearchParams(query))] as const);
+    // Every part also in German (D94): its first variant with the Words translated, for e2e/languages.spec.ts.
+    for (const [variant, config] of [...configs, ["de", translate(component.schema, configs[0][1], "de")] as const]) {
 
       const harness = path.join(process.cwd(), "app/(bare)/harness", `${slug}-${variant}`);
       write(path.join(harness, `${slug}.tsx`), applyConfig(sources.react, config));

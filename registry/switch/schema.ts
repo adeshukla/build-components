@@ -49,6 +49,24 @@ export const switchSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The track when it is on.", group: "Style", type: "color", default: "#2563eb" },
+  {
+    key: "onText",
+    label: "On",
+    description: "The word shown while it is on.",
+    group: "Words",
+    type: "text",
+    default: "On",
+    maxLength: 20,
+  },
+  {
+    key: "offText",
+    label: "Off",
+    description: "The word shown while it is off.",
+    group: "Words",
+    type: "text",
+    default: "Off",
+    maxLength: 20,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

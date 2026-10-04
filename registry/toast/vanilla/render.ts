@@ -48,6 +48,7 @@ export function renderToastMarkup(config: ToastConfig) {
     `data-message="${escapeHtml(config.message)}"`,
     `data-error="${escapeHtml(config.errorMessage)}"`,
     `data-action="${escapeHtml(config.actionText)}"`,
+    `data-close-label="${escapeHtml(config.closeLabel)}"`,
   ].join(" ");
 
   return `    <div class="to to--theme-${config.theme}" style="${vars}" ${settings}>
@@ -55,7 +56,7 @@ export function renderToastMarkup(config: ToastConfig) {
         <button class="to-trigger" type="button" data-show="good">${escapeHtml(config.buttonText)}</button>
         <button class="to-trigger" type="button" data-show="bad">${escapeHtml(config.errorButtonText)}</button>
       </div>
-      <div class="to-stack to-stack--${config.position}" role="region" aria-label="Notifications" data-stack>
+      <div class="to-stack to-stack--${config.position}" role="region" aria-label="${escapeHtml(config.regionLabel)}" data-stack>
         <div class="to-live" aria-live="polite" aria-atomic="false" data-live></div>
       </div>
     </div>`;

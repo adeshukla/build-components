@@ -3,7 +3,8 @@
 type Base = {
   key: string;
   label: string;
-  group: "Content" | "Behaviour" | "Add-ons" | "Style";
+  /** Words: what the part says by itself (buttons, announcements, errors), in any language (D94). */
+  group: "Content" | "Behaviour" | "Add-ons" | "Style" | "Words";
   /** One plain sentence shown under the control: what the option does. */
   description?: string;
   /** Only shown (in the editor) when another option has this value. */

@@ -53,6 +53,15 @@ export const phoneInputSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The focus ring.", group: "Style", type: "color", default: "#2563eb" },
+  {
+    key: "countryLabel",
+    label: "Country code",
+    description: "Names the country code list, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Country code",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

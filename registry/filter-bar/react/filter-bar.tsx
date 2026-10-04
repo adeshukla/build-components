@@ -9,6 +9,11 @@ export type FilterBarConfig = {
   clearAll: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  noneText: string;
+  oneText: string;
+  manyText: string;
+  clearText: string;
+  pillsLabel: string;
 };
 
 // @config-start
@@ -27,6 +32,11 @@ const defaultConfig: FilterBarConfig = {
   clearAll: true,
   theme: "light",
   accentColor: "#0f766e",
+  noneText: "No filters applied",
+  oneText: "{count} filter applied: {filters}",
+  manyText: "{count} filters applied: {filters}",
+  clearText: "Clear all",
+  pillsLabel: "Applied filters",
 };
 // @config-end
 
@@ -77,6 +87,9 @@ function readableAccent(hex: string, onDark: boolean) {
 
 const key = (filter: { group: string; label: string }) => `${filter.group}: ${filter.label}`;
 
+/** Words with something put in them: "{count} filters applied" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig }) {
   const filters = config.filters.filter((filter) => filter.label.trim() !== "");
   const [on, setOn] = useState<string[]>([]);
@@ -111,8 +124,8 @@ export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig
 
   const summary =
     active.length === 0
-      ? "No filters applied"
-      : `${active.length} filter${active.length === 1 ? "" : "s"} applied: ${active.map((filter) => filter.label).join(", ")}`;
+      ? config.noneText
+      : fill(active.length === 1 ? config.oneText : config.manyText, { count: active.length, filters: active.map((filter) => filter.label).join(", ") });
 
   return (
     <div style={style} className="bg-(--fb-surface) text-(--fb-text)">
@@ -128,7 +141,7 @@ export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig
             }}
             className="min-h-11 cursor-pointer rounded-[var(--bc-radius-xs,0.25rem)] px-2 text-sm text-(--fb-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fb-accent-text)"
           >
-            Clear all
+            {config.clearText}
           </button>
         )}
       </div>
@@ -167,7 +180,7 @@ export function FilterBar({ config = defaultConfig }: { config?: FilterBarConfig
       ))}
 
       {config.showPills && active.length > 0 && (
-        <ul aria-label="Applied filters" className="mt-4 flex list-none flex-wrap gap-2 p-0">
+        <ul aria-label={config.pillsLabel} className="mt-4 flex list-none flex-wrap gap-2 p-0">
           {active.map((filter) => (
             <li
               key={key(filter)}

@@ -4,6 +4,13 @@
  * and every change is summed up once in a status line.
  */
 (function () {
+  /** Words with something put in them: "{count} filters applied" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createFilterBar(root) {
     const chips = Array.from(root.querySelectorAll("[data-chip]"));
     const pills = root.querySelector("[data-pills]");
@@ -48,10 +55,13 @@
 
       if (status) {
         status.textContent = on.length
-          ? on.length + " filter" + (on.length === 1 ? "" : "s") + " applied: " + on.map(function (chip) {
-              return chip.dataset.label;
-            }).join(", ")
-          : "No filters applied";
+          ? fill(on.length === 1 ? root.dataset.one : root.dataset.many, {
+              count: on.length,
+              filters: on.map(function (chip) {
+                return chip.dataset.label;
+              }).join(", "),
+            })
+          : root.dataset.none;
       }
     }
 

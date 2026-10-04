@@ -27,6 +27,7 @@ export type PopoverConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  closeLabel: string;
 };
 
 // @config-start
@@ -47,6 +48,7 @@ const defaultConfig: PopoverConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 12,
+  closeLabel: "Close",
 };
 // @config-end
 
@@ -204,7 +206,7 @@ export function Popover({ config = defaultConfig }: { config?: PopoverConfig }) 
               }}
               className={`-m-1 grid size-8 shrink-0 cursor-pointer place-items-center rounded-full hover:bg-(--pv-hover) ${focus}`}
             >
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{config.closeLabel}</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="size-4">
                 <path d="M6 6l12 12M18 6 6 18" />
               </svg>

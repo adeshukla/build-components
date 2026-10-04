@@ -14,7 +14,7 @@ type Props = {
   className?: string;
 };
 
-const groupOrder = ["Content", "Behaviour", "Add-ons", "Style"] as const;
+const groupOrder = ["Content", "Behaviour", "Add-ons", "Style", "Words"] as const;
 
 // Readable names for select values; anything not listed is shown as written (e.g. DD/MM/YYYY).
 const choiceNames: Record<string, string> = {

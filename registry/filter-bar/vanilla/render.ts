@@ -50,15 +50,15 @@ ${filters
     )
     .join("\n");
 
-  return `    <div class="fb fb--theme-${config.theme}" style="${vars}" data-filter-bar>
+  return `    <div class="fb fb--theme-${config.theme}" style="${vars}" data-filter-bar data-none="${escapeHtml(config.noneText)}" data-one="${escapeHtml(config.oneText)}" data-many="${escapeHtml(config.manyText)}">
       <div class="fb-head">
         <p class="fb-title">${escapeHtml(config.label)}</p>
-${config.clearAll ? `        <button class="fb-clear" type="button" hidden data-clear>Clear all</button>` : ""}
+${config.clearAll ? `        <button class="fb-clear" type="button" hidden data-clear>${escapeHtml(config.clearText)}</button>` : ""}
       </div>
 ${chips}
-${config.showPills ? `      <ul class="fb-pills" aria-label="Applied filters" hidden data-pills></ul>` : ""}
+${config.showPills ? `      <ul class="fb-pills" aria-label="${escapeHtml(config.pillsLabel)}" hidden data-pills></ul>` : ""}
       <!-- What changed, said once, for people who cannot see the chips light up. -->
-      <p class="fb-status" role="status" data-status>No filters applied</p>
+      <p class="fb-status" role="status" data-status>${escapeHtml(config.noneText)}</p>
     </div>`;
 }
 

@@ -55,7 +55,7 @@ ${options.map((option) => `              <label class="dr-choice"><input type="c
         <div class="dr-inner">
 ${config.side === "bottom" ? '          <span class="dr-grabber" aria-hidden="true"></span>\n' : ""}          <div class="dr-header">
             <h2 class="dr-title" id="drawer-title" tabindex="-1">${escapeHtml(config.title)}</h2>
-            <button class="dr-close" type="button" aria-label="Close" data-close>
+            <button class="dr-close" type="button" aria-label="${escapeHtml(config.closeLabel)}" data-close>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
           </div>

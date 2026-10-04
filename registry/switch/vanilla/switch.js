@@ -8,7 +8,7 @@
     const input = root.querySelector(".sw-input");
     const state = root.querySelector("[data-state]");
     input.addEventListener("change", function () {
-      if (state) state.textContent = input.checked ? "On" : "Off";
+      if (state) state.textContent = input.checked ? state.dataset.on : state.dataset.off;
       root.dispatchEvent(new CustomEvent("switch-change", { detail: { on: input.checked } }));
     });
   }
