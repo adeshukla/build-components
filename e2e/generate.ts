@@ -1426,6 +1426,7 @@ export const components: Record<
     variants: {
       default: "",
       quiet: "heading=Inbox&showCount=false&unreadWord=New&theme=dark",
+      duplicates: "items=%5B%7B%22title%22%3A%22Build%20failed%20on%20main%22%2C%22meta%22%3A%221%20hour%20ago%22%2C%22unread%22%3A%22yes%22%7D%2C%7B%22title%22%3A%22Build%20failed%20on%20main%22%2C%22meta%22%3A%222%20hours%20ago%22%2C%22unread%22%3A%22yes%22%7D%5D",
     },
   },
   "row-actions": {

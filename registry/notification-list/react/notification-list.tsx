@@ -81,7 +81,8 @@ function readableAccent(hex: string, onDark: boolean) {
 
 export function NotificationList({ config = defaultConfig }: { config?: NotificationListConfig }) {
   const id = useId();
-  const [read, setRead] = useState<string[]>([]);
+  // Read state is kept by position in the list, not by title: two notifications can share a title.
+  const [read, setRead] = useState<number[]>([]);
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
@@ -96,7 +97,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
     "--ntf-line": `var(--bc-${dark ? "dark" : "light"}-line, ${palette.line})`,
   } as CSSProperties;
 
-  const isUnread = (item: { title: string; unread: string }) => item.unread === "yes" && !read.includes(item.title);
+  const isUnread = (item: { unread: string }, index: number) => item.unread === "yes" && !read.includes(index);
   const unread = config.items.filter(isUnread).length;
 
   return (
@@ -110,7 +111,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
         {unread > 0 && (
           <button
             type="button"
-            onClick={() => setRead(config.items.map((item) => item.title))}
+            onClick={() => setRead(config.items.map((_, index) => index))}
             className="inline-flex min-h-11 items-center rounded-[var(--bc-radius-sm,0.375rem)] border border-(--ntf-line) bg-(--ntf-sunk) px-3 text-sm font-medium text-(--ntf-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ntf-accent-text)"
           >
             {config.markAllLabel}
@@ -119,11 +120,11 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
       </div>
 
       <ul aria-labelledby={`${id}-heading`} className="m-0 list-none p-0">
-        {config.items.map((item) => {
-          const fresh = isUnread(item);
+        {config.items.map((item, index) => {
+          const fresh = isUnread(item, index);
           return (
             <li
-              key={item.title}
+              key={index}
               data-unread={fresh ? "true" : "false"}
               className={`flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-(--ntf-line) py-3 ${
                 fresh ? "border-l-4 border-l-(--ntf-accent) pl-3" : "pl-4"
@@ -140,7 +141,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
               {fresh && (
                 <button
                   type="button"
-                  onClick={() => setRead([...read, item.title])}
+                  onClick={() => setRead([...read, index])}
                   // Named with the thing it acts on, so a list of buttons all called "Mark as read" is not
                   // what a screen reader hears.
                   aria-label={`${config.markOneLabel}: ${item.title}`}

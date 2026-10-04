@@ -62,6 +62,21 @@ for (const target of targets("notification-list")) {
       await expect(page.getByRole("heading")).toHaveText("Notifications");
     });
 
+    test("two items with one title: no console errors, and marking the second leaves the first", async ({ page }) => {
+      // React's own complaints (two items with one key) arrive as console errors.
+      const errors: string[] = [];
+      page.on("console", (message) => message.type() === "error" && errors.push(message.text()));
+      await open(page, target.url("duplicates"));
+      const buttons = page.getByRole("button", { name: "Mark as read: Build failed on main" });
+      await expect(buttons).toHaveCount(2);
+      await rows(page).nth(1).getByRole("button").click();
+      await expect(rows(page).nth(0)).toHaveAttribute("data-unread", "true");
+      await expect(rows(page).nth(1)).toHaveAttribute("data-unread", "false");
+      await expect(buttons).toHaveCount(1);
+      await expect(status(page)).toHaveText("1 unread");
+      expect(errors).toEqual([]);
+    });
+
     test("quiet variant: no count in the heading and its own wording", async ({ page }) => {
       await open(page, target.url("quiet"));
       await expect(page.getByRole("heading")).toHaveText("Inbox");
