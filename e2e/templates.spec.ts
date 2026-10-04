@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { registry, type RegistrySlug } from "../lib/registry";
 import { readComponentSources, readTemplateSources } from "../lib/sources";
 import { templateHtml, templateReactSource } from "../lib/template-output";
 import { defaultOptions, templates, type TemplateOptions } from "../lib/templates";
@@ -76,10 +77,10 @@ for (const template of templates) {
       for (const url of item.registryDependencies as string[]) {
         expect(url).toMatch(/\/r\/[a-z-]+\.json\?/);
         expect(url).toContain("theme=dark");
-        // A colour no part has as its default, so every part has to carry it.
-        expect(url).toContain("accentColor=%237c2d12");
         // The page imports every part it depends on.
         const slug = /\/r\/([a-z-]+)\.json/.exec(url)![1];
+        // A colour no part has as its default, so every part with an accent has to carry it.
+        if (registry[slug as RegistrySlug].schema.some((option) => option.key === "accentColor")) expect(url).toContain("accentColor=%237c2d12");
         expect(item.files[0].content).toContain(`from "@/components/${slug}"`);
       }
     });
