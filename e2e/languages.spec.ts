@@ -66,12 +66,30 @@ function contentOf(schema: readonly Option[], config: Record<string, unknown>) {
 
 /** Words in a string once the person's own content, numbers and punctuation are taken out. */
 function leftover(text: string, content: string[]) {
-  let rest = text;
-  for (const value of content) rest = rest.split(value).join(" ");
+  // Case aside: a part may lower-case a name it is given ("Change delivery address").
+  let rest = text.toLowerCase();
+  for (const value of content) rest = rest.split(value.toLowerCase()).join(" ");
   return rest.replace(/[\d\p{P}\p{S}]+/gu, " ").replace(/\s+/g, " ").trim();
 }
 
-const sameInEnglishAndGerman = new Set(Object.keys(dictionary).filter((english) => dictionary[english].de === english));
+/** Words German shares with English ("in {symbol}"), as the pieces around their blanks. */
+const sharedPieces = Object.keys(dictionary)
+  .filter((english) => dictionary[english].de === english)
+  .map((english) => english.split(/\{\w+\}/));
+
+/** Whether text is one of those words, filled in: what it says is German too, not left over. */
+const sameInEnglishAndGerman = sharedPieces.map((pieces) => ({
+  test: (text: string) => {
+    if (!text.startsWith(pieces[0]) || !text.endsWith(pieces.at(-1)!)) return false;
+    let at = pieces[0].length;
+    for (const piece of pieces.slice(1, -1)) {
+      at = text.indexOf(piece, at);
+      if (at === -1) return false;
+      at += piece.length;
+    }
+    return text.length >= at + pieces.at(-1)!.length || pieces.length === 1;
+  },
+}));
 
 for (const slug of Object.keys(components)) {
   for (const target of targets(slug).slice(0, 2)) {
@@ -92,7 +110,7 @@ for (const slug of Object.keys(components)) {
       const untranslated = inEnglish.filter(
         (text) =>
           inGerman.has(text) &&
-          !sameInEnglishAndGerman.has(text) &&
+          !sameInEnglishAndGerman.some((pattern) => pattern.test(text)) &&
           // A placeholder to replace, and initials taken from a name, are not words to translate.
           !text.startsWith("[TODO") &&
           !/^\p{Lu}{1,3}$/u.test(text) &&

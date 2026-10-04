@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CheckboxGroupConfig } from "../react/checkbox-group";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6", error: "#b42318" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
@@ -50,7 +53,7 @@ ${option.note.trim() === "" ? "" : `              <span class="cg-note">${escape
         </label>\n`
       : "";
 
-  return `    <div class="cg cg--theme-${config.theme} cg--${config.columns}" style="${vars}" data-checkbox-group data-min="${Math.max(0, config.minRequired)}" data-error-text="${escapeHtml(config.errorText)}">
+  return `    <div class="cg cg--theme-${config.theme} cg--${config.columns}" style="${vars}" data-checkbox-group data-count="${escapeHtml(config.countText)}" data-min="${Math.max(0, config.minRequired)}" data-error-text="${escapeHtml(config.errorText)}">
       <fieldset class="cg-set" aria-describedby="cg-hint">
         <legend class="cg-legend">${escapeHtml(config.legend)}</legend>
 ${config.hint.trim() === "" ? "" : `        <p class="cg-hint" id="cg-hint">${escapeHtml(config.hint)}</p>\n`}${selectAll}        <div class="cg-options">
@@ -58,7 +61,7 @@ ${boxes}
         </div>
         <p class="cg-error" id="cg-error" role="alert" hidden data-error></p>
       </fieldset>
-${config.showCount ? `      <!-- Said politely rather than on every tick. -->\n      <p class="cg-count" role="status" data-count>0 of ${options.length} picked</p>\n` : ""}      <button class="cg-save" type="button" data-save>Save choices</button>
+${config.showCount ? `      <!-- Said politely rather than on every tick. -->\n      <p class="cg-count" role="status" data-count>${escapeHtml(fill(config.countText, { count: 0, total: options.length }))}</p>\n` : ""}      <button class="cg-save" type="button" data-save>${escapeHtml(config.saveText)}</button>
     </div>`;
 }
 

@@ -11,6 +11,8 @@ export type ComparisonTableConfig = {
   noText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  featureHeader: string;
+  featuredText: string;
 };
 
 // @config-start
@@ -35,6 +37,8 @@ const defaultConfig: ComparisonTableConfig = {
   noText: "No",
   theme: "light",
   accentColor: "#0f766e",
+  featureHeader: "Feature",
+  featuredText: "Most picked",
 };
 // @config-end
 
@@ -116,7 +120,7 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
           <thead>
             <tr>
               <th scope="col" className="w-2/5 border-b border-(--cp-line) p-3 text-start align-bottom">
-                Feature
+{config.featureHeader}
               </th>
               {plans.map((plan) => {
                 const featured = plan.name === config.highlight;
@@ -129,7 +133,7 @@ export function ComparisonTable({ config = defaultConfig }: { config?: Compariso
                     <span className="block font-semibold">{plan.name}</span>
                     {plan.note.trim() !== "" && <span className="block text-xs font-normal text-(--cp-muted)">{plan.note}</span>}
                     {/* The highlight is said in words as well as painted. */}
-                    {featured && <span className="block text-xs font-medium text-(--cp-accent-text)">Most picked</span>}
+                    {featured && <span className="block text-xs font-medium text-(--cp-accent-text)">{config.featuredText}</span>}
                   </th>
                 );
               })}

@@ -13,6 +13,8 @@ export type QuantityConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  fewerLabel: string;
+  moreLabel: string;
 };
 
 // @config-start
@@ -27,6 +29,8 @@ const defaultConfig: QuantityConfig = {
   name: "quantity",
   theme: "light",
   accentColor: "#2563eb",
+  fewerLabel: "Fewer {label}",
+  moreLabel: "More {label}",
 };
 // @config-end
 
@@ -74,6 +78,9 @@ function readableAccent(hex: string, onDark: boolean) {
   }
   return onDark ? "#ffffff" : "#000000";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Quantity({ config = defaultConfig }: { config?: QuantityConfig }) {
   const id = useId();
@@ -125,7 +132,7 @@ export function Quantity({ config = defaultConfig }: { config?: QuantityConfig }
       <div className="mt-2 inline-flex items-stretch overflow-hidden rounded-[var(--bc-radius-md,0.5rem)] border border-(--qt-border)">
         <button
           type="button"
-          aria-label={`Fewer ${config.label.toLowerCase()}`}
+          aria-label={fill(config.fewerLabel, { label: config.label.toLowerCase() })}
           aria-disabled={value <= min || undefined}
           onClick={() => nudge(-step)}
           className={button}
@@ -156,7 +163,7 @@ export function Quantity({ config = defaultConfig }: { config?: QuantityConfig }
         />
         <button
           type="button"
-          aria-label={`More ${config.label.toLowerCase()}`}
+          aria-label={fill(config.moreLabel, { label: config.label.toLowerCase() })}
           aria-disabled={value >= max || undefined}
           onClick={() => nudge(step)}
           className={button}

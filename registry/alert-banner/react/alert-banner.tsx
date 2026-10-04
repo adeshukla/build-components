@@ -10,6 +10,11 @@ export type AlertBannerConfig = {
   actionUrl: string;
   dismissible: boolean;
   theme: "light" | "dark" | "system";
+  infoWord: string;
+  successWord: string;
+  warningWord: string;
+  errorWord: string;
+  dismissLabel: string;
 };
 
 // @config-start
@@ -21,6 +26,11 @@ const defaultConfig: AlertBannerConfig = {
   actionUrl: "/billing",
   dismissible: true,
   theme: "light",
+  infoWord: "Information",
+  successWord: "Success",
+  warningWord: "Warning",
+  errorWord: "Error",
+  dismissLabel: "Dismiss: {title}",
 };
 // @config-end
 
@@ -66,12 +76,16 @@ const darkMedia = {
 
 const safeHref = (value: string) => (/^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#");
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerConfig }) {
   const [gone, setGone] = useState(false);
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
   const palette = dark ? palettes.dark : palettes.light;
   const tone = tones[config.tone];
+  const toneWord = { info: config.infoWord, success: config.successWord, warning: config.warningWord, error: config.errorWord }[config.tone];
   const style = {
     "--ab-surface": palette.surface[config.tone],
     "--ab-tone": palette.tone[config.tone],
@@ -93,7 +107,7 @@ export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerCo
       </svg>
       <div className="min-w-0 flex-1">
         <p className="font-semibold">
-          <span className="sr-only">{tone.word}: </span>
+          <span className="sr-only">{toneWord}: </span>
           {config.title}
         </p>
         {config.body.trim() !== "" && <p className="mt-0.5 text-sm text-(--ab-muted)">{config.body}</p>}
@@ -111,7 +125,7 @@ export function AlertBanner({ config = defaultConfig }: { config?: AlertBannerCo
       {config.dismissible && (
         <button
           type="button"
-          aria-label={`Dismiss: ${config.title}`}
+          aria-label={fill(config.dismissLabel, { title: config.title })}
           onClick={() => {
             setGone(true);
             // The message goes; focus must not go with it. Put it on whatever the page marks as

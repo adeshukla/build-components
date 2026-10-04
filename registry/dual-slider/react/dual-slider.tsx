@@ -19,6 +19,7 @@ export type DualSliderConfig = {
   showBar: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  rangeText: string;
 };
 
 // @config-start
@@ -39,6 +40,7 @@ const defaultConfig: DualSliderConfig = {
   showBar: true,
   theme: "light",
   accentColor: "#7c3aed",
+  rangeText: "{low} to {high}",
 };
 // @config-end
 
@@ -93,6 +95,9 @@ export function group(value: number) {
   const spaced = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return `${value < 0 ? "-" : ""}${spaced}${fraction ? `.${fraction}` : ""}`;
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function DualSlider({ config = defaultConfig }: { config?: DualSliderConfig }) {
   const id = useId();
@@ -183,7 +188,7 @@ export function DualSlider({ config = defaultConfig }: { config?: DualSliderConf
         </div>
 
         <p role="status" className="mt-2 text-sm text-(--dsl-muted)">
-          {say(low)} to {say(high)}
+          {fill(config.rangeText, { low: say(low), high: say(high) })}
         </p>
       </fieldset>
     </div>

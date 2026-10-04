@@ -11,6 +11,7 @@ export type FeatureGridConfig = {
   showRule: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  aboutText: string;
 };
 
 // @config-start
@@ -30,6 +31,7 @@ const defaultConfig: FeatureGridConfig = {
   showRule: true,
   theme: "light",
   accentColor: "#0f766e",
+  aboutText: "about {title}",
 };
 // @config-end
 
@@ -83,6 +85,9 @@ function safeHref(value: string) {
   return /^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridConfig }) {
   const id = useId();
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -128,7 +133,7 @@ export function FeatureGrid({ config = defaultConfig }: { config?: FeatureGridCo
               >
                 {config.linkText}
                 {/* Six "Read more" links are useless in a list of links: name the feature. */}
-                <span className="sr-only">{` about ${item.title.toLowerCase()}`}</span>
+                <span className="sr-only">{` ${fill(config.aboutText, { title: item.title.toLowerCase() })}`}</span>
               </a>
             )}
           </li>

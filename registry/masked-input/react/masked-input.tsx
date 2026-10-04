@@ -11,6 +11,7 @@ export type MaskedInputConfig = {
   errorText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  exampleText: string;
 };
 
 // @config-start
@@ -23,6 +24,7 @@ const defaultConfig: MaskedInputConfig = {
   errorText: "That is not a full postcode yet.",
   theme: "light",
   accentColor: "#1d4ed8",
+  exampleText: "Like {example}. We add the spacing.",
 };
 // @config-end
 
@@ -96,6 +98,9 @@ export function applyMask(mask: string, raw: string) {
   return out;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function MaskedInput({ config = defaultConfig }: { config?: MaskedInputConfig }) {
   const id = useId();
   const [value, setValue] = useState("");
@@ -124,7 +129,7 @@ export function MaskedInput({ config = defaultConfig }: { config?: MaskedInputCo
       </label>
       {/* The shape is said in the hint, not left to be discovered by typing into a field that fights back. */}
       <p id={`${id}-hint`} className="text-sm text-(--mi-muted)">
-        {config.hint.trim() !== "" ? config.hint : config.showExample ? `Like ${example}. We add the spacing.` : ""}
+        {config.hint.trim() !== "" ? config.hint : config.showExample ? fill(config.exampleText, { example }) : ""}
       </p>
 
       <input

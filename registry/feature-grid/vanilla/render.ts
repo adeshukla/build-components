@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { FeatureGridConfig } from "../react/feature-grid";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -36,7 +39,7 @@ export function renderFeatureGridMarkup(config: FeatureGridConfig) {
 ${item.glyph.trim() === "" ? "" : `          <!-- Decoration: the heading next to it carries the meaning. -->
           <p class="fg-glyph" aria-hidden="true">${escapeHtml(item.glyph)}</p>\n`}          <h3 class="fg-title">${escapeHtml(item.title)}</h3>
           <p class="fg-text">${escapeHtml(item.text)}</p>
-${item.href.trim() === "" ? "" : `          <a class="fg-link" href="${escapeHtml(safeHref(item.href))}">${escapeHtml(config.linkText)}<span class="fg-sr"> about ${escapeHtml(item.title.toLowerCase())}</span></a>\n`}        </li>`,
+${item.href.trim() === "" ? "" : `          <a class="fg-link" href="${escapeHtml(safeHref(item.href))}">${escapeHtml(config.linkText)}<span class="fg-sr"> ${escapeHtml(fill(config.aboutText, { title: item.title.toLowerCase() }))}</span></a>\n`}        </li>`,
     )
     .join("\n");
 

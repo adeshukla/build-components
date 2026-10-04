@@ -14,6 +14,7 @@ export type UnitInputConfig = {
   errorText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  unitLabel: string;
 };
 
 // @config-start
@@ -32,6 +33,7 @@ const defaultConfig: UnitInputConfig = {
   errorText: "Give a length between 1 and 200.",
   theme: "light",
   accentColor: "#1d4ed8",
+  unitLabel: "Unit for {label}",
 };
 // @config-end
 
@@ -79,6 +81,9 @@ function readableAccent(hex: string, onDark: boolean) {
   }
   return onDark ? "#ffffff" : "#000000";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function UnitInput({ config = defaultConfig }: { config?: UnitInputConfig }) {
   const id = useId();
@@ -148,7 +153,7 @@ export function UnitInput({ config = defaultConfig }: { config?: UnitInputConfig
           }`}
         />
         <label htmlFor={`${id}-unit`} className="sr-only">
-          {`Unit for ${config.label.toLowerCase()}`}
+          {fill(config.unitLabel, { label: config.label.toLowerCase() })}
         </label>
         <select
           id={`${id}-unit`}

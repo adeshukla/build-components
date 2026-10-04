@@ -3,11 +3,19 @@
  * Two native range inputs, one per end. This keeps a gap between them, draws the span and says it.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     minGap: 20,
     valuePrefix: "£",
     valueSuffix: "",
+    rangeText: "{low} to {high}",
   };
   // @config-end
 
@@ -23,7 +31,7 @@
     const high = root.querySelector("[data-high]");
     const lowOut = root.querySelector("[data-low-value]");
     const highOut = root.querySelector("[data-high-value]");
-    const fill = root.querySelector("[data-fill]");
+    const bar = root.querySelector("[data-fill]");
     const status = root.querySelector("[data-status]");
 
     function say(value) {
@@ -41,11 +49,11 @@
       if (highOut) highOut.textContent = say(Number(high.value));
       low.setAttribute("aria-valuetext", say(Number(low.value)));
       high.setAttribute("aria-valuetext", say(Number(high.value)));
-      if (fill) {
-        fill.style.marginInlineStart = left + "%";
-        fill.style.width = Math.max(right - left, 1) + "%";
+      if (bar) {
+        bar.style.marginInlineStart = left + "%";
+        bar.style.width = Math.max(right - left, 1) + "%";
       }
-      if (status) status.textContent = say(Number(low.value)) + " to " + say(Number(high.value));
+      if (status) status.textContent = fill(config.rangeText, { low: say(Number(low.value)), high: say(Number(high.value)) });
     }
 
     // The two ends clamp each other rather than swapping, so the thumb being dragged keeps its meaning.

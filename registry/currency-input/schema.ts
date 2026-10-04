@@ -35,6 +35,15 @@ export const currencyInputSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The focus ring.", group: "Style", type: "color", default: "#2563eb" },
+  {
+    key: "currencyText",
+    label: "Currency",
+    description: "Read out after the label. {symbol} is the currency's symbol.",
+    group: "Words",
+    type: "text",
+    default: "in {symbol}",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

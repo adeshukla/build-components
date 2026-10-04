@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { UnitInputConfig } from "../react/unit-input";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6", error: "#b42318" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
@@ -40,7 +43,7 @@ ${config.hint.trim() === "" ? "" : `      <p class="ui-hint" id="ui-hint">${esca
       <!-- Two fields, one answer: the number and the unit are separately labelled. -->
       <div class="ui-row">
         <input class="ui-amount" id="ui-amount" name="${escapeHtml(config.name)}" type="text" inputmode="decimal" autocomplete="off" min="${config.min}" max="${config.max}" step="${config.step}"${config.hint.trim() === "" ? "" : ' aria-describedby="ui-hint"'} data-amount>
-        <label class="ui-sr" for="ui-unit">Unit for ${escapeHtml(config.label.toLowerCase())}</label>
+        <label class="ui-sr" for="ui-unit">${escapeHtml(fill(config.unitLabel, { label: config.label.toLowerCase() }))}</label>
         <select class="ui-unit" id="ui-unit" name="${escapeHtml(config.unitName)}" data-unit>
 ${units}
         </select>

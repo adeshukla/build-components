@@ -4,6 +4,13 @@
  * count is said politely rather than on every tick.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createCheckboxGroup(root) {
     const boxes = Array.from(root.querySelectorAll("[data-option]"));
     const all = root.querySelector("[data-all]");
@@ -25,7 +32,7 @@
         // "Some of them" is a third state a checkbox can only be put into from script.
         all.indeterminate = on > 0 && on < boxes.length;
       }
-      if (count) count.textContent = on + " of " + boxes.length + " picked";
+      if (count) count.textContent = fill(root.dataset.count, { count: on, total: boxes.length });
       if (error && !error.hidden && on >= minimum) hideError();
     }
 

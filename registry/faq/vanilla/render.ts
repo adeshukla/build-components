@@ -40,12 +40,12 @@ export function renderFaqMarkup(config: FaqConfig) {
     )
     .join("\n");
 
-  return `    <div class="fq fq--theme-${config.theme}" style="${vars}" data-faq>
+  return `    <div class="fq fq--theme-${config.theme}" style="${vars}" data-faq data-open-all="${escapeHtml(config.openAllText)}" data-close-all="${escapeHtml(config.closeAllText)}">
       <div class="fq-head">
         <div>
           <h2 class="fq-heading">${escapeHtml(config.heading)}</h2>
 ${config.intro.trim() === "" ? "" : `          <p class="fq-intro">${escapeHtml(config.intro)}</p>\n`}        </div>
-${config.showToggleAll && items.length > 1 ? `        <button class="fq-toggle" type="button" aria-pressed="false" data-toggle-all>Open all</button>\n` : ""}      </div>
+${config.showToggleAll && items.length > 1 ? `        <button class="fq-toggle" type="button" aria-pressed="false" data-toggle-all>${escapeHtml(config.openAllText)}</button>\n` : ""}      </div>
 
       <!-- Native details and summary: open and close, the keyboard, and find-on-page all come free. -->
       <div class="fq-list">

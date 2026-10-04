@@ -26,6 +26,15 @@ export const dualSliderSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#7c3aed" },
+  {
+    key: "rangeText",
+    label: "Range",
+    description: "Said as either end moves. {low} and {high} are the two ends.",
+    group: "Words",
+    type: "text",
+    default: "{low} to {high}",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

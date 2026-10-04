@@ -40,6 +40,15 @@ export const featureGridSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "Glyphs and links.", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "aboutText",
+    label: "Link ending",
+    description: "Read out after the link text, so each link is told apart. {title} is the feature, in lower case.",
+    group: "Words",
+    type: "text",
+    default: "about {title}",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

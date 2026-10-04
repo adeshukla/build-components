@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, safeHref, themedColour } from "@/lib/html";
 import type { AlertBannerConfig } from "../react/alert-banner";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 /** Each tone has its own word, icon and colour: colour is never the only sign of what this is. */
 const tones = {
   info: { word: "Information", path: "M12 8h.01M11 12h1v5h1" },
@@ -27,6 +30,7 @@ export function renderAlertBannerMarkup(config: AlertBannerConfig) {
   const dark = config.theme === "dark";
   const palette = dark ? palettes.dark : palettes.light;
   const tone = tones[config.tone];
+  const toneWord = { info: config.infoWord, success: config.successWord, warning: config.warningWord, error: config.errorWord }[config.tone];
   const vars = [
     `--ab-surface: ${palette.surface[config.tone]}`,
     `--ab-tone: ${palette.tone[config.tone]}`,
@@ -37,13 +41,13 @@ export function renderAlertBannerMarkup(config: AlertBannerConfig) {
   return `    <div class="ab ab--theme-${config.theme}" style="${vars}" role="${config.tone === "error" ? "alert" : "status"}" data-alert-banner>
       <svg class="ab-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="${tone.path}"/></svg>
       <div class="ab-body">
-        <p class="ab-title"><span class="ab-sr">${tone.word}: </span>${escapeHtml(config.title)}</p>
+        <p class="ab-title"><span class="ab-sr">${escapeHtml(toneWord)}: </span>${escapeHtml(config.title)}</p>
 ${config.body.trim() ? `        <p class="ab-text">${escapeHtml(config.body)}</p>\n` : ""}${
     config.actionText.trim()
       ? `        <p class="ab-actions"><a class="ab-action" href="${escapeHtml(safeHref(config.actionUrl))}">${escapeHtml(config.actionText)}</a></p>\n`
       : ""
   }      </div>
-${config.dismissible ? `      <button class="ab-dismiss" type="button" aria-label="Dismiss: ${escapeHtml(config.title)}" data-dismiss>
+${config.dismissible ? `      <button class="ab-dismiss" type="button" aria-label="${escapeHtml(fill(config.dismissLabel, { title: config.title }))}" data-dismiss>
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>\n` : ""}    </div>`;
 }

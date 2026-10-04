@@ -26,6 +26,15 @@ export const maskedInputSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "exampleText",
+    label: "Example",
+    description: "Shown when the example is on. {example} is a made-up value.",
+    group: "Words",
+    type: "text",
+    default: "Like {example}. We add the spacing.",
+    maxLength: 120,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

@@ -12,7 +12,7 @@
     toggle.addEventListener("click", function () {
       const open = toggle.getAttribute("aria-pressed") !== "true";
       toggle.setAttribute("aria-pressed", String(open));
-      toggle.textContent = open ? "Close all" : "Open all";
+      toggle.textContent = open ? root.dataset.closeAll : root.dataset.openAll;
       items.forEach(function (item) {
         item.open = open;
       });

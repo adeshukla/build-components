@@ -34,6 +34,24 @@ export const codeBlockSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "wrapText",
+    label: "Wrap lines",
+    description: "The button that wraps long lines.",
+    group: "Words",
+    type: "text",
+    default: "Wrap lines",
+    maxLength: 40,
+  },
+  {
+    key: "regionLabel",
+    label: "Code area",
+    description: "Names the scrolling code, for screen readers. {title} is the title.",
+    group: "Words",
+    type: "text",
+    default: "{title} code",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

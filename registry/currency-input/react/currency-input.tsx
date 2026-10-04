@@ -13,6 +13,7 @@ export type CurrencyInputConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  currencyText: string;
 };
 
 // @config-start
@@ -27,6 +28,7 @@ const defaultConfig: CurrencyInputConfig = {
   name: "amount",
   theme: "light",
   accentColor: "#2563eb",
+  currencyText: "in {symbol}",
 };
 // @config-end
 
@@ -96,6 +98,9 @@ function parse(text: string, allowNegative: boolean) {
   return Number.isFinite(value) ? (negative ? -value : value) : null;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function CurrencyInput({ config = defaultConfig }: { config?: CurrencyInputConfig }) {
   const id = useId();
   const decimals = Math.max(0, Math.min(4, Math.round(config.decimals)));
@@ -123,7 +128,7 @@ export function CurrencyInput({ config = defaultConfig }: { config?: CurrencyInp
         {config.label}
         {/* The symbol is drawn beside the field, so it is said once, with the field, not read as
             a stray character by itself. */}
-        {symbol !== "" && <span className="sr-only"> in {symbol}</span>}
+        {symbol !== "" && <span className="sr-only"> {fill(config.currencyText, { symbol })}</span>}
       </label>
       {config.hint.trim() !== "" && (
         <p id={`${id}-hint`} className="text-sm text-(--ci-muted)">

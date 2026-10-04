@@ -10,6 +10,8 @@ export type FaqConfig = {
   openFirst: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  openAllText: string;
+  closeAllText: string;
 };
 
 // @config-start
@@ -38,6 +40,8 @@ const defaultConfig: FaqConfig = {
   openFirst: false,
   theme: "light",
   accentColor: "#1d4ed8",
+  openAllText: "Open all",
+  closeAllText: "Close all",
 };
 // @config-end
 
@@ -125,7 +129,7 @@ export function Faq({ config = defaultConfig }: { config?: FaqConfig }) {
             }}
             className="min-h-11 cursor-pointer rounded-[var(--bc-radius-sm,0.375rem)] border border-(--fq-line) px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--fq-accent-text)"
           >
-            {allOpen ? "Close all" : "Open all"}
+            {allOpen ? config.closeAllText : config.openAllText}
           </button>
         )}
       </div>

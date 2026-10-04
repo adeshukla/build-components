@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { QuantityConfig } from "../react/quantity";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", border: "#737373", hover: "#eeecf5" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", hover: "#2a2438" },
@@ -39,11 +42,11 @@ export function renderQuantityMarkup(config: QuantityConfig) {
   return `    <div class="qt qt--theme-${config.theme}" style="${vars}" data-quantity data-unit="${escapeHtml(unit)}">
       <label class="qt-label" for="quantity-input">${escapeHtml(config.label)}${unit ? ` <span class="qt-unit">(${escapeHtml(unit)})</span>` : ""}</label>
 ${hint ? `      <p class="qt-hint" id="quantity-hint">${escapeHtml(hint)}</p>\n` : ""}      <div class="qt-group">
-        <button class="qt-step" type="button" aria-label="Fewer ${escapeHtml(noun)}"${value <= min ? ' aria-disabled="true"' : ""} data-less>
+        <button class="qt-step" type="button" aria-label="${escapeHtml(fill(config.fewerLabel, { label: noun }))}"${value <= min ? ' aria-disabled="true"' : ""} data-less>
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
         </button>
         <input class="qt-input" id="quantity-input" type="number" inputmode="numeric"${config.name ? ` name="${escapeHtml(config.name)}"` : ""} value="${value}" min="${min}" max="${max}" step="${step}"${hint ? ' aria-describedby="quantity-hint"' : ""} data-input>
-        <button class="qt-step" type="button" aria-label="More ${escapeHtml(noun)}"${value >= max ? ' aria-disabled="true"' : ""} data-more>
+        <button class="qt-step" type="button" aria-label="${escapeHtml(fill(config.moreLabel, { label: noun }))}"${value >= max ? ' aria-disabled="true"' : ""} data-more>
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>

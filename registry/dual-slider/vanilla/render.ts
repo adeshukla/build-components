@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { DualSliderConfig } from "../react/dual-slider";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#eae7f2", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#2c2639", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -63,7 +66,7 @@ export function renderDualSliderMarkup(config: DualSliderConfig) {
           <input class="dsl-input" id="dsl-high" name="${escapeHtml(config.name)}Max" type="range"${limits} value="${config.startHigh}" aria-valuetext="${escapeHtml(say(config.startHigh))}" data-high>
         </div>
 
-        <p class="dsl-status" role="status" data-status>${escapeHtml(`${say(config.startLow)} to ${say(config.startHigh)}`)}</p>
+        <p class="dsl-status" role="status" data-status>${escapeHtml(fill(config.rangeText, { low: say(config.startLow), high: say(config.startHigh) }))}</p>
       </fieldset>
     </div>`;
 }

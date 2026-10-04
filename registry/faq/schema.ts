@@ -46,6 +46,24 @@ export const faqSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "Focus rings.", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "openAllText",
+    label: "Open all",
+    description: "The button that opens every answer.",
+    group: "Words",
+    type: "text",
+    default: "Open all",
+    maxLength: 40,
+  },
+  {
+    key: "closeAllText",
+    label: "Close all",
+    description: "The same button once every answer is open.",
+    group: "Words",
+    type: "text",
+    default: "Close all",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

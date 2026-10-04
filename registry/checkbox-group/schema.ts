@@ -40,6 +40,24 @@ export const checkboxGroupSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The ticks.", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "countText",
+    label: "Count",
+    description: "Said as boxes are ticked. {count} and {total} are counts.",
+    group: "Words",
+    type: "text",
+    default: "{count} of {total} picked",
+    maxLength: 80,
+  },
+  {
+    key: "saveText",
+    label: "Button",
+    description: "The button that checks the choices.",
+    group: "Words",
+    type: "text",
+    default: "Save choices",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

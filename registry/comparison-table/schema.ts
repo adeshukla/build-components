@@ -58,6 +58,24 @@ export const comparisonTableSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "featureHeader",
+    label: "First column heading",
+    description: "Heads the column of features.",
+    group: "Words",
+    type: "text",
+    default: "Feature",
+    maxLength: 40,
+  },
+  {
+    key: "featuredText",
+    label: "Most picked",
+    description: "Shown under the featured plan's name.",
+    group: "Words",
+    type: "text",
+    default: "Most picked",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

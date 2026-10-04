@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CurrencyInputConfig } from "../react/currency-input";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", border: "#737373", error: "#b3261e" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", error: "#ff6b6b" },
@@ -52,7 +55,7 @@ export function renderCurrencyInputMarkup(config: CurrencyInputConfig) {
   const mark = symbol ? `<span class="ci-symbol" aria-hidden="true">${escapeHtml(symbol)}</span>` : "";
 
   return `    <div class="ci ci--theme-${config.theme}" style="${vars}" data-currency-input data-decimals="${decimals}" data-negative="${config.allowNegative}">
-      <label class="ci-label" for="currency-input">${escapeHtml(config.label)}${symbol ? `<span class="ci-sr"> in ${escapeHtml(symbol)}</span>` : ""}</label>
+      <label class="ci-label" for="currency-input">${escapeHtml(config.label)}${symbol ? `<span class="ci-sr"> ${escapeHtml(fill(config.currencyText, { symbol }))}</span>` : ""}</label>
 ${hint ? `      <p class="ci-hint" id="currency-hint">${escapeHtml(hint)}</p>\n` : ""}      <div class="ci-field">
 ${!config.symbolAfter && mark ? `        ${mark}\n` : ""}        <input class="ci-input" id="currency-input" type="text" inputmode="decimal" autocomplete="off" value="${start === null ? "" : escapeHtml(format(start, decimals))}"${hint ? ' aria-describedby="currency-hint"' : ""} data-input>
 ${config.symbolAfter && mark ? `        ${mark}\n` : ""}      </div>

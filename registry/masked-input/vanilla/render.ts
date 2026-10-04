@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { MaskedInputConfig } from "../react/masked-input";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6", error: "#b42318" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459", error: "#ff9d95" },
@@ -30,7 +33,7 @@ export function renderMaskedInputMarkup(config: MaskedInputConfig) {
   ].join("; ");
 
   const example = config.mask.replace(/#/g, "0").replace(/[A*]/g, "X");
-  const hint = config.hint.trim() !== "" ? config.hint : config.showExample ? `Like ${example}. We add the spacing.` : "";
+  const hint = config.hint.trim() !== "" ? config.hint : config.showExample ? fill(config.exampleText, { example }) : "";
   const numeric = /^[#\s\-/]+$/.test(config.mask);
 
   return `    <div class="mi mi--theme-${config.theme}" style="${vars}" data-masked-input data-mask="${escapeHtml(config.mask)}" data-label="${escapeHtml(config.label)}">

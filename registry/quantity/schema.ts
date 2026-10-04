@@ -28,6 +28,24 @@ export const quantitySchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The focus ring.", group: "Style", type: "color", default: "#2563eb" },
+  {
+    key: "fewerLabel",
+    label: "Minus button",
+    description: "Read out for −. {label} is the label, in lower case.",
+    group: "Words",
+    type: "text",
+    default: "Fewer {label}",
+    maxLength: 60,
+  },
+  {
+    key: "moreLabel",
+    label: "Plus button",
+    description: "Read out for +. {label} is the label, in lower case.",
+    group: "Words",
+    type: "text",
+    default: "More {label}",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

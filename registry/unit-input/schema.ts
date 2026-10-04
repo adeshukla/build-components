@@ -36,6 +36,15 @@ export const unitInputSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "unitLabel",
+    label: "Unit list",
+    description: "Names the unit list. {label} is the label, in lower case.",
+    group: "Words",
+    type: "text",
+    default: "Unit for {label}",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

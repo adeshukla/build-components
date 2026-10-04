@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { CodeBlockConfig } from "../react/code-block";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#1c1826", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -37,7 +40,7 @@ export function renderCodeBlockMarkup(config: CodeBlockConfig) {
     .join("");
 
   const wrapButton = config.wrapToggle
-    ? `          <button class="cb-button" type="button" aria-pressed="false" data-wrap>Wrap lines</button>\n`
+    ? `          <button class="cb-button" type="button" aria-pressed="false" data-wrap>${escapeHtml(config.wrapText)}</button>\n`
     : "";
 
   return `    <div class="cb cb--theme-${config.theme}" style="${vars}" data-code-block>
@@ -48,7 +51,7 @@ ${wrapButton}          <button class="cb-button" type="button" data-copy data-co
         </div>
       </div>
 
-      <div class="cb-scroll" role="region" aria-label="${escapeHtml(config.title)} code" tabindex="0">
+      <div class="cb-scroll" role="region" aria-label="${escapeHtml(fill(config.regionLabel, { title: config.title }))}" tabindex="0">
         <pre class="cb-pre" data-pre><code data-code>${lines}</code></pre>
       </div>
 

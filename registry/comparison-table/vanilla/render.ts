@@ -45,7 +45,7 @@ export function renderComparisonTableMarkup(config: ComparisonTableConfig) {
       const featured = plan.name === config.highlight;
       return `            <th class="cp-plan${featured ? " cp-plan--featured" : ""}" scope="col">
               <span class="cp-name">${escapeHtml(plan.name)}</span>
-${plan.note.trim() === "" ? "" : `              <span class="cp-note">${escapeHtml(plan.note)}</span>\n`}${featured ? `              <span class="cp-badge">Most picked</span>\n` : ""}            </th>`;
+${plan.note.trim() === "" ? "" : `              <span class="cp-note">${escapeHtml(plan.note)}</span>\n`}${featured ? `              <span class="cp-badge">${escapeHtml(config.featuredText)}</span>\n` : ""}            </th>`;
     })
     .join("\n");
 
@@ -73,7 +73,7 @@ ${cells}
           <caption class="cp-caption">${escapeHtml(config.caption)}</caption>
           <thead>
             <tr>
-            <th class="cp-col" scope="col">Feature</th>
+            <th class="cp-col" scope="col">${escapeHtml(config.featureHeader)}</th>
 ${head}
             </tr>
           </thead>
