@@ -100,6 +100,42 @@ export const stepperSchema = [
     type: "color",
     default: "#2563eb",
   },
+  {
+    key: "summaryText",
+    label: "Where you are",
+    description: "Said above the steps. {current}, {total} and {step} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "Step {current} of {total}: {step}",
+    maxLength: 120,
+  },
+  {
+    key: "doneText",
+    label: "Done",
+    description: "Read out after a finished step.",
+    group: "Words",
+    type: "text",
+    default: "(completed)",
+    maxLength: 40,
+  },
+  {
+    key: "currentText",
+    label: "Current",
+    description: "Read out after the step you are on.",
+    group: "Words",
+    type: "text",
+    default: "(current step)",
+    maxLength: 40,
+  },
+  {
+    key: "todoText",
+    label: "Not started",
+    description: "Read out after a step still to come.",
+    group: "Words",
+    type: "text",
+    default: "(not started)",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

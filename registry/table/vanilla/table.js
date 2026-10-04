@@ -4,6 +4,13 @@
  * sorting (announced through aria-sort) and row selection (announced through a live count).
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   const asNumber = function (value) {
     return Number(String(value).replace(/[^0-9.-]/g, ""));
   };
@@ -70,7 +77,7 @@
       const chosen = picks.filter(function (pick) {
         return pick.checked;
       }).length;
-      count.textContent = chosen === 0 ? "No rows selected" : chosen + " of " + picks.length + " rows selected";
+      count.textContent = chosen === 0 ? root.dataset.none : fill(root.dataset.count, { count: chosen, total: picks.length });
       if (selectAll) {
         selectAll.checked = chosen === picks.length && picks.length > 0;
         // "Some but not all" is its own state, and the browser draws it for us.

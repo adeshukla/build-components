@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import { type TableConfig } from "../react/table";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 // A copy of the React file's own: that is a client module, so the server only gets a reference to it.
 function parseTable(data: string) {
   const lines = data
@@ -91,7 +94,7 @@ export function renderTableMarkup(config: TableConfig) {
       (row, rowIndex) => `          <tr role="row" data-row="${rowIndex}">
 ${
   config.selectable
-    ? `            <td role="cell" class="tl-pick"><input type="checkbox" aria-label="Select ${escapeHtml(row[0])}" data-select="${rowIndex}"></td>\n`
+    ? `            <td role="cell" class="tl-pick"><input type="checkbox" aria-label="${escapeHtml(fill(config.selectRowLabel, { row: row[0] }))}" data-select="${rowIndex}"></td>\n`
     : ""
 }${row
         .map((cell, index) =>
@@ -105,13 +108,13 @@ ${
     .join("\n");
 
   const selectAll = config.selectable
-    ? `            <th role="columnheader" scope="col" class="tl-pick"><input type="checkbox" aria-label="Select all rows" data-select-all></th>\n`
+    ? `            <th role="columnheader" scope="col" class="tl-pick"><input type="checkbox" aria-label="${escapeHtml(config.selectAllLabel)}" data-select-all></th>\n`
     : "";
   const count = config.selectable
-    ? `      <p class="tl-count" aria-live="polite" data-count>No rows selected</p>\n`
+    ? `      <p class="tl-count" aria-live="polite" data-count>${escapeHtml(config.noneText)}</p>\n`
     : "";
 
-  return `    <div class="${classes}" style="${vars}" data-table data-rows="${rows.length}">
+  return `    <div class="${classes}" style="${vars}" data-table data-none="${escapeHtml(config.noneText)}" data-count="${escapeHtml(config.countText)}" data-rows="${rows.length}">
 ${count}      <div class="tl-frame">
         <!-- The roles are spelled out because stacking the rows on a phone changes display,
              and that quietly strips a table of its semantics. -->

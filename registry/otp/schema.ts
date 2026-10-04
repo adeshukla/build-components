@@ -93,6 +93,15 @@ export const otpSchema = [
     min: 0,
     max: 24,
   },
+  {
+    key: "boxLabel",
+    label: "Each box",
+    description: "Read out for each box. {index} and {length} are numbers.",
+    group: "Words",
+    type: "text",
+    default: "Character {index} of {length}",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

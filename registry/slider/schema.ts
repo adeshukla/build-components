@@ -132,6 +132,33 @@ export const sliderSchema = [
     type: "color",
     default: "#2563eb",
   },
+  {
+    key: "rangeText",
+    label: "Range",
+    description: "Shown for the two ends. {low} and {high} are the values.",
+    group: "Words",
+    type: "text",
+    default: "{low} – {high}",
+    maxLength: 60,
+  },
+  {
+    key: "lowestLabel",
+    label: "Lower end",
+    description: "Read out for the lower handle. {label} is the label.",
+    group: "Words",
+    type: "text",
+    default: "{label}, lowest",
+    maxLength: 80,
+  },
+  {
+    key: "highestLabel",
+    label: "Upper end",
+    description: "Read out for the upper handle. {label} is the label.",
+    group: "Words",
+    type: "text",
+    default: "{label}, highest",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

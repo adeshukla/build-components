@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { MultiSelectConfig } from "../react/multi-select";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#8d8a99", hover: "#f0eff6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#8d8a99", hover: "#2a2438" },
@@ -57,9 +60,9 @@ export function renderMultiSelectMarkup(config: MultiSelectConfig) {
     ? `      <p class="ms-hint" id="multi-select-hint">${escapeHtml(config.hint)}</p>\n`
     : "";
 
-  return `    <div class="ms ms--theme-${config.theme}" style="${vars}" data-multi-select data-filter="${config.filter}" data-max="${config.maxSelected}" data-clear-all="${config.clearAll}" data-label="${escapeHtml(config.label)}">
+  return `    <div class="ms ms--theme-${config.theme}" style="${vars}" data-multi-select data-words="${escapeHtml(JSON.stringify({ remove: config.removeLabel, clear: config.clearText, added: config.addedText, removed: config.removedText, allRemoved: config.allRemovedText, limit: config.limitText, noMatch: config.noMatchText }))}" data-filter="${config.filter}" data-max="${config.maxSelected}" data-clear-all="${config.clearAll}" data-label="${escapeHtml(config.label)}">
       <label class="ms-label" for="multi-select-input">${escapeHtml(config.label)}</label>
-${hint}      <ul class="ms-chosen" aria-label="${escapeHtml(config.label)}, selected" data-chosen hidden></ul>
+${hint}      <ul class="ms-chosen" aria-label="${escapeHtml(fill(config.chosenLabel, { label: config.label }))}" data-chosen hidden></ul>
       <input class="ms-input" id="multi-select-input" type="text" role="combobox" aria-expanded="false" aria-controls="multi-select-list" aria-autocomplete="list"${config.hint.trim() ? ' aria-describedby="multi-select-hint"' : ""} placeholder="${escapeHtml(config.placeholder)}" data-input>
       <p class="ms-sr" aria-live="polite" data-announce></p>
       <ul class="ms-list" id="multi-select-list" role="listbox" aria-label="${escapeHtml(config.label)}" aria-multiselectable="true" hidden data-list>

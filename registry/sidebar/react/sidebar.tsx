@@ -16,6 +16,7 @@ export type SidebarConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  badgeSuffix: string;
 };
 
 // @config-start
@@ -39,6 +40,7 @@ const defaultConfig: SidebarConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 10,
+  badgeSuffix: "waiting",
 };
 // @config-end
 
@@ -232,7 +234,7 @@ export function Sidebar({ config = defaultConfig }: { config?: SidebarConfig }) 
                       {config.badges && item.badge.trim() !== "" && (
                         <span className="rounded-full bg-(--sb-sunk) px-2 py-0.5 text-xs font-medium text-(--sb-muted)">
                           {item.badge}
-                          <span className="sr-only"> waiting</span>
+                          <span className="sr-only">{` ${config.badgeSuffix}`}</span>
                         </span>
                       )}
                     </a>

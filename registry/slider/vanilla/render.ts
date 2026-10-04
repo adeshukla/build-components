@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SliderConfig } from "../react/slider";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", track: "#d9d5e4", text: "#16121f", muted: "#4d4a57" },
   dark: { surface: "#141019", track: "#3a3448", text: "#f6f5fa", muted: "#b6b3c2" },
@@ -53,16 +56,16 @@ export function renderSliderMarkup(config: SliderConfig) {
   const track =
     config.mode === "single"
       ? `        <input class="sl-input" ${common} value="${value}" aria-labelledby="slider-label"${describedBy} aria-valuetext="${escapeHtml(show(value))}" data-single>`
-      : `        <input class="sl-input sl-input--stacked" ${common} value="${lower}" aria-label="${escapeHtml(config.label)}, lowest"${describedBy} aria-valuetext="${escapeHtml(show(lower))}" data-lower>
-        <input class="sl-input sl-input--stacked" ${common} value="${upper}" aria-label="${escapeHtml(config.label)}, highest" aria-valuetext="${escapeHtml(show(upper))}" data-upper>`;
+      : `        <input class="sl-input sl-input--stacked" ${common} value="${lower}" aria-label="${escapeHtml(fill(config.lowestLabel, { label: config.label }))}"${describedBy} aria-valuetext="${escapeHtml(show(lower))}" data-lower>
+        <input class="sl-input sl-input--stacked" ${common} value="${upper}" aria-label="${escapeHtml(fill(config.highestLabel, { label: config.label }))}" aria-valuetext="${escapeHtml(show(upper))}" data-upper>`;
 
   const output = config.showValue
     ? `        <output class="sl-value" aria-live="polite" data-output>${escapeHtml(
-        config.mode === "range" ? `${show(lower)} – ${show(upper)}` : show(value),
+        config.mode === "range" ? fill(config.rangeText, { low: show(lower), high: show(upper) }) : show(value),
       )}</output>\n`
     : "";
 
-  return `    <div class="sl sl--${config.mode} sl--theme-${config.theme}" style="${vars}" data-slider data-prefix="${escapeHtml(config.prefix)}" data-suffix="${escapeHtml(config.suffix)}" data-min="${min}" data-max="${max}">
+  return `    <div class="sl sl--${config.mode} sl--theme-${config.theme}" style="${vars}" data-slider data-range="${escapeHtml(config.rangeText)}" data-prefix="${escapeHtml(config.prefix)}" data-suffix="${escapeHtml(config.suffix)}" data-min="${min}" data-max="${max}">
       <div class="sl-head">
         <p class="sl-label" id="slider-label">${escapeHtml(config.label)}</p>
 ${output}      </div>

@@ -122,6 +122,42 @@ export const paginationSchema = [
     min: 0,
     max: 24,
   },
+  {
+    key: "pageLabel",
+    label: "Page link",
+    description: "Read out for each page number. {page} is the number.",
+    group: "Words",
+    type: "text",
+    default: "Page {page}",
+    maxLength: 40,
+  },
+  {
+    key: "summaryText",
+    label: "Where you are",
+    description: "Said under the pages. {current} and {total} are page numbers.",
+    group: "Words",
+    type: "text",
+    default: "Page {current} of {total}",
+    maxLength: 60,
+  },
+  {
+    key: "firstText",
+    label: "First",
+    description: "The button to the first page.",
+    group: "Words",
+    type: "text",
+    default: "First",
+    maxLength: 30,
+  },
+  {
+    key: "lastText",
+    label: "Last",
+    description: "The button to the last page.",
+    group: "Words",
+    type: "text",
+    default: "Last",
+    maxLength: 30,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

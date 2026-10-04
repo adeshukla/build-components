@@ -4,10 +4,19 @@
  * add and remove is announced, and the chips submit as name[] hidden fields.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   const CROSS =
     '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 
   function createTagInput(root) {
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
     const field = root.querySelector("[data-field]");
     const chips = root.querySelector("[data-chips]");
     const count = root.querySelector("[data-count]");
@@ -21,7 +30,7 @@
 
     function paint() {
       const all = tags();
-      count.textContent = all.length + " of " + max + " added";
+      count.textContent = fill(words.count, { count: all.length, max: max });
       field.placeholder = all.length >= max ? "" : field.dataset.placeholder || field.placeholder;
       if (!name) return;
       values.textContent = "";
@@ -38,7 +47,7 @@
       const gone = chip.firstChild.textContent.trim();
       chip.closest("li").remove();
       paint();
-      status.textContent = gone + " removed. " + tags().length + " of " + max + ".";
+      status.textContent = fill(words.removed, { tag: gone, count: tags().length, max: max });
       field.focus();
     }
 
@@ -47,11 +56,11 @@
       if (value === "") return;
       const all = tags();
       if (all.length >= max) {
-        status.textContent = "You can add " + max + " at most. Remove one first.";
+        status.textContent = fill(words.limit, { max: max });
         return;
       }
       if (!duplicates && all.some((tag) => tag.toLowerCase() === value.toLowerCase())) {
-        status.textContent = value + " is already in the list.";
+        status.textContent = fill(words.duplicate, { tag: value });
         field.value = "";
         return;
       }
@@ -62,7 +71,7 @@
       const button = document.createElement("button");
       button.className = "ti-remove";
       button.type = "button";
-      button.setAttribute("aria-label", "Remove " + value);
+      button.setAttribute("aria-label", fill(words.remove, { tag: value }));
       button.setAttribute("data-remove", "");
       button.innerHTML = CROSS;
       chip.appendChild(button);
@@ -70,7 +79,7 @@
       chips.appendChild(item);
       field.value = "";
       paint();
-      status.textContent = value + " added. " + tags().length + " of " + max + ".";
+      status.textContent = fill(words.added, { tag: value, count: tags().length, max: max });
     }
 
     field.dataset.placeholder = field.placeholder;

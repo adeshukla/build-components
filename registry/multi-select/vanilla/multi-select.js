@@ -4,6 +4,13 @@
  * highlighted option is pointed at with aria-activedescendant rather than real focus.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createMultiSelect(root) {
     const input = root.querySelector("[data-input]");
     const list = root.querySelector("[data-list]");
@@ -17,6 +24,8 @@
     const max = Number(root.dataset.max) || 0;
     const clearAll = root.dataset.clearAll !== "false";
     const label = root.dataset.label || "";
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
     let chosen = [];
     let active = 0;
 
@@ -67,7 +76,7 @@
         button.type = "button";
         button.className = "ms-chip";
         // Named outright: joined text nodes would read "Testing , remove".
-        button.setAttribute("aria-label", "Remove " + label);
+        button.setAttribute("aria-label", fill(words.remove, { item: label }));
         button.innerHTML =
           label.replace(/[<>&]/g, "") +
           '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>';
@@ -84,12 +93,12 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "ms-clear";
-        button.textContent = "Clear all";
+        button.textContent = words.clear;
         button.addEventListener("click", function () {
           chosen = [];
           paintChosen();
           paintOptions();
-          say("All removed. 0 selected.");
+          say(fill(words.allRemoved, { count: 0 }));
           input.focus();
         });
         item.appendChild(button);
@@ -110,13 +119,13 @@
       const at = chosen.indexOf(value);
       if (at !== -1) {
         chosen.splice(at, 1);
-        say(value + " removed. " + chosen.length + " selected.");
+        say(fill(words.removed, { item: value, count: chosen.length }));
       } else if (max > 0 && chosen.length >= max) {
-        say("You can choose " + max + " at most. Remove one first.");
+        say(fill(words.limit, { max: max }));
         return;
       } else {
         chosen.push(value);
-        say(value + " selected. " + chosen.length + " selected.");
+        say(fill(words.added, { item: value, count: chosen.length }));
         input.value = "";
         filter();
       }
@@ -134,7 +143,7 @@
       const shown = matches();
       if (empty) {
         empty.hidden = shown.length > 0;
-        empty.textContent = "No matches for “" + input.value + "”.";
+        empty.textContent = fill(words.noMatch, { query: input.value });
       }
       active = 0;
       paintActive();
@@ -178,7 +187,7 @@
         chosen.pop();
         paintChosen();
         paintOptions();
-        say(last + " removed. " + chosen.length + " selected.");
+        say(fill(words.removed, { item: last, count: chosen.length }));
       }
     });
 

@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { RatingConfig } from "../react/rating";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", empty: "#c9c5d4" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", empty: "#4a4458" },
@@ -50,13 +53,13 @@ export function renderRatingMarkup(config: RatingConfig) {
   if (config.mode === "show") {
     const value = Math.min(max, Math.max(0, config.value));
     // One image with the whole thing in its name; part stars come from clipping the filled row.
-    return `    <div class="ra ra--theme-${config.theme}" style="${vars}" data-rating>
+    return `    <div class="ra ra--theme-${config.theme}" style="${vars}" data-rating data-score="${escapeHtml(config.scoreText)}">
       <div class="ra-row">
-        <span class="ra-stars" role="img" aria-label="${show(value)} out of ${max}">
+        <span class="ra-stars" role="img" aria-label="${escapeHtml(fill(config.scoreText, { value: show(value), max }))}">
           <span class="ra-empty" aria-hidden="true">${stars.map(() => STAR).join("")}</span>
           <span class="ra-filled" aria-hidden="true" style="width: ${(value / max) * 100}%">${stars.map(() => STAR).join("")}</span>
         </span>
-${config.showValue ? `        <span class="ra-value">${show(value)} <span class="ra-of">out of ${max}</span></span>` : ""}${countHtml}
+${config.showValue ? `        <span class="ra-value">${show(value)} <span class="ra-of">${escapeHtml(fill(config.outOfText, { max }))}</span></span>` : ""}${countHtml}
       </div>
     </div>`;
   }
@@ -74,7 +77,7 @@ ${steps(star)
   .map(
     (step) => `            <label class="ra-pick">
               <input class="ra-input" type="radio" name="${escapeHtml(config.name || "rating")}" value="${step}"${step === picked ? " checked" : ""}>
-              <span class="ra-sr">${step === 1 ? "1 star" : `${show(step)} stars`}</span>
+              <span class="ra-sr">${escapeHtml(fill(step === 1 ? config.starOne : config.starMany, { count: show(step) }))}</span>
               ${config.halfStars ? HALF(step === star ? "right" : "left") : STAR}
             </label>`,
   )
@@ -90,7 +93,7 @@ ${steps(star)
           <div class="ra-picks">
 ${inputs}
           </div>
-${config.showValue ? `          <output class="ra-value" data-output>${picked === 0 ? "Not rated yet" : `${show(picked)} out of ${max}`}</output>` : ""}${countHtml}
+${config.showValue ? `          <output class="ra-value" data-output>${escapeHtml(picked === 0 ? config.noneText : fill(config.scoreText, { value: show(picked), max }))}</output>` : ""}${countHtml}
         </div>
       </fieldset>
     </div>`;

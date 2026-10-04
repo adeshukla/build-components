@@ -21,6 +21,14 @@ export type MultiSelectConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  chosenLabel: string;
+  removeLabel: string;
+  clearText: string;
+  addedText: string;
+  removedText: string;
+  allRemovedText: string;
+  limitText: string;
+  noMatchText: string;
 };
 
 // @config-start
@@ -44,6 +52,14 @@ const defaultConfig: MultiSelectConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 10,
+  chosenLabel: "{label}, selected",
+  removeLabel: "Remove {item}",
+  clearText: "Clear all",
+  addedText: "{item} selected. {count} selected.",
+  removedText: "{item} removed. {count} selected.",
+  allRemovedText: "All removed. {count} selected.",
+  limitText: "You can choose {max} at most. Remove one first.",
+  noMatchText: "No matches for “{query}”.",
 };
 // @config-end
 
@@ -93,6 +109,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectConfig }) {
   const id = useId();
   const all = config.options.map((option) => option.label).filter((label) => label.trim() !== "");
@@ -128,16 +147,16 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
     if (chosen.includes(label)) {
       const rest = chosen.filter((entry) => entry !== label);
       setChosen(rest);
-      setMessage(`${label} removed. ${rest.length} selected.`);
+      setMessage(fill(config.removedText, { item: label, count: rest.length }));
       return;
     }
     if (full) {
-      setMessage(`You can choose ${config.maxSelected} at most. Remove one first.`);
+      setMessage(fill(config.limitText, { max: config.maxSelected }));
       return;
     }
     const next = [...chosen, label];
     setChosen(next);
-    setMessage(`${label} selected. ${next.length} selected.`);
+    setMessage(fill(config.addedText, { item: label, count: next.length }));
     setQuery("");
   }
 
@@ -167,7 +186,7 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
     if (event.key === "Backspace" && query === "" && chosen.length > 0) {
       const last = chosen[chosen.length - 1];
       setChosen(chosen.slice(0, -1));
-      setMessage(`${last} removed. ${chosen.length - 1} selected.`);
+      setMessage(fill(config.removedText, { item: last, count: chosen.length - 1 }));
     }
   }
 
@@ -198,14 +217,14 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
 
       {/* The chosen ones are buttons, not decoration: each one can be taken off again. */}
       {chosen.length > 0 && (
-        <ul aria-label={`${config.label}, selected`} className="mt-2 flex list-none flex-wrap gap-2 p-0">
+        <ul aria-label={fill(config.chosenLabel, { label: config.label })} className="mt-2 flex list-none flex-wrap gap-2 p-0">
           {chosen.map((label) => (
             <li key={label}>
               <button
                 type="button"
                 onClick={() => toggle(label)}
                 // Named outright: joined text nodes would read "Testing , remove".
-                aria-label={`Remove ${label}`}
+                aria-label={fill(config.removeLabel, { item: label })}
                 className={`inline-flex min-h-8 cursor-pointer items-center gap-1 rounded-full bg-(--ms-sunk) py-1 pr-2 pl-3 text-sm ${focus}`}
               >
                 {label}
@@ -221,11 +240,11 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
                 type="button"
                 onClick={() => {
                   setChosen([]);
-                  setMessage("All removed. 0 selected.");
+                  setMessage(fill(config.allRemovedText, { count: 0 }));
                 }}
                 className={`inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 py-1 text-sm underline ${focus}`}
               >
-                Clear all
+{config.clearText}
               </button>
             </li>
           )}
@@ -271,7 +290,7 @@ export function MultiSelect({ config = defaultConfig }: { config?: MultiSelectCo
         className="absolute z-20 mt-1 max-h-60 w-full list-none overflow-y-auto rounded-(--ms-radius) border border-(--ms-line) bg-(--ms-surface) p-1 shadow-lg"
       >
         {matches.length === 0 && (
-          <li className="px-3 py-2 text-(--ms-muted)">No matches for “{query}”.</li>
+          <li className="px-3 py-2 text-(--ms-muted)">{fill(config.noMatchText, { query })}</li>
         )}
         {matches.map((label, index) => {
           const selected = chosen.includes(label);

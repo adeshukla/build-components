@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { TagInputConfig } from "../react/tag-input";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#eeecf5", text: "#16121f", muted: "#4d4a57", border: "#737373", line: "#d9d5e4" },
   dark: { surface: "#141019", sunk: "#2a2438", text: "#f6f5fa", muted: "#b6b3c2", border: "#8e8a99", line: "#3a3448" },
@@ -37,17 +40,17 @@ export function renderTagInputMarkup(config: TagInputConfig) {
 
   const chips = tags
     .map(
-      (tag) => `          <li><span class="ti-chip">${escapeHtml(tag)}<button class="ti-remove" type="button" aria-label="Remove ${escapeHtml(tag)}" data-remove>${CROSS}</button></span></li>`,
+      (tag) => `          <li><span class="ti-chip">${escapeHtml(tag)}<button class="ti-remove" type="button" aria-label="${escapeHtml(fill(config.removeLabel, { tag }))}" data-remove>${CROSS}</button></span></li>`,
     )
     .join("\n");
 
-  return `    <div class="ti ti--theme-${config.theme}" style="${vars}" data-tag-input data-max="${max}" data-duplicates="${config.allowDuplicates}"${config.name ? ` data-name="${escapeHtml(config.name)}"` : ""}>
+  return `    <div class="ti ti--theme-${config.theme}" style="${vars}" data-tag-input data-words="${escapeHtml(JSON.stringify({ count: config.countText, added: config.addedText, removed: config.removedText, duplicate: config.duplicateText, limit: config.limitText, remove: config.removeLabel }))}" data-max="${max}" data-duplicates="${config.allowDuplicates}"${config.name ? ` data-name="${escapeHtml(config.name)}"` : ""}>
       <label class="ti-label" for="tag-input-field">${escapeHtml(config.label)}</label>
-${hint ? `      <p class="ti-hint" id="tag-input-hint">${escapeHtml(hint)}</p>\n` : ""}      <ul class="ti-chips" aria-label="${escapeHtml(config.label)} added" data-chips>
+${hint ? `      <p class="ti-hint" id="tag-input-hint">${escapeHtml(hint)}</p>\n` : ""}      <ul class="ti-chips" aria-label="${escapeHtml(fill(config.chipsLabel, { label: config.label }))}" data-chips>
 ${chips}
       </ul>
       <input class="ti-field" id="tag-input-field" type="text" autocomplete="off" placeholder="${escapeHtml(config.placeholder)}" aria-describedby="${hint ? "tag-input-hint " : ""}tag-input-count" data-field>
-      <p class="ti-count" id="tag-input-count" data-count>${tags.length} of ${max} added</p>
+      <p class="ti-count" id="tag-input-count" data-count>${escapeHtml(fill(config.countText, { count: tags.length, max }))}</p>
       <p class="ti-sr" role="status" data-status></p>
       <span data-values></span>
     </div>`;

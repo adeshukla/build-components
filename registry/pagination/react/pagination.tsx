@@ -16,6 +16,10 @@ export type PaginationConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  pageLabel: string;
+  summaryText: string;
+  firstText: string;
+  lastText: string;
 };
 
 // @config-start
@@ -33,6 +37,10 @@ const defaultConfig: PaginationConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 8,
+  pageLabel: "Page {page}",
+  summaryText: "Page {current} of {total}",
+  firstText: "First",
+  lastText: "Last",
 };
 // @config-end
 
@@ -96,6 +104,9 @@ export function pagesFor(current: number, total: number, siblings: number) {
   return pages;
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Pagination({
   config = defaultConfig,
   onPage,
@@ -138,7 +149,7 @@ export function Pagination({
     const className = `${step} ${isCurrent ? "border-(--pg-accent) bg-(--pg-accent) text-(--pg-on-accent) hover:bg-(--pg-accent)" : ""}`;
     const target = href(page);
     return target ? (
-      <a href={target} aria-current={isCurrent ? "page" : undefined} aria-label={`Page ${page}`} className={className}>
+      <a href={target} aria-current={isCurrent ? "page" : undefined} aria-label={fill(config.pageLabel, { page })} className={className}>
         {page}
       </a>
     ) : (
@@ -146,7 +157,7 @@ export function Pagination({
         type="button"
         onClick={() => go(page)}
         aria-current={isCurrent ? "page" : undefined}
-        aria-label={`Page ${page}`}
+        aria-label={fill(config.pageLabel, { page })}
         className={className}
       >
         {page}
@@ -206,17 +217,17 @@ export function Pagination({
 
         {config.summary && (
           <p aria-live="polite" className="text-sm text-(--pg-muted)">
-            Page {current} of {total}
+            {fill(config.summaryText, { current, total })}
           </p>
         )}
 
         {config.firstLast && config.look === "numbers" && (
           <div className="flex gap-1">
             <button type="button" onClick={() => go(1)} disabled={current === 1} className={step}>
-              First
+{config.firstText}
             </button>
             <button type="button" onClick={() => go(total)} disabled={current === total} className={step}>
-              Last
+{config.lastText}
             </button>
           </div>
         )}

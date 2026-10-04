@@ -52,6 +52,15 @@ export const avatarGroupSchema = [
     default: "light",
     options: ["light", "dark", "system"],
   },
+  {
+    key: "moreLabel",
+    label: "The rest",
+    description: "Read out for the +N circle. {count} and {names} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "{count} more: {names}",
+    maxLength: 80,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

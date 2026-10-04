@@ -4,6 +4,13 @@
  * they are buttons, and this moves between pages and rebuilds the run of numbers.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createPagination(root) {
     const list = root.querySelector("[data-list]");
     if (!list || root.dataset.pattern) return;
@@ -42,7 +49,7 @@
             const button = document.createElement("button");
             button.type = "button";
             button.className = "pg-step pg-page" + (page === current ? " pg-current" : "");
-            button.setAttribute("aria-label", "Page " + page);
+            button.setAttribute("aria-label", fill(root.dataset.pageLabel, { page: page }));
             if (page === current) button.setAttribute("aria-current", "page");
             button.dataset.page = String(page);
             button.textContent = String(page);
@@ -63,7 +70,7 @@
       const last = root.querySelector("[data-last]");
       if (first) first.disabled = current === 1;
       if (last) last.disabled = current === total;
-      if (summary) summary.textContent = "Page " + current + " of " + total;
+      if (summary) summary.textContent = fill(root.dataset.summary, { current: current, total: total });
     }
 
     function go(page) {

@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage } from "@/lib/html";
 import type { AvatarGroupConfig } from "../react/avatar-group";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", ring: "#ffffff" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", ring: "#141019" },
@@ -46,7 +49,7 @@ export function renderAvatarGroupMarkup(config: AvatarGroupConfig) {
     .join("\n");
 
   const more = rest.length
-    ? `\n        <li><span class="ag-avatar ag-more" role="img" aria-label="${rest.length} more: ${escapeHtml(rest.map((person) => person.name).join(", "))}"><span aria-hidden="true">+${rest.length}</span></span></li>`
+    ? `\n        <li><span class="ag-avatar ag-more" role="img" aria-label="${escapeHtml(fill(config.moreLabel, { count: rest.length, names: rest.map((person) => person.name).join(", ") }))}"><span aria-hidden="true">+${rest.length}</span></span></li>`
     : "";
 
   return `    <div class="ag ag--${config.size}${config.overlap ? " ag--overlap" : ""} ag--theme-${config.theme}" style="${vars}" data-avatar-group>

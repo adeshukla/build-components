@@ -21,6 +21,7 @@ export type OtpConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  boxLabel: string;
 };
 
 // @config-start
@@ -35,6 +36,7 @@ const defaultConfig: OtpConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 10,
+  boxLabel: "Character {index} of {length}",
 };
 // @config-end
 
@@ -90,6 +92,9 @@ function keyOf(event: { key: string; target: EventTarget | null }) {
   const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
   return rtl ? (swapped[event.key] ?? event.key) : event.key;
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
   const id = useId();
@@ -194,7 +199,7 @@ export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
                 // Only the first box offers the code from a text message; the rest are filled from it.
                 autoComplete={index === 0 ? "one-time-code" : "off"}
                 maxLength={1}
-                aria-label={`Character ${index + 1} of ${length}`}
+                aria-label={fill(config.boxLabel, { index: index + 1, length })}
                 aria-describedby={config.hint.trim() !== "" && index === 0 ? `${id}-otp-hint` : undefined}
                 value={digit}
                 onChange={(event) => setDigit(index, event.target.value)}

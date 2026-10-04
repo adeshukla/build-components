@@ -117,6 +117,15 @@ export const sidebarSchema = [
     min: 0,
     max: 24,
   },
+  {
+    key: "badgeSuffix",
+    label: "Badge ending",
+    description: "Read out after a badge's number.",
+    group: "Words",
+    type: "text",
+    default: "waiting",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

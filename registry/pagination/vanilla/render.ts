@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import { type PaginationConfig } from "../react/pagination";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 // A copy of the React file's own: that is a client module, so the server only gets a reference to it.
 function pagesFor(current: number, total: number, siblings: number) {
   const pages: (number | "gap")[] = [];
@@ -63,7 +66,7 @@ export function renderPaginationMarkup(config: PaginationConfig) {
 
   const pageItem = (page: number) => {
     const isCurrent = page === current;
-    const attrs = `class="pg-step pg-page${isCurrent ? " pg-current" : ""}" aria-label="Page ${page}"${isCurrent ? ' aria-current="page"' : ""} data-page="${page}"`;
+    const attrs = `class="pg-step pg-page${isCurrent ? " pg-current" : ""}" aria-label="${escapeHtml(fill(config.pageLabel, { page }))}"${isCurrent ? ' aria-current="page"' : ""} data-page="${page}"`;
     return pattern === ""
       ? `          <li><button type="button" ${attrs}>${page}</button></li>`
       : `          <li><a href="${href(page)}" ${attrs}>${page}</a></li>`;
@@ -94,16 +97,16 @@ export function renderPaginationMarkup(config: PaginationConfig) {
   const firstLast =
     config.firstLast && config.look === "numbers"
       ? `        <div class="pg-ends">
-          <button class="pg-step" type="button" data-first${current === 1 ? " disabled" : ""}>First</button>
-          <button class="pg-step" type="button" data-last${current === total ? " disabled" : ""}>Last</button>
+          <button class="pg-step" type="button" data-first${current === 1 ? " disabled" : ""}>${escapeHtml(config.firstText)}</button>
+          <button class="pg-step" type="button" data-last${current === total ? " disabled" : ""}>${escapeHtml(config.lastText)}</button>
         </div>\n`
       : "";
 
   const summary = config.summary
-    ? `        <p class="pg-summary" aria-live="polite" data-summary>Page ${current} of ${total}</p>\n`
+    ? `        <p class="pg-summary" aria-live="polite" data-summary>${escapeHtml(fill(config.summaryText, { current, total }))}</p>\n`
     : "";
 
-  return `    <nav class="pg pg--${config.look} pg--theme-${config.theme}" style="${vars}" aria-label="${escapeHtml(config.label)}" data-pagination data-total="${total}" data-current="${current}" data-siblings="${Math.max(0, Math.round(config.siblings))}" data-pattern="${escapeHtml(pattern)}">
+  return `    <nav class="pg pg--${config.look} pg--theme-${config.theme}" style="${vars}" aria-label="${escapeHtml(config.label)}" data-pagination data-page-label="${escapeHtml(config.pageLabel)}" data-summary="${escapeHtml(config.summaryText)}" data-total="${total}" data-current="${current}" data-siblings="${Math.max(0, Math.round(config.siblings))}" data-pattern="${escapeHtml(pattern)}">
       <div class="pg-row">
         <ul class="pg-list" data-list>
 ${arrow("previous")}

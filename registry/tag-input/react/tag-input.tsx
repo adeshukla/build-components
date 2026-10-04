@@ -12,6 +12,13 @@ export type TagInputConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  chipsLabel: string;
+  removeLabel: string;
+  countText: string;
+  addedText: string;
+  removedText: string;
+  duplicateText: string;
+  limitText: string;
 };
 
 // @config-start
@@ -25,6 +32,13 @@ const defaultConfig: TagInputConfig = {
   name: "skills",
   theme: "light",
   accentColor: "#2563eb",
+  chipsLabel: "{label} added",
+  removeLabel: "Remove {tag}",
+  countText: "{count} of {max} added",
+  addedText: "{tag} added. {count} of {max}.",
+  removedText: "{tag} removed. {count} of {max}.",
+  duplicateText: "{tag} is already in the list.",
+  limitText: "You can add {max} at most. Remove one first.",
 };
 // @config-end
 
@@ -73,6 +87,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -99,23 +116,23 @@ export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }
     const value = raw.trim().replace(/,$/, "").trim();
     if (value === "") return;
     if (full) {
-      setMessage(`You can add ${max} at most. Remove one first.`);
+      setMessage(fill(config.limitText, { max }));
       return;
     }
     if (!config.allowDuplicates && tags.some((tag) => tag.toLowerCase() === value.toLowerCase())) {
-      setMessage(`${value} is already in the list.`);
+      setMessage(fill(config.duplicateText, { tag: value }));
       setText("");
       return;
     }
     setTags([...tags, value]);
     setText("");
-    setMessage(`${value} added. ${tags.length + 1} of ${max}.`);
+    setMessage(fill(config.addedText, { tag: value, count: tags.length + 1, max }));
   }
 
   function remove(index: number) {
     const gone = tags[index];
     setTags(tags.filter((_, at) => at !== index));
-    setMessage(`${gone} removed. ${tags.length - 1} of ${max}.`);
+    setMessage(fill(config.removedText, { tag: gone, count: tags.length - 1, max }));
     inputRef.current?.focus();
   }
 
@@ -140,14 +157,14 @@ export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }
         </p>
       )}
       {/* The chips sit outside the field, so the field's own value is only what is being typed. */}
-      <ul aria-label={`${config.label} added`} className="mt-2 flex flex-wrap gap-2 empty:hidden">
+      <ul aria-label={fill(config.chipsLabel, { label: config.label })} className="mt-2 flex flex-wrap gap-2 empty:hidden">
         {tags.map((tag, index) => (
           <li key={`${tag}-${index}`}>
             <span className="inline-flex items-center gap-1 rounded-full bg-(--ti-sunk) py-1 pe-1 ps-3 text-sm">
               {tag}
               <button
                 type="button"
-                aria-label={`Remove ${tag}`}
+                aria-label={fill(config.removeLabel, { tag })}
                 onClick={() => remove(index)}
                 className="grid size-6 cursor-pointer place-items-center rounded-full text-(--ti-muted) hover:bg-black/10 hover:text-(--ti-text) focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ti-accent-text)"
               >
@@ -173,7 +190,7 @@ export function TagInput({ config = defaultConfig }: { config?: TagInputConfig }
         className="mt-2 h-11 w-full rounded-[var(--bc-radius-md,0.5rem)] border border-(--ti-border) bg-(--ti-surface) px-3 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ti-accent-text)"
       />
       <p id={`${id}-count`} className="mt-1 text-sm text-(--ti-muted)">
-        {tags.length} of {max} added
+        {fill(config.countText, { count: tags.length, max })}
       </p>
       <p role="status" className="sr-only">
         {message}

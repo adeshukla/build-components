@@ -79,7 +79,7 @@ export function renderSidebarMarkup(config: SidebarConfig) {
           const active = item.href.trim() !== "" && item.href === config.activeHref;
           const badge =
             config.badges && item.badge.trim() !== ""
-              ? `<span class="sb-badge">${escapeHtml(item.badge)}<span class="sb-sr"> waiting</span></span>`
+              ? `<span class="sb-badge">${escapeHtml(item.badge)}<span class="sb-sr"> ${escapeHtml(config.badgeSuffix)}</span></span>`
               : "";
           return `            <li><a class="sb-link${active ? " sb-active" : ""}" href="${escapeHtml(safeHref(item.href))}"${active ? ' aria-current="page"' : ""}>${escapeHtml(item.label)}${badge}</a></li>`;
         })

@@ -13,6 +13,11 @@ export type RatingConfig = {
   name: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  scoreText: string;
+  outOfText: string;
+  starOne: string;
+  starMany: string;
+  noneText: string;
 };
 
 // @config-start
@@ -27,6 +32,11 @@ const defaultConfig: RatingConfig = {
   name: "rating",
   theme: "light",
   accentColor: "#e6a700",
+  scoreText: "{value} out of {max}",
+  outOfText: "out of {max}",
+  starOne: "{count} star",
+  starMany: "{count} stars",
+  noneText: "Not rated yet",
 };
 // @config-end
 
@@ -110,6 +120,9 @@ function HalfStar({ side, className = "" }: { side: "left" | "right"; className?
   );
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
   const id = useId();
   const max = Math.max(2, Math.min(10, Math.round(config.max)));
@@ -138,7 +151,7 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
     return (
       <div style={style} className="bg-(--ra-surface) text-(--ra-text)">
         <div className="flex flex-wrap items-center gap-2">
-          <span role="img" aria-label={`${show(value)} out of ${max}`} className="relative inline-flex">
+          <span role="img" aria-label={fill(config.scoreText, { value: show(value), max })} className="relative inline-flex">
             <span aria-hidden="true" className="flex text-(--ra-empty)">
               {stars.map((star) => (
                 <Star key={star} />
@@ -156,7 +169,7 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
           </span>
           {config.showValue && (
             <span className="font-medium tabular-nums">
-              {show(value)} <span className="text-(--ra-muted)">out of {max}</span>
+              {show(value)} <span className="text-(--ra-muted)">{fill(config.outOfText, { max })}</span>
             </span>
           )}
           {count !== "" && <span className="text-sm text-(--ra-muted)">{count}</span>}
@@ -186,7 +199,7 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
                       onChange={() => setPicked(step)}
                       className="peer sr-only"
                     />
-                    <span className="sr-only">{step === 1 ? "1 star" : `${show(step)} stars`}</span>
+                    <span className="sr-only">{fill(step === 1 ? config.starOne : config.starMany, { count: show(step) })}</span>
                     {config.halfStars ? (
                       <HalfStar
                         side={step === star ? "right" : "left"}
@@ -204,7 +217,7 @@ export function Rating({ config = defaultConfig }: { config?: RatingConfig }) {
           </div>
           {config.showValue && (
             <output className="text-sm font-medium tabular-nums">
-              {picked === 0 ? "Not rated yet" : `${show(picked)} out of ${max}`}
+              {picked === 0 ? config.noneText : fill(config.scoreText, { value: show(picked), max })}
             </output>
           )}
           {count !== "" && <span className="text-sm text-(--ra-muted)">{count}</span>}

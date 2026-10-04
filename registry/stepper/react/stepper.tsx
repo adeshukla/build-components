@@ -15,6 +15,10 @@ export type StepperConfig = {
   details: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  summaryText: string;
+  doneText: string;
+  currentText: string;
+  todoText: string;
 };
 
 // @config-start
@@ -34,6 +38,10 @@ const defaultConfig: StepperConfig = {
   details: true,
   theme: "light",
   accentColor: "#2563eb",
+  summaryText: "Step {current} of {total}: {step}",
+  doneText: "(completed)",
+  currentText: "(current step)",
+  todoText: "(not started)",
 };
 // @config-end
 
@@ -88,6 +96,9 @@ function safeHref(value: string) {
   return /^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Stepper({ config = defaultConfig }: { config?: StepperConfig }) {
   const steps = config.steps.filter((step) => step.label.trim() !== "");
   const current = Math.min(Math.max(1, Math.round(config.current)), Math.max(1, steps.length));
@@ -115,7 +126,7 @@ export function Stepper({ config = defaultConfig }: { config?: StepperConfig }) 
     <nav aria-label={config.label} style={style} className="bg-(--st-surface) text-(--st-text)">
       {config.summary && (
         <p className="mb-3 text-sm text-(--st-muted)">
-          Step {current} of {steps.length}: {steps[current - 1].label}
+          {fill(config.summaryText, { current, total: steps.length, step: steps[current - 1].label })}
         </p>
       )}
 
@@ -153,7 +164,7 @@ export function Stepper({ config = defaultConfig }: { config?: StepperConfig }) 
                   {step.label}
                   {/* Said in words, because the tick and the colour are not available to everyone. */}
                   <span className="sr-only">
-                    {done ? " (completed)" : isCurrent ? " (current step)" : " (not started)"}
+                    {` ${done ? config.doneText : isCurrent ? config.currentText : config.todoText}`}
                   </span>
                 </span>
                 {config.details && step.detail.trim() !== "" && (

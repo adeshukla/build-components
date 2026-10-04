@@ -17,6 +17,9 @@ export type SliderConfig = {
   showValue: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  rangeText: string;
+  lowestLabel: string;
+  highestLabel: string;
 };
 
 // @config-start
@@ -35,6 +38,9 @@ const defaultConfig: SliderConfig = {
   showValue: true,
   theme: "light",
   accentColor: "#2563eb",
+  rangeText: "{low} – {high}",
+  lowestLabel: "{label}, lowest",
+  highestLabel: "{label}, highest",
 };
 // @config-end
 
@@ -84,6 +90,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
   const id = useId();
   const min = config.min;
@@ -127,7 +136,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
         </p>
         {config.showValue && (
           <output aria-live="polite" className="font-medium tabular-nums">
-            {config.mode === "range" ? `${show(lower)} – ${show(upper)}` : show(value)}
+            {config.mode === "range" ? fill(config.rangeText, { low: show(lower), high: show(upper) }) : show(value)}
           </output>
         )}
       </div>
@@ -173,7 +182,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
             max={max}
             step={config.step}
             value={lower}
-            aria-label={`${config.label}, lowest`}
+            aria-label={fill(config.lowestLabel, { label: config.label })}
             aria-describedby={config.hint.trim() !== "" ? `${id}-slider-hint` : undefined}
             aria-valuetext={show(lower)}
             onChange={(event) => setLower(Math.min(Number(event.target.value), upper))}
@@ -185,7 +194,7 @@ export function Slider({ config = defaultConfig }: { config?: SliderConfig }) {
             max={max}
             step={config.step}
             value={upper}
-            aria-label={`${config.label}, highest`}
+            aria-label={fill(config.highestLabel, { label: config.label })}
             aria-valuetext={show(upper)}
             onChange={(event) => setUpper(Math.max(Number(event.target.value), lower))}
             className={`absolute inset-0 ${stacked}`}

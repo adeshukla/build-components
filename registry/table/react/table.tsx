@@ -15,6 +15,10 @@ export type TableConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  noneText: string;
+  countText: string;
+  selectAllLabel: string;
+  selectRowLabel: string;
 };
 
 // @config-start
@@ -35,6 +39,10 @@ AB-1045,Meridian,14 Mar,2,£68.00`,
   theme: "light",
   accentColor: "#2563eb",
   radius: 10,
+  noneText: "No rows selected",
+  countText: "{count} of {total} rows selected",
+  selectAllLabel: "Select all rows",
+  selectRowLabel: "Select {row}",
 };
 // @config-end
 
@@ -106,6 +114,9 @@ export function parseTable(data: string) {
 const asNumber = (value: string) => Number(value.replace(/[^0-9.-]/g, ""));
 const isNumeric = (value: string) => value.trim() !== "" && Number.isFinite(asNumber(value)) && /\d/.test(value);
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Table({ config = defaultConfig }: { config?: TableConfig }) {
   const { columns, rows } = parseTable(config.data);
   const [sort, setSort] = useState<{ index: number; direction: "ascending" | "descending" } | null>(null);
@@ -152,7 +163,7 @@ export function Table({ config = defaultConfig }: { config?: TableConfig }) {
     <div style={style} className="bg-(--tl-surface) text-(--tl-text)">
       {config.selectable && (
         <p aria-live="polite" className="mb-2 text-sm text-(--tl-muted)">
-          {selected.length === 0 ? "No rows selected" : `${selected.length} of ${rows.length} rows selected`}
+          {selected.length === 0 ? config.noneText : fill(config.countText, { count: selected.length, total: rows.length })}
         </p>
       )}
 
@@ -183,7 +194,7 @@ export function Table({ config = defaultConfig }: { config?: TableConfig }) {
                       if (node) node.indeterminate = selected.length > 0 && selected.length < rows.length;
                     }}
                     onChange={(event) => setSelected(event.target.checked ? rows.map((_, index) => index) : [])}
-                    aria-label="Select all rows"
+                    aria-label={config.selectAllLabel}
                     className={`size-6 accent-(--tl-accent) ${focus}`}
                   />
                 </th>
@@ -242,7 +253,7 @@ export function Table({ config = defaultConfig }: { config?: TableConfig }) {
                         )
                       }
                       // Named by the row's first cell, so it is not just "checkbox" five times.
-                      aria-label={`Select ${rows[rowIndex][0]}`}
+                      aria-label={fill(config.selectRowLabel, { row: rows[rowIndex][0] })}
                       className={`size-6 accent-(--tl-accent) ${focus}`}
                     />
                   </td>

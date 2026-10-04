@@ -4,13 +4,20 @@
  * The root fires "rating-change" with event.detail.value.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createRating(root) {
     const output = root.querySelector("[data-output]");
     const max = Number(root.dataset.max) || 5;
     root.addEventListener("change", function (event) {
       if (!event.target.matches(".ra-input")) return;
       const value = Number(event.target.value);
-      if (output) output.textContent = value + " out of " + max;
+      if (output) output.textContent = fill(root.dataset.score, { value: value, max: max });
       root.dispatchEvent(new CustomEvent("rating-change", { detail: { value: value } }));
     });
   }

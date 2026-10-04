@@ -4,6 +4,13 @@
  * ends from crossing, paints the filled part of the track and keeps the value text in step.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createSlider(root) {
     const single = root.querySelector("[data-single]");
     const lower = root.querySelector("[data-lower]");
@@ -37,7 +44,7 @@
       upper.setAttribute("aria-valuetext", show(high));
       root.style.setProperty("--sl-from", percent(low));
       root.style.setProperty("--sl-to", percent(high));
-      if (output) output.textContent = show(low) + " – " + show(high);
+      if (output) output.textContent = fill(root.dataset.range, { low: show(low), high: show(high) });
     }
 
     if (single) single.addEventListener("input", paint);

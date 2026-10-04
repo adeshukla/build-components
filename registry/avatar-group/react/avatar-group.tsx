@@ -9,6 +9,7 @@ export type AvatarGroupConfig = {
   size: "sm" | "md" | "lg";
   overlap: boolean;
   theme: "light" | "dark" | "system";
+  moreLabel: string;
 };
 
 // @config-start
@@ -25,6 +26,7 @@ const defaultConfig: AvatarGroupConfig = {
   size: "md",
   overlap: true,
   theme: "light",
+  moreLabel: "{count} more: {names}",
 };
 // @config-end
 
@@ -72,6 +74,9 @@ function tintOf(name: string) {
 
 const safeSrc = (value: string) => (/^(\/|https?:\/\/)/i.test(value.trim()) ? value.trim() : "");
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function AvatarGroup({ config = defaultConfig }: { config?: AvatarGroupConfig }) {
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
   const dark = config.theme === "dark" || (config.theme === "system" && systemDark);
@@ -117,7 +122,7 @@ export function AvatarGroup({ config = defaultConfig }: { config?: AvatarGroupCo
           <li className="relative">
             <span
               role="img"
-              aria-label={`${rest.length} more: ${rest.map((person) => person.name).join(", ")}`}
+              aria-label={fill(config.moreLabel, { count: rest.length, names: rest.map((person) => person.name).join(", ") })}
               className={`${avatar} bg-(--ag-surface) font-semibold text-(--ag-muted) ring-1 ring-(--ag-muted)`}
             >
               <span aria-hidden="true">+{rest.length}</span>

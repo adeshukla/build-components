@@ -108,6 +108,42 @@ export const tableSchema = [
     min: 0,
     max: 24,
   },
+  {
+    key: "noneText",
+    label: "Nothing selected",
+    description: "Said while no row is ticked.",
+    group: "Words",
+    type: "text",
+    default: "No rows selected",
+    maxLength: 80,
+  },
+  {
+    key: "countText",
+    label: "Selected",
+    description: "Said as rows are ticked. {count} and {total} are counts.",
+    group: "Words",
+    type: "text",
+    default: "{count} of {total} rows selected",
+    maxLength: 80,
+  },
+  {
+    key: "selectAllLabel",
+    label: "Tick all",
+    description: "Read out for the box that ticks every row.",
+    group: "Words",
+    type: "text",
+    default: "Select all rows",
+    maxLength: 60,
+  },
+  {
+    key: "selectRowLabel",
+    label: "Tick a row",
+    description: "Read out for each row's box. {row} is the row's first cell.",
+    group: "Words",
+    type: "text",
+    default: "Select {row}",
+    maxLength: 60,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

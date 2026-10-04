@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { OtpConfig } from "../react/otp";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#8d8a99" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#8d8a99" },
@@ -51,7 +54,7 @@ export function renderOtpMarkup(config: OtpConfig) {
 ${Array.from({ length })
   .map(
     (_, index) =>
-      `          <input class="ot-box" type="text" inputmode="${mode}" autocomplete="${index === 0 ? "one-time-code" : "off"}" maxlength="1" aria-label="Character ${index + 1} of ${length}"${index === 0 ? describedBy : ""} data-box="${index}">`,
+      `          <input class="ot-box" type="text" inputmode="${mode}" autocomplete="${index === 0 ? "one-time-code" : "off"}" maxlength="1" aria-label="${escapeHtml(fill(config.boxLabel, { index: index + 1, length }))}"${index === 0 ? describedBy : ""} data-box="${index}">`,
   )
   .join("\n")}
         </div>`;

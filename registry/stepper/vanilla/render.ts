@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { StepperConfig } from "../react/stepper";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4", done: "#1a7f52" },
   dark: { surface: "#141019", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448", done: "#6ddba4" },
@@ -47,7 +50,7 @@ export function renderStepperMarkup(config: StepperConfig) {
       const done = position < current;
       const isCurrent = position === current;
       const state = done ? "done" : isCurrent ? "current" : "todo";
-      const said = done ? " (completed)" : isCurrent ? " (current step)" : " (not started)";
+      const said = ` ${done ? config.doneText : isCurrent ? config.currentText : config.todoText}`;
       const marker = done ? tick : config.marker === "number" ? String(position) : `<span class="st-dot"></span>`;
       const detail =
         config.details && step.detail.trim() !== ""
@@ -55,7 +58,7 @@ export function renderStepperMarkup(config: StepperConfig) {
           : "";
       const body = `          <span class="st-marker st-marker--${state}" aria-hidden="true">${marker}</span>
           <span class="st-words">
-            <span class="st-label">${escapeHtml(step.label)}<span class="st-sr">${said}</span></span>
+            <span class="st-label">${escapeHtml(step.label)}<span class="st-sr">${escapeHtml(said)}</span></span>
 ${detail}          </span>`;
       const inner =
         done && config.linkDone && step.href.trim() !== ""
@@ -72,7 +75,7 @@ ${inner}
     .join("\n");
 
   const summary = config.summary
-    ? `    <p class="st-summary">Step ${current} of ${steps.length}: ${escapeHtml(steps[current - 1].label)}</p>\n`
+    ? `    <p class="st-summary">${escapeHtml(fill(config.summaryText, { current, total: steps.length, step: steps[current - 1].label }))}</p>\n`
     : "";
 
   return `    <nav class="st st--${config.orientation} st--theme-${config.theme}" style="${vars}" aria-label="${escapeHtml(config.label)}">
