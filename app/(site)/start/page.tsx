@@ -73,6 +73,20 @@ export default function StartPage() {
                 the end — and the registry applies them to the file before it hands it over, so nothing has
                 to be edited afterwards.
               </p>
+
+              <h3 className="mt-8 font-display text-2xl">Or by name, and from your AI assistant</h3>
+              <p className="mt-2 max-w-prose text-pretty text-ink-muted">
+                Add the namespace to your <code className="font-mono text-ink">components.json</code> once, and install any
+                part by its name. The shadcn MCP server reads the same index, so an assistant can find and add parts too.
+              </p>
+              <Command>{`"registries": { "@build-components": "${siteUrl}/r/{name}.json" }`}</Command>
+              <Command>{"npx shadcn@latest add @build-components/date-picker"}</Command>
+              <p className="mt-3 max-w-prose text-sm text-pretty text-ink-muted">
+                By name, a part comes with its defaults. Assistants that read{" "}
+                <a href="/llms.txt" className="underline underline-offset-3">llms.txt</a> also get{" "}
+                <a href="/llms-full.txt" className="underline underline-offset-3">every option of every part</a>, so they
+                can write the address with your options in it.
+              </p>
             </section>
 
             <section aria-labelledby="needs">

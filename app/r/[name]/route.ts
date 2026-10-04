@@ -1,3 +1,4 @@
+import { registryIndex } from "@/lib/ai-index";
 import { count } from "@/lib/counter";
 import { applyConfig } from "@/lib/export";
 import { isRegistrySlug, registry } from "@/lib/registry";
@@ -7,6 +8,8 @@ import { readSource } from "@/lib/sources";
 // shadcn-compatible registry item: npx shadcn@latest add "<origin>/r/<name>.json?<options>"
 export async function GET(request: Request, ctx: RouteContext<"/r/[name]">) {
   const { name } = await ctx.params;
+  // The index of every part (D91): what `@build-components/registry` resolves to, for the CLI and its MCP server.
+  if (name === "registry.json") return Response.json(registryIndex());
   const slug = name.replace(/\.json$/, "");
   // Only known slugs reach the file system.
   if (!name.endsWith(".json") || !isRegistrySlug(slug)) {
