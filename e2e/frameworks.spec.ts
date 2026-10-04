@@ -69,7 +69,9 @@ async function afterUnmount(page: Page, url: string) {
 }
 
 // The parts that set up the most around them: a timer, document listeners, media queries and an observer.
-const parts = ["countdown", "menu", "date-picker"].filter((slug) => !frameworkParts() || frameworkParts()!.includes(slug));
+// The hero is the bar, so it must be built too.
+const built = (slug: string) => !frameworkParts() || frameworkParts()!.includes(slug);
+const parts = built("hero") ? ["countdown", "menu", "date-picker"].filter(built) : [];
 
 for (const framework of frameworks) {
   test.describe(`${framework.name}: a component that goes takes its part's set-up with it`, () => {

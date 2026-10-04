@@ -28,8 +28,9 @@ export type PartSources = {
 };
 
 /**
- * The part's script as a module. Its own start-up line (every element marked as one on the page) becomes
- * `mount(container)`: the same start, inside one container, returning what undoes it.
+ * The part's script as a module. Its start-up lines (every element marked as one on the page; the header
+ * has two, itself and its light and dark switch) become `mount(container)`: the same starts, inside one
+ * container, returning what undoes them.
  */
 export function coreModule(slug: string, js: string) {
   const lines = js.replace(/\r\n/g, "\n").split("\n");
@@ -38,13 +39,12 @@ export function coreModule(slug: string, js: string) {
   while (close > 0 && lines[close].trim() === "") close--;
   if (open === -1 || lines[close] !== "})();") throw new Error(`${slug}: the script is not one IIFE`);
   const body = lines.slice(open + 1, close);
-  const start = body.length - 1 - [...body].reverse().findIndex((line) => line.trim() !== "");
-  const startUp = /^\s*document\.querySelectorAll\((".+?")\)\.forEach\((.+)\);$/.exec(body[start]);
-  if (!startUp) throw new Error(`${slug}: the script's last line does not start it on the page`);
-  const [, selector, starter] = startUp;
+  const startUpLine = /^ {2}document\.querySelectorAll\((".+?")\)\.forEach\((.+)\);$/;
+  const starts = body.map((line) => startUpLine.exec(line)).filter((match) => match !== null);
+  if (starts.length === 0) throw new Error(`${slug}: the script never starts itself on the page`);
   return [
     ...lines.slice(0, open),
-    ...body.slice(0, start).map((line) => line.replace(/^ {2}/, "")),
+    ...body.filter((line) => !startUpLine.test(line)).map((line) => line.replace(/^ {2}/, "")),
     "",
     "/**",
     " * Starts the part in `container` and returns what stops it (D92): the listeners, timers and observers",
@@ -54,7 +54,7 @@ export function coreModule(slug: string, js: string) {
     "  const undo = [];",
     "  const stopWatching = watch(container, undo);",
     "  try {",
-    `    container.querySelectorAll(${selector}).forEach(${starter});`,
+    ...starts.map(([, selector, starter]) => `    container.querySelectorAll(${selector}).forEach(${starter});`),
     "  } finally {",
     "    stopWatching();",
     "  }",
