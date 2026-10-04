@@ -780,3 +780,11 @@ templates (once is one template's choice, not a pattern); then the parts of the 
 parts with the page. Never a part already on the page; four at most.
 **Found on the way:** the feature grid keyed items by title, so two items with one title broke React. Keyed
 by position now; the template React tests fail on any console error, which is how it was caught.
+
+## 2026-10-04 — D89. The site's colour control is light or dark, starting from the system
+Adesh asked to drop the "system" option. The site opens in the system's theme and the control shows it;
+picking the other one pins it (stored, survives reloads). Picking what the system says unpins, so the site
+follows the system again as it changes, with no third button to explain.
+**Found on the way:** the header renders the control twice (desktop, and inside the phone menu), and both
+radio groups were named `theme`, so the browser made them one group and only one radio across both could
+be checked. Each now gets its own name from `useId()`. `e2e/site-pages.spec.ts` covers it.

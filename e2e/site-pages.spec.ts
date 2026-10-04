@@ -200,3 +200,49 @@ test.describe("the get-started page", () => {
     await expect(page.getByText("[TODO: no licence has been chosen", { exact: false })).toBeVisible();
   });
 });
+
+test.describe("the site theme", () => {
+  /** Loads a page with the theme control on screen: on a phone it is inside the menu. */
+  async function load(page: Page, path?: string) {
+    if (path) await page.goto(path);
+    else await page.reload();
+    const menu = page.getByRole("button", { name: "Menu" });
+    if (!(await menu.isVisible())) return;
+    // A click that lands before hydration does nothing, so retry until the menu is really open.
+    await expect(async () => {
+      if (!(await radio(page, "light").isVisible())) await menu.click();
+      await expect(radio(page, "light")).toBeVisible({ timeout: 1000 });
+    }).toPass();
+  }
+  const radio = (page: Page, theme: "light" | "dark") => page.getByRole("radio", { name: `${theme} theme` });
+  const pick = (page: Page, theme: "light" | "dark") => page.locator("label").filter({ has: radio(page, theme) }).click();
+
+  for (const system of ["light", "dark"] as const) {
+    const other = system === "light" ? "dark" : "light";
+
+    test(`opens in the system's ${system} theme, and the other one sticks once picked`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: system });
+      await load(page, "/start");
+      await expect(radio(page, system)).toBeChecked();
+      await expect(page.locator("html")).not.toHaveAttribute("data-theme");
+
+      await pick(page, other);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", other);
+      await load(page);
+      await expect(radio(page, other)).toBeChecked();
+
+      // Going back to what the system says pins nothing, so the site follows the system again.
+      await pick(page, system);
+      await expect(page.locator("html")).not.toHaveAttribute("data-theme");
+      expect(await page.evaluate(() => localStorage.getItem("theme"))).toBeNull();
+    });
+  }
+
+  test("follows the system as it changes while nothing is pinned", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await load(page, "/start");
+    await expect(radio(page, "light")).toBeChecked();
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(radio(page, "dark")).toBeChecked();
+  });
+});

@@ -54,6 +54,8 @@ Adesh said ship. `main` was fast-forwarded to `dev` (7a5d67e) and pushed; Vercel
 - **Fix:** notification list and toolbar keyed items (and kept read/pressed state) by their text, so two
   items with one title logged a duplicate-key error and marking one marked both. Now by position; `duplicates`
   variants test it.
+- **Site theme (D89):** the header control is light/dark only and opens in the system theme; the two copies
+  of it no longer share one radio group.
 
 
 ## Session 14: wider layout to try, live reel, more templates, page builder

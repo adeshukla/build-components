@@ -1,46 +1,50 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useId, useSyncExternalStore } from "react";
 
-type Theme = "system" | "light" | "dark";
+type Theme = "light" | "dark";
 
 const listeners = new Set<() => void>();
+const darkQuery = () => window.matchMedia("(prefers-color-scheme: dark)");
+const systemTheme = (): Theme => (darkQuery().matches ? "dark" : "light");
 
+/** A pinned choice if there is one, otherwise whatever the system says. */
 function readTheme(): Theme {
   try {
     const stored = localStorage.getItem("theme");
-    return stored === "light" || stored === "dark" ? stored : "system";
+    if (stored === "light" || stored === "dark") return stored;
   } catch {
-    return "system";
+    // Storage blocked: follow the system.
   }
+  return systemTheme();
 }
 
 function writeTheme(theme: Theme) {
+  // Picking what the system already says means "follow the system", so nothing is pinned.
+  const pin = theme === systemTheme() ? null : theme;
   try {
-    if (theme === "system") localStorage.removeItem("theme");
-    else localStorage.setItem("theme", theme);
+    if (pin) localStorage.setItem("theme", pin);
+    else localStorage.removeItem("theme");
   } catch {
     // Private mode: the choice applies to this page only.
   }
-  if (theme === "system") delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = theme;
+  if (pin) document.documentElement.dataset.theme = pin;
+  else delete document.documentElement.dataset.theme;
   listeners.forEach((listener) => listener());
 }
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
+  // While nothing is pinned, the site follows the system as it changes, and the control has to as well.
+  const query = darkQuery();
+  query.addEventListener("change", listener);
   return () => {
     listeners.delete(listener);
+    query.removeEventListener("change", listener);
   };
 }
 
 const icons: Record<Theme, React.ReactNode> = {
-  system: (
-    <>
-      <rect x="3" y="4" width="18" height="13" rx="2" />
-      <path d="M8 21h8" />
-    </>
-  ),
   light: (
     <>
       <circle cx="12" cy="12" r="4" />
@@ -50,19 +54,22 @@ const icons: Record<Theme, React.ReactNode> = {
   dark: <path d="M20 14.5A8 8 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />,
 };
 
-/** Three-state theme control: follow the system, or pin light or dark. */
+/** Light or dark. The site opens in the system's theme; picking the other one pins it. */
 export function ThemeToggle() {
-  const theme = useSyncExternalStore(subscribe, readTheme, () => "system" as Theme);
+  // The header renders this twice (desktop and phone menu): one shared name would make them one radio group.
+  const name = useId();
+  // Unknown on the server, so neither is checked until the page hydrates.
+  const theme = useSyncExternalStore(subscribe, readTheme, () => null);
 
   return (
     <fieldset className="flex items-center">
       <legend className="sr-only">Colour theme</legend>
       <div className="flex rounded-md border border-rule bg-wash p-0.5">
-        {(["system", "light", "dark"] as const).map((value) => (
+        {(["light", "dark"] as const).map((value) => (
           <label key={value} className="relative cursor-pointer">
             <input
               type="radio"
-              name="theme"
+              name={name}
               value={value}
               checked={theme === value}
               onChange={() => writeTheme(value)}
@@ -72,7 +79,7 @@ export function ThemeToggle() {
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="size-4">
                 {icons[value]}
               </svg>
-              <span className="sr-only">{value === "system" ? "Follow system theme" : `${value} theme`}</span>
+              <span className="sr-only">{`${value} theme`}</span>
             </span>
           </label>
         ))}
