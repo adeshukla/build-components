@@ -312,6 +312,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
                   <input
                     type={field.format === "url" ? "url" : "text"}
                     value={item[field.key] ?? ""}
+                    dir="auto"
                     maxLength={field.maxLength}
                     onChange={(event) =>
                       onChange(items.map((it, i) => (i === index ? { ...it, [field.key]: event.target.value } : it)))
@@ -400,6 +401,8 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             rows={3}
             maxLength={option.maxLength}
             value={value as string}
+            // Words in Arabic or Hebrew read right to left as they are typed.
+            dir="auto"
             aria-describedby={descriptionId}
             onChange={(event) => onChange(event.target.value)}
             className={`${inputClass} resize-y`}
@@ -410,6 +413,7 @@ function Control({ idBase, option, value, changed, showGroup, onChange, onReset 
             type={option.format === "url" ? "url" : "text"}
             maxLength={option.maxLength}
             value={value as string}
+            dir="auto"
             aria-describedby={descriptionId}
             onChange={(event) => onChange(event.target.value)}
             className={inputClass}
