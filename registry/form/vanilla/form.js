@@ -4,12 +4,20 @@
  * Messages name the problem and the fix, in the style of the GOV.UK Design System.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createForm(root) {
     const form = root.querySelector("[data-form-element]");
     const rows = Array.from(root.querySelectorAll("[data-field]"));
     if (!form || rows.length === 0) return;
 
     const validateOn = root.dataset.validateOn || "blur";
+    const words = JSON.parse(root.dataset.words);
     const summary = root.querySelector("[data-summary]");
     const summaryList = root.querySelector("[data-summary-list]");
     const success = root.querySelector("[data-success]");
@@ -32,51 +40,55 @@
       const min = limit(row.dataset.min);
       const max = limit(row.dataset.max);
 
-      if (type === "checkbox") return required && !control.checked ? "Select “" + label + "” to continue." : "";
+      function say(text, values) {
+        return fill(text, Object.assign({ label: label, name: lower }, values));
+      }
+
+      if (type === "checkbox") return required && !control.checked ? say(words.checkboxText) : "";
 
       const text = (control.value || "").trim();
       if (text === "") {
         if (!required) return "";
-        if (type === "select") return "Select " + lower + ".";
-        if (type === "date") return "Enter " + lower + ", for example 27 03 2026.";
-        return "Enter " + lower + ".";
+        if (type === "select") return say(words.selectMissingText);
+        if (type === "date") return say(words.dateMissingText);
+        return say(words.missingText);
       }
 
       if (type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
-        return "Enter an email address in the correct format, like name@example.com.";
+        return words.emailText;
       }
       if (type === "tel" && !/^[\d\s()+-]{7,}$/.test(text)) {
-        return "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.";
+        return words.telText;
       }
       if (type === "url" && !/^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(text)) {
-        return "Enter a web address in the correct format, like https://example.com.";
+        return words.urlText;
       }
       if (type === "select" && row.dataset.options && row.dataset.options.split("|").indexOf(text) === -1) {
-        return "Select " + lower + " from the list.";
+        return say(words.notInListText);
       }
 
       if (type === "number" || type === "date") {
-        if (type === "number" && !isFinite(Number(text))) return label + " must be a number.";
+        if (type === "number" && !isFinite(Number(text))) return say(words.notNumberText);
         const size = type === "number" ? Number(text) : Date.parse(text);
         const low = type === "number" ? min : row.dataset.min ? Date.parse(row.dataset.min) : null;
         const high = type === "number" ? max : row.dataset.max ? Date.parse(row.dataset.max) : null;
-        if (low !== null && size < low) return label + " must be " + row.dataset.min + (type === "number" ? " or more." : " or later.");
-        if (high !== null && size > high) return label + " must be " + row.dataset.max + (type === "number" ? " or less." : " or earlier.");
+        if (low !== null && size < low) return say(type === "number" ? words.tooSmallText : words.tooEarlyText, { min: row.dataset.min });
+        if (high !== null && size > high) return say(type === "number" ? words.tooBigText : words.tooLateText, { max: row.dataset.max });
         return "";
       }
 
       if (min !== null && text.length < min) {
-        return label + " must be at least " + min + " characters. You have entered " + text.length + ".";
+        return say(words.tooShortText, { min: min, count: text.length });
       }
       if (max !== null && text.length > max) {
-        return label + " must be " + max + " characters or fewer. You have entered " + text.length + ".";
+        return say(words.tooLongText, { max: max, count: text.length });
       }
       if (row.dataset.pattern) {
         try {
           if (!new RegExp(row.dataset.pattern).test(text)) {
             return row.dataset.help
-              ? "Enter " + lower + " in the format described: " + row.dataset.help
-              : "Enter " + lower + " in the requested format.";
+              ? say(words.formatHelpText, { help: row.dataset.help })
+              : say(words.formatText);
           }
         } catch {
           // An unusable pattern must never block the visitor.
@@ -135,7 +147,7 @@
       const length = (controlOf(row).value || "").length;
       // Nothing typed yet, nothing to count: an empty field does not need a countdown.
       counter.hidden = length === 0;
-      counter.textContent = Math.max(0, max - length) + " characters remaining";
+      counter.textContent = fill(words.remainingText, { count: Math.max(0, max - length) });
     }
 
     rows.forEach(function (row) {

@@ -27,6 +27,29 @@ export type FormConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  checkboxText: string;
+  missingText: string;
+  selectMissingText: string;
+  dateMissingText: string;
+  emailText: string;
+  telText: string;
+  urlText: string;
+  notInListText: string;
+  notNumberText: string;
+  tooSmallText: string;
+  tooBigText: string;
+  tooEarlyText: string;
+  tooLateText: string;
+  tooShortText: string;
+  tooLongText: string;
+  formatHelpText: string;
+  formatText: string;
+  summaryTitle: string;
+  errorPrefix: string;
+  optionalText: string;
+  requiredText: string;
+  chooseOneText: string;
+  remainingText: string;
 };
 
 // @config-start
@@ -78,6 +101,29 @@ const defaultConfig: FormConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 8,
+  checkboxText: "Select “{label}” to continue.",
+  missingText: "Enter {name}.",
+  selectMissingText: "Select {name}.",
+  dateMissingText: "Enter {name}, for example 27 03 2026.",
+  emailText: "Enter an email address in the correct format, like name@example.com.",
+  telText: "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.",
+  urlText: "Enter a web address in the correct format, like https://example.com.",
+  notInListText: "Select {name} from the list.",
+  notNumberText: "{label} must be a number.",
+  tooSmallText: "{label} must be {min} or more.",
+  tooBigText: "{label} must be {max} or less.",
+  tooEarlyText: "{label} must be {min} or later.",
+  tooLateText: "{label} must be {max} or earlier.",
+  tooShortText: "{label} must be at least {min} characters. You have entered {count}.",
+  tooLongText: "{label} must be {max} characters or fewer. You have entered {count}.",
+  formatHelpText: "Enter {name} in the format described: {help}",
+  formatText: "Enter {name} in the requested format.",
+  summaryTitle: "There is a problem",
+  errorPrefix: "Error:",
+  optionalText: "(optional)",
+  requiredText: "(required)",
+  chooseOneText: "Choose one",
+  remainingText: "{count} characters remaining",
 };
 // @config-end
 
@@ -143,7 +189,7 @@ const limit = (value: string) => (value.trim() === "" || !Number.isFinite(Number
  * One rule set for both outputs. Messages name the problem and the fix, in the style of the
  * GOV.UK Design System: "Enter your full name", not "Invalid input".
  */
-export function validateField(field: FormField, value: string, checked: boolean) {
+export function validateField(field: FormField, value: string, checked: boolean, words: FormConfig) {
   const type = fieldType(field);
   const label = field.label.trim();
   const lower = label.charAt(0).toLowerCase() + label.slice(1);
@@ -151,51 +197,52 @@ export function validateField(field: FormField, value: string, checked: boolean)
   const max = limit(field.max);
   const required = isRequired(field);
 
-  if (type === "checkbox") return required && !checked ? `Select “${label}” to continue.` : "";
+  const say = (text: string, values: Record<string, string | number> = {}) => fill(text, { label, name: lower, ...values });
+  if (type === "checkbox") return required && !checked ? say(words.checkboxText) : "";
 
   const text = value.trim();
   if (text === "") {
     if (!required) return "";
-    if (type === "select") return `Select ${lower}.`;
-    if (type === "date") return `Enter ${lower}, for example 27 03 2026.`;
-    return `Enter ${lower}.`;
+    if (type === "select") return say(words.selectMissingText);
+    if (type === "date") return say(words.dateMissingText);
+    return say(words.missingText);
   }
 
   if (type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
-    return "Enter an email address in the correct format, like name@example.com.";
+    return words.emailText;
   }
   if (type === "tel" && !/^[\d\s()+-]{7,}$/.test(text)) {
-    return "Enter a phone number using only digits, spaces, brackets, + or -, like +44 20 7946 0000.";
+    return words.telText;
   }
   if (type === "url" && !/^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(text)) {
-    return "Enter a web address in the correct format, like https://example.com.";
+    return words.urlText;
   }
   if (type === "select" && choices(field).length > 0 && !choices(field).includes(text)) {
-    return `Select ${lower} from the list.`;
+    return say(words.notInListText);
   }
 
   if (type === "number" || type === "date") {
-    if (type === "number" && !Number.isFinite(Number(text))) return `${label} must be a number.`;
+    if (type === "number" && !Number.isFinite(Number(text))) return say(words.notNumberText);
     const size = type === "number" ? Number(text) : Date.parse(text);
     const low = type === "number" ? min : field.min.trim() === "" ? null : Date.parse(field.min);
     const high = type === "number" ? max : field.max.trim() === "" ? null : Date.parse(field.max);
-    if (low !== null && size < low) return `${label} must be ${field.min} or later.`.replace("or later", type === "number" ? "or more" : "or later");
-    if (high !== null && size > high) return `${label} must be ${field.max} or earlier.`.replace("or earlier", type === "number" ? "or less" : "or earlier");
+    if (low !== null && size < low) return say(type === "number" ? words.tooSmallText : words.tooEarlyText, { min: field.min.trim() });
+    if (high !== null && size > high) return say(type === "number" ? words.tooBigText : words.tooLateText, { max: field.max.trim() });
     return "";
   }
 
   if (min !== null && text.length < min) {
-    return `${label} must be at least ${min} characters. You have entered ${text.length}.`;
+    return say(words.tooShortText, { min, count: text.length });
   }
   if (max !== null && text.length > max) {
-    return `${label} must be ${max} characters or fewer. You have entered ${text.length}.`;
+    return say(words.tooLongText, { max, count: text.length });
   }
   if (field.pattern.trim() !== "") {
     try {
       if (!new RegExp(field.pattern).test(text)) {
         return field.help.trim() !== ""
-          ? `Enter ${lower} in the format described: ${field.help.trim()}`
-          : `Enter ${lower} in the requested format.`;
+          ? say(words.formatHelpText, { help: field.help.trim() })
+          : say(words.formatText);
       }
     } catch {
       // An unusable pattern must never block the visitor.
@@ -203,6 +250,9 @@ export function validateField(field: FormField, value: string, checked: boolean)
   }
   return "";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ContactForm({ config = defaultConfig }: { config?: FormConfig }) {
   const id = useId();
@@ -233,6 +283,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
       field,
       next?.value ?? valueOf(field),
       next?.checked ?? checkedOf(field),
+      config,
     );
     setErrors((current) => ({ ...current, [name]: message }));
     return message;
@@ -242,7 +293,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
     event.preventDefault();
     const found: Record<string, string> = {};
     for (const field of fields) {
-      const message = validateField(field, valueOf(field), checkedOf(field));
+      const message = validateField(field, valueOf(field), checkedOf(field), config);
       if (message !== "") found[fieldName(field.label)] = message;
     }
     setErrors(found);
@@ -310,7 +361,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
             className="rounded-(--fm-radius) border-2 border-(--fm-error) p-4"
           >
             <h3 id={`${id}-form-summary-title`} className="font-semibold text-(--fm-error)">
-              There is a problem
+              {config.summaryTitle}
             </h3>
             <ul className="mt-2 flex list-none flex-col gap-1 p-0">
               {listed.map((field) => (
@@ -375,7 +426,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                   </div>
                   {error !== "" && (
                     <p id={`${fieldId(name)}-error`} className="mt-1 text-sm font-medium text-(--fm-error)">
-                      <span className="sr-only">Error: </span>
+                      <span className="sr-only">{config.errorPrefix} </span>
                       {error}
                     </p>
                   )}
@@ -393,8 +444,8 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                 <div>
                   <label htmlFor={fieldId(name)} className="block font-medium">
                     {field.label}
-                    {config.marker === "optional" && !required && <span className="text-(--fm-muted)"> (optional)</span>}
-                    {config.marker === "required" && required && <span className="text-(--fm-muted)"> (required)</span>}
+                    {config.marker === "optional" && !required && <span className="text-(--fm-muted)"> {config.optionalText}</span>}
+                    {config.marker === "required" && required && <span className="text-(--fm-muted)"> {config.requiredText}</span>}
                   </label>
                   {field.help.trim() !== "" && (
                     <p id={`${fieldId(name)}-help`} className="mt-0.5 text-sm text-(--fm-muted)">
@@ -433,7 +484,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                     onBlur={() => config.validateOn === "blur" && check(field)}
                     className={`${control} ${error !== "" ? "border-2 border-(--fm-error)" : "border-(--fm-line)"}`}
                   >
-                    <option value="">Choose one</option>
+                    <option value="">{config.chooseOneText}</option>
                     {choices(field).map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -468,7 +519,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                 <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 text-sm">
                   {error !== "" ? (
                     <p id={`${fieldId(name)}-error`} className="font-medium text-(--fm-error)">
-                      <span className="sr-only">Error: </span>
+                      <span className="sr-only">{config.errorPrefix} </span>
                       {error}
                     </p>
                   ) : (
@@ -476,7 +527,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
                   )}
                   {config.counter && max !== null && (type === "text" || type === "textarea") && valueOf(field) !== "" && (
                     <p aria-live="polite" className="ml-auto text-(--fm-muted)">
-                      {Math.max(0, max - valueOf(field).length)} characters remaining
+                      {fill(config.remainingText, { count: Math.max(0, max - valueOf(field).length) })}
                     </p>
                   )}
                 </div>

@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import { type FormConfig, type FormField } from "../react/form";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 // A copy of the React file's own: that is a client module, so the server only gets a reference to it.
 function fieldName(label: string) {
   return label.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "field";
@@ -78,9 +81,9 @@ export function renderFormMarkup(config: FormConfig) {
         : "";
       const marker =
         config.marker === "optional" && !required
-          ? ` <span class="fm-muted">(optional)</span>`
+          ? ` <span class="fm-muted">${escapeHtml(config.optionalText)}</span>`
           : config.marker === "required" && required
-            ? ` <span class="fm-muted">(required)</span>`
+            ? ` <span class="fm-muted">${escapeHtml(config.requiredText)}</span>`
             : "";
 
       if (type === "checkbox") {
@@ -90,7 +93,7 @@ export function renderFormMarkup(config: FormConfig) {
               <label for="${name}">${escapeHtml(field.label)}</label>
             </div>
             <div class="fm-message">
-              <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">Error: </span><span data-message></span></p>
+              <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">${escapeHtml(config.errorPrefix)} </span><span data-message></span></p>
             </div>
           </div>`;
       }
@@ -100,7 +103,7 @@ export function renderFormMarkup(config: FormConfig) {
           ? `            <textarea class="fm-control" id="${name}" name="${name}" rows="5"${field.max.trim() ? ` maxlength="${escapeHtml(field.max.trim())}"` : ""}${describedBy}></textarea>`
           : type === "select"
             ? `            <select class="fm-control" id="${name}" name="${name}"${describedBy}>
-              <option value="">Choose one</option>
+              <option value="">${escapeHtml(config.chooseOneText)}</option>
 ${choices(field)
   .map((option) => `              <option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`)
   .join("\n")}
@@ -109,7 +112,7 @@ ${choices(field)
 
       const counter =
         config.counter && field.max.trim() !== "" && (type === "text" || type === "textarea")
-          ? `            <p class="fm-hint" aria-live="polite" data-counter>${escapeHtml(field.max.trim())} characters remaining</p>\n`
+          ? `            <p class="fm-hint" aria-live="polite" data-counter>${escapeHtml(fill(config.remainingText, { count: field.max.trim() }))}</p>\n`
           : "";
 
       return `          <div class="fm-row${wide ? " fm-row--wide" : ""}" ${rules}>
@@ -118,7 +121,7 @@ ${choices(field)
 ${hint}            </div>
 ${input}
             <div class="fm-message">
-              <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">Error: </span><span data-message></span></p>
+              <p class="fm-error" id="${name}-error" hidden><span class="fm-sr">${escapeHtml(config.errorPrefix)} </span><span data-message></span></p>
 ${counter}            </div>
           </div>`;
     })
@@ -126,12 +129,12 @@ ${counter}            </div>
 
   const summary = config.errorSummary
     ? `        <div class="fm-summary" role="alert" aria-labelledby="form-summary-title" tabindex="-1" data-summary hidden>
-          <h3 class="fm-summary-title" id="form-summary-title">There is a problem</h3>
+          <h3 class="fm-summary-title" id="form-summary-title">${escapeHtml(config.summaryTitle)}</h3>
           <ul class="fm-summary-list" data-summary-list></ul>
         </div>\n`
     : "";
 
-  return `    <section class="fm fm--${config.layout} fm--theme-${config.theme}" style="${vars}" data-form data-validate-on="${config.validateOn}" data-summary-on="${config.errorSummary}">
+  return `    <section class="fm fm--${config.layout} fm--theme-${config.theme}" style="${vars}" data-form data-words="${escapeHtml(JSON.stringify({ checkboxText: config.checkboxText, missingText: config.missingText, selectMissingText: config.selectMissingText, dateMissingText: config.dateMissingText, emailText: config.emailText, telText: config.telText, urlText: config.urlText, notInListText: config.notInListText, notNumberText: config.notNumberText, tooSmallText: config.tooSmallText, tooBigText: config.tooBigText, tooEarlyText: config.tooEarlyText, tooLateText: config.tooLateText, tooShortText: config.tooShortText, tooLongText: config.tooLongText, formatHelpText: config.formatHelpText, formatText: config.formatText, errorPrefix: config.errorPrefix, remainingText: config.remainingText }))}" data-validate-on="${config.validateOn}" data-summary-on="${config.errorSummary}">
       <form novalidate data-form-element>
         <div class="fm-intro">
           <h2 class="fm-title">${escapeHtml(config.title)}</h2>
