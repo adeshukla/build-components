@@ -101,6 +101,15 @@ function bodyOf(page: string) {
   );
 }
 
+/** A part's markup with these options, as its HTML output has it in <body> (also the framework outputs'). */
+export function partMarkup(slug: string, config: Record<string, unknown>, fixedHtml: string) {
+  const render = registry[slug as RegistrySlug];
+  // Parts driven by their script ship fixed markup instead; its <main> is the demo page's, not ours.
+  return "renderHtml" in render && render.renderHtml
+    ? bodyOf(render.renderHtml(config))
+    : bodyOf(fixedHtml).replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
+}
+
 /**
  * The HTML/CSS/JS output as one file: every part's markup in place, all their CSS in one <style> and all
  * their scripts in one <script>, each with the template's options applied.
@@ -112,12 +121,7 @@ export function templateHtml(
 ) {
   const sections = resolve(template, options);
   const markup = (section: (typeof sections)[number]) => {
-    const render = registry[section.slug as RegistrySlug];
-    // Parts driven by their script ship fixed markup instead; its <main> is the demo page's, not ours.
-    const html =
-      "renderHtml" in render && render.renderHtml
-        ? bodyOf(render.renderHtml(section.config))
-        : bodyOf(sources[section.slug]?.html ?? "").replace(/^<main>\s*([\s\S]*?)\s*<\/main>$/, "$1");
+    const html = partMarkup(section.slug, section.config, sources[section.slug]?.html ?? "");
     const { width, space } = sectionFrame(section);
     const outer = [width !== "full" && "tpl-px", space !== "none" && `tpl-py-${space}`].filter(Boolean).join(" ");
     const inner = width === "full" || width === "auto" ? "" : `tpl-max-${width}`;

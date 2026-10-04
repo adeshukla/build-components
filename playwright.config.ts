@@ -14,6 +14,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   reporter: "list",
+  // The framework outputs (D92), compiled once before the workers start.
+  globalSetup: "./e2e/global-setup.ts",
   use: { baseURL: `http://localhost:${port}`, locale: "en-US" },
   // Same tests in Chromium, WebKit (Safari's engine) and an emulated iPhone.
   // Playwright's WebKit is close to Safari but not identical; a real iPhone check stays on the manual checklist.
