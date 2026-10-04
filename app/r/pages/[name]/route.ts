@@ -1,3 +1,4 @@
+import { count } from "@/lib/counter";
 import { siteRegistryItem } from "@/lib/next-project";
 import { decodeSite } from "@/lib/site-builder";
 
@@ -10,5 +11,6 @@ export async function GET(request: Request, ctx: RouteContext<"/r/pages/[name]">
   const { name } = await ctx.params;
   const site = await decodeSite(new URL(request.url).searchParams.get("p") ?? "");
   if (!name.endsWith(".json") || !site) return new Response("Not found", { status: 404 });
+  count("install", "built-site");
   return Response.json(siteRegistryItem(site));
 }

@@ -1,3 +1,4 @@
+import { count } from "@/lib/counter";
 import { readTemplateSources } from "@/lib/sources";
 import { partInstallUrls, templateReactSource } from "@/lib/template-output";
 import { optionsFromParams, templateById } from "@/lib/templates";
@@ -12,6 +13,7 @@ export async function GET(request: Request, ctx: RouteContext<"/r/templates/[nam
   const template = name.endsWith(".json") ? templateById(name.replace(/\.json$/, "")) : undefined;
   if (!template) return new Response("Not found", { status: 404 });
 
+  count("install", `template:${template.id}`);
   const url = new URL(request.url);
   const options = optionsFromParams(template, url.searchParams);
   const { exportNames } = readTemplateSources(template.sections.map((section) => section.slug));

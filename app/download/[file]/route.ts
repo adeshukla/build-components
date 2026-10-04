@@ -1,3 +1,4 @@
+import { count } from "@/lib/counter";
 import { nextSite, siteHtml } from "@/lib/next-project";
 import { decodeSite } from "@/lib/site-builder";
 import { zip } from "@/lib/zip";
@@ -16,6 +17,8 @@ export async function GET(request: Request, ctx: RouteContext<"/download/[file]"
   if (!site || parts === 0) return new Response("Not found", { status: 404 });
   const name = file.replace(/(-html)?\.(zip|json|html)$/, "").replace(/[^a-z0-9-]/g, "") || "site";
 
+  // The builder asks for the .json files and zips them itself, so they count as downloads too.
+  if (/\.(zip|json|html)$/.test(file)) count("download", file.endsWith(".html") || file.endsWith("-html.json") ? "built-site:html" : "built-site:next");
   if (file.endsWith("-html.json")) return Response.json(siteHtml(site));
   if (file.endsWith(".json")) return Response.json(nextSite(site));
   if (file.endsWith(".html")) {

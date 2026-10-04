@@ -5,6 +5,7 @@ import { Segmented } from "@/components/segmented";
 import { luminance } from "@/lib/html";
 import { encodePage, fromTemplate } from "@/lib/page-builder";
 import { partBySlug } from "@/lib/parts";
+import { countInBrowser } from "@/lib/count-beacon";
 import { templateHtml, templateInstallCommand, templateReactSource } from "@/lib/template-output";
 import { defaultOptions, optionsToParams, templateById, type TemplateOptions } from "@/lib/templates";
 
@@ -173,6 +174,7 @@ export function TemplateEditor({
     try {
       await navigator.clipboard.writeText(text);
       setCopied(what);
+      countInBrowser("copy", `template:${template.id}`);
     } catch {
       setCopied("Copying is blocked here: select the code instead");
     }
@@ -184,6 +186,7 @@ export function TemplateEditor({
     link.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     link.download = `${template.id}.html`;
     link.click();
+    countInBrowser("download", `template:${template.id}`);
     URL.revokeObjectURL(link.href);
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { countInBrowser } from "@/lib/count-beacon";
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent } from "react";
 import { match } from "@/components/catalogue";
 import { OptionsPanel } from "@/components/options-panel";
@@ -760,6 +761,7 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
     try {
       await navigator.clipboard.writeText(text);
       setCopied(what);
+      countInBrowser("copy", "built-site");
     } catch {
       setCopied("Copying is blocked here: select the text instead");
     }

@@ -55,6 +55,12 @@ export default function AboutPage() {
         Built by {author.name}, a UI developer, as part of <a href={author.url}>devstash.me</a>. Found a bug or want a
         part that is not here? Get in touch through <a href={author.url}>devstash.me</a>.
       </p>
+
+      <h2>What we count</h2>
+      <p>
+        How many times each part and template is installed, downloaded or copied, a total per month, to decide what
+        to build next. Nothing about who: no cookies, no addresses, nothing about your browser or device.
+      </p>
     </TextPage>
   );
 }

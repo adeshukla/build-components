@@ -1,3 +1,4 @@
+import { count } from "@/lib/counter";
 import { applyConfig } from "@/lib/export";
 import { isRegistrySlug, registry } from "@/lib/registry";
 import { parseConfig } from "@/lib/schema";
@@ -12,6 +13,7 @@ export async function GET(request: Request, ctx: RouteContext<"/r/[name]">) {
     return new Response("Not found", { status: 404 });
   }
 
+  count("install", slug);
   const item = registry[slug];
   const config = parseConfig(item.schema, new URL(request.url).searchParams);
   return Response.json({

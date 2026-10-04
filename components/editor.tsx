@@ -4,6 +4,7 @@ import { Fragment, useEffect, useId, useRef, useState, useSyncExternalStore } fr
 import { OptionsPanel } from "@/components/options-panel";
 import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
+import { countInBrowser } from "@/lib/count-beacon";
 import { applyConfig } from "@/lib/export";
 import { fullBleed, partBySlug } from "@/lib/parts";
 import { toSearchParams, type Schema } from "@/lib/schema";
@@ -198,6 +199,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
             {output === "vanilla" && (
               <CopyButton
                 text={() => onePage(html, sources.css, js)}
+                counted={slug}
                 label={`Copy all ${files.length === 3 ? "three" : "two"} as one page`}
                 doneLabel="The whole page is on the clipboard"
               />
@@ -206,7 +208,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
           <TabList label="Code" idBase={`${idBase}-code`} value={activeCode} onChange={setCodeTab} tabs={codeTabs} />
           <div {...tabPanelProps(`${idBase}-code`, activeCode)}>
             {activeFile ? (
-              <CodeView name={activeFile.name} code={activeFile.code} flash={flash} />
+              <CodeView slug={slug} name={activeFile.name} code={activeFile.code} flash={flash} />
             ) : (
               <InstallPanel slug={slug} command={`npx shadcn@latest add "${origin}/r/${slug}.json${query ? `?${query}` : ""}"`} />
             )}
@@ -335,7 +337,7 @@ function InstallPanel({ slug, command }: { slug: string; command: string }) {
     <div className="space-y-4 p-4 sm:p-6">
       <div className="glass flex flex-col items-stretch gap-3 rounded-2xl p-3 text-ink sm:flex-row sm:items-center sm:pl-4">
         <code className="min-w-0 flex-1 font-mono text-sm break-words">{command}</code>
-        <CopyButton text={() => command} label="Copy install command" doneLabel="Command copied" tone="accent" />
+        <CopyButton text={() => command} label="Copy install command" doneLabel="Command copied" tone="accent" counted={slug} />
       </div>
       <p className="text-sm text-pretty text-ink-muted">
         Run it in your project root. It writes <code className="font-mono text-ink">components/{slug}.tsx</code> with
@@ -346,7 +348,7 @@ function InstallPanel({ slug, command }: { slug: string; command: string }) {
   );
 }
 
-function CodeView({ name, code, flash }: { name: string; code: string; flash: { keys: string[]; count: number } }) {
+function CodeView({ slug, name, code, flash }: { slug: string; name: string; code: string; flash: { keys: string[]; count: number } }) {
   const lines = code.split("\n");
   return (
     <div>
@@ -354,7 +356,7 @@ function CodeView({ name, code, flash }: { name: string; code: string; flash: { 
         <span className="font-mono text-xs text-ink-muted">
           {lines.length} lines · changed options flash orange
         </span>
-        <CopyButton text={() => code} label={`Copy ${name}`} doneLabel={`${name} copied`} />
+        <CopyButton text={() => code} label={`Copy ${name}`} doneLabel={`${name} copied`} counted={slug} />
       </div>
       <pre
         tabIndex={0}
@@ -385,11 +387,14 @@ function CopyButton({
   label,
   doneLabel,
   tone = "paper",
+  counted,
 }: {
   text: () => string;
   label: string;
   doneLabel: string;
   tone?: "paper" | "accent";
+  /** The part to count a copy for (D90); unset, nothing is counted (a link, say). */
+  counted?: string;
 }) {
   const [said, setSaid] = useState<"" | "done" | "failed">("");
 
@@ -404,8 +409,14 @@ function CopyButton({
        * opening the dev server from a phone on the same network — and it can be refused anywhere.
        * The old selection copy still works in both cases.
        */
-      setSaid(oldWayCopy(value) ? "done" : "failed");
+      if (!oldWayCopy(value)) {
+        setSaid("failed");
+        setTimeout(() => setSaid(""), 2500);
+        return;
+      }
+      setSaid("done");
     }
+    if (counted) countInBrowser("copy", counted);
     setTimeout(() => setSaid(""), 2500);
   }
 
