@@ -19,7 +19,19 @@ Last updated: 2026-10-04 (session 16, on dev, not shipped)
   production build; the downloaded three-page project builds.
 - **Theme (D87):** Adesh picked A, Presets first. Six themes plus Fine-tune, read by all 125 parts in both
   outputs; a visitors' light and dark switch in the header; in the preview and every download.
-- **Next:** more sections (Adesh's item 10), then ship when he says so.
+- **More pages and whole websites (D88):** Adesh asked for more pre-built pages, whole websites, suggestions
+  while building and more parts. Six new sections (text section, picture, testimonials, contact details,
+  post list, announcement bar; 131 parts now); nine more page templates (home, services, blog, article,
+  team, careers, FAQ, sign in, coming soon; 18 in all); five whole websites (software product, studio,
+  company, blog, launch) on /templates and in the builder; a Suggested list in the builder's parts pane.
+- **Tests:** the six parts' specs, templates (419 incl. feature grid), builder and site pages (104) pass in
+  all three browsers against Adesh's dev server. Template React pages now also fail on console errors.
+- **Gotcha found:** e2e/builder.spec.ts with the default workers against `next dev` leaves the preview frame
+  blank in 2 to 4 tests (it fails the same way without today's changes). `--workers=2` passes every time.
+- **Spun off:** notification list and toolbar key items by their text, so two items with one title break
+  React (the feature grid had the same bug, fixed).
+- **Next:** Adesh tries /templates and /build; then ship when he says so. No shop website yet: there is no
+  product list template (a product card is one card).
 - **Not shipped:** everything since D83 is on dev, waiting for "ship".
 
 ## Shipped (2026-10-03)

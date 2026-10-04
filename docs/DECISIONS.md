@@ -757,3 +757,26 @@ Templates are unchanged: they have no theme. A new site starts on Clean.
 **Tested:** every part under Editorial (light) and Bold (dark), React and HTML, with axe
 (`e2e/theme.spec.ts`); the header switch in both outputs and three browsers; a downloaded themed site run with
 `next start`: theme, switch, the choice surviving a reload and a page change, no console errors.
+
+## 2026-10-04 — D88. More pages, whole websites, and suggestions while building
+**Adesh asked:** "pre-built more pages and a whole website", suggestions from our parts while someone builds,
+more components and page templates.
+**Parts:** six HTML-first sections a website needs: text section, picture (a drawn placeholder until it has
+an address; an unsafe address, which `parseConfig` turns into `#`, also means "no picture"), testimonials
+(only `[TODO]` quotes, names and roles ship: no invented people), contact details (`<address>` around a
+`<dl>`, mailto and tel links), post list (dates in words by hand, titles one level under the heading) and
+an announcement bar (an `aside` named Announcement, a banner part, so it sits in the shared top).
+**Page templates:** nine more (home, services, blog, article, team, careers, FAQ, sign in, coming soon). Sign
+in is by email link, because the form part has no password field and a sign-in made of loose parts would not
+be a form. A template's announcement bar goes under the header: the skip link must stay the first stop.
+Benefits, open roles, authors and quotations are `[TODO]`.
+**Whole websites** (`starters` in `lib/site-builder.ts`): a list of [page title, template] pairs. Every page
+takes the first page's header and footer and the menu lists the pages, so the existing site model, outputs
+and tests apply unchanged. Started from the builder's empty home page, its "Fill this page from" list (asks
+before replacing work), or /templates via `/build?site=<id>`. No shop website: there is no product list.
+**Suggestions** (`suggestions` in `lib/page-builder.ts`): learnt from the templates, not a hand-kept map.
+First what the page lacks (a header, its one h1, a footer); then what follows the chosen part in at least two
+templates (once is one template's choice, not a pattern); then the parts of the templates sharing the most
+parts with the page. Never a part already on the page; four at most.
+**Found on the way:** the feature grid keyed items by title, so two items with one title broke React. Keyed
+by position now; the template React tests fail on any console error, which is how it was caught.
