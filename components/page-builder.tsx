@@ -13,6 +13,7 @@ import {
   inOrder,
   MAX_SECTIONS,
   newSection,
+  suggestions,
   pageTemplate,
   regionOf,
   type BuiltPage,
@@ -21,7 +22,22 @@ import {
 import { inStock, partBySlug, type Category } from "@/lib/parts";
 import { registry, type RegistrySlug } from "@/lib/registry";
 import { buttonShapes, colourFamilies, cornerScales, fonts, lookOf, presets, spacings, type Look, type PresetId } from "@/lib/theme";
-import { addressFor, blankSite, decodeSite, encodeSite, fromView, MAX_PAGES, newPage, pageView, siteData, siteFrom, siteFromPage, type BuiltSite } from "@/lib/site-builder";
+import {
+  addressFor,
+  blankSite,
+  decodeSite,
+  encodeSite,
+  fromView,
+  MAX_PAGES,
+  newPage,
+  pageView,
+  siteData,
+  siteFrom,
+  siteFromPage,
+  siteFromStarter,
+  starters,
+  type BuiltSite,
+} from "@/lib/site-builder";
 import { ACCEPTED_PICTURES, loadPicture, pictureName, picturesIn, savePicture, swapPictures } from "@/lib/pictures";
 import type { Schema } from "@/lib/schema";
 import { templateReactSource } from "@/lib/template-output";
@@ -168,6 +184,7 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
   const chosen = selected ? sections.find((section) => section.slug === selected) : undefined;
   const chosenSlots = chosen ? pictureSlots(registry[chosen.slug].schema) : [];
   const passing = checks.filter((check) => check.ok).length;
+  const suggested = suggestions(page, selected);
   const pictures = picturesIn(page);
   // The page as the frame shows it: a kept picture's address is answered by the worker; one this browser
   // does not have (a shared link), or any before the worker is answering, is left empty: a placeholder.
@@ -484,6 +501,7 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
   }
 
   function startFrom(choice: string) {
+    if (choice.startsWith("site:")) return startSite(choice.slice(5));
     if (current.sections.length > 0 && !window.confirm("Replace this page's sections with the template's?")) return;
     const picked = templateById(choice);
     const filled = picked ? fromTemplate(picked, { ...defaultOptions(picked), name: page.name, brand: page.brand, theme: page.theme }) : { ...page, sections: [] };
@@ -496,6 +514,20 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
     setPage(next);
     setSelected(next.sections.find((section) => regionOf(section.slug) === "main")?.slug ?? null);
     setSaid(picked ? `Started from the ${picked.name.toLowerCase()} template` : "Cleared the page");
+    setStart("");
+  }
+
+  /** A whole website (D88): replaces every page, keeps the name, colour, theme and look. */
+  function startSite(id: string) {
+    const built = siteFromStarter(id, { name: site.name, brand: site.brand, theme: site.theme, look: site.look });
+    const starter = starters.find((candidate) => candidate.id === id);
+    if (!built || !starter) return;
+    const anything = site.pages.length > 1 || site.pages.some((candidate) => candidate.sections.length > 0) || site.top.length + site.bottom.length > 0;
+    if (anything && !window.confirm(`Replace the whole website with the ${starter.name} website's ${built.pages.length} pages?`)) return;
+    setSite(built);
+    setPageId(built.pages[0].id);
+    setSelected(built.pages[0].sections[0]?.slug ?? null);
+    setSaid(`Started the ${starter.name} website: ${built.pages.length} pages, linked from the menu`);
     setStart("");
   }
 
@@ -770,11 +802,20 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
             >
               <option value="">Choose…</option>
               <option value="blank">An empty page</option>
-              {templates.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {`${option.name} template`}
-                </option>
-              ))}
+              <optgroup label="This page">
+                {templates.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {`${option.name} template`}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="The whole website">
+                {starters.map((option) => (
+                  <option key={option.id} value={`site:${option.id}`}>
+                    {`${option.name} website (${option.pages.length} pages)`}
+                  </option>
+                ))}
+              </optgroup>
             </select>
             <button type="button" disabled={!start} onClick={() => startFrom(start)} className="btn-glass cursor-pointer text-sm disabled:cursor-not-allowed disabled:opacity-60">
               Start
@@ -823,6 +864,33 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
           />
         </div>
         <div className="thin-scroll relative grid max-h-[50vh] min-h-0 gap-5 overflow-y-auto p-4 lg:max-h-none lg:flex-1">
+          {query === "" && suggested.length > 0 && (
+            <div>
+              <h3 className="font-mono text-xs tracking-wide text-ink-muted uppercase">Suggested</h3>
+              <ul className="mt-2 grid gap-2">
+                {suggested.map((suggestion) => (
+                  <li key={suggestion.slug}>
+                    <button
+                      type="button"
+                      onClick={() => add(suggestion.slug)}
+                      className="drawing-host flex w-full cursor-pointer items-center gap-3 rounded-xl border border-dashed border-rule-strong bg-paper p-1.5 text-left transition-[border-color] duration-300 hover:border-accent"
+                    >
+                      <span
+                        className="grid h-10 w-14 shrink-0 place-items-center rounded-lg bg-[color-mix(in_oklab,var(--part-accent)_22%,transparent)] text-ink"
+                        style={{ ["--part-accent" as string]: partBySlug(suggestion.slug).accent }}
+                      >
+                        <PartDrawing slug={suggestion.slug} accent={partBySlug(suggestion.slug).accent} className="h-7 w-auto" />
+                      </span>
+                      <span className="min-w-0 text-xs leading-tight">
+                        <span className="block font-medium">{name(suggestion.slug)}</span>
+                        <span className="block text-ink-muted">{suggestion.why}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {order.map((category) => {
             const inCategory = found.filter((part) => part.category === category);
             if (inCategory.length === 0) return null;
@@ -1001,6 +1069,27 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
                     ? "Your header and footer stay; the template's sections go between them. Or drag parts from the left onto this page."
                     : "Or drag parts from the left onto this page."}
                 </p>
+                {current.path === "/" && site.pages.length === 1 && (
+                  <>
+                    <h4 className="mt-5 text-sm font-semibold">A whole website</h4>
+                    <ul className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3">
+                      {starters.map((option) => (
+                        <li key={option.id}>
+                          <button
+                            type="button"
+                            onClick={() => startSite(option.id)}
+                            className="h-full w-full cursor-pointer rounded-xl border border-rule bg-paper-sunk p-4 text-left transition-[border-color,translate] duration-300 hover:-translate-y-0.5 hover:border-accent"
+                          >
+                            <span className="block font-semibold">{`${option.name} website`}</span>
+                            <span className="mt-1 block font-mono text-xs text-ink-muted">{option.pages.map(([title]) => title).join(" · ")}</span>
+                            <span className="mt-1 block text-xs text-ink-muted">{option.summary}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <h4 className="mt-6 text-sm font-semibold">One page</h4>
+                  </>
+                )}
                 <ul className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3">
                   {templates.map((option) => (
                     <li key={option.id}>

@@ -1,7 +1,7 @@
 import { fullBleed, partBySlug } from "@/lib/parts";
 import { isRegistrySlug, registry, type RegistrySlug } from "@/lib/registry";
 import { parseConfig, toSearchParams } from "@/lib/schema";
-import { isBleed, resolve, sectionSpaces, sectionWidths, type SectionSpace, type SectionWidth, type Template, type TemplateOptions } from "@/lib/templates";
+import { isBleed, resolve, sectionSpaces, sectionWidths, templates, type SectionSpace, type SectionWidth, type Template, type TemplateOptions } from "@/lib/templates";
 
 /*
  * The page builder (D80): a page someone puts together from the catalogue, part by part. It is turned
@@ -139,4 +139,49 @@ export function decodePage(text: string): BuiltPage | null {
   } catch {
     return null;
   }
+}
+
+/*
+ * Suggestions while building (D88). What a page is missing comes first: a banner, one main heading, a
+ * footer. Then what usually comes next, learnt from the templates rather than written by hand: the parts
+ * that follow this one in the templates that use it, the most common first; then what the templates most
+ * like this page have that it does not.
+ */
+export type Suggestion = { slug: RegistrySlug; why: string };
+
+export function suggestions(page: BuiltPage, after: RegistrySlug | null, limit = 4): Suggestion[] {
+  const has = new Set(page.sections.map((section) => section.slug));
+  const main = page.sections.filter((section) => regionOf(section.slug) === "main");
+  const out: Suggestion[] = [];
+  const offer = (slug: RegistrySlug, why: string) => {
+    if (!has.has(slug) && !out.some((suggestion) => suggestion.slug === slug)) out.push({ slug, why });
+  };
+
+  if (!has.has("header") && !has.has("mega-menu")) offer("header", "Every page needs a way around");
+  const h1 = page.sections.some((section) => section.slug === "page-header" || section.config.headingLevel === "h1");
+  if (!h1) offer(main.length === 0 ? "hero" : "page-header", "Gives the page its one main heading");
+  if (!has.has("footer") && main.length > 0) offer("footer", "Every page ends with one");
+
+  const from = after && regionOf(after) === "main" ? after : (main.at(-1)?.slug ?? null);
+  const counts = new Map<RegistrySlug, number>();
+  for (const template of templates) {
+    const slugs = template.sections.filter((section) => section.region === "main").map((section) => section.slug);
+    const at = from ? slugs.indexOf(from) : -1;
+    const next = from ? (at === -1 ? undefined : slugs[at + 1]) : slugs[0];
+    if (next) counts.set(next, (counts.get(next) ?? 0) + 1);
+  }
+  const why = from ? `Often follows ${partBySlug(from).name}` : "Pages often open with it";
+  // Twice at least: once is one template's choice, not a pattern.
+  for (const [slug, count] of [...counts].sort((a, b) => b[1] - a[1])) if (count > 1) offer(slug, why);
+
+  // Then the rest of the templates most like this page: the more parts they share with it, the closer.
+  const alike = templates
+    .map((template) => {
+      const slugs = template.sections.filter((section) => section.region === "main").map((section) => section.slug);
+      return { template, slugs, shared: slugs.filter((slug) => has.has(slug)).length };
+    })
+    .filter((candidate) => candidate.shared > 0)
+    .sort((a, b) => b.shared - a.shared);
+  for (const { template, slugs } of alike) for (const slug of slugs) offer(slug, `In the ${template.name.toLowerCase()} template`);
+  return out.slice(0, limit);
 }

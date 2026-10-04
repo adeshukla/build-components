@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { encodePage, MAX_SECTIONS, newSection, type BuiltPage } from "../lib/page-builder";
+import { encodePage, MAX_SECTIONS, newSection, suggestions, type BuiltPage } from "../lib/page-builder";
 import { inStock } from "../lib/parts";
 import { isRegistrySlug } from "../lib/registry";
 import { expectNoAxeViolations } from "./helpers";
@@ -196,6 +196,48 @@ test.describe("a website", () => {
     await expect(pages(page)).toHaveText([/^Home/, "+ Add a page"]);
     await expect(pages(page).first()).toBeFocused();
   });
+
+  test("a whole website starts in one click, every page from a template, linked from the menu (D88)", async ({ page }) => {
+    await page.goto("/build");
+    await page.getByRole("button", { name: /^Company website/ }).click();
+    await expect(pages(page)).toHaveText([/^Home/, /^About/, /^Team/, /^Careers/, /^FAQ/, /^Contact/, "+ Add a page"]);
+    const header = frameOf(page).locator('[data-part="header"]');
+    await expect(header.getByRole("link", { name: "Careers" }).first()).toHaveAttribute("href", "/careers");
+    await pages(page).filter({ hasText: "Careers" }).click();
+    await expect(frameOf(page).getByRole("heading", { level: 1 })).toHaveText("Careers");
+    await expect(frameOf(page).getByRole("heading", { name: "Open roles" })).toBeVisible();
+
+    // Once there is work on the page, starting another website asks first.
+    page.once("dialog", (dialog) => dialog.dismiss());
+    await page.getByLabel("Fill this page from").selectOption({ label: "Launch website (3 pages)" });
+    await page.getByRole("button", { name: "Start", exact: true }).click();
+    await expect(pages(page)).toHaveCount(7);
+  });
+
+  test("suggestions fill what a page is missing, then what usually comes next (D88)", async ({ page }) => {
+    await page.goto("/build");
+    const suggested = page.locator("h3", { hasText: "Suggested" }).locator("+ ul").getByRole("button");
+    await expect(suggested).toHaveText([/^Site header/, /^Hero section.*main heading/, /^Page header/]);
+    await suggested.filter({ hasText: "Hero section" }).click();
+    await expect(rows(page)).toHaveCount(1);
+    // A hero is followed by a feature grid in the landing, home and services templates.
+    await expect(suggested.filter({ hasText: "Feature grid" })).toContainText("Often follows Hero section");
+    await expect(suggested.filter({ hasText: "Site footer" })).toContainText("Every page ends with one");
+    await suggested.filter({ hasText: "Feature grid" }).click();
+    await expect(pageList(page)).toContainText("Feature grid");
+    await expect(suggested.filter({ hasText: /^Feature grid/ })).toHaveCount(0);
+  });
+});
+
+test("suggestions come from the templates, and never offer what is on the page", () => {
+  const blogPage = built(["header", "page-header", "post-list", "newsletter", "footer"]);
+  const offered = suggestions(blogPage, null);
+  expect(offered.length).toBeGreaterThan(0);
+  for (const { slug } of offered) expect(blogPage.sections.map((section) => section.slug)).not.toContain(slug);
+  // Nothing follows a newsletter in any template; the closest templates fill in.
+  expect(offered[0].why).toMatch(/^In the .+ template$/);
+  // A page without its banner, heading or footer hears about those first.
+  expect(suggestions(built(["faq"]), "faq").slice(0, 3).map((suggestion) => suggestion.slug)).toEqual(["header", "page-header", "footer"]);
 });
 
 /** A page of the given parts, as the builder would write it. */

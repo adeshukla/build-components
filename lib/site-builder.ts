@@ -1,9 +1,11 @@
-import { lookFrom, lookOf } from "@/lib/theme";
+import { defaultOptions, templateById } from "@/lib/templates";
+import { lookFrom, lookOf, type Look } from "@/lib/theme";
 import {
   basicsFrom,
   blankPage,
   decodePage,
   fromBase64Url,
+  fromTemplate,
   inOrder,
   pageTemplate,
   regionOf,
@@ -46,6 +48,61 @@ export function siteFromPage(page: BuiltPage): BuiltSite {
 
 /** A new site starts on the Clean theme: every part then shares one look from the first part on. */
 export const blankSite = (): BuiltSite => ({ ...siteFromPage(blankPage()), look: lookOf("clean") });
+
+/**
+ * Whole websites to start from (D88): each page is a page template, and every page shares the header and
+ * footer of the first. The menu then lists the pages, so the links between them work from the start.
+ */
+export const starters = [
+  {
+    id: "software",
+    name: "Software product",
+    summary: "Home, pricing, blog, changelog, help and contact: the site a product needs on launch day.",
+    pages: [["Home", "home-page"], ["Pricing", "pricing-page"], ["Blog", "blog"], ["Changelog", "changelog"], ["Help", "help-centre"], ["Contact", "contact"]],
+  },
+  {
+    id: "studio",
+    name: "Studio",
+    summary: "What you offer, who you are, the team, your writing and a way to start a project.",
+    pages: [["Home", "services"], ["About", "about"], ["Team", "team"], ["Blog", "blog"], ["Contact", "contact"]],
+  },
+  {
+    id: "company",
+    name: "Company",
+    summary: "A company's front page, its story, its people, its open roles and its questions.",
+    pages: [["Home", "home-page"], ["About", "about"], ["Team", "team"], ["Careers", "careers"], ["FAQ", "faq-page"], ["Contact", "contact"]],
+  },
+  {
+    id: "blog",
+    name: "Blog",
+    summary: "Posts first, one post laid out to read, a page about you and a way to write to you.",
+    pages: [["Home", "blog"], ["A post", "article"], ["About", "about"], ["Contact", "contact"]],
+  },
+  {
+    id: "launch",
+    name: "Launch",
+    summary: "Before it opens: a countdown with a sign-up, the questions people ask, and a way to get in touch.",
+    pages: [["Home", "coming-soon"], ["FAQ", "faq-page"], ["Contact", "contact"]],
+  },
+] as const;
+
+/** A starter as a site, with the name, colour, theme and look already chosen. */
+export function siteFromStarter(id: string, basics: { name: string; brand: string; theme: BuiltSite["theme"]; look?: Look }): BuiltSite | null {
+  const starter = starters.find((candidate) => candidate.id === id);
+  if (!starter) return null;
+  const pages = starter.pages.map(([title, templateId]) => {
+    const template = templateById(templateId)!;
+    return { title, page: fromTemplate(template, { ...defaultOptions(template), ...basics }) };
+  });
+  const site = { ...siteFromPage(pages[0].page), look: basics.look };
+  return {
+    ...site,
+    pages: pages.map(({ title, page }, index) => {
+      const id = index === 0 ? "home" : slugOf(title);
+      return { id, title, path: index === 0 ? "/" : `/${id}`, sections: page.sections.filter((section) => regionOf(section.slug) === "main") };
+    }),
+  };
+}
 
 /** The links a menu shows: every page but the home page, eight at most (what a header holds). */
 export const menuLinks = (site: BuiltSite) =>
