@@ -21,8 +21,8 @@ export default function AccessibilityPage() {
         <li>Target sizes of at least 24 by 24 CSS pixels, and no sideways scrolling at phone widths.</li>
         <li>Chromium, WebKit (the engine behind Safari) and an emulated iPhone 15.</li>
         <li>
-          The same tests run on both exported outputs, React + Tailwind and HTML/CSS/JS, for every variant of the
-          options.
+          The same tests run on every exported output (React + Tailwind, HTML/CSS/JS, and the Vue, Svelte, Angular,
+          Solid and Web Component files built from it) for every variant of the options.
         </li>
       </ul>
 

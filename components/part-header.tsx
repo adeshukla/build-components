@@ -10,7 +10,7 @@ export function PartHeader({ slug }: { slug: string }) {
   const specs = [
     ["Pattern", part.pattern],
     ["Category", `${part.category} · ${part.group}`],
-    ["Outputs", "React + Tailwind, HTML/CSS/JS"],
+    ["Outputs", "React + Tailwind, HTML/CSS/JS, Vue, Svelte, Angular, Solid, Web Component"],
     ["Status", "In stock, tested"],
   ];
   const version = isRegistrySlug(slug) ? versionOf(slug) : null;

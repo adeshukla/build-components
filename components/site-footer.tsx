@@ -28,7 +28,7 @@ export function SiteFooter() {
             <li>axe checks against WCAG 2.2 AA</li>
             <li>Keyboard-only flows</li>
             <li>Chromium, WebKit (Safari) and an emulated iPhone</li>
-            <li>React + Tailwind and HTML/CSS/JS, the same tests on both</li>
+            <li>React + Tailwind, HTML/CSS/JS, Vue, Svelte, Angular, Solid and Web Components, the same tests on each</li>
           </ul>
         </div>
       </div>

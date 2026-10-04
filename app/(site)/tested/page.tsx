@@ -71,7 +71,7 @@ export default function TestedPage() {
             What runs
           </h2>
           <p className="mt-3 max-w-2xl text-pretty text-ink-muted">
-            On all {inStock.length} parts, on both outputs, on every commit that touches them.
+            On all {inStock.length} parts, on every output, on every commit that touches them.
           </p>
 
           <dl className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">

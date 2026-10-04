@@ -43,7 +43,8 @@ const setup = [
   `    "registries": { "@build-components": "${siteUrl}/r/{name}.json" }`,
   "    npx shadcn@latest add @build-components/date-picker",
   "",
-  "The React output needs Tailwind CSS v4. Each part's page also gives plain HTML/CSS/JS to copy.",
+  "The React output needs Tailwind CSS v4. Each part's page also gives plain HTML/CSS/JS, and Vue, Svelte, Angular,",
+  "Solid and Web Component files built on it, to copy or download.",
   "Options left out keep their defaults; values that are not valid are ignored.",
 ];
 

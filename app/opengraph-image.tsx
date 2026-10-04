@@ -31,7 +31,7 @@ export default function Image() {
         <span style={{ color: "#c2410c", fontStyle: "italic" }}>Find yours by looking.</span>
       </div>
       <div style={{ display: "flex", fontSize: 30, color: "#5f5a52", fontFamily: "sans-serif" }}>
-        {`${inStock.length} tested components · React + Tailwind or HTML/CSS/JS`}
+        {`${inStock.length} tested components · React, HTML/CSS/JS, Vue, Svelte, Angular, Solid`}
       </div>
     </div>,
     size,

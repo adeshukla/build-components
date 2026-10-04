@@ -31,12 +31,12 @@ export default function AboutPage() {
           you take, so there is nothing to wire up afterwards.
         </li>
         <li>
-          <strong>Two outputs from one set of options.</strong> React + Tailwind CSS v4, or HTML, CSS and JavaScript
-          with no build step.
+          <strong>Every output from one set of options.</strong> React + Tailwind CSS v4; HTML, CSS and JavaScript
+          with no build step; and Vue, Svelte, Angular, Solid and Web Component files built on that plain output.
         </li>
         <li>
           <strong>The exported code is what gets tested.</strong> Not a demo: the same axe, keyboard and browser tests
-          run on both outputs.
+          run on every output.
         </li>
         <li>
           <strong>No runtime dependency.</strong> Copy the files, or install them with the shadcn CLI. Nothing is loaded

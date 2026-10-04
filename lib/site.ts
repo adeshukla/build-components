@@ -4,7 +4,7 @@ export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://build-compon
 export const siteName = "Build Components";
 
 export const siteDescription =
-  "Accessible UI components you configure visually and take into your project as plain code: React + Tailwind or HTML/CSS/JS. No library to install.";
+  "Accessible UI components you configure visually and take into your project as plain code: React + Tailwind, HTML/CSS/JS, Vue, Svelte, Angular, Solid or a Web Component. No library to install.";
 
 export const author = { name: "Adesh Shukla", url: "https://devstash.me" };
 
