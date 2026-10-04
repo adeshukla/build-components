@@ -119,7 +119,7 @@ export function TextSection({ config = defaultConfig }: { config?: TextSectionCo
           <p className="mt-6">
             <a
               href={safeHref(config.linkHref)}
-              className="font-semibold text-(--tx-accent-text) underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tx-accent-text)"
+              className="inline-flex min-h-11 items-center font-semibold text-(--tx-accent-text) underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--tx-accent-text)"
             >
               {config.linkText}
             </a>

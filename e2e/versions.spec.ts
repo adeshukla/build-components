@@ -19,8 +19,8 @@ test("every part has a history, newest first, whose numbers only go up", () => {
       expect(after[1] > before[1] || (after[1] === before[1] && after[2] > before[2]), `${slug} ${changes.map((c) => c.version)}`).toBe(true);
     }
   }
-  // A fix after the theme: 1.0.0, 1.1.0, 1.1.1.
-  expect(versionOf("feature-grid")).toBe("1.1.1");
+  // The theme, a fix, then the Words options: 1.0.0, 1.1.0, 1.1.1, 1.2.0.
+  expect(changesOf("feature-grid").map((change) => change.version)).toEqual(["1.2.0", "1.1.1", "1.1.0", "1.0.0"]);
 });
 
 test("an installed file names the part, its version and where its changes are", async ({ request }) => {
@@ -36,10 +36,10 @@ test("a part page shows its version, its changes, its last run and a report link
   await expect(main.getByRole("link", { name: `${versionOf("feature-grid")}, what changed` })).toHaveAttribute("href", "#changes");
   const changes = main.getByRole("region", { name: "Changes" });
   await expect(changes.getByRole("listitem")).toHaveCount(changesOf("feature-grid").length);
-  await expect(changes.getByRole("listitem").first()).toContainText("Fixed.");
+  await expect(changes.getByRole("listitem").first()).toContainText("Added.");
   await expect(main.getByRole("region", { name: "Last test run" })).toContainText(/passed|No run recorded/);
   const report = main.getByRole("link", { name: "Report a problem with Feature grid" });
-  await expect(report).toHaveAttribute("href", /^mailto:hello@devstash\.me\?subject=Problem%20with%20Feature%20grid%201\.1\.1&body=/);
+  await expect(report).toHaveAttribute("href", /^mailto:hello@devstash\.me\?subject=Problem%20with%20Feature%20grid%201\.2\.0&body=/);
   await expectNoAxeViolations(page);
 });
 

@@ -196,7 +196,9 @@ test.describe("the tested page", () => {
 test.describe("the get-started page", () => {
   test("gives a real install command and does not imply a licence it has not got", async ({ page }) => {
     await page.goto("/start");
-    await expect(page.getByText("npx shadcn@latest add", { exact: false })).toContainText("/r/date-picker.json");
+    // Two commands: by URL, and by name through the @build-components namespace (D91).
+    await expect(page.getByText("npx shadcn@latest add https", { exact: false })).toContainText("/r/date-picker.json");
+    await expect(page.getByText("npx shadcn@latest add @build-components/date-picker", { exact: false })).toBeVisible();
     await expect(page.getByText("[TODO: no licence has been chosen", { exact: false })).toBeVisible();
   });
 });

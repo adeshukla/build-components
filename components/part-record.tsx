@@ -74,7 +74,7 @@ export function PartRecord({ slug }: { slug: RegistrySlug }) {
             <p className="mt-2 text-sm text-ink-muted">No run recorded for this part yet.</p>
           )}
           <p className="mt-4 text-sm">
-            <Link href="/tested" className="underline decoration-rule-strong underline-offset-3 hover:decoration-accent">
+            <Link href="/tested" className="inline-flex min-h-6 items-center underline decoration-rule-strong underline-offset-3 hover:decoration-accent">
               What every part is tested for
             </Link>
           </p>
@@ -88,7 +88,7 @@ export function PartRecord({ slug }: { slug: RegistrySlug }) {
           <p className="mt-4 text-sm">
             <a
               href={`mailto:${problemEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}
-              className="underline decoration-rule-strong underline-offset-3 hover:decoration-accent"
+              className="inline-flex min-h-6 items-center underline decoration-rule-strong underline-offset-3 hover:decoration-accent"
             >
               {`Report a problem with ${name}`}
             </a>

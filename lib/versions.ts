@@ -38,6 +38,7 @@ const own: Partial<Record<RegistrySlug, Change[]>> = {
   "feature-grid": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output." }],
   "notification-list": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output or share a read state." }],
   toolbar: [{ date: "2026-10-04", kind: "fixed", note: "Two buttons with the same label no longer break the React output." }],
+  "text-section": [{ date: "2026-10-05", kind: "fixed", note: "Its link is a 44px target, not 21px." }],
   cart: [{ date: "2026-10-05", kind: "fixed", note: "In the HTML/CSS/JS output, the item count in the heading now changes with the basket." }],
 };
 

@@ -40,6 +40,7 @@
 @media (min-width: 640px) { .tx-heading { font-size: 2.25rem; } }
 .tx-body { margin: 1rem 0 0; color: var(--tx-muted); font-size: 1.125rem; line-height: 1.625; text-wrap: pretty; }
 .tx-more { margin: 1.5rem 0 0; }
-.tx-link { color: var(--tx-accent-text); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+/* A link on its own line is a target: 44px tall, like a button. */
+.tx-link { display: inline-flex; min-height: 2.75rem; align-items: center; color: var(--tx-accent-text); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
 .tx-link:hover { text-decoration: none; }
 .tx-link:focus-visible { outline: 2px solid var(--tx-accent-text); outline-offset: 2px; }

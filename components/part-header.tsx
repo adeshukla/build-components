@@ -47,7 +47,7 @@ export function PartHeader({ slug }: { slug: string }) {
             <div>
               <dt className="font-mono text-xs text-ink-muted uppercase">Version</dt>
               <dd className="mt-0.5 font-medium">
-                <a href="#changes" className="underline decoration-rule-strong underline-offset-3 hover:decoration-accent">
+                <a href="#changes" className="inline-flex min-h-6 items-center underline decoration-rule-strong underline-offset-3 hover:decoration-accent">
                   {`${version}, what changed`}
                 </a>
               </dd>

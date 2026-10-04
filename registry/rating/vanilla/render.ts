@@ -53,7 +53,7 @@ export function renderRatingMarkup(config: RatingConfig) {
   if (config.mode === "show") {
     const value = Math.min(max, Math.max(0, config.value));
     // One image with the whole thing in its name; part stars come from clipping the filled row.
-    return `    <div class="ra ra--theme-${config.theme}" style="${vars}" data-rating data-score="${escapeHtml(config.scoreText)}">
+    return `    <div class="ra ra--theme-${config.theme}" style="${vars}" data-rating>
       <div class="ra-row">
         <span class="ra-stars" role="img" aria-label="${escapeHtml(fill(config.scoreText, { value: show(value), max }))}">
           <span class="ra-empty" aria-hidden="true">${stars.map(() => STAR).join("")}</span>
@@ -86,7 +86,7 @@ ${steps(star)
     )
     .join("\n");
 
-  return `    <div class="ra ra--theme-${config.theme}" style="${vars}" data-rating data-max="${max}">
+  return `    <div class="ra ra--theme-${config.theme}" style="${vars}" data-rating data-max="${max}" data-score="${escapeHtml(config.scoreText)}">
       <fieldset class="ra-fieldset">
         <legend class="ra-legend">${escapeHtml(config.label)}</legend>
         <div class="ra-row">
