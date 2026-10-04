@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ReadingProgressConfig } from "../react/reading-progress";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
@@ -38,7 +41,7 @@ export function renderReadingProgressMarkup(config: ReadingProgressConfig) {
 
   const links = sections
     .map(
-      (section, index) => `          <li><a class="rp-link" href="#${slug(section.title)}"${index === 0 ? ' aria-current="location"' : ""}><span class="rp-sr"${index === 0 ? "" : ' hidden'}>Current section: </span>${escapeHtml(section.title)}</a></li>`,
+      (section, index) => `          <li><a class="rp-link" href="#${slug(section.title)}"${index === 0 ? ' aria-current="location"' : ""}><span class="rp-sr"${index === 0 ? "" : ' hidden'}>${escapeHtml(config.currentLabel)} </span>${escapeHtml(section.title)}</a></li>`,
     )
     .join("\n");
 
@@ -52,9 +55,9 @@ export function renderReadingProgressMarkup(config: ReadingProgressConfig) {
     )
     .join("\n");
 
-  return `    <div class="rp rp--theme-${config.theme}" style="${vars}" data-reading-progress>
+  return `    <div class="rp rp--theme-${config.theme}" style="${vars}" data-reading-progress data-read="${escapeHtml(config.readText)}">
 ${config.showBar ? `      <div class="rp-track">
-        <div class="rp-bar" role="progressbar" aria-label="${escapeHtml(config.label)}" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="0% read" data-bar></div>
+        <div class="rp-bar" role="progressbar" aria-label="${escapeHtml(config.label)}" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-valuetext="${escapeHtml(fill(config.readText, { percent: 0 }))}" data-bar></div>
       </div>\n` : ""}${
     config.showContents && sections.length
       ? `      <nav class="rp-contents" aria-labelledby="reading-contents">
@@ -64,7 +67,7 @@ ${links}
         </ul>
       </nav>\n`
       : ""
-  }${body ? `      <div class="rp-page">\n${body}\n      </div>\n` : ""}
+  }${body ? `      <div class="rp-page" data-demo>\n${body}\n      </div>\n` : ""}
     </div>`;
 }
 

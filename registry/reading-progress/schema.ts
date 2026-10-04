@@ -48,6 +48,24 @@ export const readingProgressSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", description: "The bar and the current section.", group: "Style", type: "color", default: "#2563eb" },
+  {
+    key: "currentLabel",
+    label: "Current section",
+    description: "Read out before the section you are in.",
+    group: "Words",
+    type: "text",
+    default: "Current section:",
+    maxLength: 40,
+  },
+  {
+    key: "readText",
+    label: "Read so far",
+    description: "Read out for the bar. {percent} is how far.",
+    group: "Words",
+    type: "text",
+    default: "{percent}% read",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

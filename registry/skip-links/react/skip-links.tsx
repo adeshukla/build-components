@@ -9,6 +9,7 @@ export type SkipLinksConfig = {
   demoHeading: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  navLabel: string;
 };
 
 // @config-start
@@ -23,6 +24,7 @@ const defaultConfig: SkipLinksConfig = {
   demoHeading: "What the links skip to",
   theme: "light",
   accentColor: "#1d4ed8",
+  navLabel: "Skip links",
 };
 // @config-end
 
@@ -96,7 +98,7 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
   return (
     <div style={style} className="bg-(--sk-surface) text-(--sk-text)">
       <nav
-        aria-label="Skip links"
+        aria-label={config.navLabel}
         className={`flex gap-2 ${config.position === "top-centre" ? "justify-center" : ""} ${config.alwaysVisible ? "flex-wrap border-b border-(--sk-line) p-2" : ""}`}
       >
         {config.links.map((link) => (
@@ -120,7 +122,7 @@ export function SkipLinks({ config = defaultConfig }: { config?: SkipLinksConfig
       </nav>
 
       {/* The demo page the links skip into. In your own page these are the landmarks you already have. */}
-      <div className="p-4">
+      <div data-demo className="p-4">
         <h2 className="font-medium">{config.demoHeading}</h2>
         <p className="mt-1 text-sm text-(--sk-muted)">
           Press Tab from the very top of the page. Each target takes focus, so the next Tab carries on from there.

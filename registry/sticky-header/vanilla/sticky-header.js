@@ -9,6 +9,7 @@
     shrink: true,
     hideOnScrollDown: true,
     threshold: 80,
+    navLabel: "Sections",
   };
   // @config-end
 

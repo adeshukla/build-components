@@ -12,6 +12,7 @@ export type StickyHeaderConfig = {
   demoSections: number;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  navLabel: string;
 };
 
 // @config-start
@@ -25,6 +26,7 @@ const defaultConfig: StickyHeaderConfig = {
   demoSections: 6,
   theme: "light",
   accentColor: "#1d4ed8",
+  navLabel: "Sections",
 };
 // @config-end
 
@@ -147,7 +149,7 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
           } ${shrunk ? "py-2" : "py-4"} ${away ? "-translate-y-full" : "translate-y-0"}`}
         >
           <p className={`m-0 font-semibold ${shrunk ? "text-base" : "text-xl"}`}>{config.title}</p>
-          <nav aria-label="Sections" className="order-3 w-full sm:order-none sm:w-auto">
+          <nav aria-label={config.navLabel} className="order-3 w-full sm:order-none sm:w-auto">
             <ul className="flex list-none flex-wrap gap-x-4 p-0 text-sm">
               {config.links.map((link, index) => (
                 <li key={link.label}>
@@ -171,7 +173,7 @@ export function StickyHeader({ config = defaultConfig }: { config?: StickyHeader
         </header>
 
         {/* Something to scroll. In your own page this is the page. */}
-        <div className="grid gap-8 p-4">
+        <div data-demo className="grid gap-8 p-4">
           {sections.map((section) => (
             <section key={section} aria-labelledby={`sth-section-${section}`}>
               <h2 id={`sth-section-${section}`} tabIndex={-1} className="text-lg font-semibold">

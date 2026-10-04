@@ -162,7 +162,7 @@ export function TeamGrid({ config = defaultConfig }: { config?: TeamGridConfig }
         ))}
       </ul>
 
-      <p className="mt-5 text-xs text-(--tm-muted)">
+      <p data-demo className="mt-5 text-xs text-(--tm-muted)">
         No names or photographs ship with this part. Put your own in, and ask each person before you do.
       </p>
     </div>

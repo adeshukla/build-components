@@ -161,7 +161,7 @@ export function ImageGallery({ config = defaultConfig }: { config?: ImageGallery
         })}
       </ul>
 
-      <p className="mt-4 text-xs text-(--gal-muted)">
+      <p data-demo className="mt-4 text-xs text-(--gal-muted)">
         No pictures ship with this part. Set each item&apos;s src, and write alt for the ones that carry
         meaning — leave it empty for the ones that are decoration.
       </p>

@@ -70,7 +70,7 @@ export function renderLogoWallMarkup(config: LogoWallConfig) {
 ${items}
       </ul>
 
-      <p class="lw-note">These are the tools this page is built with, which is a claim about us. A &ldquo;trusted by&rdquo; wall is a claim about someone else — only put a name there with their permission.</p>
+      <p class="lw-note" data-demo>These are the tools this page is built with, which is a claim about us. A &ldquo;trusted by&rdquo; wall is a claim about someone else — only put a name there with their permission.</p>
     </div>`;
 }
 

@@ -57,12 +57,12 @@ export function renderSkipLinksMarkup(config: SkipLinksConfig) {
     .join(" ");
 
   return `    <div class="sk ${modifiers}" style="${vars}" data-skip-links>
-      <nav class="sk-nav" aria-label="Skip links">
+      <nav class="sk-nav" aria-label="${escapeHtml(config.navLabel)}">
 ${links}
       </nav>
 
       <!-- The demo page the links skip into. In your own page these are the landmarks you already have. -->
-      <div class="sk-demo">
+      <div class="sk-demo" data-demo>
         <h2 class="sk-demo-heading">${escapeHtml(config.demoHeading)}</h2>
         <p class="sk-demo-text">Press Tab from the very top of the page. Each target takes focus, so the next Tab carries on from there.</p>
         <div class="sk-targets">

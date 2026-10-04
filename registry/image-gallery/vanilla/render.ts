@@ -69,7 +69,7 @@ export function renderImageGalleryMarkup(config: ImageGalleryConfig) {
 ${items}
       </ul>
 
-      <p class="gal-note">No pictures ship with this part. Set each item's src, and write alt for the ones that carry meaning — leave it empty for the ones that are decoration.</p>
+      <p class="gal-note" data-demo>No pictures ship with this part. Set each item's src, and write alt for the ones that carry meaning — leave it empty for the ones that are decoration.</p>
     </div>`;
 }
 

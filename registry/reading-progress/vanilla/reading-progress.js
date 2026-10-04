@@ -4,6 +4,13 @@
  * the page itself, so it works over whatever content it is put with.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createReadingProgress(root) {
     const bar = root.querySelector("[data-bar]");
     const links = Array.from(root.querySelectorAll(".rp-link"));
@@ -14,7 +21,7 @@
         const percent = height <= 0 ? 100 : Math.min(100, Math.max(0, Math.round((window.scrollY / height) * 100)));
         bar.style.width = percent + "%";
         bar.setAttribute("aria-valuenow", String(percent));
-        bar.setAttribute("aria-valuetext", percent + "% read");
+        bar.setAttribute("aria-valuetext", fill(root.dataset.read, { percent: percent }));
       }
       if (!links.length) return;
       const headings = links

@@ -17,7 +17,7 @@ export function renderBackToTopMarkup(config: BackToTopConfig) {
 
   // Example page content, so there is something to scroll. Delete it in your own page.
   const filler = config.showDemo
-    ? `      <div class="bt-page">
+    ? `      <div class="bt-page" data-demo>
         <h1 class="bt-heading" id="top" tabindex="-1">Page heading</h1>
 ${Array.from({ length: 16 }, (_, index) => `        <p class="bt-filler">Section ${index + 1}. A page needs some length before a back-to-top button earns its place, so here is a paragraph of it. Keep scrolling and the button turns up in the corner.</p>`).join("\n")}
       </div>\n`

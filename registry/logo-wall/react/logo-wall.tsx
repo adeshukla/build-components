@@ -173,7 +173,7 @@ export function LogoWall({ config = defaultConfig }: { config?: LogoWallConfig }
         })}
       </ul>
 
-      <p className="mt-4 text-xs text-(--lw-muted)">
+      <p data-demo className="mt-4 text-xs text-(--lw-muted)">
         These are the tools this page is built with, which is a claim about us. A &ldquo;trusted by&rdquo;
         wall is a claim about someone else — only put a name there with their permission.
       </p>

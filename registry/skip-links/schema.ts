@@ -33,6 +33,15 @@ export const skipLinksSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "navLabel",
+    label: "Links label",
+    description: "Names the group of skip links, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Skip links",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

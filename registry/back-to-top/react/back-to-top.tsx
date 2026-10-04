@@ -94,7 +94,7 @@ export function BackToTop({ config = defaultConfig }: { config?: BackToTopConfig
     <div style={style} className="bg-(--bt-surface) text-(--bt-text)">
       {config.showDemo && (
         // Example page content, so there is something to scroll. Delete it in your own page.
-        <div>
+        <div data-demo>
           <h1 tabIndex={-1} className="mb-4 text-2xl font-semibold outline-none">
             Page heading
           </h1>

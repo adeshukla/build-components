@@ -52,7 +52,7 @@ export function renderStickyHeaderMarkup(config: StickyHeaderConfig) {
       <div class="sth-scroller" data-scroller>
         <header class="sth-header" data-header>
           <p class="sth-title">${escapeHtml(config.title)}</p>
-          <nav class="sth-nav" aria-label="Sections">
+          <nav class="sth-nav" aria-label="${escapeHtml(config.navLabel)}">
             <ul class="sth-list">
 ${links}
             </ul>
@@ -61,7 +61,7 @@ ${links}
         </header>
 
         <!-- Something to scroll. In your own page this is the page. -->
-        <div class="sth-body">
+        <div class="sth-body" data-demo>
 ${sections}
         </div>
       </div>

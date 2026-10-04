@@ -28,6 +28,15 @@ export const stickyHeaderSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "navLabel",
+    label: "Links label",
+    description: "Names the row of links, for screen readers.",
+    group: "Words",
+    type: "text",
+    default: "Sections",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

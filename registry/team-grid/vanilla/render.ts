@@ -69,7 +69,7 @@ export function renderTeamGridMarkup(config: TeamGridConfig) {
 ${people}
       </ul>
 
-      <p class="tm-note">No names or photographs ship with this part. Put your own in, and ask each person before you do.</p>
+      <p class="tm-note" data-demo>No names or photographs ship with this part. Put your own in, and ask each person before you do.</p>
     </div>`;
 }
 

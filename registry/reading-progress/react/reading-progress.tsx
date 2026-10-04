@@ -11,6 +11,8 @@ export type ReadingProgressConfig = {
   showDemo: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  currentLabel: string;
+  readText: string;
 };
 
 // @config-start
@@ -28,6 +30,8 @@ const defaultConfig: ReadingProgressConfig = {
   showDemo: true,
   theme: "light",
   accentColor: "#2563eb",
+  currentLabel: "Current section:",
+  readText: "{percent}% read",
 };
 // @config-end
 
@@ -81,6 +85,9 @@ const slug = (title: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ReadingProgress({ config = defaultConfig }: { config?: ReadingProgressConfig }) {
   const id = useId();
@@ -137,7 +144,7 @@ export function ReadingProgress({ config = defaultConfig }: { config?: ReadingPr
             aria-valuenow={percent}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuetext={`${percent}% read`}
+            aria-valuetext={fill(config.readText, { percent })}
             style={{ width: `${percent}%` }}
             className="h-full bg-(--rp-accent) transition-[width] duration-150 motion-reduce:transition-none"
           />
@@ -161,7 +168,7 @@ export function ReadingProgress({ config = defaultConfig }: { config?: ReadingPr
                     aria-current={here ? "location" : undefined}
                     className={`block rounded-[var(--bc-radius-xs,0.25rem)] py-1 text-sm underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--rp-accent-text) ${here ? "font-semibold text-(--rp-accent-text)" : "text-(--rp-muted)"}`}
                   >
-                    {here && <span className="sr-only">Current section: </span>}
+                    {here && <span className="sr-only">{`${config.currentLabel} `}</span>}
                     {section.title}
                   </a>
                 </li>
@@ -173,7 +180,7 @@ export function ReadingProgress({ config = defaultConfig }: { config?: ReadingPr
 
       {config.showDemo && (
         // Example page content, so there is something to read past. Delete it in your own page.
-        <div className="mt-6">
+        <div data-demo className="mt-6">
           {sections.map((section) => (
             <section key={slug(section.title)}>
               <h2 id={slug(section.title)} className="mt-6 mb-2 text-lg font-semibold">
