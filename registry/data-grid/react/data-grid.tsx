@@ -93,6 +93,13 @@ const MIN_WIDTH = 96;
 const MAX_WIDTH = 480;
 const clamp = (value: number) => Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Math.round(value)));
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }) {
   const id = useId();
   const rows = config.rows.filter((row) => row.name.trim() !== "");
@@ -131,9 +138,9 @@ export function DataGrid({ config = defaultConfig }: { config?: DataGridConfig }
   // Dragging is the quick way; the arrow keys are the way that works without a pointer (WCAG 2.5.7).
   function onHandleKeyDown(event: React.KeyboardEvent, index: number) {
     const step = event.shiftKey ? 48 : 16;
-    if (event.key === "ArrowRight") setWidth(index, widths[index] + step);
-    else if (event.key === "ArrowLeft") setWidth(index, widths[index] - step);
-    else if (event.key === "Home") setWidth(index, columns[index].width);
+    if (keyOf(event) === "ArrowRight") setWidth(index, widths[index] + step);
+    else if (keyOf(event) === "ArrowLeft") setWidth(index, widths[index] - step);
+    else if (keyOf(event) === "Home") setWidth(index, columns[index].width);
     else return;
     event.preventDefault();
   }

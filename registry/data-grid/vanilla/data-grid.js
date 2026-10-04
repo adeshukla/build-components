@@ -4,6 +4,13 @@
  * columns that resize by drag or by arrow key.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   const MIN_WIDTH = 96;
   const MAX_WIDTH = 480;
   const clamp = function (value) {
@@ -72,9 +79,9 @@
       handle.addEventListener("keydown", function (event) {
         const step = event.shiftKey ? 48 : 16;
         const now = Number(handle.getAttribute("aria-valuenow"));
-        if (event.key === "ArrowRight") setWidth(handle, now + step);
-        else if (event.key === "ArrowLeft") setWidth(handle, now - step);
-        else if (event.key === "Home") setWidth(handle, start);
+        if (keyOf(event) === "ArrowRight") setWidth(handle, now + step);
+        else if (keyOf(event) === "ArrowLeft") setWidth(handle, now - step);
+        else if (keyOf(event) === "Home") setWidth(handle, start);
         else return;
         event.preventDefault();
       });

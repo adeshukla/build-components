@@ -72,6 +72,13 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) {
   const items = config.items.filter((item) => item.label.trim() !== "");
   // One stop for the whole toolbar: Tab goes past it, the arrow keys move inside it (APG toolbar).
@@ -105,10 +112,10 @@ export function Toolbar({ config = defaultConfig }: { config?: ToolbarConfig }) 
   function onKeyDown(event: React.KeyboardEvent) {
     const forward = vertical ? "ArrowDown" : "ArrowRight";
     const back = vertical ? "ArrowUp" : "ArrowLeft";
-    if (event.key === forward) go(here + 1);
-    else if (event.key === back) go(here - 1);
-    else if (event.key === "Home") go(0);
-    else if (event.key === "End") go(items.length - 1);
+    if (keyOf(event) === forward) go(here + 1);
+    else if (keyOf(event) === back) go(here - 1);
+    else if (keyOf(event) === "Home") go(0);
+    else if (keyOf(event) === "End") go(items.length - 1);
     else return;
     event.preventDefault();
   }

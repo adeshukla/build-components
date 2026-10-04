@@ -4,6 +4,13 @@
  * and End to jump to the ends.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   function createToolbar(root) {
     const bar = root.querySelector("[data-bar]");
     const items = Array.from(root.querySelectorAll("[data-item]"));
@@ -23,10 +30,10 @@
       const vertical = bar.getAttribute("aria-orientation") === "vertical";
       const forward = vertical ? "ArrowDown" : "ArrowRight";
       const back = vertical ? "ArrowUp" : "ArrowLeft";
-      if (event.key === forward) go(here + 1);
-      else if (event.key === back) go(here - 1);
-      else if (event.key === "Home") go(0);
-      else if (event.key === "End") go(items.length - 1);
+      if (keyOf(event) === forward) go(here + 1);
+      else if (keyOf(event) === back) go(here - 1);
+      else if (keyOf(event) === "Home") go(0);
+      else if (keyOf(event) === "End") go(items.length - 1);
       else return;
       event.preventDefault();
     });

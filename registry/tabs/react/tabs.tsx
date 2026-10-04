@@ -82,6 +82,13 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function Tabs({ config = defaultConfig }: { config?: TabsConfig }) {
   const id = useId();
   const items = config.items.filter((item) => item.label.trim() !== "");
@@ -120,9 +127,9 @@ export function Tabs({ config = defaultConfig }: { config?: TabsConfig }) {
       Home: 0,
       End: items.length - 1,
     };
-    if (!(event.key in moves)) return;
+    if (!(keyOf(event) in moves)) return;
     event.preventDefault();
-    focusTab(moves[event.key]);
+    focusTab(moves[keyOf(event)]);
   }
 
   if (items.length === 0) return null;

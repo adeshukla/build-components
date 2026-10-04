@@ -4,6 +4,13 @@
  * from the WAI-ARIA Tabs pattern: arrow keys move, Home and End jump to the ends.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   function createTabs(root) {
     const tabs = Array.from(root.querySelectorAll('[role="tab"]'));
     if (tabs.length === 0) return;
@@ -35,9 +42,9 @@
         };
         moves[vertical ? "ArrowUp" : "ArrowLeft"] = (index - 1 + tabs.length) % tabs.length;
         moves[vertical ? "ArrowDown" : "ArrowRight"] = (index + 1) % tabs.length;
-        if (!(event.key in moves)) return;
+        if (!(keyOf(event) in moves)) return;
         event.preventDefault();
-        focusTab(moves[event.key]);
+        focusTab(moves[keyOf(event)]);
       });
     });
   }

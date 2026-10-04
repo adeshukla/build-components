@@ -127,6 +127,13 @@ function FileIcon() {
   );
 }
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }) {
   const id = useId();
   const tree = buildTree(config.items);
@@ -196,29 +203,29 @@ export function TreeView({ config = defaultConfig }: { config?: TreeViewConfig }
     const isOpen = expanded.has(node.id);
     let handled = true;
 
-    if (event.key === "ArrowDown") {
+    if (keyOf(event) === "ArrowDown") {
       if (visible[index + 1]) focusNode(visible[index + 1].id);
-    } else if (event.key === "ArrowUp") {
+    } else if (keyOf(event) === "ArrowUp") {
       if (index > 0) focusNode(visible[index - 1].id);
-    } else if (event.key === "ArrowRight") {
+    } else if (keyOf(event) === "ArrowRight") {
       if (isParent && !isOpen) toggle(node.id, true);
       else if (isParent) focusNode(node.children[0].id);
-    } else if (event.key === "ArrowLeft") {
+    } else if (keyOf(event) === "ArrowLeft") {
       if (isParent && isOpen) toggle(node.id, false);
       else if (node.parent) focusNode(node.parent);
-    } else if (event.key === "Home") {
+    } else if (keyOf(event) === "Home") {
       focusNode(visible[0].id);
-    } else if (event.key === "End") {
+    } else if (keyOf(event) === "End") {
       focusNode(visible[visible.length - 1].id);
-    } else if (event.key === "Enter" || event.key === " ") {
+    } else if (keyOf(event) === "Enter" || keyOf(event) === " ") {
       setSelected(node.id);
-    } else if (event.key === "*") {
+    } else if (keyOf(event) === "*") {
       // Opens every folder at this level, as in the APG tree pattern.
       const siblings = node.parent ? byId.get(node.parent)!.children : tree;
       setExpanded((before) => new Set([...before, ...siblings.filter((sibling) => sibling.children.length).map((sibling) => sibling.id)]));
-    } else if (event.key.length === 1 && /\S/.test(event.key) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    } else if (keyOf(event).length === 1 && /\S/.test(keyOf(event)) && !event.ctrlKey && !event.metaKey && !event.altKey) {
       // Type-ahead: the next visible item starting with that character.
-      const char = event.key.toLowerCase();
+      const char = keyOf(event).toLowerCase();
       const ordered = [...visible.slice(index + 1), ...visible.slice(0, index + 1)];
       const match = ordered.find((candidate) => candidate.name.toLowerCase().startsWith(char));
       if (match) focusNode(match.id);

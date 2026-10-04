@@ -132,6 +132,13 @@ const icons = {
   close: "M6 6l12 12M18 6 6 18",
 };
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function Lightbox({ config = defaultConfig }: { config?: LightboxConfig }) {
   const id = useId();
   const items = config.items.filter((item) => item.alt.trim() !== "" || item.src.trim() !== "");
@@ -179,11 +186,11 @@ export function Lightbox({ config = defaultConfig }: { config?: LightboxConfig }
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
-    if (event.key === "ArrowLeft") go(-1);
-    else if (event.key === "ArrowRight") go(1);
-    else if (event.key === "Home") setCurrent(0);
-    else if (event.key === "End") setCurrent(items.length - 1);
-    else if (event.key === "Tab") {
+    if (keyOf(event) === "ArrowLeft") go(-1);
+    else if (keyOf(event) === "ArrowRight") go(1);
+    else if (keyOf(event) === "Home") setCurrent(0);
+    else if (keyOf(event) === "End") setCurrent(items.length - 1);
+    else if (keyOf(event) === "Tab") {
       // Keep Tab inside the viewer (APG dialog pattern).
       const buttons = [...event.currentTarget.querySelectorAll<HTMLElement>("button")];
       const index = buttons.indexOf(document.activeElement as HTMLElement);

@@ -84,6 +84,13 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
   const id = useId();
   const length = Math.min(10, Math.max(3, Math.round(config.length)));
@@ -117,7 +124,7 @@ export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>, index: number) {
-    if (event.key === "Backspace" && digits[index] === "" && index > 0) {
+    if (keyOf(event) === "Backspace" && digits[index] === "" && index > 0) {
       event.preventDefault();
       const next = [...digits];
       next[index - 1] = "";
@@ -125,11 +132,11 @@ export function Otp({ config = defaultConfig }: { config?: OtpConfig }) {
       boxes.current[index - 1]?.focus();
       return;
     }
-    if (event.key === "ArrowLeft" && index > 0) {
+    if (keyOf(event) === "ArrowLeft" && index > 0) {
       event.preventDefault();
       boxes.current[index - 1]?.focus();
     }
-    if (event.key === "ArrowRight" && index < length - 1) {
+    if (keyOf(event) === "ArrowRight" && index < length - 1) {
       event.preventDefault();
       boxes.current[index + 1]?.focus();
     }

@@ -66,6 +66,9 @@ const mirrored: RegistrySlug[] = [
   "tag-input",
   "tree-view",
 ];
+/** Parts whose scripts read the arrow keys: in a right-to-left page, Left now goes forward (D93). */
+const sidewaysKeys: RegistrySlug[] = ["data-grid", "date-picker", "lightbox", "menu-bar", "otp", "resizable-panels", "tabs", "toolbar", "tree-view"];
+const rtlKeys: Change = { date: "2026-10-04", kind: "fixed", note: "In a right-to-left page the Left and Right arrow keys swap, as the layout does." };
 const rtlFix: Change = { date: "2026-10-04", kind: "fixed", note: "Mirrors in a right-to-left page (Arabic, Hebrew, Persian, Urdu)." };
 
 /** A part's changes with their version numbers, newest first. */
@@ -73,7 +76,7 @@ export function changesOf(slug: RegistrySlug): VersionedChange[] {
   const released = firstReleased[slug];
   const start = released ? [{ date: released, kind: "first" as const, note: "" }] : [shipped, themed];
   // A stable sort: the theme, listed first, stays ahead of a part's own change on the same day.
-  const history = [...start, ...(own[slug] ?? []), ...(mirrored.includes(slug) ? [rtlFix] : [])].sort((a, b) => a.date.localeCompare(b.date));
+  const history = [...start, ...(own[slug] ?? []), ...(mirrored.includes(slug) ? [rtlFix] : []), ...(sidewaysKeys.includes(slug) ? [rtlKeys] : [])].sort((a, b) => a.date.localeCompare(b.date));
   let [minor, patch] = [0, 0];
   const versioned = history.map((change) => {
     if (change.kind === "added") [minor, patch] = [minor + 1, 0];

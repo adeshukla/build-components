@@ -4,6 +4,13 @@
  * Selecting an item fires a "tree-select" event on the root: event.detail.path is its full path.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   function createTreeView(root) {
     const items = Array.from(root.querySelectorAll('[role="treeitem"]'));
     const selection = root.querySelector("[data-selection]");
@@ -40,28 +47,28 @@
       const isParent = !!group(item);
       let handled = true;
 
-      if (event.key === "ArrowDown") {
+      if (keyOf(event) === "ArrowDown") {
         if (shown[index + 1]) focus(shown[index + 1]);
-      } else if (event.key === "ArrowUp") {
+      } else if (keyOf(event) === "ArrowUp") {
         if (index > 0) focus(shown[index - 1]);
-      } else if (event.key === "ArrowRight") {
+      } else if (keyOf(event) === "ArrowRight") {
         if (isParent && !isOpen(item)) setOpen(item, true);
         else if (isParent) focus(group(item).querySelector('[role="treeitem"]'));
-      } else if (event.key === "ArrowLeft") {
+      } else if (keyOf(event) === "ArrowLeft") {
         if (isParent && isOpen(item)) setOpen(item, false);
         else if (parentOf(item)) focus(parentOf(item));
-      } else if (event.key === "Home") {
+      } else if (keyOf(event) === "Home") {
         focus(shown[0]);
-      } else if (event.key === "End") {
+      } else if (keyOf(event) === "End") {
         focus(shown[shown.length - 1]);
-      } else if (event.key === "Enter" || event.key === " ") {
+      } else if (keyOf(event) === "Enter" || keyOf(event) === " ") {
         select(item);
-      } else if (event.key === "*") {
+      } else if (keyOf(event) === "*") {
         // Opens every folder at this level, as in the APG tree pattern.
         Array.from(item.parentElement.children).forEach((sibling) => setOpen(sibling, true));
-      } else if (event.key.length === 1 && /\S/.test(event.key) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      } else if (keyOf(event).length === 1 && /\S/.test(keyOf(event)) && !event.ctrlKey && !event.metaKey && !event.altKey) {
         // Type-ahead: the next visible item starting with that character.
-        const char = event.key.toLowerCase();
+        const char = keyOf(event).toLowerCase();
         const ordered = shown.slice(index + 1).concat(shown.slice(0, index + 1));
         const match = ordered.find((candidate) => name(candidate).toLowerCase().indexOf(char) === 0);
         if (match) focus(match);

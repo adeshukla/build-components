@@ -256,6 +256,13 @@ const isApplePhone = () =>
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
   /iPad/.test(navigator.userAgent);
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function DatePicker({ config = defaultConfig }: { config?: DatePickerConfig }) {
   const id = useId();
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -458,24 +465,24 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
               PageUp: by(-144),
               PageDown: by(144),
             };
-    if (event.key === "Enter" || event.key === " ") {
+    if (keyOf(event) === "Enter" || keyOf(event) === " ") {
       event.preventDefault();
       pick(focused);
-    } else if (moves[event.key]) {
+    } else if (moves[keyOf(event)]) {
       event.preventDefault();
-      moveTo(moves[event.key]());
+      moveTo(moves[keyOf(event)]());
     }
   }
 
   function onDialogKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
     // In the month or year view, Escape steps back to the days instead of closing.
-    if (event.key === "Escape" && view !== "days") {
+    if (keyOf(event) === "Escape" && view !== "days") {
       event.preventDefault();
       changeView("days");
       return;
     }
     // Keep Tab inside the open dialog (APG dialog pattern).
-    if (event.key !== "Tab") return;
+    if (keyOf(event) !== "Tab") return;
     const items = [...event.currentTarget.querySelectorAll<HTMLElement>('button, [tabindex="0"]')];
     const first = items[0];
     const last = items[items.length - 1];
@@ -556,7 +563,7 @@ export function DatePicker({ config = defaultConfig }: { config?: DatePickerConf
           onChange={(event) => setText(event.target.value)}
           onBlur={commitText}
           onKeyDown={(event) => {
-            if (event.key === "Enter") commitText();
+            if (keyOf(event) === "Enter") commitText();
           }}
           className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-(--dp-muted) ${size.input}`}
         />

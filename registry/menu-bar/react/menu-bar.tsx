@@ -86,6 +86,13 @@ export function toMenus(items: MenuBarConfig["items"]) {
   return menus;
 }
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) {
   const menus = toMenus(config.items);
   const [openAt, setOpenAt] = useState<number | null>(null);
@@ -153,7 +160,7 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
   // order two effects run in.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
+      if (keyOf(event) !== "Escape") return;
       setOpenAt((current) => {
         if (current === null) return null;
         wanted.current = { kind: "top", index: current };
@@ -209,22 +216,22 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
               tabIndex={focusAt === index ? 0 : -1}
               onClick={() => (openAt === index ? closeMenu(false) : openMenu(index, "first"))}
               onKeyDown={(event) => {
-                if (event.key === "ArrowRight") {
+                if (keyOf(event) === "ArrowRight") {
                   event.preventDefault();
                   moveTop(index + 1, openAt !== null);
-                } else if (event.key === "ArrowLeft") {
+                } else if (keyOf(event) === "ArrowLeft") {
                   event.preventDefault();
                   moveTop(index - 1, openAt !== null);
-                } else if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+                } else if (keyOf(event) === "ArrowDown" || keyOf(event) === "Enter" || keyOf(event) === " ") {
                   event.preventDefault();
                   openMenu(index, "first");
-                } else if (event.key === "ArrowUp") {
+                } else if (keyOf(event) === "ArrowUp") {
                   event.preventDefault();
                   openMenu(index, "last");
-                } else if (event.key === "Home") {
+                } else if (keyOf(event) === "Home") {
                   event.preventDefault();
                   moveTop(0, false);
-                } else if (event.key === "End") {
+                } else if (keyOf(event) === "End") {
                   event.preventDefault();
                   moveTop(menus.length - 1, false);
                 }
@@ -252,30 +259,30 @@ export function MenuBar({ config = defaultConfig }: { config?: MenuBarConfig }) 
                     onClick={() => choose(entry.item)}
                     onKeyDown={(event) => {
                       const list = itemsIn(index);
-                      if (event.key === "ArrowDown") {
+                      if (keyOf(event) === "ArrowDown") {
                         event.preventDefault();
                         list[(at + 1) % list.length]?.focus();
-                      } else if (event.key === "ArrowUp") {
+                      } else if (keyOf(event) === "ArrowUp") {
                         event.preventDefault();
                         list[(at - 1 + list.length) % list.length]?.focus();
-                      } else if (event.key === "Home") {
+                      } else if (keyOf(event) === "Home") {
                         event.preventDefault();
                         list[0]?.focus();
-                      } else if (event.key === "End") {
+                      } else if (keyOf(event) === "End") {
                         event.preventDefault();
                         list[list.length - 1]?.focus();
-                      } else if (event.key === "ArrowRight") {
+                      } else if (keyOf(event) === "ArrowRight") {
                         // From inside a menu, sideways means the next menu — opened, as the APG has it.
                         event.preventDefault();
                         moveTop(index + 1, true);
-                      } else if (event.key === "ArrowLeft") {
+                      } else if (keyOf(event) === "ArrowLeft") {
                         event.preventDefault();
                         moveTop(index - 1, true);
-                      } else if (event.key === "Tab") {
+                      } else if (keyOf(event) === "Tab") {
                         // Tab leaves the whole bar rather than walking the menu it opened.
                         setOpenAt(null);
-                      } else if (event.key.length === 1 && /\S/.test(event.key)) {
-                        if (typeAhead(list, at, event.key)) event.preventDefault();
+                      } else if (keyOf(event).length === 1 && /\S/.test(keyOf(event))) {
+                        if (typeAhead(list, at, keyOf(event))) event.preventDefault();
                       }
                     }}
                     className="flex w-full min-h-11 items-center justify-between gap-6 rounded-[var(--bc-radius-xs,0.25rem)] px-3 text-left hover:bg-(--mb-sunk) focus-visible:bg-(--mb-sunk) focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-(--mb-accent-text)"

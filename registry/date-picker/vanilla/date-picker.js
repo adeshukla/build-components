@@ -4,6 +4,13 @@
  * Keyboard and ARIA follow the WAI-ARIA APG "Date Picker Dialog" pattern.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   // @config-start
   const defaultConfig = {
     label: "Date",
@@ -522,7 +529,7 @@
     input.addEventListener("input", syncInputs);
     input.addEventListener("blur", commitText);
     input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") commitText();
+      if (keyOf(event) === "Enter") commitText();
     });
     if (clearButton) {
       clearButton.addEventListener("click", () => {
@@ -592,24 +599,24 @@
                 PageUp: by(-144),
                 PageDown: by(144),
               };
-      if (event.key === "Enter" || event.key === " ") {
+      if (keyOf(event) === "Enter" || keyOf(event) === " ") {
         event.preventDefault();
         pick(focused);
-      } else if (moves[event.key]) {
+      } else if (moves[keyOf(event)]) {
         event.preventDefault();
-        moveTo(moves[event.key]());
+        moveTo(moves[keyOf(event)]());
       }
     });
 
     dialog.addEventListener("keydown", (event) => {
       // In the month or year view, Escape steps back to the days instead of closing.
-      if (event.key === "Escape" && view !== "days") {
+      if (keyOf(event) === "Escape" && view !== "days") {
         event.preventDefault();
         changeView("days");
         return;
       }
       // Keep Tab inside the open dialog (APG dialog pattern).
-      if (event.key !== "Tab") return;
+      if (keyOf(event) !== "Tab") return;
       const items = [...dialog.querySelectorAll('button, [tabindex="0"]')];
       const first = items[0];
       const last = items[items.length - 1];

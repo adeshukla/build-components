@@ -4,6 +4,13 @@
  * between boxes, pasting a whole code across them, and the completion message.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   function createOtp(root) {
     const boxes = Array.from(root.querySelectorAll("[data-box]"));
     const single = root.querySelector("[data-single]");
@@ -56,18 +63,18 @@
       });
 
       box.addEventListener("keydown", function (event) {
-        if (event.key === "Backspace" && box.value === "" && index > 0) {
+        if (keyOf(event) === "Backspace" && box.value === "" && index > 0) {
           event.preventDefault();
           boxes[index - 1].value = "";
           boxes[index - 1].focus();
           say();
           return;
         }
-        if (event.key === "ArrowLeft" && index > 0) {
+        if (keyOf(event) === "ArrowLeft" && index > 0) {
           event.preventDefault();
           boxes[index - 1].focus();
         }
-        if (event.key === "ArrowRight" && index < boxes.length - 1) {
+        if (keyOf(event) === "ArrowRight" && index < boxes.length - 1) {
           event.preventDefault();
           boxes[index + 1].focus();
         }

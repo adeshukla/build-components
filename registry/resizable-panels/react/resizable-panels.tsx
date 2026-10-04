@@ -89,6 +89,13 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+function keyOf(event: { key: string; target: EventTarget | null }) {
+  const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+  const swapped: Record<string, string> = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+  return rtl ? (swapped[event.key] ?? event.key) : event.key;
+}
+
 export function ResizablePanels({ config = defaultConfig }: { config?: ResizablePanelsConfig }) {
   const id = useId();
   const min = Math.min(config.minSize, config.maxSize);
@@ -125,11 +132,11 @@ export function ResizablePanels({ config = defaultConfig }: { config?: Resizable
     const less = horizontal ? "ArrowLeft" : "ArrowUp";
     const more = horizontal ? "ArrowRight" : "ArrowDown";
     let handled = true;
-    if (event.key === less) resize(shown - config.step);
-    else if (event.key === more) resize((collapsed ? min : size) + (collapsed ? 0 : config.step));
-    else if (event.key === "Home") resize(min);
-    else if (event.key === "End") resize(max);
-    else if (event.key === "Enter" && config.collapsible) setCollapsed(!collapsed);
+    if (keyOf(event) === less) resize(shown - config.step);
+    else if (keyOf(event) === more) resize((collapsed ? min : size) + (collapsed ? 0 : config.step));
+    else if (keyOf(event) === "Home") resize(min);
+    else if (keyOf(event) === "End") resize(max);
+    else if (keyOf(event) === "Enter" && config.collapsible) setCollapsed(!collapsed);
     else handled = false;
     if (handled) event.preventDefault();
   }

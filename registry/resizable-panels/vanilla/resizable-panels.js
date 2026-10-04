@@ -4,6 +4,13 @@
  * event.detail.size (the first panel's percentage, 0 when collapsed).
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   function createResizablePanels(root) {
     const first = root.querySelector("[data-first]");
     const divider = root.querySelector("[data-divider]");
@@ -37,11 +44,11 @@
       const less = horizontal ? "ArrowLeft" : "ArrowUp";
       const more = horizontal ? "ArrowRight" : "ArrowDown";
       let handled = true;
-      if (event.key === less) resize((collapsed ? 0 : size) - step);
-      else if (event.key === more) resize(collapsed ? min : size + step);
-      else if (event.key === "Home") resize(min);
-      else if (event.key === "End") resize(max);
-      else if (event.key === "Enter" && collapsible) {
+      if (keyOf(event) === less) resize((collapsed ? 0 : size) - step);
+      else if (keyOf(event) === more) resize(collapsed ? min : size + step);
+      else if (keyOf(event) === "Home") resize(min);
+      else if (keyOf(event) === "End") resize(max);
+      else if (keyOf(event) === "Enter" && collapsible) {
         collapsed = !collapsed;
         paint();
       } else handled = false;

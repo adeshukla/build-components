@@ -4,6 +4,13 @@
  * focus kept inside, and focus back on the thumbnail of the picture you were on.
  */
 (function () {
+  /** The key as the reader means it (D93): in a right-to-left page, Left goes forward and Right goes back. */
+  function keyOf(event) {
+    const rtl = event.target instanceof Element && getComputedStyle(event.target).direction === "rtl";
+    const swapped = { ArrowLeft: "ArrowRight", ArrowRight: "ArrowLeft" };
+    return rtl ? (swapped[event.key] ?? event.key) : event.key;
+  }
+
   /** How far a swipe has to travel, in pixels, to change picture. */
   const SWIPE = 50;
 
@@ -93,11 +100,11 @@
     });
 
     dialog.addEventListener("keydown", function (event) {
-      if (event.key === "ArrowLeft") go(-1);
-      else if (event.key === "ArrowRight") go(1);
-      else if (event.key === "Home") show(0);
-      else if (event.key === "End") show(openers.length - 1);
-      else if (event.key === "Tab") {
+      if (keyOf(event) === "ArrowLeft") go(-1);
+      else if (keyOf(event) === "ArrowRight") go(1);
+      else if (keyOf(event) === "Home") show(0);
+      else if (keyOf(event) === "End") show(openers.length - 1);
+      else if (keyOf(event) === "Tab") {
         // Keep Tab inside the viewer (APG dialog pattern).
         const buttons = Array.from(dialog.querySelectorAll("button"));
         const index = buttons.indexOf(document.activeElement);
