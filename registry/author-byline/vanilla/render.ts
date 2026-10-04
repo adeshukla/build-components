@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { AuthorBylineConfig } from "../react/author-byline";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f1eff7", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -20,13 +23,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand, the same way the React output does it. Duplicated: that file is a client one. */
-function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 function initialsFor(name: string, override: string) {
@@ -69,19 +70,19 @@ export function renderAuthorBylineMarkup(config: AuthorBylineConfig) {
         }
 
         <div>
-          <p class="byl-name"><span class="byl-by">By </span>${who}${
+          <p class="byl-name"><span class="byl-by">${escapeHtml(config.byText)} </span>${who}${
             config.role.trim() === "" ? "" : `<span class="byl-role">, ${escapeHtml(config.role)}</span>`
           }</p>
 
           <p class="byl-meta">
-            <span>Published <time datetime="${escapeHtml(config.date)}">${escapeHtml(sayDate(config.date))}</time></span>
+            <span>${escapeHtml(config.publishedText)} <time datetime="${escapeHtml(config.date)}">${escapeHtml(sayDate(config.date, config))}</time></span>
             <!-- Updated is said as well as published, not instead of it: both are facts people want. -->
             ${
               config.updatedDate.trim() === ""
                 ? ""
-                : `${dot}<span>Updated <time datetime="${escapeHtml(config.updatedDate)}">${escapeHtml(sayDate(config.updatedDate))}</time></span>`
+                : `${dot}<span>${escapeHtml(config.updatedText)} <time datetime="${escapeHtml(config.updatedDate)}">${escapeHtml(sayDate(config.updatedDate, config))}</time></span>`
             }
-            ${config.readingMinutes > 0 ? `${dot}<span>${config.readingMinutes} minute read</span>` : ""}
+            ${config.readingMinutes > 0 ? `${dot}<span>${escapeHtml(fill(config.readText, { minutes: config.readingMinutes }))}</span>` : ""}
           </p>
         </div>
       </div>

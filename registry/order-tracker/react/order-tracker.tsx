@@ -13,6 +13,8 @@ export type OrderTrackerConfig = {
   layout: "vertical" | "horizontal";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  dateText: string;
 };
 
 // @config-start
@@ -33,6 +35,8 @@ const defaultConfig: OrderTrackerConfig = {
   layout: "vertical",
   theme: "light",
   accentColor: "#0f766e",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  dateText: "{day} {month} {year}",
 };
 // @config-end
 
@@ -81,14 +85,15 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand: Intl gives the server and the browser different strings. */
-export function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+export function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return "";
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function OrderTracker({ config = defaultConfig }: { config?: OrderTrackerConfig }) {
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -163,7 +168,7 @@ export function OrderTracker({ config = defaultConfig }: { config?: OrderTracker
                 {step.detail !== "" && <p className="mt-1 text-sm text-(--ord-muted)">{step.detail}</p>}
                 {step.date !== "" && (
                   <p className="mt-1 text-sm text-(--ord-muted)">
-                    <time dateTime={step.date}>{sayDate(step.date)}</time>
+                    <time dateTime={step.date}>{sayDate(step.date, config)}</time>
                   </p>
                 )}
               </div>

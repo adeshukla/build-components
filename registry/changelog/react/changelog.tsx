@@ -10,6 +10,8 @@ export type ChangelogConfig = {
   showLatest: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  dateText: string;
 };
 
 // @config-start
@@ -28,6 +30,8 @@ const defaultConfig: ChangelogConfig = {
   showLatest: true,
   theme: "light",
   accentColor: "#7c3aed",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  dateText: "{day} {month} {year}",
 };
 // @config-end
 
@@ -76,13 +80,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand: Intl gives the server and the browser different strings. */
-export function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+export function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 /** Runs of entries with the same version become one release, in the order they are listed. */
@@ -100,6 +102,9 @@ export function toReleases(entries: ChangelogConfig["entries"]) {
   }
   return releases;
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Changelog({ config = defaultConfig }: { config?: ChangelogConfig }) {
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -132,7 +137,7 @@ export function Changelog({ config = defaultConfig }: { config?: ChangelogConfig
               <Sub className="m-0 font-mono text-lg font-semibold">{release.version}</Sub>
               {/* A real time element, written out in full: 2026-09-18 is not a date most people read. */}
               <time dateTime={release.date} className="text-sm text-(--chg-muted)">
-                {sayDate(release.date)}
+                {sayDate(release.date, config)}
               </time>
               {config.showLatest && index === 0 && (
                 <span className="rounded-full bg-(--chg-accent) px-2 py-0.5 text-xs font-semibold text-(--chg-on-accent)">

@@ -40,6 +40,24 @@ export const orderTrackerSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#0f766e" },
+  {
+    key: "monthNames",
+    label: "Month names",
+    description: "The twelve months, January first, with commas between.",
+    group: "Words",
+    type: "text",
+    default: "January,February,March,April,May,June,July,August,September,October,November,December",
+    maxLength: 240,
+  },
+  {
+    key: "dateText",
+    label: "Date",
+    description: "How a date is written. {day}, {month} and {year} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "{day} {month} {year}",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

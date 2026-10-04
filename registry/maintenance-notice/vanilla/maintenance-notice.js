@@ -8,6 +8,11 @@
   const config = {
     remember: true,
     storageKey: "maintenance-2026-10-04",
+    monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+    momentText: "{day} {month} at {time}",
+    windowText: "{start} until {end}",
+    dismissedText: "Notice dismissed.",
+    dismissedForeverText: "Notice dismissed. It will not come back on this browser.",
   };
   // @config-end
 
@@ -43,8 +48,8 @@
         notice.hidden = true;
         if (said) {
           said.textContent = config.remember
-            ? "Notice dismissed. It will not come back on this browser."
-            : "Notice dismissed.";
+            ? config.dismissedForeverText
+            : config.dismissedText;
         }
       });
     }

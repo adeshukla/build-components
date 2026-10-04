@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { ArticleCardConfig } from "../react/article-card";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f1eff7", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#181320", sunk: "#272031", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -20,13 +23,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand, the same way the React output does it. Duplicated: that file is a client one. */
-function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 export function renderArticleCardMarkup(config: ArticleCardConfig) {
@@ -62,8 +63,8 @@ export function renderArticleCardMarkup(config: ArticleCardConfig) {
           <p class="atc-summary">${escapeHtml(config.summary)}</p>
 
           <p class="atc-meta">
-            <time datetime="${escapeHtml(config.date)}">${escapeHtml(sayDate(config.date))}</time>
-            ${config.readingMinutes > 0 ? `<span aria-hidden="true">·</span><span>${config.readingMinutes} minute read</span>` : ""}
+            <time datetime="${escapeHtml(config.date)}">${escapeHtml(sayDate(config.date, config))}</time>
+            ${config.readingMinutes > 0 ? `<span aria-hidden="true">·</span><span>${escapeHtml(fill(config.readText, { minutes: config.readingMinutes }))}</span>` : ""}
           </p>
 
           ${tags.length === 0 ? "" : `<ul class="atc-tags">${tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>`}

@@ -4,21 +4,35 @@
  * other, and says the span in words.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     spanUnit: "nights",
     orderErrorText: "Check-out cannot be before check-in.",
+    monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+    dateText: "{day} {month} {year}",
+    nightOne: "{count} night",
+    nightMany: "{count} nights",
+    dayOne: "{count} day",
+    dayMany: "{count} days",
+    spanText: "{span}, {from} to {to}",
   };
   // @config-end
 
-  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-  /** Formatted by hand: a locale-formatted date differs between machines. */
+  /** Formatted by hand from the Words options (D94): a locale-formatted date differs between machines. */
   function sayDate(iso) {
     const parts = iso.split("-").map(Number);
     if (parts.length !== 3 || !parts[0]) return iso;
-    return parts[2] + " " + MONTHS[parts[1] - 1] + " " + parts[0];
+    const month = (config.monthNames.split(",")[parts[1] - 1] || String(parts[1])).trim();
+    return fill(config.dateText, { day: parts[2], month: month, year: parts[0] });
   }
+
 
   function daysBetween(from, to) {
     const f = from.split("-").map(Number);
@@ -64,8 +78,8 @@
         }
         const days = daysBetween(from.value, to.value);
         const count = config.spanUnit === "nights" ? days : days + 1;
-        const unit = config.spanUnit === "nights" ? "night" : "day";
-        status.textContent = count + " " + (count === 1 ? unit : unit + "s") + ", " + sayDate(from.value) + " to " + sayDate(to.value);
+        const span = config.spanUnit === "nights" ? (count === 1 ? config.nightOne : config.nightMany) : count === 1 ? config.dayOne : config.dayMany;
+        status.textContent = fill(config.spanText, { span: fill(span, { count: count }), from: sayDate(from.value), to: sayDate(to.value) });
       }
     }
 

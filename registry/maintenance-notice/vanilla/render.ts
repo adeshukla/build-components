@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { MaintenanceNoticeConfig } from "../react/maintenance-notice";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#fffaf0", text: "#16121f", muted: "#4d4a57", line: "#e8d9b5" },
   dark: { surface: "#211b10", text: "#f6f5fa", muted: "#c8c0ad", line: "#5a4a28" },
@@ -20,13 +23,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
 /**
- * Written out by hand, the same way the React output does it. Duplicated rather than imported: this is
- * a server module and the React file is a client one.
+ * Written out by hand from the Words options (D94). Intl gives the server and the browser different
+ * strings, and "22:00–02:00" with no date is the kind of window nobody can plan around.
  */
-function sayWindow(startsAt: string, endsAt: string) {
+function sayWindow(startsAt: string, endsAt: string, words: { monthNames: string; momentText: string; windowText: string }) {
   const parse = (value: string) => {
     const [date, time] = value.split("T");
     const [year, month, day] = (date ?? "").split("-").map(Number);
@@ -36,9 +37,8 @@ function sayWindow(startsAt: string, endsAt: string) {
   const to = parse(endsAt);
   if (!from.year || !to.year) return "";
   const sameDay = from.year === to.year && from.month === to.month && from.day === to.day;
-  const start = `${from.day} ${MONTHS[from.month - 1]} at ${from.time}`;
-  const end = sameDay ? to.time : `${to.day} ${MONTHS[to.month - 1]} at ${to.time}`;
-  return `${start} until ${end}`;
+  const moment = (when: typeof from) => fill(words.momentText, { day: when.day, month: words.monthNames.split(",")[when.month - 1]?.trim() ?? when.month, time: when.time });
+  return fill(words.windowText, { start: moment(from), end: sameDay ? to.time : moment(to) });
 }
 
 export function renderMaintenanceNoticeMarkup(config: MaintenanceNoticeConfig) {
@@ -50,7 +50,7 @@ export function renderMaintenanceNoticeMarkup(config: MaintenanceNoticeConfig) {
     ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--mnt-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
-  const when = sayWindow(config.startsAt, config.endsAt);
+  const when = sayWindow(config.startsAt, config.endsAt, config);
   const glyph =
     config.tone === "warning"
       ? "M12 2 1.5 20.5h21L12 2Zm0 5.5 1 7h-2l1-7Zm0 9.25a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z"

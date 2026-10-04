@@ -15,6 +15,9 @@ export type ArticleCardConfig = {
   thumbAlt: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  dateText: string;
+  readText: string;
 };
 
 // @config-start
@@ -31,6 +34,9 @@ const defaultConfig: ArticleCardConfig = {
   thumbAlt: "",
   theme: "light",
   accentColor: "#7c3aed",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  dateText: "{day} {month} {year}",
+  readText: "{minutes} minute read",
 };
 // @config-end
 
@@ -79,13 +85,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand: Intl gives the server and the browser different strings. */
-export function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+export function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 /** Only http(s) links are let through: a config value must never become a javascript: URL. */
@@ -97,6 +101,9 @@ function safeHref(href: string) {
     return "#";
   }
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ArticleCard({ config = defaultConfig }: { config?: ArticleCardConfig }) {
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -160,11 +167,11 @@ export function ArticleCard({ config = defaultConfig }: { config?: ArticleCardCo
           <p className="mt-2 text-(--atc-muted)">{config.summary}</p>
 
           <p className="mt-3 flex flex-wrap items-center gap-x-2 text-sm text-(--atc-muted)">
-            <time dateTime={config.date}>{sayDate(config.date)}</time>
+            <time dateTime={config.date}>{sayDate(config.date, config)}</time>
             {config.readingMinutes > 0 && (
               <>
                 <span aria-hidden="true">·</span>
-                <span>{`${config.readingMinutes} minute read`}</span>
+                <span>{fill(config.readText, { minutes: config.readingMinutes })}</span>
               </>
             )}
           </p>

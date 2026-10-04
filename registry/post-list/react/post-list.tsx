@@ -12,6 +12,8 @@ export type PostListConfig = {
   showExcerpts: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  dateText: string;
 };
 
 // @config-start
@@ -28,6 +30,8 @@ const defaultConfig: PostListConfig = {
   showExcerpts: true,
   theme: "light",
   accentColor: "#2563eb",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  dateText: "{day} {month} {year}",
 };
 // @config-end
 
@@ -81,15 +85,16 @@ function safeHref(value: string) {
   return /^(\/|#|https?:\/\/|mailto:|tel:)/i.test(value.trim()) ? value.trim() : "#";
 }
 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** "2026-09-14" as "14 September 2026", by hand: Intl differs between the server and the browser. */
-export function sayDate(iso: string) {
+/** "2026-09-14" as "14 September 2026", by hand from the Words options (D94): Intl differs between the server and the browser. */
+export function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
   if (!match) return "";
-  const month = months[Number(match[2]) - 1];
-  return month ? `${Number(match[3])} ${month} ${match[1]}` : "";
+  const month = words.monthNames.split(",")[Number(match[2]) - 1]?.trim();
+  return month ? fill(words.dateText, { day: Number(match[3]), month, year: match[1] }) : "";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function PostList({ config = defaultConfig }: { config?: PostListConfig }) {
   const id = useId();
@@ -131,9 +136,9 @@ export function PostList({ config = defaultConfig }: { config?: PostListConfig }
                   {post.title}
                 </a>
               </Title>
-              {sayDate(post.date) && (
+              {sayDate(post.date, config) && (
                 <p className="m-0 mt-1 text-sm text-(--pl-muted)">
-                  <time dateTime={post.date.trim()}>{sayDate(post.date)}</time>
+                  <time dateTime={post.date.trim()}>{sayDate(post.date, config)}</time>
                 </p>
               )}
               {config.showExcerpts && post.excerpt.trim() !== "" && <p className="m-0 mt-3 text-(--pl-muted)">{post.excerpt}</p>}

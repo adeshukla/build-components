@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { PostListConfig } from "../react/post-list";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4" },
   dark: { surface: "#141019", sunk: "#1c1726", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
@@ -20,14 +23,12 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** The same as the React file's (a copy: that file is a client module). */
-function sayDate(iso: string) {
+/** "2026-09-14" as "14 September 2026", by hand from the Words options (D94): Intl differs between the server and the browser. */
+function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
   if (!match) return "";
-  const month = months[Number(match[2]) - 1];
-  return month ? `${Number(match[3])} ${month} ${match[1]}` : "";
+  const month = words.monthNames.split(",")[Number(match[2]) - 1]?.trim();
+  return month ? fill(words.dateText, { day: Number(match[3]), month, year: match[1] }) : "";
 }
 
 /** Plain HTML, no JavaScript: the markup is generated from the options. "system" theme is handled in CSS. */
@@ -43,7 +44,7 @@ export function renderPostListMarkup(config: PostListConfig) {
   const posts = config.posts
     .filter((post) => post.title.trim() !== "")
     .map((post) => {
-      const date = sayDate(post.date);
+      const date = sayDate(post.date, config);
       return `        <li>
           <article class="pl-post">
             <${title} class="pl-title"><a class="pl-link" href="${escapeHtml(safeHref(post.href))}">${escapeHtml(post.title)}</a></${title}>

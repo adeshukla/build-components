@@ -14,6 +14,12 @@ export type AuthorBylineConfig = {
   layout: "row" | "stacked";
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  dateText: string;
+  byText: string;
+  publishedText: string;
+  updatedText: string;
+  readText: string;
 };
 
 // @config-start
@@ -29,6 +35,12 @@ const defaultConfig: AuthorBylineConfig = {
   layout: "row",
   theme: "light",
   accentColor: "#7c3aed",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  dateText: "{day} {month} {year}",
+  byText: "By",
+  publishedText: "Published",
+  updatedText: "Updated",
+  readText: "{minutes} minute read",
 };
 // @config-end
 
@@ -77,13 +89,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand: Intl gives the server and the browser different strings. */
-export function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+export function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 /** First letters of the first two words, unless the initials are given. */
@@ -106,6 +116,9 @@ function safeHref(href: string) {
     return "#";
   }
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function AuthorByline({ config = defaultConfig }: { config?: AuthorBylineConfig }) {
   const systemDark = useSyncExternalStore(darkMedia.subscribe, darkMedia.get, () => false);
@@ -146,7 +159,7 @@ export function AuthorByline({ config = defaultConfig }: { config?: AuthorByline
 
         <div>
           <p className="m-0">
-            <span className="text-(--byl-muted)">By </span>
+            <span className="text-(--byl-muted)">{`${config.byText} `}</span>
             {named ? (
               // rel="author" says what the link is, which is more than "a link with a person's name".
               <a
@@ -164,21 +177,21 @@ export function AuthorByline({ config = defaultConfig }: { config?: AuthorByline
 
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-(--byl-muted)">
             <span>
-              Published <time dateTime={config.date}>{sayDate(config.date)}</time>
+              {config.publishedText} <time dateTime={config.date}>{sayDate(config.date, config)}</time>
             </span>
             {/* Updated is said as well as published, not instead of it: both are facts people want. */}
             {config.updatedDate.trim() !== "" && (
               <>
                 <span aria-hidden="true">·</span>
                 <span>
-                  Updated <time dateTime={config.updatedDate}>{sayDate(config.updatedDate)}</time>
+                  {config.updatedText} <time dateTime={config.updatedDate}>{sayDate(config.updatedDate, config)}</time>
                 </span>
               </>
             )}
             {config.readingMinutes > 0 && (
               <>
                 <span aria-hidden="true">·</span>
-                <span>{`${config.readingMinutes} minute read`}</span>
+                <span>{fill(config.readText, { minutes: config.readingMinutes })}</span>
               </>
             )}
           </p>

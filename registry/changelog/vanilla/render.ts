@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ChangelogConfig } from "../react/changelog";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -20,13 +23,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Written out by hand, the same way the React output does it. Duplicated: that file is a client one. */
-function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 function toReleases(entries: ChangelogConfig["entries"]) {
@@ -73,7 +74,7 @@ export function renderChangelogMarkup(config: ChangelogConfig) {
             <div class="chg-top">
               <${sub} class="chg-version">${escapeHtml(release.version)}</${sub}>
               <!-- A real time element, written out in full: 2026-09-18 is not a date most people read. -->
-              <time class="chg-date" datetime="${escapeHtml(release.date)}">${escapeHtml(sayDate(release.date))}</time>
+              <time class="chg-date" datetime="${escapeHtml(release.date)}">${escapeHtml(sayDate(release.date, config))}</time>
               ${config.showLatest && index === 0 ? `<span class="chg-latest">${escapeHtml(config.latestLabel)}</span>` : ""}
             </div>
 ${groups}

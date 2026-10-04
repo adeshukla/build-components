@@ -16,6 +16,13 @@ export type DateRangeConfig = {
   orderErrorText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  dateText: string;
+  nightOne: string;
+  nightMany: string;
+  dayOne: string;
+  dayMany: string;
+  spanText: string;
 };
 
 // @config-start
@@ -33,6 +40,13 @@ const defaultConfig: DateRangeConfig = {
   orderErrorText: "Check-out cannot be before check-in.",
   theme: "light",
   accentColor: "#1d4ed8",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  dateText: "{day} {month} {year}",
+  nightOne: "{count} night",
+  nightMany: "{count} nights",
+  dayOne: "{count} day",
+  dayMany: "{count} days",
+  spanText: "{span}, {from} to {to}",
 };
 // @config-end
 
@@ -81,13 +95,11 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Formatted by hand: Intl gives the server and the browser different strings. */
-export function sayDate(iso: string) {
+/** Written out by hand from the Words options (D94): Intl gives the server and the browser different strings. */
+export function sayDate(iso: string, words: { monthNames: string; dateText: string }) {
   const [year, month, day] = iso.split("-").map(Number);
   if (!year || !month || !day) return iso;
-  return `${day} ${MONTHS[month - 1]} ${year}`;
+  return fill(words.dateText, { day, month: words.monthNames.split(",")[month - 1]?.trim() ?? month, year });
 }
 
 export function daysBetween(from: string, to: string) {
@@ -95,6 +107,9 @@ export function daysBetween(from: string, to: string) {
   const [ty, tm, td] = to.split("-").map(Number);
   return Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(fy, fm - 1, fd)) / 86_400_000);
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function DateRange({ config = defaultConfig }: { config?: DateRangeConfig }) {
   const id = useId();
@@ -118,7 +133,6 @@ export function DateRange({ config = defaultConfig }: { config?: DateRangeConfig
   const outOfOrder = from !== "" && to !== "" && daysBetween(from, to) < 0;
   const span = from !== "" && to !== "" && !outOfOrder ? daysBetween(from, to) : null;
   const nights = config.spanUnit === "nights" ? span : span === null ? null : span + 1;
-  const unit = config.spanUnit === "nights" ? "night" : "day";
 
   const field = `mt-2 min-h-11 w-full rounded-[var(--bc-radius-sm,0.375rem)] border bg-(--dr-sunk) px-3 text-(--dr-text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--dr-accent-text)`;
 
@@ -181,7 +195,11 @@ export function DateRange({ config = defaultConfig }: { config?: DateRangeConfig
           <p role="status" className="mt-3 text-sm text-(--dr-muted)">
             {nights === null
               ? ""
-              : `${nights} ${nights === 1 ? unit : `${unit}s`}, ${sayDate(from)} to ${sayDate(to)}`}
+              : fill(config.spanText, {
+                  span: fill(config.spanUnit === "nights" ? (nights === 1 ? config.nightOne : config.nightMany) : nights === 1 ? config.dayOne : config.dayMany, { count: nights }),
+                  from: sayDate(from, config),
+                  to: sayDate(to, config),
+                })}
           </p>
         )}
       </fieldset>

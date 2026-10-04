@@ -16,6 +16,11 @@ export type MaintenanceNoticeConfig = {
   storageKey: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  monthNames: string;
+  momentText: string;
+  windowText: string;
+  dismissedText: string;
+  dismissedForeverText: string;
 };
 
 // @config-start
@@ -33,6 +38,11 @@ const defaultConfig: MaintenanceNoticeConfig = {
   storageKey: "maintenance-2026-10-04",
   theme: "light",
   accentColor: "#e6b24a",
+  monthNames: "January,February,March,April,May,June,July,August,September,October,November,December",
+  momentText: "{day} {month} at {time}",
+  windowText: "{start} until {end}",
+  dismissedText: "Notice dismissed.",
+  dismissedForeverText: "Notice dismissed. It will not come back on this browser.",
 };
 // @config-end
 
@@ -99,13 +109,11 @@ function writeDismissed(key: string) {
   }
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
 /**
- * Written out by hand. Intl gives the server and the browser different strings, and "22:00–02:00" with
- * no date is the kind of window nobody can plan around.
+ * Written out by hand from the Words options (D94). Intl gives the server and the browser different
+ * strings, and "22:00–02:00" with no date is the kind of window nobody can plan around.
  */
-export function sayWindow(startsAt: string, endsAt: string) {
+export function sayWindow(startsAt: string, endsAt: string, words: { monthNames: string; momentText: string; windowText: string }) {
   const parse = (value: string) => {
     const [date, time] = value.split("T");
     const [year, month, day] = (date ?? "").split("-").map(Number);
@@ -115,9 +123,8 @@ export function sayWindow(startsAt: string, endsAt: string) {
   const to = parse(endsAt);
   if (!from.year || !to.year) return "";
   const sameDay = from.year === to.year && from.month === to.month && from.day === to.day;
-  const start = `${from.day} ${MONTHS[from.month - 1]} at ${from.time}`;
-  const end = sameDay ? to.time : `${to.day} ${MONTHS[to.month - 1]} at ${to.time}`;
-  return `${start} until ${end}`;
+  const moment = (when: typeof from) => fill(words.momentText, { day: when.day, month: words.monthNames.split(",")[when.month - 1]?.trim() ?? when.month, time: when.time });
+  return fill(words.windowText, { start: moment(from), end: sameDay ? to.time : moment(to) });
 }
 
 /** Only http(s) links are let through: a config value must never become a javascript: URL. */
@@ -129,6 +136,9 @@ function safeHref(href: string) {
     return "#";
   }
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function MaintenanceNotice({ config = defaultConfig }: { config?: MaintenanceNoticeConfig }) {
   const [justGone, setJustGone] = useState(false);
@@ -154,7 +164,7 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
   } as CSSProperties;
 
   const gone = justGone || (config.remember && stored);
-  const when = sayWindow(config.startsAt, config.endsAt);
+  const when = sayWindow(config.startsAt, config.endsAt, config);
 
   return (
     <div style={style}>
@@ -219,7 +229,7 @@ export function MaintenanceNotice({ config = defaultConfig }: { config?: Mainten
       {/* Something under the notice, so its stickiness can be seen. Delete it in your own page. */}
       <div className="grid gap-3 p-4">
         <p role="status" data-said className="text-sm text-(--mnt-muted)">
-          {gone ? (config.remember ? "Notice dismissed. It will not come back on this browser." : "Notice dismissed.") : ""}
+          {gone ? (config.remember ? config.dismissedForeverText : config.dismissedText) : ""}
         </p>
         {[0, 1, 2, 3, 4, 5].map((row) => (
           <div key={row} aria-hidden="true" className="h-4 rounded-[var(--bc-radius-xs,0.25rem)] bg-(--mnt-line)" style={{ width: `${92 - row * 9}%` }} />
