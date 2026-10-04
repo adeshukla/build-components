@@ -4,6 +4,13 @@
  * This handles quantities, removing a line, the totals and the drawer.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createCart(root) {
     const symbol = root.dataset.symbol || "£";
     const shippingCost = Number(root.dataset.shippingCost) || 0;
@@ -13,6 +20,7 @@
     const empty = root.querySelector("[data-empty]");
     const announce = root.querySelector("[data-announce]");
     const drawer = root.querySelector("[data-drawer]");
+    const words = JSON.parse(root.dataset.words);
 
     function money(value) {
       return symbol + value.toFixed(2);
@@ -51,17 +59,19 @@
       root.querySelectorAll("[data-items]").forEach(function (node) {
         node.textContent = String(items);
       });
+      const itemsText = root.querySelector("[data-items-text]");
+      if (itemsText) itemsText.textContent = fill(items === 1 ? words.itemOneText : words.itemsText, { count: items });
       root.querySelector("[data-subtotal]").textContent = money(subtotal);
       const shippingNode = root.querySelector("[data-shipping]");
-      if (shippingNode) shippingNode.textContent = shipping === 0 ? "Free" : money(shipping);
+      if (shippingNode) shippingNode.textContent = shipping === 0 ? words.freeText : money(shipping);
       root.querySelector("[data-total]").textContent = money(subtotal + shipping);
 
       const progress = root.querySelector("[data-progress]");
       if (progress) {
         progress.value = Math.min(subtotal, freeOver);
         root.querySelector("[data-progress-text]").textContent = free
-          ? "Delivery is free on this order."
-          : "Spend " + money(Math.max(0, freeOver - subtotal)) + " more for free delivery.";
+          ? words.freeDeliveryText
+          : fill(words.spendMoreText, { amount: money(Math.max(0, freeOver - subtotal)) });
       }
 
       if (all.length === 0) {
@@ -88,7 +98,7 @@
         if (field) field.value = String(next);
         else line.querySelector("[data-quantity-text]").textContent = String(next);
         const subtotal = paint();
-        say(line.dataset.name + ", quantity " + next + ". Subtotal " + money(subtotal) + ".");
+        say(fill(words.changedText, { name: line.dataset.name, count: next, subtotal: money(subtotal) }));
         return;
       }
 
@@ -99,7 +109,7 @@
         line.remove();
         paint();
         const left = lines().length;
-        say(name + " removed. " + (left === 0 ? "Your basket is empty." : left + " line" + (left === 1 ? "" : "s") + " left."));
+        say(fill(words.removedText, { name: name }) + " " + (left === 0 ? words.emptiedText : fill(left === 1 ? words.lineLeftText : words.linesLeftText, { count: left })));
         return;
       }
 
@@ -114,7 +124,7 @@
       const line = field.closest("[data-line]");
       field.value = String(quantityOf(line));
       const subtotal = paint();
-      say(line.dataset.name + ", quantity " + field.value + ". Subtotal " + money(subtotal) + ".");
+      say(fill(words.changedText, { name: line.dataset.name, count: field.value, subtotal: money(subtotal) }));
     });
 
     if (drawer) {

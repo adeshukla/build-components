@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, safeHref, themedColour } from "@/lib/html";
 import type { CartConfig } from "../react/cart";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#d9d5e4" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#3a3448" },
@@ -60,19 +63,19 @@ export function renderCartMarkup(config: CartConfig) {
     .map((line, index) => {
       const quantity = config.quantityStepper
         ? `            <div class="ct-stepper">
-              <button class="ct-step" type="button" data-step="-1"${line.count <= 1 ? " disabled" : ""}><span class="ct-sr">Decrease quantity of ${escapeHtml(line.name)}</span><span aria-hidden="true">&minus;</span></button>
-              <input class="ct-quantity" type="text" inputmode="numeric" value="${line.count}" aria-label="Quantity of ${escapeHtml(line.name)}" data-quantity>
-              <button class="ct-step" type="button" data-step="1"${line.count >= 99 ? " disabled" : ""}><span class="ct-sr">Increase quantity of ${escapeHtml(line.name)}</span><span aria-hidden="true">+</span></button>
+              <button class="ct-step" type="button" data-step="-1"${line.count <= 1 ? " disabled" : ""}><span class="ct-sr">${escapeHtml(fill(config.decreaseLabel, { name: line.name }))}</span><span aria-hidden="true">&minus;</span></button>
+              <input class="ct-quantity" type="text" inputmode="numeric" value="${line.count}" aria-label="${escapeHtml(fill(config.quantityLabel, { name: line.name }))}" data-quantity>
+              <button class="ct-step" type="button" data-step="1"${line.count >= 99 ? " disabled" : ""}><span class="ct-sr">${escapeHtml(fill(config.increaseLabel, { name: line.name }))}</span><span aria-hidden="true">+</span></button>
             </div>`
-        : `            <p class="ct-muted ct-small">Quantity <span data-quantity-text>${line.count}</span></p>`;
+        : `            <p class="ct-muted ct-small">${escapeHtml(config.quantityText).replace("{count}", `<span data-quantity-text>${line.count}</span>`)}</p>`;
       const remove = config.removeButton
-        ? `              <button class="ct-remove" type="button" data-remove><span class="ct-sr">Remove ${escapeHtml(line.name)} from the basket</span><span aria-hidden="true">Remove</span></button>\n`
+        ? `              <button class="ct-remove" type="button" data-remove><span class="ct-sr">${escapeHtml(fill(config.removeLabel, { name: line.name }))}</span><span aria-hidden="true">${escapeHtml(config.removeText)}</span></button>\n`
         : "";
 
       return `          <li class="ct-line" data-line data-price="${line.each}" data-name="${escapeHtml(line.name)}" data-index="${index}">
             <div class="ct-details">
               <p class="ct-name">${escapeHtml(line.name)}</p>
-${line.variant.trim() ? `              <p class="ct-muted ct-small">${escapeHtml(line.variant)}</p>\n` : ""}              <p class="ct-muted ct-small">${money(line.each)} each</p>
+${line.variant.trim() ? `              <p class="ct-muted ct-small">${escapeHtml(line.variant)}</p>\n` : ""}              <p class="ct-muted ct-small">${escapeHtml(fill(config.eachText, { price: money(line.each) }))}</p>
             </div>
 ${quantity}
             <div class="ct-line-end">
@@ -86,14 +89,14 @@ ${remove}            </div>
     config.shipping && freeOver > 0 && lines.length > 0
       ? `        <div class="ct-progress-box" data-progress-box>
           <p class="ct-small" data-progress-text>${
-            shippingFree ? "Delivery is free on this order." : `Spend ${money(Math.max(0, freeOver - subtotal))} more for free delivery.`
+            escapeHtml(shippingFree ? config.freeDeliveryText : fill(config.spendMoreText, { amount: money(Math.max(0, freeOver - subtotal)) }))
           }</p>
-          <progress class="ct-progress" value="${Math.min(subtotal, freeOver)}" max="${freeOver}" aria-label="Progress towards free delivery" data-progress></progress>
+          <progress class="ct-progress" value="${Math.min(subtotal, freeOver)}" max="${freeOver}" aria-label="${escapeHtml(config.progressLabel)}" data-progress></progress>
         </div>\n`
       : "";
 
   const shippingRow = config.shipping
-    ? `          <div class="ct-total-row"><dt class="ct-muted">Delivery</dt><dd data-shipping>${shipping === 0 ? "Free" : money(shipping)}</dd></div>\n`
+    ? `          <div class="ct-total-row"><dt class="ct-muted">${escapeHtml(config.deliveryText)}</dt><dd data-shipping>${shipping === 0 ? escapeHtml(config.freeText) : money(shipping)}</dd></div>\n`
     : "";
 
   const second =
@@ -103,7 +106,7 @@ ${remove}            </div>
 
   const body = `      <div class="ct-head">
         <h2 class="ct-title" id="cart-title">${escapeHtml(config.title)}</h2>
-        <p class="ct-muted ct-small"><span data-items>${items}</span> item${items === 1 ? "" : "s"}</p>
+        <p class="ct-muted ct-small" data-items-text>${escapeHtml(fill(items === 1 ? config.itemOneText : config.itemsText, { count: items }))}</p>
       </div>
       <p class="ct-sr" role="status" aria-live="polite" data-announce></p>
       <p class="ct-empty" data-empty${lines.length === 0 ? "" : " hidden"}>${escapeHtml(config.emptyText)}</p>
@@ -111,14 +114,14 @@ ${remove}            </div>
 ${rows}
       </ul>
 ${progress}      <dl class="ct-totals">
-        <div class="ct-total-row"><dt class="ct-muted">Subtotal</dt><dd data-subtotal>${money(subtotal)}</dd></div>
-${shippingRow}        <div class="ct-total-row ct-total-row--grand"><dt>Total</dt><dd data-total>${money(subtotal + shipping)}</dd></div>
+        <div class="ct-total-row"><dt class="ct-muted">${escapeHtml(config.subtotalText)}</dt><dd data-subtotal>${money(subtotal)}</dd></div>
+${shippingRow}        <div class="ct-total-row ct-total-row--grand"><dt>${escapeHtml(config.totalText)}</dt><dd data-total>${money(subtotal + shipping)}</dd></div>
       </dl>
 ${config.taxNote.trim() ? `      <p class="ct-muted ct-small">${escapeHtml(config.taxNote)}</p>\n` : ""}      <div class="ct-actions">
         <a class="ct-checkout" href="${escapeHtml(safeHref(config.checkoutHref))}"${lines.length === 0 ? ' aria-disabled="true"' : ""} data-checkout>${escapeHtml(config.checkoutText)}</a>
 ${second}      </div>`;
 
-  const settings = `data-cart data-symbol="${symbol}" data-shipping-cost="${amount(config.shippingCost)}" data-free-over="${freeOver}" data-has-shipping="${config.shipping}"`;
+  const settings = `data-cart data-words="${escapeHtml(JSON.stringify({ itemOneText: config.itemOneText, itemsText: config.itemsText, freeText: config.freeText, freeDeliveryText: config.freeDeliveryText, spendMoreText: config.spendMoreText, changedText: config.changedText, removedText: config.removedText, emptiedText: config.emptiedText, lineLeftText: config.lineLeftText, linesLeftText: config.linesLeftText }))}" data-symbol="${symbol}" data-shipping-cost="${amount(config.shippingCost)}" data-free-over="${freeOver}" data-has-shipping="${config.shipping}"`;
 
   if (config.layout === "drawer") {
     return `    <div class="ct ct--theme-${config.theme}" style="${vars}" ${settings}>

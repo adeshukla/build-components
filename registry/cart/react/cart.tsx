@@ -23,6 +23,27 @@ export type CartConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  itemOneText: string;
+  itemsText: string;
+  eachText: string;
+  decreaseLabel: string;
+  increaseLabel: string;
+  quantityLabel: string;
+  quantityText: string;
+  removeText: string;
+  removeLabel: string;
+  freeDeliveryText: string;
+  spendMoreText: string;
+  progressLabel: string;
+  subtotalText: string;
+  deliveryText: string;
+  freeText: string;
+  totalText: string;
+  changedText: string;
+  removedText: string;
+  emptiedText: string;
+  lineLeftText: string;
+  linesLeftText: string;
 };
 
 // @config-start
@@ -49,6 +70,27 @@ const defaultConfig: CartConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 10,
+  itemOneText: "{count} item",
+  itemsText: "{count} items",
+  eachText: "{price} each",
+  decreaseLabel: "Decrease quantity of {name}",
+  increaseLabel: "Increase quantity of {name}",
+  quantityLabel: "Quantity of {name}",
+  quantityText: "Quantity {count}",
+  removeText: "Remove",
+  removeLabel: "Remove {name} from the basket",
+  freeDeliveryText: "Delivery is free on this order.",
+  spendMoreText: "Spend {amount} more for free delivery.",
+  progressLabel: "Progress towards free delivery",
+  subtotalText: "Subtotal",
+  deliveryText: "Delivery",
+  freeText: "Free",
+  totalText: "Total",
+  changedText: "{name}, quantity {count}. Subtotal {subtotal}.",
+  removedText: "{name} removed.",
+  emptiedText: "Your basket is empty.",
+  lineLeftText: "{count} line left.",
+  linesLeftText: "{count} lines left.",
 };
 // @config-end
 
@@ -110,6 +152,9 @@ const count = (value: string) => Math.min(99, Math.max(1, Math.round(amount(valu
 /** Formatted by hand, not by locale, so the server and the browser always agree. */
 const money = (value: number, currency: CartConfig["currency"]) => `${symbols[currency]}${value.toFixed(2)}`;
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
   const id = useId();
   const [lines, setLines] = useState(() =>
@@ -146,10 +191,8 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
     if (!line) return;
     const quantity = Math.min(99, Math.max(1, next));
     setLines(lines.map((entry) => (entry.id === id ? { ...entry, quantity } : entry)));
-    setMessage(`${line.name}, quantity ${quantity}. Subtotal ${money(
-      lines.reduce((total, entry) => total + amount(entry.price) * (entry.id === id ? quantity : entry.quantity), 0),
-      config.currency,
-    )}.`);
+    const nextSubtotal = lines.reduce((total, entry) => total + amount(entry.price) * (entry.id === id ? quantity : entry.quantity), 0);
+    setMessage(fill(config.changedText, { name: line.name, count: quantity, subtotal: money(nextSubtotal, config.currency) }));
   }
 
   function remove(id: number) {
@@ -157,7 +200,8 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
     if (!line) return;
     const rest = lines.filter((entry) => entry.id !== id);
     setLines(rest);
-    setMessage(`${line.name} removed. ${rest.length === 0 ? "Your basket is empty." : `${rest.length} line${rest.length === 1 ? "" : "s"} left.`}`);
+    const left = rest.length === 0 ? config.emptiedText : fill(rest.length === 1 ? config.lineLeftText : config.linesLeftText, { count: rest.length });
+    setMessage(`${fill(config.removedText, { name: line.name })} ${left}`);
   }
 
   const style = {
@@ -181,7 +225,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
           {config.title}
         </h2>
         <p className="text-sm text-(--ct-muted)">
-          {items} item{items === 1 ? "" : "s"}
+          {fill(items === 1 ? config.itemOneText : config.itemsText, { count: items })}
         </p>
       </div>
 
@@ -200,7 +244,7 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
                 <p className="font-medium">{line.name}</p>
                 {line.variant.trim() !== "" && <p className="text-sm text-(--ct-muted)">{line.variant}</p>}
                 <p className="mt-1 text-sm text-(--ct-muted)">
-                  {money(amount(line.price), config.currency)} each
+                  {fill(config.eachText, { price: money(amount(line.price), config.currency) })}
                 </p>
               </div>
 
@@ -212,13 +256,13 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
                     disabled={line.quantity <= 1}
                     className={stepper}
                   >
-                    <span className="sr-only">Decrease quantity of {line.name}</span>
+                    <span className="sr-only">{fill(config.decreaseLabel, { name: line.name })}</span>
                     <span aria-hidden="true">−</span>
                   </button>
                   <input
                     type="text"
                     inputMode="numeric"
-                    aria-label={`Quantity of ${line.name}`}
+                    aria-label={fill(config.quantityLabel, { name: line.name })}
                     value={line.quantity}
                     onChange={(event) => setQuantity(line.id, count(event.target.value))}
                     className="w-12 rounded-(--ct-radius) border border-(--ct-line) bg-(--ct-surface) px-2 py-1 text-center text-(--ct-text)"
@@ -229,12 +273,12 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
                     disabled={line.quantity >= 99}
                     className={stepper}
                   >
-                    <span className="sr-only">Increase quantity of {line.name}</span>
+                    <span className="sr-only">{fill(config.increaseLabel, { name: line.name })}</span>
                     <span aria-hidden="true">+</span>
                   </button>
                 </div>
               ) : (
-                <p className="text-sm text-(--ct-muted)">Quantity {line.quantity}</p>
+                <p className="text-sm text-(--ct-muted)">{fill(config.quantityText, { count: line.quantity })}</p>
               )}
 
               <div className="ml-auto flex flex-col items-end gap-1 sm:min-w-24">
@@ -245,8 +289,8 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
                     onClick={() => remove(line.id)}
                     className={`min-h-6 cursor-pointer rounded-(--ct-radius) p-1 text-sm text-(--ct-accent-text) underline ${focus}`}
                   >
-                    <span className="sr-only">Remove {line.name} from the basket</span>
-                    <span aria-hidden="true">Remove</span>
+                    <span className="sr-only">{fill(config.removeLabel, { name: line.name })}</span>
+                    <span aria-hidden="true">{config.removeText}</span>
                   </button>
                 )}
               </div>
@@ -259,14 +303,14 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
         <div className="rounded-(--ct-radius) bg-(--ct-sunk) p-3">
           <p className="text-sm">
             {shippingFree
-              ? "Delivery is free on this order."
-              : `Spend ${money(missing, config.currency)} more for free delivery.`}
+              ? config.freeDeliveryText
+              : fill(config.spendMoreText, { amount: money(missing, config.currency) })}
           </p>
           {/* A native progress bar: the browser already tells assistive tech what it means. */}
           <progress
             value={Math.min(subtotal, freeOver)}
             max={freeOver}
-            aria-label="Progress towards free delivery"
+            aria-label={config.progressLabel}
             className="mt-2 block h-2 w-full appearance-none overflow-hidden rounded-full border-0 bg-(--ct-line) [&::-moz-progress-bar]:bg-(--ct-accent) [&::-webkit-progress-bar]:bg-(--ct-line) [&::-webkit-progress-value]:bg-(--ct-accent)"
           />
         </div>
@@ -274,17 +318,17 @@ export function Cart({ config = defaultConfig }: { config?: CartConfig }) {
 
       <dl className="mt-auto flex flex-col gap-1">
         <div className="flex justify-between gap-4">
-          <dt className="text-(--ct-muted)">Subtotal</dt>
+          <dt className="text-(--ct-muted)">{config.subtotalText}</dt>
           <dd className="font-medium">{money(subtotal, config.currency)}</dd>
         </div>
         {config.shipping && (
           <div className="flex justify-between gap-4">
-            <dt className="text-(--ct-muted)">Delivery</dt>
-            <dd className="font-medium">{shipping === 0 ? "Free" : money(shipping, config.currency)}</dd>
+            <dt className="text-(--ct-muted)">{config.deliveryText}</dt>
+            <dd className="font-medium">{shipping === 0 ? config.freeText : money(shipping, config.currency)}</dd>
           </div>
         )}
         <div className="flex justify-between gap-4 border-t border-(--ct-line) pt-2 text-lg">
-          <dt className="font-semibold">Total</dt>
+          <dt className="font-semibold">{config.totalText}</dt>
           <dd className="font-semibold">{money(subtotal + shipping, config.currency)}</dd>
         </div>
       </dl>
