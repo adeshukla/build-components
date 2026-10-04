@@ -845,3 +845,29 @@ parts only; class lists and rules that also move along x stay physical, as half-
 The switch knob and the tree's chevron turn the other way. The nine parts whose scripts read the arrow keys
 swap Left and Right in RTL (`keyOf`); `e2e/rtl-keys.spec.ts` checks Left in RTL leaves each part exactly where
 Right leaves it in LTR. All 262 mirror; the changed parts' own specs pass in three browsers.
+
+## 2026-10-05 — D94. Languages: every word a part says by itself is an option
+**Chosen over a translation layer at runtime:** each word a part says without being told (a label, a hint,
+an error, an announcement, a count) became a text option in a "Words" group, defaulting to the English it said
+before. A part speaks whatever its options say, and the file you take holds only the words you chose; nothing
+is looked up at runtime. 92 parts have Words; the other 39 only say what their content options say.
+**Rules:** words with something put in them name it, `{count}`, `{name}`, filled by a small `fill()` in each
+file (no shared helper: each output stands alone). Counts come as two options, one and other: enough for the
+ten languages' everyday counts, not every plural rule. HTML-first parts pass words to their script as
+`data-*` attributes or one `data-words` JSON attribute; scripts with a config block read `config.x`. Demo
+filler is marked `data-demo`. Month and day names come from the page's `lang` (date picker, `toLocaleDateString`),
+not the browser's.
+**Dictionary:** `lib/dictionary.ts` (English → es, fr, de, pt, ar, he, hi, ja, zh) and `translate()` in
+`lib/languages.ts`. Written without a native speaker: [TODO: have each language reviewed]. The editor's Words
+tab has a Language picker that fills every Words option in; it reads its language back from the options, so
+the link keeps it, and shows "Your own words" once one is edited. The preview frames take the language's
+`lang` and, for Arabic and Hebrew, `dir="rtl"`. A link with another language carries every word, so it is long.
+**Tested:** `e2e/languages.spec.ts` renders each part in English and German (the "de" variant from
+`e2e/generate.ts`) and fails on anything said in both that is not the person's own content: every part passes
+in both outputs. It also fails on a Words option the dictionary lacks, and on a stray control character in a
+part's files (one slipped into seven files as an escaped regex backreference). Words said only on interaction
+were found by reading the sources (`scratchpad/words2.ts`) and converted too.
+**Changed English, on purpose:** the searchable select's "Choose a country from the list." is now "Choose one
+from the list." (no a/an guessing); the search says "1 result." (was "1 results."); the HTML/CSS/JS cart's
+heading count now follows the basket. **Left as is:** am/pm in the time picker's 12-hour format, KB/MB and
+"bytes" in the upload, and a label put lower case into a sentence ("Show {name} options").

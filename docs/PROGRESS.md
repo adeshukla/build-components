@@ -1,6 +1,20 @@
 # Progress
 
-Last updated: 2026-10-04 (session 16, on dev, not shipped)
+Last updated: 2026-10-05 (session 17, on dev, not shipped)
+
+## Session 17
+- **Adesh asked** for points 5, 6 and 7 of the product suggestions, all of them: every trending framework,
+  languages and right to left, and an index for AI assistants.
+- **AI index (D91):** `/r/registry.json` (a shadcn namespace, `@build-components`), `/llms.txt`, `/llms-full.txt`.
+- **Frameworks (D92):** Vue, Svelte, Angular, Solid and a Web Component for every part, built on the plain
+  output and run through every part's own spec (12,176 passed). In the editor as the third output, with a zip.
+- **Right to left (D93):** every part mirrors in both outputs (262 checks); arrow keys swap in RTL.
+- **Languages (D94):** every word a part says by itself is a Words option (92 parts); a dictionary for ten
+  languages; a Language picker in the editor's Words tab; previews take the language's lang and direction.
+  `e2e/languages.spec.ts` passes for every part in both outputs. The translations are unreviewed:
+  [TODO: have each language checked by a native speaker].
+- **Regression:** [TODO: fill in when the full run ends]
+- **Not shipped:** on dev, waiting for "ship". The counter still needs the Upstash database (session 16).
 
 ## Session 16
 - **Builder reworked (D83):** drag onto the page itself (it did nothing before), by mouse or touch; click a
