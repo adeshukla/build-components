@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { PricingTableConfig } from "../react/pricing-table";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -42,7 +45,7 @@ export function renderPricingTableMarkup(config: PricingTableConfig) {
   const cycle = config.showCycle
     ? `      <!-- Real radios in a group: the cycle is a choice between two, not a switch with a hidden meaning. -->
       <fieldset class="pt-cycle">
-        <legend class="pt-cycle-legend">Billing</legend>
+        <legend class="pt-cycle-legend">${escapeHtml(config.billingLabel)}</legend>
         <div class="pt-switch">
           <label class="pt-option"><input type="radio" name="pt-cycle" class="pt-sr" value="monthly" checked data-cycle>${escapeHtml(config.monthlyLabel)}</label>
           <label class="pt-option"><input type="radio" name="pt-cycle" class="pt-sr" value="yearly" data-cycle>${escapeHtml(config.yearlyLabel)}</label>
@@ -58,9 +61,9 @@ ${config.yearlyNote.trim() !== "" ? `        <p class="pt-note" hidden data-note
         .map((feature) => `            <li class="pt-feature"><span class="pt-tick" aria-hidden="true">✓</span>${escapeHtml(feature)}</li>`)
         .join("\n");
       return `        <li class="pt-plan${featured ? " pt-plan--featured" : ""}">
-          <h3 class="pt-name">${escapeHtml(plan.name)}${featured ? `<span class="pt-badge">Most picked</span>` : ""}</h3>
+          <h3 class="pt-name">${escapeHtml(plan.name)}${featured ? `<span class="pt-badge">${escapeHtml(config.featuredText)}</span>` : ""}</h3>
           <p class="pt-blurb">${escapeHtml(plan.blurb)}</p>
-          <p class="pt-price"><span data-amount data-monthly="${escapeHtml(plan.monthly)}" data-yearly="${escapeHtml(plan.yearly)}">${escapeHtml(config.currency)}${escapeHtml(plan.monthly)}</span><span class="pt-period" data-period>a month</span></p>
+          <p class="pt-price"><span data-amount data-monthly="${escapeHtml(plan.monthly)}" data-yearly="${escapeHtml(plan.yearly)}">${escapeHtml(config.currency)}${escapeHtml(plan.monthly)}</span><span class="pt-period" data-period>${escapeHtml(config.perMonthText)}</span></p>
           <ul class="pt-features">
 ${features}
           </ul>
@@ -69,13 +72,13 @@ ${features}
     })
     .join("\n");
 
-  return `    <div class="pt pt--theme-${config.theme}" style="${vars}" data-pricing-table data-currency="${escapeHtml(config.currency)}" data-monthly-label="${escapeHtml(config.monthlyLabel)}" data-yearly-label="${escapeHtml(config.yearlyLabel)}">
+  return `    <div class="pt pt--theme-${config.theme}" style="${vars}" data-pricing-table data-per-month="${escapeHtml(config.perMonthText)}" data-per-year="${escapeHtml(config.perYearText)}" data-showing="${escapeHtml(config.showingText)}" data-currency="${escapeHtml(config.currency)}" data-monthly-label="${escapeHtml(config.monthlyLabel)}" data-yearly-label="${escapeHtml(config.yearlyLabel)}">
       <h2 class="pt-heading">${escapeHtml(config.heading)}</h2>
 ${cycle}      <ul class="pt-plans">
 ${cards}
       </ul>
       <!-- Every price on the page just changed: say it once rather than leaving it to be noticed. -->
-      <p class="pt-status" role="status" data-status>Showing ${escapeHtml(config.monthlyLabel.toLowerCase())} prices</p>
+      <p class="pt-status" role="status" data-status>${escapeHtml(fill(config.showingText, { period: config.monthlyLabel.toLowerCase() }))}</p>
     </div>`;
 }
 

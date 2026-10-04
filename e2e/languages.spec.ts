@@ -58,8 +58,10 @@ function contentOf(schema: readonly Option[], config: Record<string, unknown>) {
   for (const option of schema) {
     if (option.group === "Words") continue;
     const value = config[option.key];
-    if (typeof value === "string") values.push(value, ...value.split(/[\n,]/));
-    if (Array.isArray(value)) for (const item of value) values.push(...Object.values(item as Record<string, string>));
+    // Lists inside one field come apart at a new line, a comma or a semicolon (a plan's features).
+    const pieces = (text: string) => [text, ...text.split(/[\n,;]/)];
+    if (typeof value === "string") values.push(...pieces(value));
+    if (Array.isArray(value)) for (const item of value) values.push(...Object.values(item as Record<string, string>).flatMap(pieces));
   }
   return values.map((value) => value.trim()).filter((value) => value.length > 1).sort((a, b) => b.length - a.length);
 }

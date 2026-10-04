@@ -9,6 +9,12 @@ export type SlotPickerConfig = {
   confirmText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  slotText: string;
+  freeText: string;
+  takenText: string;
+  noneText: string;
+  selectedText: string;
+  bookedText: string;
 };
 
 // @config-start
@@ -29,6 +35,12 @@ const defaultConfig: SlotPickerConfig = {
   confirmText: "Confirm this time",
   theme: "light",
   accentColor: "#0f766e",
+  slotText: "{day} at {time}",
+  freeText: "{free} of {total} times are free.",
+  takenText: "(taken)",
+  noneText: "No time picked yet",
+  selectedText: "{slot} selected",
+  bookedText: "Booked for {slot}",
 };
 // @config-end
 
@@ -77,6 +89,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function SlotPicker({ config = defaultConfig }: { config?: SlotPickerConfig }) {
   const id = useId();
   const [picked, setPicked] = useState("");
@@ -105,7 +120,7 @@ export function SlotPicker({ config = defaultConfig }: { config?: SlotPickerConf
       <fieldset className="border-0 p-0" aria-describedby={`${id}-note`}>
         <legend className="text-lg font-semibold">{config.heading}</legend>
         <p id={`${id}-note`} className="text-sm text-(--sl-muted)">
-          {config.timezoneNote} {`${free.length} of ${slots.length} times are free.`}
+          {config.timezoneNote} {fill(config.freeText, { free: free.length, total: slots.length })}
         </p>
 
         {days.map((day) => (
@@ -116,7 +131,7 @@ export function SlotPicker({ config = defaultConfig }: { config?: SlotPickerConf
                 .filter((slot) => slot.day === day)
                 .map((slot) => {
                   const taken = slot.state === "taken";
-                  const value = `${day} at ${slot.time}`;
+                  const value = fill(config.slotText, { day, time: slot.time });
                   const on = picked === value;
                   return (
                     <label
@@ -143,7 +158,7 @@ export function SlotPicker({ config = defaultConfig }: { config?: SlotPickerConf
                       />
                       {slot.time}
                       {/* Taken is said, not only drawn as a dashed outline. */}
-                      {taken && <span className="text-xs">(taken)</span>}
+                      {taken && <span className="text-xs">{config.takenText}</span>}
                     </label>
                   );
                 })}
@@ -155,7 +170,7 @@ export function SlotPicker({ config = defaultConfig }: { config?: SlotPickerConf
       <button
         type="button"
         disabled={picked === ""}
-        onClick={() => setResult(`Booked for ${picked}`)}
+        onClick={() => setResult(fill(config.bookedText, { slot: picked }))}
         className="mt-4 min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--sl-accent) px-4 font-medium text-(--sl-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sl-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
       >
         {config.confirmText}
@@ -163,7 +178,7 @@ export function SlotPicker({ config = defaultConfig }: { config?: SlotPickerConf
 
       {/* The time on its own ("10:30") means little: the announcement carries the day as well. */}
       <p role="status" className="mt-2 text-sm text-(--sl-muted)">
-        {result || (picked === "" ? "No time picked yet" : `${picked} selected`)}
+        {result || (picked === "" ? config.noneText : fill(config.selectedText, { slot: picked }))}
       </p>
     </div>
   );

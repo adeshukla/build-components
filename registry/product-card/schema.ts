@@ -40,6 +40,42 @@ export const productCardSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#16303f" },
+  {
+    key: "outText",
+    label: "Out of stock",
+    description: "Said after a choice that has run out.",
+    group: "Words",
+    type: "text",
+    default: "(out of stock)",
+    maxLength: 40,
+  },
+  {
+    key: "pickText",
+    label: "Choose first",
+    description: "Said until every choice is made. {missing} is what is left.",
+    group: "Words",
+    type: "text",
+    default: "Pick a {missing} first",
+    maxLength: 80,
+  },
+  {
+    key: "andText",
+    label: "Joining word",
+    description: "Joins what is left in the message above, as and a.",
+    group: "Words",
+    type: "text",
+    default: "and a",
+    maxLength: 20,
+  },
+  {
+    key: "addedText",
+    label: "Added",
+    description: "Said after adding. {name} and {choices} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "{name} added: {choices}",
+    maxLength: 120,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

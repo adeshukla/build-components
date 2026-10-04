@@ -4,6 +4,13 @@
  * what is still missing rather than leaving a dead button.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createProductCard(root) {
     const options = Array.from(root.querySelectorAll("[data-option]"));
     const add = root.querySelector("[data-add]");
@@ -26,7 +33,7 @@
       });
       add.disabled = missing.length > 0;
       if (status) {
-        status.textContent = missing.length ? "Pick a " + missing.join(" and a ").toLowerCase() + " first" : "";
+        status.textContent = missing.length ? fill(root.dataset.pick, { missing: missing.join(" " + root.dataset.and + " ").toLowerCase() }) : "";
       }
     }
 
@@ -37,13 +44,14 @@
     add.addEventListener("click", function () {
       if (add.disabled || !status) return;
       status.textContent =
-        root.dataset.name +
-        " added: " +
-        groups
-          .map(function (group) {
-            return pickedIn(group);
-          })
-          .join(", ");
+        fill(root.dataset.added, {
+          name: root.dataset.name,
+          choices: groups
+            .map(function (group) {
+              return pickedIn(group);
+            })
+            .join(", "),
+        });
     });
 
     refresh();

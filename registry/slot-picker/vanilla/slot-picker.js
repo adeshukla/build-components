@@ -4,6 +4,13 @@
  * because "10:30" on its own says nothing.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createSlotPicker(root) {
     const slots = Array.from(root.querySelectorAll("[data-slot]"));
     const confirm = root.querySelector("[data-confirm]");
@@ -19,7 +26,7 @@
     function refresh() {
       const value = pickedValue();
       confirm.disabled = value === "";
-      if (status) status.textContent = value === "" ? "No time picked yet" : value + " selected";
+      if (status) status.textContent = value === "" ? root.dataset.none : fill(root.dataset.selected, { slot: value });
     }
 
     slots.forEach(function (slot) {
@@ -28,7 +35,7 @@
 
     confirm.addEventListener("click", function () {
       if (confirm.disabled || !status) return;
-      status.textContent = "Booked for " + pickedValue();
+      status.textContent = fill(root.dataset.booked, { slot: pickedValue() });
     });
 
     refresh();

@@ -12,6 +12,11 @@ export type CommentThreadConfig = {
   collapsible: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  hideText: string;
+  showText: string;
+  replyTag: string;
+  justNowText: string;
+  postedText: string;
 };
 
 // @config-start
@@ -29,6 +34,11 @@ const defaultConfig: CommentThreadConfig = {
   collapsible: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  hideText: "Hide the thread",
+  showText: "Show the thread",
+  replyTag: "· reply",
+  justNowText: "Just now",
+  postedText: "Comment posted. {count} comments in this thread.",
 };
 // @config-end
 
@@ -79,6 +89,9 @@ function readableAccent(hex: string, onDark: boolean) {
 
 type Comment = { author: string; when: string; body: string; reply: boolean };
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function CommentThread({ config = defaultConfig }: { config?: CommentThreadConfig }) {
   const id = useId();
   const [extra, setExtra] = useState<Comment[]>([]);
@@ -111,9 +124,9 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
     const body = draft.trim();
     if (body === "") return;
     // "Just now" rather than a clock reading: a time formatted here would differ from the server's.
-    setExtra((current) => [...current, { author: config.yourName, when: "Just now", body, reply: false }]);
+    setExtra((current) => [...current, { author: config.yourName, when: config.justNowText, body, reply: false }]);
     setDraft("");
-    setSaid(`Comment posted. ${comments.length + 1} comments in this thread.`);
+    setSaid(fill(config.postedText, { count: comments.length + 1 }));
     fieldRef.current?.focus();
   }
 
@@ -132,7 +145,7 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
             onClick={() => setOpen((current) => !current)}
             className="min-h-11 cursor-pointer rounded-[var(--bc-radius-xs,0.25rem)] px-2 text-sm text-(--ct-accent-text) underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ct-accent-text)"
           >
-            {open ? "Hide the thread" : "Show the thread"}
+            {open ? config.hideText : config.showText}
           </button>
         )}
       </div>
@@ -147,7 +160,7 @@ export function CommentThread({ config = defaultConfig }: { config?: CommentThre
             <p className="flex flex-wrap items-baseline gap-2 text-sm">
               <span className="font-medium">{comment.author}</span>
               <span className="text-(--ct-muted)">{comment.when}</span>
-              {comment.reply && <span className="text-(--ct-muted)">· reply</span>}
+              {comment.reply && <span className="text-(--ct-muted)">{config.replyTag}</span>}
             </p>
             <p className="mt-1 text-sm">{comment.body}</p>
           </li>

@@ -36,7 +36,7 @@ export function renderCommentThreadMarkup(config: CommentThreadConfig) {
     .map((comment) => {
       const reply = comment.reply === "yes";
       return `        <li class="ct-comment${reply ? " ct-comment--reply" : ""}" data-comment>
-          <p class="ct-meta"><span class="ct-author">${escapeHtml(comment.author)}</span><span class="ct-when">${escapeHtml(comment.when)}</span>${reply ? `<span class="ct-tag">· reply</span>` : ""}</p>
+          <p class="ct-meta"><span class="ct-author">${escapeHtml(comment.author)}</span><span class="ct-when">${escapeHtml(comment.when)}</span>${reply ? `<span class="ct-tag">${escapeHtml(config.replyTag)}</span>` : ""}</p>
           <p class="ct-body">${escapeHtml(comment.body)}</p>
         </li>`;
     })
@@ -50,10 +50,10 @@ export function renderCommentThreadMarkup(config: CommentThreadConfig) {
       </div>\n`
     : "";
 
-  return `    <div class="ct ct--theme-${config.theme}" style="${vars}" data-comment-thread data-you="${escapeHtml(config.yourName)}">
+  return `    <div class="ct ct--theme-${config.theme}" style="${vars}" data-comment-thread data-just-now="${escapeHtml(config.justNowText)}" data-posted="${escapeHtml(config.postedText)}" data-show-text="${escapeHtml(config.showText)}" data-hide-text="${escapeHtml(config.hideText)}" data-you="${escapeHtml(config.yourName)}">
       <div class="ct-head">
         <h2 class="ct-heading">${escapeHtml(config.heading)}<span class="ct-count" data-count> (${comments.length})</span></h2>
-${config.collapsible ? `        <button class="ct-toggle" type="button" aria-expanded="true" aria-controls="ct-list" data-toggle>Hide the thread</button>` : ""}
+${config.collapsible ? `        <button class="ct-toggle" type="button" aria-expanded="true" aria-controls="ct-list" data-toggle>${escapeHtml(config.hideText)}</button>` : ""}
       </div>
 
       <!-- Replies are nested in their own list, so the shape of the conversation is in the markup. -->

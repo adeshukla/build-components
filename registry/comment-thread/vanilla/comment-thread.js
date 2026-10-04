@@ -4,6 +4,13 @@
  * comment appearing further up the page is silent otherwise.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createCommentThread(root) {
     const list = root.querySelector("[data-list]");
     const field = root.querySelector("[data-field]");
@@ -36,7 +43,7 @@
         const when = document.createElement("span");
         when.className = "ct-when";
         // "Just now" rather than a clock reading: a time formatted here would differ from the server's.
-        when.textContent = "Just now";
+        when.textContent = root.dataset.justNow;
         meta.append(author, when);
         const text = document.createElement("p");
         text.className = "ct-body";
@@ -48,7 +55,7 @@
         post.disabled = true;
         refreshCount();
         if (status) {
-          status.textContent = "Comment posted. " + list.querySelectorAll("[data-comment]").length + " comments in this thread.";
+          status.textContent = fill(root.dataset.posted, { count: list.querySelectorAll("[data-comment]").length });
         }
         field.focus();
       });
@@ -59,7 +66,7 @@
         const open = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", String(!open));
         list.hidden = open;
-        toggle.textContent = open ? "Show the thread" : "Hide the thread";
+        toggle.textContent = open ? root.dataset.showText : root.dataset.hideText;
       });
     }
 

@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { ProductCardConfig } from "../react/product-card";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -45,7 +48,7 @@ export function renderProductCardMarkup(config: ProductCardConfig) {
         .filter((option) => option.group === group)
         .map((option) => {
           const out = option.stock === "out";
-          return `          <label class="pc-option"><input class="pc-sr" type="radio" name="pc-${slug(group)}" value="${escapeHtml(option.label)}"${out ? " disabled" : ""} data-option data-group="${escapeHtml(group)}">${escapeHtml(option.label)}${out ? `<span class="pc-out">(out of stock)</span>` : ""}</label>`;
+          return `          <label class="pc-option"><input class="pc-sr" type="radio" name="pc-${slug(group)}" value="${escapeHtml(option.label)}"${out ? " disabled" : ""} data-option data-group="${escapeHtml(group)}">${escapeHtml(option.label)}${out ? `<span class="pc-out">${escapeHtml(config.outText)}</span>` : ""}</label>`;
         })
         .join("\n");
       return `      <fieldset class="pc-group">
@@ -57,15 +60,15 @@ ${inputs}
     })
     .join("\n");
 
-  const needed = groups.join(" and a ").toLowerCase();
+  const needed = groups.join(` ${config.andText} `).toLowerCase();
 
-  return `    <div class="pc pc--theme-${config.theme}" style="${vars}" data-product-card data-name="${escapeHtml(config.name)}" data-needed="${escapeHtml(needed)}">
+  return `    <div class="pc pc--theme-${config.theme}" style="${vars}" data-product-card data-pick="${escapeHtml(config.pickText)}" data-and="${escapeHtml(config.andText)}" data-added="${escapeHtml(config.addedText)}" data-name="${escapeHtml(config.name)}" data-needed="${escapeHtml(needed)}">
       <h2 class="pc-name">${escapeHtml(config.name)}</h2>
 ${config.showPrice ? `      <p class="pc-price">${escapeHtml(config.price)}</p>\n` : ""}      <p class="pc-blurb">${escapeHtml(config.blurb)}</p>
 ${fieldsets}
       <button class="pc-add" type="button" disabled data-add>${escapeHtml(config.addText)}</button>
       <!-- What is still needed, then what happened — the button alone cannot say either. -->
-      <p class="pc-status" role="status" data-status>Pick a ${escapeHtml(needed)} first</p>
+      <p class="pc-status" role="status" data-status>${escapeHtml(fill(config.pickText, { missing: needed }))}</p>
     </div>`;
 }
 

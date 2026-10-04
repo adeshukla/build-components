@@ -4,6 +4,13 @@
  * rather than left to be noticed.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createPricingTable(root) {
     const radios = Array.from(root.querySelectorAll("[data-cycle]"));
     const amounts = Array.from(root.querySelectorAll("[data-amount]"));
@@ -21,12 +28,12 @@
         amount.textContent = currency + (yearly ? amount.dataset.yearly : amount.dataset.monthly);
       });
       periods.forEach(function (period) {
-        period.textContent = yearly ? "a year" : "a month";
+        period.textContent = yearly ? root.dataset.perYear : root.dataset.perMonth;
       });
       if (note) note.hidden = !yearly;
       if (status) {
         const label = yearly ? root.dataset.yearlyLabel : root.dataset.monthlyLabel;
-        status.textContent = "Showing " + label.toLowerCase() + " prices";
+        status.textContent = fill(root.dataset.showing, { period: label.toLowerCase() });
       }
     }
 

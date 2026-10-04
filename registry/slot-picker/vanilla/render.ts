@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { SlotPickerConfig } from "../react/slot-picker";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#c9c4d6" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#4a4459" },
@@ -40,8 +43,8 @@ export function renderSlotPickerMarkup(config: SlotPickerConfig) {
         .filter((slot) => slot.day === day)
         .map((slot) => {
           const taken = slot.state === "taken";
-          const value = `${day} at ${slot.time}`;
-          return `            <label class="sl-slot"><input class="sl-sr" type="radio" name="sl-slot" value="${escapeHtml(value)}"${taken ? " disabled" : ""} data-slot>${escapeHtml(slot.time)}${taken ? `<span class="sl-taken">(taken)</span>` : ""}</label>`;
+          const value = fill(config.slotText, { day, time: slot.time });
+          return `            <label class="sl-slot"><input class="sl-sr" type="radio" name="sl-slot" value="${escapeHtml(value)}"${taken ? " disabled" : ""} data-slot>${escapeHtml(slot.time)}${taken ? `<span class="sl-taken">${escapeHtml(config.takenText)}</span>` : ""}</label>`;
         })
         .join("\n");
       return `        <div class="sl-day" role="group" aria-label="${escapeHtml(day)}">
@@ -53,17 +56,17 @@ ${times}
     })
     .join("\n");
 
-  return `    <div class="sl sl--theme-${config.theme}" style="${vars}" data-slot-picker>
+  return `    <div class="sl sl--theme-${config.theme}" style="${vars}" data-slot-picker data-none="${escapeHtml(config.noneText)}" data-selected="${escapeHtml(config.selectedText)}" data-booked="${escapeHtml(config.bookedText)}">
       <fieldset class="sl-set" aria-describedby="sl-note">
         <legend class="sl-legend">${escapeHtml(config.heading)}</legend>
-        <p class="sl-note" id="sl-note">${escapeHtml(config.timezoneNote)} ${free.length} of ${slots.length} times are free.</p>
+        <p class="sl-note" id="sl-note">${escapeHtml(config.timezoneNote)} ${escapeHtml(fill(config.freeText, { free: free.length, total: slots.length }))}</p>
 ${groups}
       </fieldset>
 
       <button class="sl-confirm" type="button" disabled data-confirm>${escapeHtml(config.confirmText)}</button>
 
       <!-- The time on its own ("10:30") means little: the announcement carries the day as well. -->
-      <p class="sl-status" role="status" data-status>No time picked yet</p>
+      <p class="sl-status" role="status" data-status>${escapeHtml(config.noneText)}</p>
     </div>`;
 }
 

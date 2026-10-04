@@ -14,6 +14,11 @@ export type PricingTableConfig = {
   chooseText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  billingLabel: string;
+  perMonthText: string;
+  perYearText: string;
+  featuredText: string;
+  showingText: string;
 };
 
 // @config-start
@@ -51,6 +56,11 @@ const defaultConfig: PricingTableConfig = {
   chooseText: "Choose",
   theme: "light",
   accentColor: "#0f766e",
+  billingLabel: "Billing",
+  perMonthText: "a month",
+  perYearText: "a year",
+  featuredText: "Most picked",
+  showingText: "Showing {period} prices",
 };
 // @config-end
 
@@ -106,6 +116,9 @@ const featureList = (value: string) =>
     .map((feature) => feature.trim())
     .filter((feature) => feature !== "");
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function PricingTable({ config = defaultConfig }: { config?: PricingTableConfig }) {
   const id = useId();
   const [yearly, setYearly] = useState(false);
@@ -124,7 +137,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
   } as CSSProperties;
 
   const plans = config.plans.filter((plan) => plan.name.trim() !== "");
-  const period = yearly ? "a year" : "a month";
+  const period = yearly ? config.perYearText : config.perMonthText;
 
   return (
     <div style={style} className="bg-(--pt-surface) text-(--pt-text)">
@@ -133,7 +146,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
       {config.showCycle && (
         // Real radios in a group: the cycle is a choice between two, not a switch with a hidden meaning.
         <fieldset className="mt-3 border-0 p-0">
-          <legend className="text-sm text-(--pt-muted)">Billing</legend>
+          <legend className="text-sm text-(--pt-muted)">{config.billingLabel}</legend>
           <div className="mt-1 inline-flex rounded-full border border-(--pt-line) p-1">
             {[
               { label: config.monthlyLabel, value: false },
@@ -172,7 +185,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
                 {plan.name}
                 {/* Said in words, not only shown in a colour. */}
                 {featured && (
-                  <span className="rounded-full bg-(--pt-accent) px-2 py-0.5 text-xs font-medium text-(--pt-on-accent)">Most picked</span>
+                  <span className="rounded-full bg-(--pt-accent) px-2 py-0.5 text-xs font-medium text-(--pt-on-accent)">{config.featuredText}</span>
                 )}
               </h3>
               <p className="mt-1 text-sm text-(--pt-muted)">{plan.blurb}</p>
@@ -205,7 +218,7 @@ export function PricingTable({ config = defaultConfig }: { config?: PricingTable
 
       {/* Every price on the page just changed: say it once rather than leaving it to be noticed. */}
       <p role="status" className="mt-3 text-sm text-(--pt-muted)">
-        {yearly ? `Showing ${config.yearlyLabel.toLowerCase()} prices` : `Showing ${config.monthlyLabel.toLowerCase()} prices`}
+        {fill(config.showingText, { period: (yearly ? config.yearlyLabel : config.monthlyLabel).toLowerCase() })}
       </p>
     </div>
   );
