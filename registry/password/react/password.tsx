@@ -16,6 +16,22 @@ export type PasswordConfig = {
   theme: "light" | "dark" | "system";
   accentColor: string;
   radius: number;
+  ruleLength: string;
+  ruleNumber: string;
+  ruleUpper: string;
+  ruleSymbol: string;
+  metText: string;
+  notMetText: string;
+  strengthText: string;
+  emptyText: string;
+  weakText: string;
+  fairText: string;
+  goodText: string;
+  strongText: string;
+  showText: string;
+  hideText: string;
+  toggleSuffix: string;
+  capsText: string;
 };
 
 // @config-start
@@ -33,6 +49,22 @@ const defaultConfig: PasswordConfig = {
   theme: "light",
   accentColor: "#2563eb",
   radius: 8,
+  ruleLength: "At least {count} characters",
+  ruleNumber: "A number",
+  ruleUpper: "A capital letter",
+  ruleSymbol: "A symbol, such as ! or ?",
+  metText: "(met)",
+  notMetText: "(not met yet)",
+  strengthText: "Password strength: {level}",
+  emptyText: "Enter a password",
+  weakText: "Weak",
+  fairText: "Fair",
+  goodText: "Good",
+  strongText: "Strong",
+  showText: "Show",
+  hideText: "Hide",
+  toggleSuffix: "password",
+  capsText: "Caps Lock is on.",
 };
 // @config-end
 
@@ -84,10 +116,10 @@ function readableAccent(hex: string, onDark: boolean) {
 
 /** The rules you set, each with whether this password meets it. */
 export function passwordRules(value: string, config: PasswordConfig) {
-  const rules = [{ text: `At least ${config.minLength} characters`, met: value.length >= config.minLength }];
-  if (config.requireNumber) rules.push({ text: "A number", met: /\d/.test(value) });
-  if (config.requireUpper) rules.push({ text: "A capital letter", met: /[A-Z]/.test(value) });
-  if (config.requireSymbol) rules.push({ text: "A symbol, such as ! or ?", met: /[^A-Za-z0-9]/.test(value) });
+  const rules = [{ text: fill(config.ruleLength, { count: config.minLength }), met: value.length >= config.minLength }];
+  if (config.requireNumber) rules.push({ text: config.ruleNumber, met: /\d/.test(value) });
+  if (config.requireUpper) rules.push({ text: config.ruleUpper, met: /[A-Z]/.test(value) });
+  if (config.requireSymbol) rules.push({ text: config.ruleSymbol, met: /[^A-Za-z0-9]/.test(value) });
   return rules;
 }
 
@@ -96,13 +128,16 @@ export function passwordRules(value: string, config: PasswordConfig) {
  * gate — the rules decide whether the password is allowed.
  */
 export function passwordStrength(value: string, config: PasswordConfig) {
-  if (value === "") return { score: 0, label: "Enter a password" };
+  if (value === "") return { score: 0, label: config.emptyText };
   const met = passwordRules(value, config).filter((rule) => rule.met).length;
   const variety = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((pattern) => pattern.test(value)).length;
   const long = value.length >= config.minLength + 4;
   const score = Math.min(4, Math.max(1, met + (variety >= 3 ? 1 : 0) + (long ? 1 : 0) - 1));
-  return { score, label: ["", "Weak", "Fair", "Good", "Strong"][score] };
+  return { score, label: ["", config.weakText, config.fairText, config.goodText, config.strongText][score] };
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Password({ config = defaultConfig }: { config?: PasswordConfig }) {
   const id = useId();
@@ -163,15 +198,15 @@ export function Password({ config = defaultConfig }: { config?: PasswordConfig }
             onClick={() => setShown(!shown)}
             className={`shrink-0 cursor-pointer rounded-(--pw-radius) border border-(--pw-line) px-3 font-medium ${focus}`}
           >
-            {shown ? "Hide" : "Show"}
-            <span className="sr-only"> password</span>
+            {shown ? config.hideText : config.showText}
+            <span className="sr-only">{` ${config.toggleSuffix}`}</span>
           </button>
         )}
       </div>
 
       {config.capsWarning && caps && (
         <p role="status" className="mt-1 text-sm font-medium text-(--pw-bad)">
-          Caps Lock is on.
+          {config.capsText}
         </p>
       )}
 
@@ -189,7 +224,7 @@ export function Password({ config = defaultConfig }: { config?: PasswordConfig }
           </div>
           {/* The words carry the meaning: the bars are only a picture of them. */}
           <p aria-live="polite" className="mt-1 text-sm text-(--pw-muted)">
-            Password strength: {strength.label}
+            {fill(config.strengthText, { level: strength.label })}
           </p>
         </div>
       )}
@@ -203,7 +238,7 @@ export function Password({ config = defaultConfig }: { config?: PasswordConfig }
               </span>
               <span className={rule.met ? "text-(--pw-muted)" : ""}>
                 {rule.text}
-                <span className="sr-only">{rule.met ? " (met)" : " (not met yet)"}</span>
+                <span className="sr-only">{` ${rule.met ? config.metText : config.notMetText}`}</span>
               </span>
             </li>
           ))}

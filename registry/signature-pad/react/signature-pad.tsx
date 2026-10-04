@@ -11,6 +11,12 @@ export type SignaturePadConfig = {
   confirmText: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  typeInsteadText: string;
+  clearedText: string;
+  drawnText: string;
+  typedText: string;
+  signedText: string;
+  unsignedText: string;
 };
 
 // @config-start
@@ -23,6 +29,12 @@ const defaultConfig: SignaturePadConfig = {
   confirmText: "Confirm signature",
   theme: "light",
   accentColor: "#1d4ed8",
+  typeInsteadText: "A drawing needs a pointer, so you can type your name instead.",
+  clearedText: "Signature cleared",
+  drawnText: "Signed by drawing",
+  typedText: "Signed as {name}",
+  signedText: "There is a signature",
+  unsignedText: "Nothing signed yet",
 };
 // @config-end
 
@@ -73,6 +85,9 @@ function readableAccent(hex: string, onDark: boolean) {
 
 const WIDTH = 600;
 const HEIGHT = 180;
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function SignaturePad({ config = defaultConfig }: { config?: SignaturePadConfig }) {
   const id = useId();
@@ -133,7 +148,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
     canvas?.getContext("2d")?.clearRect(0, 0, WIDTH, HEIGHT);
     setDrawn(false);
     setTyped("");
-    setResult("Signature cleared");
+    setResult(config.clearedText);
   }
 
   return (
@@ -143,7 +158,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
       </p>
       <p id={`${id}-hint`} className="text-sm text-(--sp-muted)">
         {config.hint}
-        {config.typedAlternative && " A drawing needs a pointer, so you can type your name instead."}
+        {config.typedAlternative && ` ${config.typeInsteadText}`}
       </p>
 
       {/* The drawing is a picture of a name, so it carries a label and its state in words. */}
@@ -193,7 +208,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
         <button
           type="button"
           disabled={!signed}
-          onClick={() => setResult(drawn ? "Signed by drawing" : `Signed as ${typed.trim()}`)}
+          onClick={() => setResult(drawn ? config.drawnText : fill(config.typedText, { name: typed.trim() }))}
           className="min-h-11 cursor-pointer rounded-[var(--bc-radius-button,0.375rem)] bg-(--sp-accent) px-4 font-medium text-(--sp-on-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--sp-accent-text) disabled:cursor-not-allowed disabled:opacity-50"
         >
           {config.confirmText}
@@ -202,7 +217,7 @@ export function SignaturePad({ config = defaultConfig }: { config?: SignaturePad
 
       {/* Whether there is a signature at all is invisible to anyone not looking at the box. */}
       <p role="status" className="mt-2 text-sm text-(--sp-muted)">
-        {result || (signed ? "There is a signature" : "Nothing signed yet")}
+        {result || (signed ? config.signedText : config.unsignedText)}
       </p>
     </div>
   );

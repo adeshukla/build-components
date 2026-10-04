@@ -37,7 +37,7 @@ export function renderErrorSummaryMarkup(config: ErrorSummaryConfig) {
       const id = `esm-field-${index}`;
       const type = field.kind === "email" ? "email" : field.kind === "tel" ? "tel" : "text";
       return `          <div class="esm-row">
-            <label class="esm-label" for="${id}">${escapeHtml(field.label)}${field.required === "yes" ? "" : ' <span class="esm-optional">(optional)</span>'}</label>
+            <label class="esm-label" for="${id}">${escapeHtml(field.label)}${field.required === "yes" ? "" : ` <span class="esm-optional">${escapeHtml(config.optionalText)}</span>`}</label>
             <p class="esm-message" id="${id}-message" data-message-for="${id}" hidden></p>
             <input class="esm-input" id="${id}" name="${escapeHtml(nameFor(field.label))}" type="${type}" data-field data-field-label="${escapeHtml(field.label)}" data-field-required="${field.required}">
           </div>`;

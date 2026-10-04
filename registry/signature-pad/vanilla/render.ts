@@ -39,9 +39,9 @@ export function renderSignaturePadMarkup(config: SignaturePadConfig) {
       </div>\n`
     : "";
 
-  return `    <div class="sp sp--theme-${config.theme}" style="${vars}" data-signature-pad data-ink="${palette.ink}">
+  return `    <div class="sp sp--theme-${config.theme}" style="${vars}" data-signature-pad data-signed="${escapeHtml(config.signedText)}" data-unsigned="${escapeHtml(config.unsignedText)}" data-cleared="${escapeHtml(config.clearedText)}" data-drawn="${escapeHtml(config.drawnText)}" data-typed="${escapeHtml(config.typedText)}" data-ink="${palette.ink}">
       <p class="sp-label" id="sp-label">${escapeHtml(config.label)}</p>
-      <p class="sp-hint" id="sp-hint">${escapeHtml(config.hint)}${config.typedAlternative ? " A drawing needs a pointer, so you can type your name instead." : ""}</p>
+      <p class="sp-hint" id="sp-hint">${escapeHtml(config.hint)}${config.typedAlternative ? ` ${escapeHtml(config.typeInsteadText)}` : ""}</p>
 
       <!-- The drawing is a picture of a name, so it carries a label and its state in words. -->
       <canvas class="sp-canvas" width="600" height="180" role="img" aria-labelledby="sp-label" aria-describedby="sp-hint" data-canvas></canvas>
@@ -52,7 +52,7 @@ ${typed}      <div class="sp-actions">
       </div>
 
       <!-- Whether there is a signature at all is invisible to anyone not looking at the box. -->
-      <p class="sp-status" role="status" data-status>Nothing signed yet</p>
+      <p class="sp-status" role="status" data-status>${escapeHtml(config.unsignedText)}</p>
     </div>`;
 }
 

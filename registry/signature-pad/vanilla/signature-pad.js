@@ -4,6 +4,13 @@
  * whether anything has been signed is said in words.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   const WIDTH = 600;
   const HEIGHT = 180;
 
@@ -23,7 +30,7 @@
 
     function refresh(message) {
       confirm.disabled = !signed();
-      if (status) status.textContent = message || (signed() ? "There is a signature" : "Nothing signed yet");
+      if (status) status.textContent = message || (signed() ? root.dataset.signed : root.dataset.unsigned);
     }
 
     /** Canvas pixels from a pointer position, whatever size the canvas is drawn at. */
@@ -70,12 +77,12 @@
       context.clearRect(0, 0, WIDTH, HEIGHT);
       drawn = false;
       if (typed) typed.value = "";
-      refresh("Signature cleared");
+      refresh(root.dataset.cleared);
     });
 
     confirm.addEventListener("click", function () {
       if (confirm.disabled || !status) return;
-      status.textContent = drawn ? "Signed by drawing" : "Signed as " + typed.value.trim();
+      status.textContent = drawn ? root.dataset.drawn : fill(root.dataset.typed, { name: typed.value.trim() });
     });
 
     refresh();

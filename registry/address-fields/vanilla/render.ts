@@ -56,7 +56,7 @@ ${config.countryFirst ? countryBlock : ""}
 ${
   config.showLine2
     ? `          <div>
-            <label class="af-label" for="af-line2">${escapeHtml(config.line2Label)} <span class="af-optional">(optional)</span></label>
+            <label class="af-label" for="af-line2">${escapeHtml(config.line2Label)} <span class="af-optional">${escapeHtml(config.optionalText)}</span></label>
             <input class="af-input" id="af-line2" name="${escapeHtml(config.name)}Line2" type="text" autocomplete="address-line2">
           </div>`
     : ""

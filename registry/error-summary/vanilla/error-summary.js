@@ -4,12 +4,25 @@
  * line is a link to the answer that has to change.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     heading: "There is a problem",
     countInHeading: false,
     markFields: true,
     successText: "Thank you. Your details were accepted.",
+    optionalText: "(optional)",
+    requiredError: "Enter your {label}",
+    emailError: "Enter an email address in the form name@example.com",
+    telError: "Enter a phone number using only digits, spaces, + and brackets",
+    countOne: "{count} problem to fix",
+    countMany: "{count} problems to fix",
   };
   // @config-end
 
@@ -17,12 +30,12 @@
   function problemWith(input) {
     const label = input.dataset.fieldLabel || "answer";
     const value = input.value.trim();
-    if (input.dataset.fieldRequired === "yes" && value === "") return "Enter your " + label.toLowerCase();
+    if (input.dataset.fieldRequired === "yes" && value === "") return fill(config.requiredError, { label: label.toLowerCase() });
     if (value === "") return "";
     if (input.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-      return "Enter an email address in the form name@example.com";
+      return config.emailError;
     if (input.type === "tel" && !/^[0-9+()\s-]{7,}$/.test(value))
-      return "Enter a phone number using only digits, spaces, + and brackets";
+      return config.telError;
     return "";
   }
 
@@ -62,7 +75,7 @@
       if (problems.length === 0) return;
 
       heading.textContent = config.countInHeading
-        ? problems.length + (problems.length === 1 ? " problem to fix" : " problems to fix")
+        ? fill(problems.length === 1 ? config.countOne : config.countMany, { count: problems.length })
         : config.heading;
 
       problems.forEach(function (problem) {

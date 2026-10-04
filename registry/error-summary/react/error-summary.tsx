@@ -13,6 +13,12 @@ export type ErrorSummaryConfig = {
   markFields: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  optionalText: string;
+  requiredError: string;
+  emailError: string;
+  telError: string;
+  countOne: string;
+  countMany: string;
 };
 
 // @config-start
@@ -31,6 +37,12 @@ const defaultConfig: ErrorSummaryConfig = {
   markFields: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  optionalText: "(optional)",
+  requiredError: "Enter your {label}",
+  emailError: "Enter an email address in the form name@example.com",
+  telError: "Enter a phone number using only digits, spaces, + and brackets",
+  countOne: "{count} problem to fix",
+  countMany: "{count} problems to fix",
 };
 // @config-end
 
@@ -80,14 +92,21 @@ function readableAccent(hex: string, onDark: boolean) {
 }
 
 /** What is wrong with one answer, said as an instruction rather than as a label plus "invalid". */
-export function problemWith(field: { label: string; kind: string; required: string }, value: string) {
-  if (field.required === "yes" && value.trim() === "") return `Enter your ${field.label.toLowerCase()}`;
+export function problemWith(
+  field: { label: string; kind: string; required: string },
+  value: string,
+  words: { requiredError: string; emailError: string; telError: string },
+) {
+  if (field.required === "yes" && value.trim() === "") return fill(words.requiredError, { label: field.label.toLowerCase() });
   if (value.trim() === "") return "";
   if (field.kind === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-    return `Enter an email address in the form name@example.com`;
-  if (field.kind === "tel" && !/^[0-9+()\s-]{7,}$/.test(value)) return `Enter a phone number using only digits, spaces, + and brackets`;
+    return words.emailError;
+  if (field.kind === "tel" && !/^[0-9+()\s-]{7,}$/.test(value)) return words.telError;
   return "";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummaryConfig }) {
   const id = useId();
@@ -116,7 +135,7 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
 
   const check = () => {
     const found = config.fields
-      .map((field, index) => ({ index, message: problemWith(field, at(index)) }))
+      .map((field, index) => ({ index, message: problemWith(field, at(index), config) }))
       .filter((problem) => problem.message !== "");
     setProblems(found);
     setDone(found.length === 0);
@@ -145,7 +164,7 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
             className="mb-5 rounded-[var(--bc-radius-sm,0.375rem)] border-4 border-(--esm-error) p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--esm-accent-text)"
           >
             <Heading id={`${id}-summary-heading`} className="m-0 text-lg font-semibold text-(--esm-error)">
-              {config.countInHeading ? `${count} ${count === 1 ? "problem" : "problems"} to fix` : config.heading}
+              {config.countInHeading ? fill(count === 1 ? config.countOne : config.countMany, { count }) : config.heading}
             </Heading>
             <ul className="mt-2 list-disc pl-5">
               {problems?.map((problem) => (
@@ -176,7 +195,7 @@ export function ErrorSummary({ config = defaultConfig }: { config?: ErrorSummary
               <div key={index} className="mt-4">
                 <label htmlFor={`${id}-field-${index}`} className="block text-sm font-medium">
                   {field.label}
-                  {field.required !== "yes" && <span className="font-normal text-(--esm-muted)"> (optional)</span>}
+                  {field.required !== "yes" && <span className="font-normal text-(--esm-muted)">{` ${config.optionalText}`}</span>}
                 </label>
                 {message !== "" && config.markFields && (
                   <p id={`${id}-error-${index}`} className="mt-1 text-sm font-medium text-(--esm-error)">

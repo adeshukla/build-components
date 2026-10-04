@@ -1,6 +1,9 @@
 import { escapeHtml, htmlPage, luminance, themedColour } from "@/lib/html";
 import type { PasswordConfig } from "../react/password";
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 const palettes = {
   light: { surface: "#ffffff", sunk: "#f4f3f8", text: "#16121f", muted: "#4d4a57", line: "#8d8a99", good: "#1a7f52", bad: "#b4232b" },
   dark: { surface: "#141019", sunk: "#221d2e", text: "#f6f5fa", muted: "#b6b3c2", line: "#8d8a99", good: "#6ddba4", bad: "#ff8f8f" },
@@ -40,17 +43,16 @@ export function renderPasswordMarkup(config: PasswordConfig) {
     `--pw-bad: ${palette.bad}`,
   ].join("; ");
 
-  const rules = [`At least ${config.minLength} characters|length`];
-  if (config.requireNumber) rules.push("A number|number");
-  if (config.requireUpper) rules.push("A capital letter|upper");
-  if (config.requireSymbol) rules.push("A symbol, such as ! or ?|symbol");
+  const rules: [string, string][] = [[fill(config.ruleLength, { count: config.minLength }), "length"]];
+  if (config.requireNumber) rules.push([config.ruleNumber, "number"]);
+  if (config.requireUpper) rules.push([config.ruleUpper, "upper"]);
+  if (config.requireSymbol) rules.push([config.ruleSymbol, "symbol"]);
 
   const ruleList = config.showRules
     ? `      <ul class="pw-rules" id="password-rules" data-rules>
 ${rules
-  .map((rule) => {
-    const [text, kind] = rule.split("|");
-    return `        <li class="pw-rule" data-rule="${kind}"><span class="pw-mark" aria-hidden="true">•</span><span>${escapeHtml(text)}<span class="pw-sr" data-state> (not met yet)</span></span></li>`;
+  .map(([text, kind]) => {
+    return `        <li class="pw-rule" data-rule="${kind}"><span class="pw-mark" aria-hidden="true">•</span><span>${escapeHtml(text)}<span class="pw-sr" data-state> ${escapeHtml(config.notMetText)}</span></span></li>`;
   })
   .join("\n")}
       </ul>\n`
@@ -61,7 +63,7 @@ ${rules
         <div class="pw-bars" aria-hidden="true">
           <span class="pw-bar" data-bar="1"></span><span class="pw-bar" data-bar="2"></span><span class="pw-bar" data-bar="3"></span><span class="pw-bar" data-bar="4"></span>
         </div>
-        <p class="pw-strength" aria-live="polite" data-strength>Password strength: Enter a password</p>
+        <p class="pw-strength" aria-live="polite" data-strength>${escapeHtml(fill(config.strengthText, { level: config.emptyText }))}</p>
       </div>\n`
     : "";
 
@@ -75,6 +77,7 @@ ${rules
     `data-number="${config.requireNumber}"`,
     `data-upper="${config.requireUpper}"`,
     `data-symbol="${config.requireSymbol}"`,
+    `data-words="${escapeHtml(JSON.stringify({ weak: config.weakText, fair: config.fairText, good: config.goodText, strong: config.strongText, met: config.metText, notMet: config.notMetText, strength: config.strengthText, empty: config.emptyText, show: config.showText, hide: config.hideText }))}"`,
     `data-caps="${config.capsWarning}"`,
   ].join(" ");
 
@@ -82,8 +85,8 @@ ${rules
       <label class="pw-label" for="password-input">${escapeHtml(config.label)}</label>
 ${config.hint.trim() ? `      <p class="pw-hint" id="password-hint">${escapeHtml(config.hint)}</p>\n` : ""}      <div class="pw-row">
         <input class="pw-input" id="password-input" type="password" autocomplete="new-password"${describedBy ? ` aria-describedby="${describedBy}"` : ""} data-input>
-${config.showToggle ? `        <button class="pw-toggle" type="button" aria-pressed="false" data-toggle>Show<span class="pw-sr"> password</span></button>\n` : ""}      </div>
-${config.capsWarning ? `      <p class="pw-caps" role="status" data-caps hidden>Caps Lock is on.</p>\n` : ""}${meter}${ruleList}    </div>`;
+${config.showToggle ? `        <button class="pw-toggle" type="button" aria-pressed="false" data-toggle>${escapeHtml(config.showText)}<span class="pw-sr"> ${escapeHtml(config.toggleSuffix)}</span></button>\n` : ""}      </div>
+${config.capsWarning ? `      <p class="pw-caps" role="status" data-caps hidden>${escapeHtml(config.capsText)}</p>\n` : ""}${meter}${ruleList}    </div>`;
 }
 
 export function renderPasswordHtml(config: PasswordConfig) {

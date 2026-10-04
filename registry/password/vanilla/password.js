@@ -4,6 +4,13 @@
  * show button, the strength and the met/unmet marks — in words as well as ticks.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   function createPassword(root) {
     const input = root.querySelector("[data-input]");
     if (!input) return;
@@ -17,7 +24,9 @@
     const needNumber = root.dataset.number === "true";
     const needUpper = root.dataset.upper === "true";
     const needSymbol = root.dataset.symbol === "true";
-    const words = ["", "Weak", "Fair", "Good", "Strong"];
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
+    const levels = ["", words.weak, words.fair, words.good, words.strong];
 
     function met(kind, value) {
       if (kind === "length") return value.length >= min;
@@ -37,7 +46,7 @@
         rule.classList.toggle("pw-met", ok);
         rule.querySelector(".pw-mark").textContent = ok ? "✓" : "•";
         const state = rule.querySelector("[data-state]");
-        if (state) state.textContent = ok ? " (met)" : " (not met yet)";
+        if (state) state.textContent = " " + (ok ? words.met : words.notMet);
       });
 
       if (!strength) return;
@@ -45,7 +54,7 @@
         bars.forEach(function (bar) {
           bar.classList.remove("pw-bar--on");
         });
-        strength.textContent = "Password strength: Enter a password";
+        strength.textContent = fill(words.strength, { level: words.empty });
         return;
       }
 
@@ -60,7 +69,7 @@
       bars.forEach(function (bar) {
         bar.classList.toggle("pw-bar--on", Number(bar.dataset.bar) <= score);
       });
-      strength.textContent = "Password strength: " + words[score];
+      strength.textContent = fill(words.strength, { level: levels[score] });
     }
 
     input.addEventListener("input", paint);
@@ -70,7 +79,7 @@
         const shown = toggle.getAttribute("aria-pressed") === "true";
         toggle.setAttribute("aria-pressed", String(!shown));
         input.type = shown ? "password" : "text";
-        toggle.childNodes[0].textContent = shown ? "Show" : "Hide";
+        toggle.childNodes[0].textContent = shown ? words.show : words.hide;
       });
     }
 

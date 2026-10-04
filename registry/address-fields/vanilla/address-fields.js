@@ -3,6 +3,13 @@
  * The country decides what the postcode field is called and whether there is a region field at all.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     countries: [
@@ -11,6 +18,8 @@
       { code: "US", name: "United States", postcodeLabel: "ZIP code", regionLabel: "State" },
       { code: "DE", name: "Germany", postcodeLabel: "Postal code", regionLabel: "" },
     ],
+    optionalText: "(optional)",
+    addressedText: "Addressed for {country}. The postcode field is called {postcode}.",
   };
   // @config-end
 
@@ -33,7 +42,7 @@
       if (regionRow) regionRow.hidden = chosen.regionLabel.trim() === "";
       if (regionLabel) regionLabel.textContent = chosen.regionLabel;
       if (status) {
-        status.textContent = "Addressed for " + chosen.name + ". The postcode field is called " + chosen.postcodeLabel + ".";
+        status.textContent = fill(config.addressedText, { country: chosen.name, postcode: chosen.postcodeLabel });
       }
     }
 

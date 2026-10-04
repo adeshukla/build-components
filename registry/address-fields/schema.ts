@@ -43,6 +43,24 @@ export const addressFieldsSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "optionalText",
+    label: "Optional",
+    description: "Shown after the second line's label.",
+    group: "Words",
+    type: "text",
+    default: "(optional)",
+    maxLength: 30,
+  },
+  {
+    key: "addressedText",
+    label: "Country set",
+    description: "Said when the country changes. {country} and {postcode} are filled in.",
+    group: "Words",
+    type: "text",
+    default: "Addressed for {country}. The postcode field is called {postcode}.",
+    maxLength: 160,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

@@ -16,6 +16,8 @@ export type AddressFieldsConfig = {
   requireCore: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  optionalText: string;
+  addressedText: string;
 };
 
 // @config-start
@@ -38,6 +40,8 @@ const defaultConfig: AddressFieldsConfig = {
   requireCore: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  optionalText: "(optional)",
+  addressedText: "Addressed for {country}. The postcode field is called {postcode}.",
 };
 // @config-end
 
@@ -85,6 +89,9 @@ function readableAccent(hex: string, onDark: boolean) {
   }
   return onDark ? "#ffffff" : "#000000";
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function AddressFields({ config = defaultConfig }: { config?: AddressFieldsConfig }) {
   const id = useId();
@@ -157,7 +164,7 @@ export function AddressFields({ config = defaultConfig }: { config?: AddressFiel
           {config.showLine2 && (
             <div>
               <label htmlFor={`${id}-line2`} className={labelClass}>
-                {config.line2Label} <span className="font-normal text-(--af-muted)">(optional)</span>
+                {config.line2Label} <span className="font-normal text-(--af-muted)">{config.optionalText}</span>
               </label>
               <input id={`${id}-line2`} name={`${config.name}Line2`} type="text" autoComplete="address-line2" className={field} />
             </div>
@@ -207,7 +214,7 @@ export function AddressFields({ config = defaultConfig }: { config?: AddressFiel
         </div>
 
         <p role="status" className="mt-3 text-sm text-(--af-muted)">
-          {country === undefined ? "" : `Addressed for ${country.name}. The postcode field is called ${country.postcodeLabel}.`}
+          {country === undefined ? "" : fill(config.addressedText, { country: country.name, postcode: country.postcodeLabel })}
         </p>
       </fieldset>
     </div>
