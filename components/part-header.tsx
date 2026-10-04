@@ -1,6 +1,8 @@
 import { ViewTransition } from "react";
 import { PartDrawing } from "@/components/part-drawing";
 import { partBySlug } from "@/lib/parts";
+import { isRegistrySlug } from "@/lib/registry";
+import { versionOf } from "@/lib/versions";
 
 /** Header for a component page: the part's drawing and name, what it is, and its spec line. */
 export function PartHeader({ slug }: { slug: string }) {
@@ -11,6 +13,7 @@ export function PartHeader({ slug }: { slug: string }) {
     ["Outputs", "React + Tailwind, HTML/CSS/JS"],
     ["Status", "In stock, tested"],
   ];
+  const version = isRegistrySlug(slug) ? versionOf(slug) : null;
 
   return (
     <div
@@ -33,13 +36,23 @@ export function PartHeader({ slug }: { slug: string }) {
             <p className="mt-2 max-w-2xl text-sm text-pretty text-ink-muted sm:mt-3 sm:text-base">{part.summary}</p>
           </div>
         </div>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-4 sm:gap-x-8 sm:gap-y-3">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-3 sm:gap-x-8 sm:gap-y-3 lg:grid-cols-5">
           {specs.map(([term, detail]) => (
             <div key={term}>
               <dt className="font-mono text-xs text-ink-muted uppercase">{term}</dt>
               <dd className="mt-0.5 font-medium">{detail}</dd>
             </div>
           ))}
+          {version && (
+            <div>
+              <dt className="font-mono text-xs text-ink-muted uppercase">Version</dt>
+              <dd className="mt-0.5 font-medium">
+                <a href="#changes" className="underline decoration-rule-strong underline-offset-3 hover:decoration-accent">
+                  {`${version}, what changed`}
+                </a>
+              </dd>
+            </div>
+          )}
         </dl>
       </div>
     </div>

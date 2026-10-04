@@ -7,3 +7,6 @@ export const siteDescription =
   "Accessible UI components you configure visually and take into your project as plain code: React + Tailwind or HTML/CSS/JS. No library to install.";
 
 export const author = { name: "Adesh Shukla", url: "https://devstash.me" };
+
+/** Where "Report a problem" on a part page writes to. */
+export const problemEmail = "hello@devstash.me";

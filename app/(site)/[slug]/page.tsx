@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PartEditor } from "@/components/part-editor";
 import { PartHeader } from "@/components/part-header";
+import { PartRecord } from "@/components/part-record";
 import { inStock } from "@/lib/parts";
 import { isRegistrySlug, registry } from "@/lib/registry";
 import { parseConfig } from "@/lib/schema";
@@ -44,6 +45,7 @@ export default async function PartPage({ params, searchParams }: PageProps<"/[sl
           sources={readComponentSources(slug)}
         />
       </div>
+      <PartRecord slug={slug} />
     </main>
   );
 }

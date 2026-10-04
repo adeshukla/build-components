@@ -21,6 +21,8 @@ const eslintConfig = defineConfig([
     "app/(bare)/harness/**",
     "e2e/.generated/**",
     "test-results/**",
+    // Other sessions' checkouts of this repo.
+    ".claude/**",
   ]),
 ]);
 
