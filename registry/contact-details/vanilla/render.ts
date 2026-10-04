@@ -33,10 +33,10 @@ export function renderContactDetailsMarkup(config: ContactDetailsConfig) {
   ].join("; ");
   const heading = config.headingLevel;
   const rows = [
-    config.email.trim() && ["Email", `<a class="cd-link" href="mailto:${escapeHtml(config.email.trim())}">${escapeHtml(config.email)}</a>`],
-    config.phone.trim() && ["Phone", `<a class="cd-link" href="${escapeHtml(telOf(config.phone))}">${escapeHtml(config.phone)}</a>`],
-    config.address.trim() && ["Address", escapeHtml(config.address).replace(/\n/g, "<br>")],
-    config.hours.trim() && ["Opening hours", escapeHtml(config.hours)],
+    config.email.trim() && [escapeHtml(config.emailTerm), `<a class="cd-link" href="mailto:${escapeHtml(config.email.trim())}">${escapeHtml(config.email)}</a>`],
+    config.phone.trim() && [escapeHtml(config.phoneTerm), `<a class="cd-link" href="${escapeHtml(telOf(config.phone))}">${escapeHtml(config.phone)}</a>`],
+    config.address.trim() && [escapeHtml(config.addressTerm), escapeHtml(config.address).replace(/\n/g, "<br>")],
+    config.hours.trim() && [escapeHtml(config.hoursTerm), escapeHtml(config.hours)],
   ]
     .filter(Boolean)
     .map((row) => `          <div class="cd-row"><dt>${(row as string[])[0]}</dt><dd>${(row as string[])[1]}</dd></div>`)

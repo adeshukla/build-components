@@ -4,6 +4,13 @@
  * heights are reachable from a keyboard; dragging is the extra, not the only way.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     title: "Delivery slot",
@@ -12,14 +19,13 @@
     startAt: "half",
     expandLabel: "Make the sheet taller",
     collapseLabel: "Make the sheet shorter",
+    peekText: "a third of the screen",
+    halfText: "half the screen",
+    fullText: "nearly the whole screen",
+    heightText: "Sheet height: {height}.",
+    shortestText: "Already at its shortest.",
   };
   // @config-end
-
-  const said = {
-    peek: "a third of the screen",
-    half: "half the screen",
-    full: "nearly the whole screen",
-  };
 
   /** The heights this sheet offers, smallest first. */
   function detentsFor(setting) {
@@ -47,7 +53,7 @@
       handle.setAttribute("aria-label", at < steps.length - 1 ? config.expandLabel : config.collapseLabel);
       // Which height it is at, in words: a bar that has moved is not a message.
       if (height) {
-        height.textContent = "Sheet height: " + said[detent] + "." + (at > 0 ? "" : " Already at its shortest.");
+        height.textContent = fill(config.heightText, { height: { peek: config.peekText, half: config.halfText, full: config.fullText }[detent] }) + (at > 0 ? "" : " " + config.shortestText);
       }
     }
 

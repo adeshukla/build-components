@@ -9,6 +9,21 @@ export type CountdownConfig = {
   showSeconds: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  dayOne: string;
+  dayMany: string;
+  hourOne: string;
+  hourMany: string;
+  minuteOne: string;
+  minuteMany: string;
+  secondOne: string;
+  secondMany: string;
+  twoText: string;
+  oneText: string;
+  daysLabel: string;
+  hoursLabel: string;
+  minutesLabel: string;
+  secondsLabel: string;
+  waitingText: string;
 };
 
 // @config-start
@@ -19,6 +34,21 @@ const defaultConfig: CountdownConfig = {
   showSeconds: true,
   theme: "light",
   accentColor: "#b45309",
+  dayOne: "{count} day",
+  dayMany: "{count} days",
+  hourOne: "{count} hour",
+  hourMany: "{count} hours",
+  minuteOne: "{count} minute",
+  minuteMany: "{count} minutes",
+  secondOne: "{count} second",
+  secondMany: "{count} seconds",
+  twoText: "{first} and {second} left",
+  oneText: "{first} left",
+  daysLabel: "days",
+  hoursLabel: "hours",
+  minutesLabel: "minutes",
+  secondsLabel: "seconds",
+  waitingText: "Working out the time left…",
 };
 // @config-end
 
@@ -82,16 +112,22 @@ function split(target: string): Parts {
   };
 }
 
-const unit = (value: number, name: string) => `${value} ${name}${value === 1 ? "" : "s"}`;
+const unit = (value: number, one: string, many: string) => fill(value === 1 ? one : many, { count: value });
 
 /** What a screen reader hears: the coarse reading, without the second hand ticking over it. */
-function spoken(parts: Parts) {
+function spoken(parts: Parts, w: CountdownConfig) {
   if (parts.done) return "";
-  if (parts.days > 0) return `${unit(parts.days, "day")} and ${unit(parts.hours, "hour")} left`;
-  if (parts.hours > 0) return `${unit(parts.hours, "hour")} and ${unit(parts.minutes, "minute")} left`;
-  if (parts.minutes > 0) return `${unit(parts.minutes, "minute")} left`;
-  return `${unit(parts.seconds, "second")} left`;
+  const days = unit(parts.days, w.dayOne, w.dayMany);
+  const hours = unit(parts.hours, w.hourOne, w.hourMany);
+  const minutes = unit(parts.minutes, w.minuteOne, w.minuteMany);
+  if (parts.days > 0) return fill(w.twoText, { first: days, second: hours });
+  if (parts.hours > 0) return fill(w.twoText, { first: hours, second: minutes });
+  if (parts.minutes > 0) return fill(w.oneText, { first: minutes });
+  return fill(w.oneText, { first: unit(parts.seconds, w.secondOne, w.secondMany) });
 }
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function Countdown({ config = defaultConfig }: { config?: CountdownConfig }) {
   // Time is read on the client only: a server-rendered clock would differ from the first paint.
@@ -116,7 +152,7 @@ export function Countdown({ config = defaultConfig }: { config?: CountdownConfig
       const next = split(config.target);
       setParts(next);
       // Said when the coarse reading changes — once a minute, not once a second.
-      const phrase = next.done ? config.finishedText : spoken(next);
+      const phrase = next.done ? config.finishedText : spoken(next, config);
       if (phrase !== lastSaid.current) {
         lastSaid.current = phrase;
         setSaid(phrase);
@@ -127,12 +163,12 @@ export function Countdown({ config = defaultConfig }: { config?: CountdownConfig
     return () => window.clearInterval(timer);
   }, [config.target, config.finishedText]);
 
-  const boxes: { value: number; name: string }[] = parts
+  const boxes: { key: string; value: number; name: string }[] = parts
     ? [
-        { value: parts.days, name: "days" },
-        { value: parts.hours, name: "hours" },
-        { value: parts.minutes, name: "minutes" },
-        ...(config.showSeconds ? [{ value: parts.seconds, name: "seconds" }] : []),
+        { key: "days", value: parts.days, name: config.daysLabel },
+        { key: "hours", value: parts.hours, name: config.hoursLabel },
+        { key: "minutes", value: parts.minutes, name: config.minutesLabel },
+        ...(config.showSeconds ? [{ key: "seconds", value: parts.seconds, name: config.secondsLabel }] : []),
       ]
     : [];
 
@@ -141,14 +177,14 @@ export function Countdown({ config = defaultConfig }: { config?: CountdownConfig
       <p className="text-sm text-(--cn-muted)">{config.label}</p>
 
       {parts === null ? (
-        <p className="mt-1 text-sm text-(--cn-muted)">Working out the time left…</p>
+        <p className="mt-1 text-sm text-(--cn-muted)">{config.waitingText}</p>
       ) : parts.done ? (
         <p className="mt-1 text-xl font-semibold">{config.finishedText}</p>
       ) : (
         // The digits tick every second, so they are hidden from the reading order and said separately.
         <ol aria-hidden="true" className="mt-1 flex list-none flex-wrap gap-2 p-0">
           {boxes.map((box) => (
-            <li key={box.name} className="min-w-16 rounded-[var(--bc-radius-md,0.5rem)] border border-(--cn-line) bg-(--cn-sunk) px-3 py-2 text-center">
+            <li key={box.key} className="min-w-16 rounded-[var(--bc-radius-md,0.5rem)] border border-(--cn-line) bg-(--cn-sunk) px-3 py-2 text-center">
               <span className="block text-2xl font-semibold tabular-nums">{box.value}</span>
               <span className="block text-xs text-(--cn-muted)">{box.name}</span>
             </li>

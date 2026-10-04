@@ -14,6 +14,10 @@ export type ContactDetailsConfig = {
   mapHref: string;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  emailTerm: string;
+  phoneTerm: string;
+  addressTerm: string;
+  hoursTerm: string;
 };
 
 // @config-start
@@ -29,6 +33,10 @@ const defaultConfig: ContactDetailsConfig = {
   mapHref: "",
   theme: "light",
   accentColor: "#2563eb",
+  emailTerm: "Email",
+  phoneTerm: "Phone",
+  addressTerm: "Address",
+  hoursTerm: "Opening hours",
 };
 // @config-end
 
@@ -101,10 +109,10 @@ export function ContactDetails({ config = defaultConfig }: { config?: ContactDet
   const link =
     "font-medium text-(--cd-accent-text) underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--cd-accent-text)";
   const rows = [
-    config.email.trim() && { term: "Email", detail: <a href={`mailto:${config.email.trim()}`} className={link}>{config.email}</a> },
-    config.phone.trim() && { term: "Phone", detail: <a href={telOf(config.phone)} className={link}>{config.phone}</a> },
-    config.address.trim() && { term: "Address", detail: <span className="whitespace-pre-line">{config.address}</span> },
-    config.hours.trim() && { term: "Opening hours", detail: config.hours },
+    config.email.trim() && { term: config.emailTerm, detail: <a href={`mailto:${config.email.trim()}`} className={link}>{config.email}</a> },
+    config.phone.trim() && { term: config.phoneTerm, detail: <a href={telOf(config.phone)} className={link}>{config.phone}</a> },
+    config.address.trim() && { term: config.addressTerm, detail: <span className="whitespace-pre-line">{config.address}</span> },
+    config.hours.trim() && { term: config.hoursTerm, detail: config.hours },
   ].filter(Boolean) as { term: string; detail: ReactNode }[];
 
   return (

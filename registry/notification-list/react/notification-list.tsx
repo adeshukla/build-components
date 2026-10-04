@@ -12,6 +12,7 @@ export type NotificationListConfig = {
   showCount: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  countText: string;
 };
 
 // @config-start
@@ -31,6 +32,7 @@ const defaultConfig: NotificationListConfig = {
   showCount: true,
   theme: "light",
   accentColor: "#1d4ed8",
+  countText: "{count} unread",
 };
 // @config-end
 
@@ -79,6 +81,9 @@ function readableAccent(hex: string, onDark: boolean) {
   return onDark ? "#ffffff" : "#000000";
 }
 
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+
 export function NotificationList({ config = defaultConfig }: { config?: NotificationListConfig }) {
   const id = useId();
   // Read state is kept by position in the list, not by title: two notifications can share a title.
@@ -106,7 +111,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
         <h2 id={`${id}-heading`} className="m-0 text-xl font-semibold">
           {/* The count is part of the heading text, so the space is in the text and it never reads "Notifications(3)". */}
           {config.heading}
-          {config.showCount && unread > 0 ? ` (${unread} unread)` : ""}
+          {config.showCount && unread > 0 ? ` (${fill(config.countText, { count: unread })})` : ""}
         </h2>
         {unread > 0 && (
           <button
@@ -156,7 +161,7 @@ export function NotificationList({ config = defaultConfig }: { config?: Notifica
       </ul>
 
       <p role="status" className="mt-3 text-sm text-(--ntf-muted)">
-        {unread === 0 ? config.allReadText : `${unread} unread`}
+        {unread === 0 ? config.allReadText : fill(config.countText, { count: unread })}
       </p>
     </div>
   );

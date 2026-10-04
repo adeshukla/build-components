@@ -4,11 +4,19 @@
  * in step with each other.
  */
 (function () {
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
   // @config-start
   const config = {
     heading: "Notifications",
     allReadText: "Nothing unread.",
     showCount: true,
+    countText: "{count} unread",
   };
   // @config-end
 
@@ -24,10 +32,10 @@
       }).length;
       // The count is part of the heading's text, so it never reads "Notifications(3)".
       if (heading) {
-        heading.textContent = config.heading + (config.showCount && unread > 0 ? " (" + unread + " unread)" : "");
+        heading.textContent = config.heading + (config.showCount && unread > 0 ? " (" + fill(config.countText, { count: unread }) + ")" : "");
       }
       if (markAll) markAll.hidden = unread === 0;
-      if (status) status.textContent = unread === 0 ? config.allReadText : unread + " unread";
+      if (status) status.textContent = unread === 0 ? config.allReadText : fill(config.countText, { count: unread });
     }
 
     function read(item) {

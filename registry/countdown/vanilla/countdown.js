@@ -4,8 +4,15 @@
  * only when the coarse reading does.
  */
 (function () {
-  function unit(value, name) {
-    return value + " " + name + (value === 1 ? "" : "s");
+  /** Words with something put in them: "{count} left" (D94). */
+  function fill(words, values) {
+    return words.replace(/\{(\w+)\}/g, function (match, name) {
+      return name in values ? String(values[name]) : match;
+    });
+  }
+
+  function unit(value, one, many) {
+    return fill(value === 1 ? one : many, { count: value });
   }
 
   /** Whole units left, worked out by hand: Intl would disagree between the server and the browser. */
@@ -22,12 +29,15 @@
   }
 
   /** What a screen reader hears: the coarse reading, without the second hand ticking over it. */
-  function spoken(parts) {
+  function spoken(parts, w) {
     if (parts.done) return "";
-    if (parts.days > 0) return unit(parts.days, "day") + " and " + unit(parts.hours, "hour") + " left";
-    if (parts.hours > 0) return unit(parts.hours, "hour") + " and " + unit(parts.minutes, "minute") + " left";
-    if (parts.minutes > 0) return unit(parts.minutes, "minute") + " left";
-    return unit(parts.seconds, "second") + " left";
+    const days = unit(parts.days, w.dayOne, w.dayMany);
+    const hours = unit(parts.hours, w.hourOne, w.hourMany);
+    const minutes = unit(parts.minutes, w.minuteOne, w.minuteMany);
+    if (parts.days > 0) return fill(w.two, { first: days, second: hours });
+    if (parts.hours > 0) return fill(w.two, { first: hours, second: minutes });
+    if (parts.minutes > 0) return fill(w.one, { first: minutes });
+    return fill(w.one, { first: unit(parts.seconds, w.secondOne, w.secondMany) });
   }
 
   function createCountdown(root) {
@@ -36,6 +46,8 @@
     const done = root.querySelector("[data-done]");
     const status = root.querySelector("[data-status]");
     const values = Array.from(root.querySelectorAll("[data-unit]"));
+    // The words, from the options (D94).
+    const words = JSON.parse(root.dataset.words);
     let lastSaid = "";
 
     function tick() {
@@ -46,7 +58,7 @@
       values.forEach(function (value) {
         value.textContent = String(parts[value.dataset.unit]);
       });
-      const phrase = parts.done ? root.dataset.finished : spoken(parts);
+      const phrase = parts.done ? root.dataset.finished : spoken(parts, words);
       if (phrase !== lastSaid) {
         lastSaid = phrase;
         if (status) status.textContent = phrase;

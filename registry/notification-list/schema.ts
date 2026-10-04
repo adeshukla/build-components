@@ -39,6 +39,15 @@ export const notificationListSchema = [
     options: ["light", "dark", "system"],
   },
   { key: "accentColor", label: "Accent colour", group: "Style", type: "color", default: "#1d4ed8" },
+  {
+    key: "countText",
+    label: "Unread count",
+    description: "Said after the heading and below the list. {count} is the number.",
+    group: "Words",
+    type: "text",
+    default: "{count} unread",
+    maxLength: 40,
+  },
 ] as const satisfies Schema;
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;

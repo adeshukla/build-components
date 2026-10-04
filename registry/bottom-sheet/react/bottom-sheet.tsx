@@ -15,6 +15,11 @@ export type BottomSheetConfig = {
   centreOnWide: boolean;
   theme: "light" | "dark" | "system";
   accentColor: string;
+  peekText: string;
+  halfText: string;
+  fullText: string;
+  heightText: string;
+  shortestText: string;
 };
 
 // @config-start
@@ -31,6 +36,11 @@ const defaultConfig: BottomSheetConfig = {
   centreOnWide: true,
   theme: "light",
   accentColor: "#0f766e",
+  peekText: "a third of the screen",
+  halfText: "half the screen",
+  fullText: "nearly the whole screen",
+  heightText: "Sheet height: {height}.",
+  shortestText: "Already at its shortest.",
 };
 // @config-end
 
@@ -88,7 +98,9 @@ export function detentsFor(setting: BottomSheetConfig["detents"]): Detent[] {
 }
 
 const heights: Record<Detent, string> = { peek: "30%", half: "55%", full: "92%" };
-const said: Record<Detent, string> = { peek: "a third of the screen", half: "half the screen", full: "nearly the whole screen" };
+
+/** Words with something put in them: "{count} left" (D94). */
+const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetConfig }) {
   const id = useId();
@@ -224,7 +236,7 @@ export function BottomSheet({ config = defaultConfig }: { config?: BottomSheetCo
           <p className="mt-2 text-(--bsh-muted)">{config.body}</p>
           {/* Which height it is at, in words: a bar that has moved is not a message. */}
           <p role="status" className="mt-3 text-sm text-(--bsh-muted)">
-            {`Sheet height: ${said[detent]}.${canShrink ? "" : " Already at its shortest."}`}
+            {`${fill(config.heightText, { height: { peek: config.peekText, half: config.halfText, full: config.fullText }[detent] })}${canShrink ? "" : ` ${config.shortestText}`}`}
           </p>
         </div>
 

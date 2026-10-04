@@ -29,21 +29,26 @@ export function renderCountdownMarkup(config: CountdownConfig) {
     ...(config.theme === "system" ? [] : Object.entries(palette).map(([key, value]) => `--cn-${key}: ${themedColour(key, value, dark)}`)),
   ].join("; ");
 
-  const units = ["days", "hours", "minutes", ...(config.showSeconds ? ["seconds"] : [])];
+  const units = [
+    ["days", config.daysLabel],
+    ["hours", config.hoursLabel],
+    ["minutes", config.minutesLabel],
+    ...(config.showSeconds ? [["seconds", config.secondsLabel]] : []),
+  ];
   const boxes = units
     .map(
-      (name) => `        <li class="cn-box">
+      ([name, label]) => `        <li class="cn-box">
           <span class="cn-value" data-unit="${name}">0</span>
-          <span class="cn-unit">${name}</span>
+          <span class="cn-unit">${escapeHtml(label)}</span>
         </li>`,
     )
     .join("\n");
 
-  return `    <div class="cn cn--theme-${config.theme}" style="${vars}" data-countdown data-target="${escapeHtml(config.target)}" data-finished="${escapeHtml(config.finishedText)}">
+  return `    <div class="cn cn--theme-${config.theme}" style="${vars}" data-countdown data-words="${escapeHtml(JSON.stringify({ dayOne: config.dayOne, dayMany: config.dayMany, hourOne: config.hourOne, hourMany: config.hourMany, minuteOne: config.minuteOne, minuteMany: config.minuteMany, secondOne: config.secondOne, secondMany: config.secondMany, two: config.twoText, one: config.oneText }))}" data-target="${escapeHtml(config.target)}" data-finished="${escapeHtml(config.finishedText)}">
       <p class="cn-label">${escapeHtml(config.label)}</p>
 
       <!-- The time left is worked out in the browser: a server-rendered clock would already be wrong. -->
-      <p class="cn-waiting" data-waiting>Working out the time left…</p>
+      <p class="cn-waiting" data-waiting>${escapeHtml(config.waitingText)}</p>
       <ol class="cn-boxes" aria-hidden="true" hidden data-boxes>
 ${boxes}
       </ol>
