@@ -38,3 +38,14 @@ export function translate(schema: readonly Option[], config: Record<string, unkn
 }
 
 export const directionOf = (language: LanguageId) => languages.find((candidate) => candidate.id === language)!.dir;
+
+/** Which language a part's Words are in, read from the options themselves; null once any is edited by hand. */
+export function languageOf(schema: readonly Option[], config: Record<string, unknown>): LanguageId | null {
+  const words = schema.filter((option) => option.group === "Words" && option.type === "text");
+  return (
+    languages.find(({ id }) => {
+      const translated = translate(words, {}, id);
+      return words.every((option) => config[option.key] === translated[option.key]);
+    })?.id ?? null
+  );
+}

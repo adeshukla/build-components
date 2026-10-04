@@ -1,12 +1,13 @@
 "use client";
 
-import { Fragment, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { Fragment, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { OptionsPanel } from "@/components/options-panel";
 import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
 import { countInBrowser } from "@/lib/count-beacon";
 import { applyConfig } from "@/lib/export";
 import { frameworkFiles, frameworks, mainFile, markupOf, type FrameworkId } from "@/lib/framework-output";
+import { directionOf, languageOf, translate } from "@/lib/languages";
 import { fullBleed, partBySlug } from "@/lib/parts";
 import { toSearchParams, type Schema } from "@/lib/schema";
 import { zipInBrowser } from "@/lib/zip-browser";
@@ -60,6 +61,9 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
   // Captured once: the frame loads with the options the page opened with.
   const [initialQuery] = useState(() => toSearchParams(schema, initialConfig).toString());
   const js = sources.js === "" ? "" : applyConfig(sources.js, config);
+  // The preview page says which language the part speaks, as the page it goes on would (D94).
+  const language = languageOf(schema, config) ?? "en";
+  const page = useMemo(() => ({ lang: language, dir: directionOf(language) }), [language]);
   const html = vanillaHtml ? vanillaHtml(config) : sources.html;
   // The component's name, as the React file exports it, names the framework files too (D92).
   const componentName = /export function ([A-Z]\w*)\(/.exec(sources.react)?.[1] ?? "Part";
@@ -110,6 +114,7 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
           config={config}
           onChange={(key, value) => apply({ ...config, [key]: value })}
           onResetAll={() => apply(Object.fromEntries(schema.map((option) => [option.key, option.default])))}
+          onLanguage={(next) => apply(translate(schema, config, next))}
         />
       </aside>
 
@@ -177,13 +182,13 @@ export function Editor({ slug, schema, initialConfig, sources, keyboard, checkli
               </p>
               <div className="rounded-md border border-rule-strong bg-paper shadow-[0_14px_32px_-18px_rgb(22_18_31/0.4)]">
                 {output === "react" ? (
-                  <PreviewFrame slug={slug} title={part.name} config={config} initialQuery={initialQuery} />
+                  <PreviewFrame slug={slug} title={part.name} config={config} page={page} initialQuery={initialQuery} />
                 ) : (
                   <VanillaFrame
                     key={query}
                     // Every framework file wraps this same markup and script, so it is what they run.
                     title={`${part.name}, HTML/CSS/JS output`}
-                    srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark", fullBleed.includes(slug))}
+                    srcDoc={vanillaDocument(html, sources.css, js, config.theme === "dark", fullBleed.includes(slug), page)}
                   />
                 )}
               </div>
@@ -274,11 +279,13 @@ function PreviewFrame({
   slug,
   title,
   config,
+  page,
   initialQuery,
 }: {
   slug: string;
   title: string;
   config: Record<string, unknown>;
+  page: { lang: string; dir: string };
   initialQuery: string;
 }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
@@ -301,8 +308,8 @@ function PreviewFrame({
 
   useEffect(() => {
     if (!ready) return;
-    frameRef.current?.contentWindow?.postMessage({ type: "config", config }, window.location.origin);
-  }, [config, ready]);
+    frameRef.current?.contentWindow?.postMessage({ type: "config", config, page }, window.location.origin);
+  }, [config, page, ready]);
 
   return (
     <iframe
@@ -365,14 +372,15 @@ ${js}
 }
 
 /** Inlines the exported CSS and JS into the exported HTML page, so the frame runs the real files. */
-function vanillaDocument(html: string, css: string, js: string, dark: boolean, bleed: boolean) {
-  const page = dark ? "background:#141019;color:#f6f5fa" : "background:#ffffff;color:#16121f";
+function vanillaDocument(html: string, css: string, js: string, dark: boolean, bleed: boolean, page: { lang: string; dir: string }) {
+  const colours = dark ? "background:#141019;color:#f6f5fa" : "background:#ffffff;color:#16121f";
   // The same padding as the React frame (24px, 32px from 640px), none for full-width parts.
   const padding = bleed ? "" : "body{padding:24px}@media (min-width:640px){body{padding:32px}}";
   return html
+    .replace('<html lang="en">', () => `<html lang="${page.lang}" dir="${page.dir}">`)
     .replace(
       /<link rel="stylesheet" href="[^"]+">/,
-      () => `<style>body{box-sizing:border-box;margin:0;min-height:100dvh;font-family:system-ui,sans-serif;${page}}${padding}${css}</style>`,
+      () => `<style>body{box-sizing:border-box;margin:0;min-height:100dvh;font-family:system-ui,sans-serif;${colours}}${padding}${css}</style>`,
     )
     .replace(/<script src="[^"]+"><\/script>/, () => (js === "" ? "" : `<script>${js}</script>`))
     .replace("</body>", () => `${reportHeight}\n  </body>`);

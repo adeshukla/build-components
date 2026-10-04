@@ -234,7 +234,13 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      if (event.data?.type === "config") setConfig(event.data.config as Config);
+      if (event.data?.type !== "config") return;
+      setConfig(event.data.config as Config);
+      // The language the editor picked: the page's own lang and direction, as on a real page (D94).
+      if (event.data.page) {
+        document.documentElement.lang = event.data.page.lang;
+        document.documentElement.dir = event.data.page.dir;
+      }
     }
     window.addEventListener("message", onMessage);
     // Tell the editor we are listening; a config sent before this would be lost.

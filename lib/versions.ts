@@ -38,6 +38,7 @@ const own: Partial<Record<RegistrySlug, Change[]>> = {
   "feature-grid": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output." }],
   "notification-list": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output or share a read state." }],
   toolbar: [{ date: "2026-10-04", kind: "fixed", note: "Two buttons with the same label no longer break the React output." }],
+  cart: [{ date: "2026-10-05", kind: "fixed", note: "In the HTML/CSS/JS output, the item count in the heading now changes with the basket." }],
 };
 
 /** Parts that did not mirror in a right-to-left page until D93 (e2e/rtl.spec.ts found them). */
@@ -71,12 +72,109 @@ const sidewaysKeys: RegistrySlug[] = ["data-grid", "date-picker", "lightbox", "m
 const rtlKeys: Change = { date: "2026-10-04", kind: "fixed", note: "In a right-to-left page the Left and Right arrow keys swap, as the layout does." };
 const rtlFix: Change = { date: "2026-10-04", kind: "fixed", note: "Mirrors in a right-to-left page (Arabic, Hebrew, Persian, Urdu)." };
 
+/** Parts that say something by themselves: every such word became an option (D94), so they speak any language. */
+const worded: RegistrySlug[] = [
+  "address-fields",
+  "alert-banner",
+  "announcement-bar",
+  "article-card",
+  "author-byline",
+  "autosave-field",
+  "avatar-group",
+  "bottom-sheet",
+  "card-fields",
+  "carousel",
+  "cart",
+  "changelog",
+  "checkbox-group",
+  "code-block",
+  "color-picker",
+  "command-menu",
+  "comment-thread",
+  "comparison-table",
+  "confirm-dialog",
+  "contact-details",
+  "cookie-consent",
+  "countdown",
+  "currency-input",
+  "cursor-pagination",
+  "data-grid",
+  "date-picker",
+  "date-range",
+  "drawer",
+  "dual-slider",
+  "error-summary",
+  "faq",
+  "feature-grid",
+  "feed",
+  "filter-bar",
+  "form",
+  "header",
+  "inline-edit",
+  "invoice-summary",
+  "kanban",
+  "lightbox",
+  "maintenance-notice",
+  "masked-input",
+  "modal",
+  "multi-select",
+  "notification-list",
+  "offline-banner",
+  "order-tracker",
+  "otp",
+  "page-header",
+  "pagination",
+  "password",
+  "phone-input",
+  "picture-section",
+  "pin-pad",
+  "popover",
+  "post-list",
+  "pricing-table",
+  "product-card",
+  "quantity",
+  "radio-cards",
+  "rating",
+  "reading-progress",
+  "search",
+  "searchable-select",
+  "select-field",
+  "session-timeout",
+  "shortcut-help",
+  "sidebar",
+  "signature-pad",
+  "skip-links",
+  "slider",
+  "slot-picker",
+  "sortable-list",
+  "stat-comparison",
+  "stepper",
+  "sticky-header",
+  "switch",
+  "table",
+  "tag-input",
+  "textarea-counter",
+  "time-picker",
+  "time-range",
+  "timeline",
+  "toast",
+  "toggle-group",
+  "toolbar",
+  "tour",
+  "tree-view",
+  "unit-input",
+  "unsaved-changes",
+  "upload",
+  "wizard",
+];
+const words: Change = { date: "2026-10-05", kind: "added", note: "Every word it says by itself is an option (the Words group), so it can speak your page's language; the editor fills them in for ten languages." };
+
 /** A part's changes with their version numbers, newest first. */
 export function changesOf(slug: RegistrySlug): VersionedChange[] {
   const released = firstReleased[slug];
   const start = released ? [{ date: released, kind: "first" as const, note: "" }] : [shipped, themed];
   // A stable sort: the theme, listed first, stays ahead of a part's own change on the same day.
-  const history = [...start, ...(own[slug] ?? []), ...(mirrored.includes(slug) ? [rtlFix] : []), ...(sidewaysKeys.includes(slug) ? [rtlKeys] : [])].sort((a, b) => a.date.localeCompare(b.date));
+  const history = [...start, ...(own[slug] ?? []), ...(mirrored.includes(slug) ? [rtlFix] : []), ...(sidewaysKeys.includes(slug) ? [rtlKeys] : []), ...(worded.includes(slug) ? [words] : [])].sort((a, b) => a.date.localeCompare(b.date));
   let [minor, patch] = [0, 0];
   const versioned = history.map((change) => {
     if (change.kind === "added") [minor, patch] = [minor + 1, 0];

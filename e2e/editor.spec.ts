@@ -37,6 +37,34 @@ for (const part of inStock) {
   });
 }
 
+test("the Language picker puts a part's words in another language, and right to left for Arabic", async ({ page }) => {
+  await page.goto("/date-picker");
+  const react = page.frameLocator('iframe[src^="/preview/date-picker"]');
+  await expect(react.getByRole("button", { name: "Choose date" })).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole("tab", { name: /Words/ }).click();
+  await page.getByLabel("Language").selectOption("de");
+  await expect(react.getByRole("button", { name: "Datum wählen" })).toBeVisible();
+  await expect(react.locator("html")).toHaveAttribute("lang", "de");
+  // The picker reads its language back from the options, so the address bar keeps it.
+  await page.reload();
+  await page.getByRole("tab", { name: /Words/ }).click();
+  await expect(page.getByLabel("Language")).toHaveValue("de");
+
+  await page.getByLabel("Language").selectOption("ar");
+  await expect(react.locator("html")).toHaveAttribute("dir", "rtl");
+  await page.locator('input[value="vanilla"]').check({ force: true });
+  const vanilla = page.frameLocator("iframe[srcdoc]");
+  await expect(vanilla.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(vanilla.getByRole("button", { name: "اختيار التاريخ" })).toBeVisible();
+
+  // Editing one word by hand leaves the picker on "Your own words".
+  await page.locator('input[value="react"]').check({ force: true });
+  const firstWord = page.getByRole("tabpanel").getByRole("textbox").first();
+  await firstWord.fill("Something else");
+  await expect(page.getByLabel("Language")).toHaveValue("");
+});
+
 test("cookie preferences save inside the sandboxed HTML/CSS/JS frame", async ({ page }) => {
   const errors: string[] = [];
   page.on("console", (message) => {

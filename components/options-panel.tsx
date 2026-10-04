@@ -3,6 +3,7 @@
 import { useId, useState, type ReactNode } from "react";
 import { Segmented } from "@/components/segmented";
 import { TabList, tabPanelProps } from "@/components/tabs";
+import { languageOf, languages, type LanguageId } from "@/lib/languages";
 import { isDefault, isVisible, type Option, type Schema } from "@/lib/schema";
 
 type Props = {
@@ -10,6 +11,8 @@ type Props = {
   config: Record<string, unknown>;
   onChange: (key: string, value: unknown) => void;
   onResetAll: () => void;
+  /** Puts every Words option into one language (D94). Without it, the Words tab has no Language picker. */
+  onLanguage?: (language: LanguageId) => void;
   /** Extra classes for the panel's box, so a host can let it fill a column instead of capping its height. */
   className?: string;
 };
@@ -50,7 +53,7 @@ const choiceNames: Record<string, string> = {
 const choiceName = (value: string) => choiceNames[value] ?? value;
 
 /** Editor controls generated from a component's options schema: one tab per group, plus search across all. */
-export function OptionsPanel({ schema, config, onChange, onResetAll, className = "" }: Props) {
+export function OptionsPanel({ schema, config, onChange, onResetAll, onLanguage, className = "" }: Props) {
   const idBase = useId();
   const groups = groupOrder.filter((group) => schema.some((option) => option.group === group));
   const [group, setGroup] = useState<string>(groups[0]);
@@ -136,6 +139,31 @@ export function OptionsPanel({ schema, config, onChange, onResetAll, className =
         {...(search ? { role: "region", "aria-label": "Matching options", tabIndex: 0 } : tabPanelProps(idBase, group))}
         className="thin-scroll relative min-h-0 flex-1 overflow-y-auto"
       >
+        {onLanguage && !search && group === "Words" && (
+          <div className="border-b border-rule bg-paper-sunk p-4">
+            <label htmlFor={`${idBase}-language`} className="font-medium">
+              Language
+            </label>
+            <p id={`${idBase}-language-description`} className="mt-0.5 text-sm text-pretty text-ink-muted">
+              Fills in every option below; Arabic and Hebrew preview right to left. The translations have not been
+              checked by native speakers yet.
+            </p>
+            <select
+              id={`${idBase}-language`}
+              aria-describedby={`${idBase}-language-description`}
+              value={languageOf(schema, config) ?? ""}
+              onChange={(event) => onLanguage(event.target.value as LanguageId)}
+              className="mt-2 block w-full rounded-md border border-rule-strong bg-paper px-3 py-2 text-sm"
+            >
+              {languageOf(schema, config) === null && <option value="">Your own words</option>}
+              {languages.map((language) => (
+                <option key={language.id} value={language.id} lang={language.id}>
+                  {language.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {shown.length === 0 ? (
           <p className="p-6 text-sm text-pretty text-ink-muted">
             No option matches “{query.trim()}”. Try a word like colour, text or button.
