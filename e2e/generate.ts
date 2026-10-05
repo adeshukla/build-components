@@ -16,6 +16,9 @@ import type { ContactDetailsConfig } from "../registry/contact-details/react/con
 import { renderPostListHtml } from "../registry/post-list/vanilla/render";
 import { postListSchema } from "../registry/post-list/schema";
 import type { PostListConfig } from "../registry/post-list/react/post-list";
+import { renderProductGridHtml } from "../registry/product-grid/vanilla/render";
+import { productGridSchema } from "../registry/product-grid/schema";
+import type { ProductGridConfig } from "../registry/product-grid/react/product-grid";
 import { renderAnnouncementBarHtml } from "../registry/announcement-bar/vanilla/render";
 import { announcementBarSchema } from "../registry/announcement-bar/schema";
 import type { AnnouncementBarConfig } from "../registry/announcement-bar/react/announcement-bar";
@@ -457,6 +460,8 @@ export const components: Record<
       default: "",
       // A different set of fields entirely: a pattern, a number range, and checks on submit only.
       summary: "errorSummary=true",
+      // Sends to an address the tests answer (answerSends in e2e/helpers.ts).
+      sends: "action=%2Fapi%2Fsend-test",
       strict: "fields=%5B%7B%22label%22%3A%20%22Full%20name%22%2C%20%22type%22%3A%20%22text%22%2C%20%22required%22%3A%20%22yes%22%2C%20%22min%22%3A%20%222%22%2C%20%22max%22%3A%20%2260%22%2C%20%22pattern%22%3A%20%22%22%2C%20%22options%22%3A%20%22%22%2C%20%22help%22%3A%20%22%22%7D%2C%20%7B%22label%22%3A%20%22Order%20number%22%2C%20%22type%22%3A%20%22text%22%2C%20%22required%22%3A%20%22yes%22%2C%20%22min%22%3A%20%22%22%2C%20%22max%22%3A%20%22%22%2C%20%22pattern%22%3A%20%22%5E%5BA-Z%5D%7B2%7D-%5C%5Cd%7B4%7D%24%22%2C%20%22options%22%3A%20%22%22%2C%20%22help%22%3A%20%22Two%20letters%2C%20a%20dash%20and%20four%20digits%2C%20like%20AB-1234%22%7D%2C%20%7B%22label%22%3A%20%22Quantity%22%2C%20%22type%22%3A%20%22number%22%2C%20%22required%22%3A%20%22yes%22%2C%20%22min%22%3A%20%221%22%2C%20%22max%22%3A%20%2210%22%2C%20%22pattern%22%3A%20%22%22%2C%20%22options%22%3A%20%22%22%2C%20%22help%22%3A%20%22%22%7D%5D&validateOn=submit&errorSummary=false&marker=required&counter=false&layout=one&title=Report+a+problem",
     },
   },
@@ -1169,6 +1174,8 @@ export const components: Record<
     variants: {
       default: "",
       stacked: "layout=stacked&requireConsent=false&theme=dark&buttonText=Subscribe",
+      // Sends to an address the tests answer (answerSends in e2e/helpers.ts).
+      sends: "action=%2Fapi%2Fsend-test",
     },
   },
   "toggle-group": {
@@ -1601,6 +1608,23 @@ export const components: Record<
     variants: {
       default: "",
       list: "layout=list&showExcerpts=false&theme=dark&headingLevel=h3",
+    },
+  },
+  "product-grid": {
+    exportName: "ProductGrid",
+    schema: productGridSchema,
+    renderHtml: (config) => renderProductGridHtml(config as unknown as ProductGridConfig),
+    variants: {
+      default: "",
+      // Pictures with their descriptions, an h3 heading, dark, three columns of portrait cards.
+      pictures:
+        "headingLevel=h3&theme=dark&columns=3&shape=portrait&products=" +
+        encodeURIComponent(
+          JSON.stringify([
+            { name: "Deck jacket", price: "£128", href: "/shop/deck-jacket", image: "/icon.svg", alt: "The Build Components mark, standing in for a photo", note: "New" },
+            { name: "Canvas tote", price: "£34", href: "/shop/canvas-tote", image: "javascript:alert(1)", alt: "", note: "" },
+          ]),
+        ),
     },
   },
   "announcement-bar": {

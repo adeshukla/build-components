@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { encodePage, MAX_SECTIONS, newSection, suggestions, type BuiltPage } from "../lib/page-builder";
 import { inStock } from "../lib/parts";
 import { isRegistrySlug } from "../lib/registry";
+import { decodeSite, encodeSite, siteFrom, siteFromStarter } from "../lib/site-builder";
 import { expectNoAxeViolations } from "./helpers";
 
 /*
@@ -363,6 +364,43 @@ test.describe("what a page gives back", () => {
       expect.arrayContaining(["app/page.tsx", "components/header.tsx", "components/home/searchable-select.tsx", "components/home/faq.tsx", "components/footer.tsx"]),
     );
     expect(item.files[0].content).toContain('import { SearchableSelect } from "@/components/home/searchable-select";');
+  });
+
+  test("a shop website with its address gives a sitemap, page metadata and forms that send (D95, D96, D97)", async ({ request }) => {
+    const shop = siteFromStarter("shop", { name: "Northwind", brand: "#16303f", theme: "light" })!;
+    const site = {
+      ...shop,
+      url: "https://northwind.example",
+      pages: shop.pages.map((page) => (page.path === "/product" ? { ...page, description: "A waxed cotton jacket.", image: "https://northwind.example/jacket.jpg" } : page)),
+    };
+    const p = await encodeSite(site);
+    // The link carries the new settings, and reads them back checked.
+    expect((await decodeSite(p))?.pages.find((page) => page.path === "/product")?.description).toBe("A waxed cotton jacket.");
+
+    const next: Record<string, string> = await (await request.get(`/download/northwind.json?p=${p}`)).json();
+    expect(next["app/sitemap.ts"]).toContain('"https://northwind.example/product"');
+    expect(next["app/robots.ts"]).toContain("https://northwind.example/sitemap.xml");
+    expect(next["app/layout.tsx"]).toContain('metadataBase: new URL("https://northwind.example")');
+    expect(next["app/product/page.tsx"]).toContain('description: "A waxed cotton jacket."');
+    expect(next["app/product/page.tsx"]).toContain('openGraph: { images: ["https://northwind.example/jacket.jpg"] }');
+    // A form left with nowhere to send posts to the project's own endpoint.
+    expect(next["app/api/forms/route.ts"]).toContain("FORM_WEBHOOK_URL");
+    expect(next["components/contact/form.tsx"]).toContain('"action": "/api/forms"');
+    expect(next["components/home/product-grid.tsx"]).toContain('"href": "/product"');
+
+    const html: Record<string, string> = await (await request.get(`/download/northwind-html.json?p=${p}`)).json();
+    expect(html["sitemap.xml"]).toContain("<loc>https://northwind.example/product.html</loc>");
+    expect(html["robots.txt"]).toContain("Sitemap: https://northwind.example/sitemap.xml");
+    expect(html["product.html"]).toContain('<meta name="description" content="A waxed cotton jacket.">');
+    expect(html["product.html"]).toContain('<link rel="canonical" href="https://northwind.example/product.html">');
+  });
+
+  test("a website's address and pictures must be web addresses", () => {
+    const bad = siteFrom({ u: "javascript:alert(1)", pages: [{ i: "home", t: "Home", p: "/", s: [], g: "data:image/png;base64,AAAA", d: "x".repeat(400) }] })!;
+    expect(bad.url).toBeUndefined();
+    expect(bad.pages[0].image).toBeUndefined();
+    expect(bad.pages[0].description).toHaveLength(160);
+    expect(siteFrom({ u: "northwind.example/shop", pages: [{ i: "home", t: "Home", p: "/", s: [] }] })!.url).toBe("https://northwind.example");
   });
 
   test("a link it cannot vouch for is refused", async ({ request }) => {

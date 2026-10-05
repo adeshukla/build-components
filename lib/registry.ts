@@ -395,6 +395,9 @@ import { renderContactDetailsHtml } from "@/registry/contact-details/vanilla/ren
 import { postListSchema } from "@/registry/post-list/schema";
 import * as postListDocs from "@/registry/post-list/docs";
 import { renderPostListHtml } from "@/registry/post-list/vanilla/render";
+import { productGridSchema } from "@/registry/product-grid/schema";
+import * as productGridDocs from "@/registry/product-grid/docs";
+import { renderProductGridHtml } from "@/registry/product-grid/vanilla/render";
 import { announcementBarSchema } from "@/registry/announcement-bar/schema";
 import * as announcementBarDocs from "@/registry/announcement-bar/docs";
 import { renderAnnouncementBarHtml } from "@/registry/announcement-bar/vanilla/render";
@@ -1316,6 +1319,13 @@ export const registry = {
     schema: postListSchema,
     ...postListDocs,
     renderHtml: (config) => renderPostListHtml(config as never),
+  },
+  "product-grid": {
+    title: "Product grid",
+    description: "Products as a grid of cards: each an article whose name is a heading and a link, with its price and picture.",
+    schema: productGridSchema,
+    ...productGridDocs,
+    renderHtml: (config) => renderProductGridHtml(config as never),
   },
   "announcement-bar": {
     title: "Announcement bar",

@@ -101,6 +101,17 @@ const pageHeader = (title: string, lede = ""): Section => ({
   config: () => ({ title, lede, showTrail: false, primaryLabel: "", secondaryLabel: "", metaValue: "" }),
 });
 
+/** A shop's header (D97): its own links, and the basket where the call to action goes. */
+const shopHeader = header({
+  links: [
+    { label: "Shop", href: "/shop" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ],
+  ctaText: "Basket",
+  ctaHref: "/basket",
+});
+
 export const templates: Template[] = [
   {
     id: "landing-page",
@@ -227,6 +238,95 @@ export const templates: Template[] = [
       { slug: "invoice-summary", region: "main", narrow: true, optional: true },
       footer,
     ],
+  },
+  {
+    id: "shop",
+    name: "Shop",
+    type: "Shop",
+    summary: "Everything the shop sells as a grid of products, each opening its own page, and a way to hear about new ones.",
+    sections: [
+      shopHeader,
+      pageHeader("Shop", "Everything we sell, newest first."),
+      {
+        slug: "product-grid",
+        region: "main",
+        // Every card opens the product page template, the one to copy for each product.
+        config: () => ({
+          heading: "All products",
+          products: [
+            { name: "Deck jacket", price: "£128", href: "/product", image: "", alt: "", note: "New" },
+            { name: "Harbour jumper", price: "£86", href: "/product", image: "", alt: "", note: "" },
+            { name: "Canvas tote", price: "£34", href: "/product", image: "", alt: "", note: "" },
+            { name: "Wool beanie", price: "£22", href: "/product", image: "", alt: "", note: "" },
+          ],
+        }),
+      },
+      {
+        slug: "newsletter",
+        region: "main",
+        optional: true,
+        narrow: true,
+        config: () => ({ heading: "Hear about new things first", copy: "One email when something new arrives.", consentText: "Yes, email me when something new arrives." }),
+      },
+      footer,
+    ],
+  },
+  {
+    id: "product-page",
+    name: "Product page",
+    type: "Shop",
+    summary: "One product: where it sits in the shop, its choices and add button, its details, and what people ask before buying.",
+    sections: [
+      shopHeader,
+      {
+        slug: "breadcrumbs",
+        region: "main",
+        config: () => ({
+          items: [
+            { label: "Home", href: "/" },
+            { label: "Shop", href: "/shop" },
+            { label: "Deck jacket", href: "" },
+          ],
+        }),
+      },
+      { slug: "product-card", region: "main", narrow: true },
+      {
+        slug: "details-list",
+        region: "main",
+        narrow: true,
+        config: () => ({
+          heading: "Details",
+          rows: [
+            { term: "Material", detail: "Waxed cotton, cotton lining", href: "" },
+            { term: "Fit", detail: "Regular", href: "" },
+            { term: "Care", detail: "Sponge clean; re-wax once a year", href: "" },
+            { term: "Delivery", detail: "[TODO: your delivery times and costs]", href: "" },
+          ],
+        }),
+      },
+      {
+        slug: "faq",
+        region: "main",
+        optional: true,
+        narrow: true,
+        config: () => ({
+          heading: "Before you buy",
+          items: [
+            { question: "How long does delivery take?", answer: "[TODO: your delivery times]" },
+            { question: "Can I send it back?", answer: "[TODO: your returns policy]" },
+            { question: "Which size should I choose?", answer: "[TODO: your size guide, or a link to it]" },
+          ],
+        }),
+      },
+      footer,
+    ],
+  },
+  {
+    id: "basket",
+    name: "Basket",
+    type: "Shop",
+    summary: "What is in the basket, what it all costs with delivery, and the way on to checkout.",
+    sections: [shopHeader, pageHeader("Basket"), { slug: "cart", region: "main", narrow: true, config: () => ({ checkoutHref: "/checkout" }) }, footer],
   },
   {
     id: "dashboard",

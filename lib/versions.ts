@@ -28,6 +28,7 @@ const firstReleased: Partial<Record<RegistrySlug, string>> = {
   "contact-details": "2026-10-04",
   "post-list": "2026-10-04",
   "announcement-bar": "2026-10-04",
+  "product-grid": "2026-10-05",
 };
 
 /** Changes to one part, oldest first. On a day the theme arrived, they came after it. */
@@ -38,6 +39,8 @@ const own: Partial<Record<RegistrySlug, Change[]>> = {
   "feature-grid": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output." }],
   "notification-list": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output or share a read state." }],
   toolbar: [{ date: "2026-10-04", kind: "fixed", note: "Two buttons with the same label no longer break the React output." }],
+  form: [{ date: "2026-10-05", kind: "added", note: "A Send to option: the form posts its fields there, says while it is sending, and says so if it did not arrive." }],
+  newsletter: [{ date: "2026-10-05", kind: "added", note: "A Send to option: the sign-up is posted there, and it says so if it did not arrive." }],
   "text-section": [{ date: "2026-10-05", kind: "fixed", note: "Its link is a 44px target, not 21px." }],
   cart: [{ date: "2026-10-05", kind: "fixed", note: "In the HTML/CSS/JS output, the item count in the heading now changes with the basket." }],
 };
@@ -119,6 +122,7 @@ const worded: RegistrySlug[] = [
   "masked-input",
   "modal",
   "multi-select",
+  "newsletter",
   "notification-list",
   "offline-banner",
   "order-tracker",

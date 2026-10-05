@@ -208,6 +208,7 @@ import { PictureSection, type PictureSectionConfig } from "@/registry/picture-se
 import { Testimonials, type TestimonialsConfig } from "@/registry/testimonials/react/testimonials";
 import { ContactDetails, type ContactDetailsConfig } from "@/registry/contact-details/react/contact-details";
 import { PostList, type PostListConfig } from "@/registry/post-list/react/post-list";
+import { ProductGrid, type ProductGridConfig } from "@/registry/product-grid/react/product-grid";
 import { AnnouncementBar, type AnnouncementBarConfig } from "@/registry/announcement-bar/react/announcement-bar";
 
 type Config = Record<string, unknown>;
@@ -434,6 +435,7 @@ export function Part({ slug, config }: { slug: string; config: Config }) {
       {slug === "testimonials" && <Testimonials config={config as unknown as TestimonialsConfig} />}
       {slug === "contact-details" && <ContactDetails config={config as unknown as ContactDetailsConfig} />}
       {slug === "post-list" && <PostList config={config as unknown as PostListConfig} />}
+      {slug === "product-grid" && <ProductGrid config={config as unknown as ProductGridConfig} />}
       {slug === "announcement-bar" && <AnnouncementBar config={config as unknown as AnnouncementBarConfig} />}
     </>
   );

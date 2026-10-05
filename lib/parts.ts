@@ -771,6 +771,17 @@ export const parts: Part[] = [
     status: "in-stock",
   },
   {
+    slug: "product-grid",
+    category: "Content",
+    group: "Shop",
+    aka: ["product list", "shop grid", "catalogue", "products", "collection", "store"],
+    name: "Product grid",
+    summary: "A shop's products as cards: a name that links, its price, a note such as New, and a picture with its description.",
+    pattern: "List of articles",
+    accent: "#fdba74",
+    status: "in-stock",
+  },
+  {
     slug: "signature-pad",
     category: "Inputs",
     group: "Drag, drop & draw",
