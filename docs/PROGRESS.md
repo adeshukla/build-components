@@ -1,6 +1,22 @@
 # Progress
 
-Last updated: 2026-10-05 (session 17, on dev, not shipped)
+Last updated: 2026-10-06 (session 17, shipped)
+
+## Shipped (2026-10-06)
+Adesh said ship. `main` was fast-forwarded to `dev` (ac90e6a, 67 commits: D83 to D99) and pushed; Vercel
+served it in about 140 seconds.
+- Before pushing: typecheck, lint and `next build` green; against `next start`: ai-index, counter, editor,
+  home, reel, site-layout, site-pages, spotlight, templates and versions in three browsers (931 passed),
+  then builder and theme (64 passed). That run found one real bug, fixed before shipping: in a production
+  build the React preview frame could say it was ready before the editor listened, so option changes never
+  reached it (the editor now asks again).
+- On the live site: every main route answers; a part page shows its version, test record and report link;
+  the Next.js zip and the Shop website's files (sitemap, forms route, product grid) come back from Vercel;
+  the Language picker turns both previews right to left in Arabic; the Shop starter opens with its four
+  products; no console errors.
+- Upstash keys were in Vercel before this deploy, so counting starts now. Checking the live site asked for
+  /r/date-picker.json, which counts as an install: expect `install:date-picker` in `counts:2026-10`.
+- One-click deploy is in the code but off (no NEXT_PUBLIC_DEPLOY_TEMPLATE).
 
 ## Session 17
 - **Adesh asked** for points 5, 6 and 7 of the product suggestions, all of them: every trending framework,
