@@ -134,8 +134,8 @@ ${counter}            </div>
         </div>\n`
     : "";
 
-  return `    <section class="fm fm--${config.layout} fm--theme-${config.theme}" style="${vars}" data-form data-words="${escapeHtml(JSON.stringify({ checkboxText: config.checkboxText, missingText: config.missingText, selectMissingText: config.selectMissingText, dateMissingText: config.dateMissingText, emailText: config.emailText, telText: config.telText, urlText: config.urlText, notInListText: config.notInListText, notNumberText: config.notNumberText, tooSmallText: config.tooSmallText, tooBigText: config.tooBigText, tooEarlyText: config.tooEarlyText, tooLateText: config.tooLateText, tooShortText: config.tooShortText, tooLongText: config.tooLongText, formatHelpText: config.formatHelpText, formatText: config.formatText, errorPrefix: config.errorPrefix, remainingText: config.remainingText }))}" data-validate-on="${config.validateOn}" data-summary-on="${config.errorSummary}">
-      <form novalidate data-form-element>
+  return `    <section class="fm fm--${config.layout} fm--theme-${config.theme}" style="${vars}" data-form data-words="${escapeHtml(JSON.stringify({ checkboxText: config.checkboxText, missingText: config.missingText, selectMissingText: config.selectMissingText, dateMissingText: config.dateMissingText, emailText: config.emailText, telText: config.telText, urlText: config.urlText, notInListText: config.notInListText, notNumberText: config.notNumberText, tooSmallText: config.tooSmallText, tooBigText: config.tooBigText, tooEarlyText: config.tooEarlyText, tooLateText: config.tooLateText, tooShortText: config.tooShortText, tooLongText: config.tooLongText, formatHelpText: config.formatHelpText, formatText: config.formatText, errorPrefix: config.errorPrefix, remainingText: config.remainingText, sendingText: config.sendingText }))}" data-validate-on="${config.validateOn}" data-summary-on="${config.errorSummary}">
+      <form novalidate${config.action.trim() ? ` action="${escapeHtml(config.action.trim())}" method="post"` : ""} data-form-element>
         <div class="fm-intro">
           <h2 class="fm-title">${escapeHtml(config.title)}</h2>
 ${config.intro.trim() ? `          <p class="fm-muted">${escapeHtml(config.intro)}</p>\n` : ""}        </div>
@@ -145,6 +145,7 @@ ${rows}
         </div>
         <div>
           <button class="fm-submit" type="submit">${escapeHtml(config.submitText)}</button>
+          <p class="fm-error fm-send-error" role="alert" hidden data-send-error>${escapeHtml(config.sendErrorText)}</p>
         </div>
       </form>
     </section>`;

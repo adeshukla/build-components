@@ -11,6 +11,22 @@
     });
   }
 
+  /**
+   * Sends the form where its action says, as a form would (a POST of its fields), and says whether it
+   * arrived. With no action nothing is sent and it counts as done: a preview, or a page still being built.
+   */
+  function send(form) {
+    const action = form.getAttribute("action");
+    if (!action) return Promise.resolve(true);
+    return fetch(action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+      .then(function (response) {
+        return response.ok;
+      })
+      .catch(function () {
+        return false;
+      });
+  }
+
   function createForm(root) {
     const form = root.querySelector("[data-form-element]");
     const rows = Array.from(root.querySelectorAll("[data-field]"));
@@ -21,6 +37,9 @@
     const summary = root.querySelector("[data-summary]");
     const summaryList = root.querySelector("[data-summary-list]");
     const success = root.querySelector("[data-success]");
+    const button = form.querySelector("[type=submit]");
+    const sendError = root.querySelector("[data-send-error]");
+    let sending = false;
 
     function controlOf(row) {
       return row.querySelector(".fm-control, .fm-checkbox");
@@ -183,15 +202,31 @@
         return;
       }
 
-      form.reset();
-      rows.forEach(function (row) {
-        paint(row, "");
-        counterFor(row);
+      if (sending) return;
+      sending = true;
+      sendError.hidden = true;
+      const label = button.textContent;
+      button.textContent = words.sendingText;
+      button.setAttribute("aria-disabled", "true");
+      send(form).then(function (delivered) {
+        sending = false;
+        button.textContent = label;
+        button.removeAttribute("aria-disabled");
+        // What was typed stays, so trying again is one press.
+        if (!delivered) {
+          sendError.hidden = false;
+          return;
+        }
+        form.reset();
+        rows.forEach(function (row) {
+          paint(row, "");
+          counterFor(row);
+        });
+        if (success) {
+          success.hidden = false;
+          success.focus();
+        }
       });
-      if (success) {
-        success.hidden = false;
-        success.focus();
-      }
     });
   }
 

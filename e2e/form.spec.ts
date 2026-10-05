@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { components } from "./generate";
-import { expectNoAxeViolations, open, targets } from "./helpers";
+import { answerSends, expectNoAxeViolations, open, targets } from "./helpers";
 
 const variants = Object.keys(components.form.variants);
 const field = (page: Page, name: string | RegExp) => page.getByLabel(name);
@@ -107,6 +107,29 @@ for (const target of targets("form")) {
       await expect(success).toHaveText("Thanks. Your message has been sent.");
       await expect(success).toBeFocused();
       await expect(field(page, /^Full name/)).toHaveValue("");
+    });
+
+    test("with an address to send to, it says whether the message arrived, and keeps it when it did not", async ({ page }) => {
+      const sends = await answerSends(page);
+      await open(page, target.url("sends"));
+      await sends.reachable();
+      await field(page, /^Full name/).fill("Alex Fisher");
+      await field(page, /^Email address/).fill("alex@example.com");
+      await field(page, /^How can we help/).selectOption("Support");
+      await field(page, /^Message/).fill("I would like a quote for a five page marketing site.");
+      await page.getByRole("checkbox").check();
+
+      sends.answerWith(500);
+      await submit(page).click();
+      await expect(page.getByRole("alert").filter({ hasText: "did not go through" })).toHaveText("It did not go through. Check your connection and try again.");
+      await expect(field(page, /^Full name/)).toHaveValue("Alex Fisher");
+      expect(sends.bodies[0]).toContain("alex@example.com");
+
+      sends.answerWith(200);
+      await submit(page).click();
+      await expect(page.getByRole("status")).toHaveText("Thanks. Your message has been sent.");
+      await expect(page.getByRole("alert").filter({ hasText: "did not go through" })).toBeHidden();
+      expect(sends.bodies).toHaveLength(2);
     });
 
     test("strict variant: custom pattern, number range, checks only on submit", async ({ page }) => {

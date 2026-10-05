@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { components } from "./generate";
-import { expectNoAxeViolations, open, targets } from "./helpers";
+import { answerSends, expectNoAxeViolations, open, targets } from "./helpers";
 
 const variants = Object.keys(components["newsletter"].variants);
 const field = (page: Page) => page.getByRole("textbox", { name: "Email address" });
@@ -60,6 +60,27 @@ for (const target of targets("newsletter")) {
       await submit(page).click();
       await expect(page.getByRole("status")).toContainText("check your inbox");
     });
+  });
+}
+
+for (const target of targets("newsletter")) {
+  test(`newsletter — ${target.name} export: with an address to send to, it says whether the sign-up arrived`, async ({ page }) => {
+    const sends = await answerSends(page);
+    await open(page, target.url("sends"));
+    await sends.reachable();
+    await field(page).fill("ada@example.com");
+    await consent(page).check();
+
+    sends.answerWith(503);
+    await submit(page).click();
+    await expect(page.getByRole("alert").filter({ hasText: "did not go through" })).toBeVisible();
+    await expect(field(page)).toHaveValue("ada@example.com");
+    expect(sends.bodies[0]).toContain("ada@example.com");
+
+    sends.answerWith(200);
+    await submit(page).click();
+    await expect(page.getByRole("status")).toContainText("check your inbox");
+    await expect(field(page)).toHaveValue("");
   });
 }
 

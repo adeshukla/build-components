@@ -81,6 +81,7 @@
   font-weight: 500;
   cursor: pointer;
 }
+.nl-button[aria-disabled="true"] { cursor: wait; }
 .nl-consent { display: flex; align-items: flex-start; gap: 0.75rem; min-height: 2.75rem; margin-top: 0.75rem; font-size: 0.875rem; cursor: pointer; }
 .nl-box { flex-shrink: 0; width: 1.25rem; height: 1.25rem; margin-top: 0.125rem; accent-color: var(--nl-accent); }
 .nl-note { margin: 0.5rem 0 0; color: var(--nl-muted); font-size: 0.75rem; }

@@ -77,3 +77,27 @@ export function targets(slug: string) {
       : []),
   ];
 }
+
+/**
+ * Answers what a form part sends to "/api/send-test" (its Send to option, D95), with the status asked for,
+ * and keeps each request's body. A file page has no server, so its form is pointed at a host the test
+ * answers instead; React pages stay on their own origin, which the site's CSP allows.
+ */
+export async function answerSends(page: Page) {
+  const bodies: string[] = [];
+  let status = 200;
+  await page.route("**/api/send-test", (route) => {
+    bodies.push(route.request().postData() ?? "");
+    return route.fulfill({ status, contentType: "application/json", body: "{}", headers: { "Access-Control-Allow-Origin": "*" } });
+  });
+  return {
+    bodies,
+    answerWith: (next: number) => (status = next),
+    /** Call after the page has opened: points a file page's form at the answered host. */
+    reachable: () =>
+      page.evaluate(() => {
+        if (location.protocol !== "file:") return;
+        document.querySelectorAll("form[action='/api/send-test']").forEach((form) => form.setAttribute("action", "https://forms.example.test/api/send-test"));
+      }),
+  };
+}

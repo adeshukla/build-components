@@ -85,6 +85,8 @@
 .fm-checkbox { width: 1.5rem; height: 1.5rem; margin-top: 0.125rem; flex-shrink: 0; accent-color: var(--fm-accent); }
 
 .fm-error { margin: 0; color: var(--fm-error); font-weight: 500; }
+.fm-send-error { margin-top: 0.75rem; }
+.fm-submit[aria-disabled="true"] { cursor: wait; }
 
 .fm-summary {
   padding: 1rem;

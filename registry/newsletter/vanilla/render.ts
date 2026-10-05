@@ -37,11 +37,11 @@ export function renderNewsletterMarkup(config: NewsletterConfig) {
         </label>\n`
     : "";
 
-  return `    <section class="nl nl--theme-${config.theme} nl--${config.layout}" style="${vars}" aria-labelledby="nl-heading" data-newsletter data-success="${escapeHtml(config.successText)}">
+  return `    <section class="nl nl--theme-${config.theme} nl--${config.layout}" style="${vars}" aria-labelledby="nl-heading" data-newsletter data-success="${escapeHtml(config.successText)}" data-words="${escapeHtml(JSON.stringify({ email: config.emailErrorText, consent: config.consentErrorText, sending: config.sendingText, failed: config.sendErrorText }))}">
       <h2 class="nl-heading" id="nl-heading">${escapeHtml(config.heading)}</h2>
 ${config.copy.trim() === "" ? "" : `      <p class="nl-copy">${escapeHtml(config.copy)}</p>\n`}
       <!-- novalidate: the browser's own bubble cannot be read back, so the message is ours. -->
-      <form class="nl-form" novalidate data-form>
+      <form class="nl-form" novalidate${config.action.trim() ? ` action="${escapeHtml(config.action.trim())}" method="post"` : ""} data-form>
         <div class="nl-row">
           <div class="nl-field-wrap">
             <label class="nl-label" for="nl-email">${escapeHtml(config.emailLabel)}</label>

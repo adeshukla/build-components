@@ -19,6 +19,7 @@ export type FormConfig = {
   submitText: string;
   successMessage: string;
   fields: FormField[];
+  action: string;
   validateOn: "blur" | "input" | "submit";
   errorSummary: boolean;
   marker: "optional" | "required" | "none";
@@ -50,6 +51,8 @@ export type FormConfig = {
   requiredText: string;
   chooseOneText: string;
   remainingText: string;
+  sendingText: string;
+  sendErrorText: string;
 };
 
 // @config-start
@@ -93,6 +96,7 @@ const defaultConfig: FormConfig = {
       help: "",
     },
   ],
+  action: "",
   validateOn: "blur",
   errorSummary: false,
   marker: "optional",
@@ -124,6 +128,8 @@ const defaultConfig: FormConfig = {
   requiredText: "(required)",
   chooseOneText: "Choose one",
   remainingText: "{count} characters remaining",
+  sendingText: "Sending…",
+  sendErrorText: "It did not go through. Check your connection and try again.",
 };
 // @config-end
 
@@ -254,6 +260,20 @@ export function validateField(field: FormField, value: string, checked: boolean,
 /** Words with something put in them: "{count} left" (D94). */
 const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
+/**
+ * Sends the form where the Send to option says, as a form would (a POST of its fields), and says whether it
+ * arrived. With no address nothing is sent and it counts as done: a preview, or a page still being built.
+ */
+async function send(action: string, form: HTMLFormElement) {
+  if (action.trim() === "") return true;
+  try {
+    const response = await fetch(action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function ContactForm({ config = defaultConfig }: { config?: FormConfig }) {
   const id = useId();
   /*
@@ -266,6 +286,8 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
   const [values, setValues] = useState<Record<string, string>>({});
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [shown, setShown] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
@@ -289,8 +311,9 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
     return message;
   }
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (sending) return;
     const found: Record<string, string> = {};
     for (const field of fields) {
       const message = validateField(field, valueOf(field), checkedOf(field), config);
@@ -309,6 +332,15 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
       return;
     }
 
+    setFailed(false);
+    setSending(true);
+    const delivered = await send(config.action, event.currentTarget);
+    setSending(false);
+    if (!delivered) {
+      // What was typed stays, so trying again is one press.
+      setFailed(true);
+      return;
+    }
     setSent(true);
     setValues({});
     setChecks({});
@@ -335,7 +367,7 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
 
   return (
     <section style={style} className="bg-(--fm-surface) text-(--fm-text)">
-      <form ref={formRef} noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
+      <form ref={formRef} noValidate action={config.action.trim() || undefined} method="post" onSubmit={onSubmit} className="flex flex-col gap-5">
         <div>
           <h2 className="text-2xl font-semibold">{config.title}</h2>
           {config.intro.trim() !== "" && <p className="mt-1 text-pretty text-(--fm-muted)">{config.intro}</p>}
@@ -539,10 +571,16 @@ export function ContactForm({ config = defaultConfig }: { config?: FormConfig })
         <div>
           <button
             type="submit"
-            className={`cursor-pointer rounded-(--fm-radius) bg-(--fm-accent) px-5 py-3 font-semibold text-(--fm-on-accent) ${focus}`}
+            aria-disabled={sending || undefined}
+            className={`cursor-pointer rounded-(--fm-radius) bg-(--fm-accent) px-5 py-3 font-semibold text-(--fm-on-accent) aria-disabled:cursor-wait ${focus}`}
           >
-            {config.submitText}
+            {sending ? config.sendingText : config.submitText}
           </button>
+          {failed && (
+            <p role="alert" className="mt-3 font-medium text-(--fm-error)">
+              {config.sendErrorText}
+            </p>
+          )}
         </div>
       </form>
     </section>
