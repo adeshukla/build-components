@@ -26,10 +26,35 @@ import {
  * A link carries the whole site, compressed; the plain page links from before still open, as a one-page site.
  */
 
-export type SitePage = { id: string; title: string; path: string; sections: BuiltSection[] };
-export type BuiltSite = Omit<BuiltPage, "sections"> & { menu: boolean; top: BuiltSection[]; bottom: BuiltSection[]; pages: SitePage[] };
+/** A page, and (D96) what search engines and link previews read about it: a description and a picture. */
+export type SitePage = { id: string; title: string; path: string; sections: BuiltSection[]; description?: string; image?: string };
+/** `url` (D96) is where the site will live, e.g. https://northwind.example: the sitemap and link previews need it. */
+export type BuiltSite = Omit<BuiltPage, "sections"> & { menu: boolean; top: BuiltSection[]; bottom: BuiltSection[]; pages: SitePage[]; url?: string };
 
 export const MAX_PAGES = 12;
+export const MAX_DESCRIPTION = 160;
+
+/** A site's address as typed, reduced to its origin ("https://northwind.example"), or "" if it is not one. */
+export function siteAddress(typed: unknown) {
+  if (typeof typed !== "string" || !typed.trim()) return "";
+  try {
+    const url = new URL(/^https?:\/\//i.test(typed.trim()) ? typed.trim() : `https://${typed.trim()}`);
+    return /^https?:$/.test(url.protocol) && url.hostname.includes(".") ? url.origin : "";
+  } catch {
+    return "";
+  }
+}
+
+/** A share picture's address: a full http(s) web address, or "" if it is not one. */
+export function pictureAddress(typed: unknown) {
+  if (typeof typed !== "string" || !typed.trim() || typed.length > 500) return "";
+  try {
+    const url = new URL(typed.trim());
+    return /^https?:$/.test(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
 const slugOf = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 
 /** A one-page site from a page: its banner and footer become the shared ones. */
@@ -77,6 +102,12 @@ export const starters = [
     name: "Blog",
     summary: "Posts first, one post laid out to read, a page about you and a way to write to you.",
     pages: [["Home", "blog"], ["A post", "article"], ["About", "about"], ["Contact", "contact"]],
+  },
+  {
+    id: "shop",
+    name: "Shop",
+    summary: "Products in a grid, a product page to copy for each one, the basket, checkout, your story and a way to get in touch.",
+    pages: [["Home", "shop"], ["Product", "product-page"], ["Basket", "basket"], ["Checkout", "checkout"], ["About", "about"], ["Contact", "contact"]],
   },
   {
     id: "launch",
@@ -164,9 +195,17 @@ export function siteData(site: BuiltSite) {
     t: site.theme,
     m: site.menu,
     l: site.look,
+    ...(site.url ? { u: site.url } : {}),
     top: site.top.map(sectionEntry),
     bottom: site.bottom.map(sectionEntry),
-    pages: site.pages.map((page) => ({ i: page.id, t: page.title, p: page.path, s: page.sections.map(sectionEntry) })),
+    pages: site.pages.map((page) => ({
+      i: page.id,
+      t: page.title,
+      p: page.path,
+      s: page.sections.map(sectionEntry),
+      ...(page.description ? { d: page.description } : {}),
+      ...(page.image ? { g: page.image } : {}),
+    })),
   };
 }
 
@@ -179,19 +218,30 @@ export function siteFrom(data: unknown): BuiltSite | null {
   const paths = new Set<string>();
   const pages: SitePage[] = [];
   for (const entry of Array.isArray(raw.pages) ? raw.pages.slice(0, MAX_PAGES) : []) {
-    const { i, t, p, s } = (entry ?? {}) as Record<string, unknown>;
+    const { i, t, p, s, d, g } = (entry ?? {}) as Record<string, unknown>;
     if (typeof i !== "string" || !/^[a-z0-9-]{1,40}$/.test(i) || ids.has(i)) continue;
     if (typeof p !== "string" || !/^\/[a-z0-9-]{0,40}$/.test(p) || paths.has(p)) continue;
     ids.add(i);
     paths.add(p);
     const title = typeof t === "string" && t.trim() ? t.trim().slice(0, 40) : "Page";
-    pages.push({ id: i, title, path: p, sections: sectionsFromEntries(s).filter((section) => regionOf(section.slug) === "main") });
+    const description = typeof d === "string" ? d.trim().slice(0, MAX_DESCRIPTION) : "";
+    const image = pictureAddress(g);
+    pages.push({
+      id: i,
+      title,
+      path: p,
+      sections: sectionsFromEntries(s).filter((section) => regionOf(section.slug) === "main"),
+      ...(description ? { description } : {}),
+      ...(image ? { image } : {}),
+    });
   }
   if (pages.length === 0) return null;
   // There is always a home page.
   if (!paths.has("/")) pages[0] = { ...pages[0], path: "/" };
+  const url = siteAddress(raw.u);
   return {
     ...basicsFrom(raw),
+    ...(url ? { url } : {}),
     menu: raw.m !== false,
     look: lookFrom(raw.l),
     top: sectionsFromEntries(raw.top, shared).filter((section) => regionOf(section.slug) === "top"),

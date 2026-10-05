@@ -10,6 +10,9 @@ import { themeCss } from "@/lib/theme";
  * the tests on the server, so all three can only ever produce the same thing.
  */
 
+/** What search engines and link previews read about a page (D96). Unset fields are left out. */
+export type PageMeta = { title?: string; description?: string; image?: string; url?: string };
+
 /** The page's own surface: the parts paint theirs, this is what shows between them. */
 const surfaces = { light: { bg: "#ffffff", fg: "#16121f" }, dark: { bg: "#141019", fg: "#f6f5fa" } };
 
@@ -44,6 +47,8 @@ export function templateReactSource(
   importFrom: (slug: string) => string = (slug) => `@/components/${slug}`,
   /** With a theme: where the page imports bc-theme.css from, when no layout does it for it. */
   themeImport?: string,
+  /** A Next.js page's metadata export (a website's pages, D96). */
+  meta?: PageMeta,
 ) {
   const sections = resolve(template, options);
   const name = (slug: string) => exportNames[slug] ?? slug;
@@ -70,10 +75,11 @@ export function templateReactSource(
   const body = side.length
     ? `<div className="flex-1 md:grid md:grid-cols-[auto_1fr]">\n        <div>\n          ${side.join("\n          ")}\n        </div>\n        ${mainBlock.replace(/\n/g, "\n  ")}\n      </div>`
     : mainBlock;
+  const metadata = meta && (meta.title || meta.description || meta.image || meta.url) ? metadataExport(meta) : "";
   return `// ${template.name} for ${options.name}: ${sections.length} parts from Build Components.
 // Each part was installed with this page's options already set, so none of them needs props here.
-${imports}
-
+${metadata ? `import type { Metadata } from "next";\n` : ""}${imports}
+${metadata}
 export default function ${componentName(template.name)}() {
   return (
     <div className="flex min-h-dvh flex-col ${surface}">
@@ -82,6 +88,18 @@ export default function ${componentName(template.name)}() {
   );
 }
 `;
+}
+
+/** `export const metadata` for a Next.js page: its title, description and share picture. */
+function metadataExport(meta: PageMeta) {
+  const lines = [
+    meta.title && `  title: ${JSON.stringify(meta.title)},`,
+    meta.description && `  description: ${JSON.stringify(meta.description)},`,
+    meta.image && `  openGraph: { images: [${JSON.stringify(meta.image)}] },`,
+    // Resolved against the layout's metadataBase, the site's address.
+    meta.url && `  alternates: { canonical: ${JSON.stringify(meta.url)} },`,
+  ].filter(Boolean);
+  return `\nexport const metadata: Metadata = {\n${lines.join("\n")}\n};\n`;
 }
 
 /** "Pricing page" → PricingPage, "Checkout" → CheckoutPage. */
@@ -104,6 +122,8 @@ export function templateHtml(
   template: Template,
   options: TemplateOptions,
   sources: Record<string, { css: string; js: string; html?: string }>,
+  /** A website's page: its description and share picture, and its own address (D96). */
+  meta: PageMeta = {},
 ) {
   const sections = resolve(template, options);
   const markup = (section: (typeof sections)[number]) => {
@@ -129,14 +149,27 @@ export function templateHtml(
     : options.theme === "dark"
       ? `background:${dark.bg};color:${dark.fg}`
       : `background:${light.bg};color:${light.fg}`;
+  const title = meta.title ?? `${template.name} | ${options.name}`;
+  const attr = (text: string) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const head = [
+    meta.description && `<meta name="description" content="${attr(meta.description)}">`,
+    meta.url && `<link rel="canonical" href="${attr(meta.url)}">`,
+    (meta.description || meta.image) && `<meta property="og:title" content="${attr(title)}">`,
+    meta.description && `<meta property="og:description" content="${attr(meta.description)}">`,
+    meta.image && `<meta property="og:image" content="${attr(meta.image)}">`,
+    meta.url && `<meta property="og:url" content="${attr(meta.url)}">`,
+  ]
+    .filter(Boolean)
+    .map((line) => `    ${line}\n`)
+    .join("");
   const system = options.look ? themeCss(options.look) : options.theme === "system" ? `@media (prefers-color-scheme: dark){body{background:${dark.bg};color:${dark.fg}}}` : "";
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${template.name} | ${options.name.replace(/[<>&"]/g, "")}</title>
-    <style>
+    <title>${attr(title)}</title>
+${head}    <style>
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;min-height:100dvh;display:flex;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;${page}}
 ${system}

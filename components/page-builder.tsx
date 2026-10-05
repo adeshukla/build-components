@@ -25,6 +25,9 @@ import { registry, type RegistrySlug } from "@/lib/registry";
 import { buttonShapes, colourFamilies, cornerScales, fonts, lookOf, presets, spacings, type Look, type PresetId } from "@/lib/theme";
 import {
   addressFor,
+  MAX_DESCRIPTION,
+  pictureAddress,
+  siteAddress,
   blankSite,
   decodeSite,
   encodeSite,
@@ -38,6 +41,7 @@ import {
   siteFromStarter,
   starters,
   type BuiltSite,
+  type SitePage,
 } from "@/lib/site-builder";
 import { ACCEPTED_PICTURES, loadPicture, pictureName, picturesIn, savePicture, swapPictures } from "@/lib/pictures";
 import type { Schema } from "@/lib/schema";
@@ -565,7 +569,7 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
     focusNext.current = `${uid}-page-title`;
   }
 
-  function editPage(patch: { title?: string; path?: string }) {
+  function editPage(patch: Partial<Pick<SitePage, "title" | "path" | "description" | "image">>) {
     setSite({ ...site, pages: site.pages.map((candidate) => (candidate.id === current.id ? { ...candidate, ...patch } : candidate)) });
   }
 
@@ -1336,6 +1340,39 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
                 {current.path === "/" ? "The home page is always /." : "Where this page lives on your site, e.g. /pricing."}
               </span>
             </label>
+            <label className="grid gap-1.5 text-sm font-medium">
+              Description
+              <textarea
+                value={current.description ?? ""}
+                maxLength={MAX_DESCRIPTION}
+                rows={3}
+                aria-describedby={`${uid}-description-note`}
+                onChange={(event) => editPage({ description: event.target.value })}
+                className="w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 py-2 text-base font-normal"
+              />
+              <span id={`${uid}-description-note`} className="text-xs font-normal text-ink-muted">
+                What search results and link previews show under the title. A sentence or two.
+              </span>
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium">
+              Share picture
+              <input
+                key={`${current.id}-image`}
+                type="url"
+                defaultValue={current.image ?? ""}
+                placeholder="https://"
+                aria-describedby={`${uid}-image-note`}
+                onBlur={(event) => {
+                  const image = pictureAddress(event.target.value);
+                  event.target.value = image;
+                  editPage({ image: image || undefined });
+                }}
+                className="min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 text-sm font-normal"
+              />
+              <span id={`${uid}-image-note`} className="text-xs font-normal text-ink-muted">
+                The picture a link preview shows, as a web address. 1200 × 630 suits most.
+              </span>
+            </label>
             {current.path !== "/" && (
               <button type="button" onClick={deletePage} className="btn-glass w-fit cursor-pointer text-sm">
                 Delete this page
@@ -1345,6 +1382,25 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
 
             <h2 className="mt-2 border-t border-rule pt-5 font-display text-2xl leading-none">Website</h2>
             <PageFields options={page} onChange={(patch) => setPage({ ...page, ...patch })} />
+            <label className="grid gap-1.5 text-sm font-medium">
+              Site address
+              <input
+                key={site.url ?? ""}
+                type="url"
+                defaultValue={site.url ?? ""}
+                placeholder="https://northwind.example"
+                aria-describedby={`${uid}-url-note`}
+                onBlur={(event) => {
+                  const url = siteAddress(event.target.value);
+                  event.target.value = url;
+                  setSite({ ...site, url: url || undefined });
+                }}
+                className="min-h-11 w-full min-w-0 rounded-lg border border-rule-strong bg-paper px-3 font-mono text-sm font-normal"
+              />
+              <span id={`${uid}-url-note`} className="text-xs font-normal text-ink-muted">
+                Where the site will live. The downloads then come with a sitemap, and link previews with full addresses.
+              </span>
+            </label>
             <ThemePanel
               look={site.look}
               hasHeader={site.top.some((section) => section.slug === "header")}
@@ -1426,6 +1482,17 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
             {sitePictures.length > 0 &&
               " Pictures you dropped in are in both downloads, but stay in this browser: the link and the install command leave them out."}
           </p>
+          <section aria-labelledby={`${uid}-online`} className="rounded-xl border border-rule bg-paper-sunk p-4 text-sm">
+            <h3 id={`${uid}-online`} className="font-semibold">
+              Put it online
+            </h3>
+            <p className="mt-1 text-pretty text-ink-muted">
+              In the Next.js project&rsquo;s folder, one command: <code className="font-mono text-ink">npx vercel</code> or{" "}
+              <code className="font-mono text-ink">npx netlify deploy --build</code>. Its forms send to its own{" "}
+              <code className="font-mono text-ink">/api/forms</code>: set <code className="font-mono text-ink">FORM_WEBHOOK_URL</code> to pass messages on
+              (the README says how). The HTML files go on any host that serves files, such as Netlify Drop.{site.url ? "" : " Set the site address under Website to include a sitemap."}
+            </p>
+          </section>
           <div>
             <Segmented
               name={`${uid}-code`}
