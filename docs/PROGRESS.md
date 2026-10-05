@@ -18,6 +18,9 @@ Last updated: 2026-10-05 (session 17, on dev, not shipped)
   Real bugs it found, now fixed: rating's plain script lost its words in pick mode (my D94 batch); the text
   section's link was 21px (D88); the part page's version, tested-for and report links were 18px (D90). The
   builder spec passes with two workers. The full test record (frameworks included) is running.
+- **Adesh confirmed (2026-10-06):** hello@devstash.me receives mail (the first test was from the same Gmail it
+  forwards to, so Gmail hid it); the Upstash keys are in Vercel (they take effect on the next deploy);
+  one-click deploy is skipped for now (it stays hidden without NEXT_PUBLIC_DEPLOY_TEMPLATE).
 - **After testing (Adesh asked):**
   - Email: a test went from shuklaadesh7@gmail.com to hello@devstash.me and did not bounce. devstash.me's mail
     is Cloudflare Email Routing; whether it was forwarded shows in Cloudflare (Email, Email Routing, Activity
