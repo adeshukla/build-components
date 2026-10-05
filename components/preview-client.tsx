@@ -235,6 +235,7 @@ export function PreviewClient({ slug, initialConfig }: { slug: string; initialCo
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "preview-hello") window.parent?.postMessage({ type: "preview-ready" }, window.location.origin);
       if (event.data?.type !== "config") return;
       setConfig(event.data.config as Config);
       // The language the editor picked: the page's own lang and direction, as on a real page (D94).

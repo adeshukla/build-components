@@ -303,6 +303,9 @@ function PreviewFrame({
       }
     }
     window.addEventListener("message", onMessage);
+    // The frame says it is ready when it starts, which can be before this page listens (a production build
+    // is quick): ask again, so the frame answers whichever of the two started first.
+    frameRef.current?.contentWindow?.postMessage({ type: "preview-hello" }, window.location.origin);
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
