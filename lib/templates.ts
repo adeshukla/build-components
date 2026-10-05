@@ -289,7 +289,7 @@ export const templates: Template[] = [
           ],
         }),
       },
-      { slug: "product-card", region: "main", narrow: true },
+      { slug: "product-card", region: "main", narrow: true, config: () => ({ headingLevel: "h1" }) },
       {
         slug: "details-list",
         region: "main",

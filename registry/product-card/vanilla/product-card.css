@@ -46,6 +46,7 @@
 
 
 .pc-name { margin: 0; font-size: 1.125rem; }
+.pc-name--page { font-size: 1.875rem; font-weight: 700; letter-spacing: -0.01em; }
 .pc-price { margin: 0.25rem 0 0; font-size: 1.25rem; font-weight: 600; }
 .pc-blurb { margin: 0.25rem 0 0; color: var(--pc-muted); font-size: 0.875rem; }
 

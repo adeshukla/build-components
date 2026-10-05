@@ -39,6 +39,7 @@ const own: Partial<Record<RegistrySlug, Change[]>> = {
   "feature-grid": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output." }],
   "notification-list": [{ date: "2026-10-04", kind: "fixed", note: "Two items with the same title no longer break the React output or share a read state." }],
   toolbar: [{ date: "2026-10-04", kind: "fixed", note: "Two buttons with the same label no longer break the React output." }],
+  "product-card": [{ date: "2026-10-05", kind: "added", note: "A heading level option, so on a product's own page its name is the h1." }],
   form: [{ date: "2026-10-05", kind: "added", note: "A Send to option: the form posts its fields there, says while it is sending, and says so if it did not arrive." }],
   newsletter: [{ date: "2026-10-05", kind: "added", note: "A Send to option: the sign-up is posted there, and it says so if it did not arrive." }],
   "text-section": [{ date: "2026-10-05", kind: "fixed", note: "Its link is a 44px target, not 21px." }],

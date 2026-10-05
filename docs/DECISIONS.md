@@ -871,3 +871,47 @@ were found by reading the sources (`scratchpad/words2.ts`) and converted too.
 from the list." (no a/an guessing); the search says "1 result." (was "1 results."); the HTML/CSS/JS cart's
 heading count now follows the basket. **Left as is:** am/pm in the time picker's 12-hour format, KB/MB and
 "bytes" in the upload, and a label put lower case into a sentence ("Show {name} options").
+
+## 2026-10-05 — D95. Forms that send
+**Adesh asked** for points 8 to 11 and said to decide without asking. The form and the newsletter have a Send
+to option (Behaviour, a URL): on a valid submit they POST their fields there (`FormData`, `Accept:
+application/json`), the button says Sending… (`aria-disabled`, a second press is ignored), and a failure is
+said in an alert while what was typed stays. Empty means nothing is sent, as before: a preview or a page
+still being built. The form element also gets `action` and `method="post"`, so it posts without JavaScript.
+**Chosen over a server action:** a server action would make the React file different from every other
+output; a URL works the same in all seven and with any form service. The Next.js download fills every empty
+Send to with its own `/api/forms` route, which passes each message to `FORM_WEBHOOK_URL` as JSON (`{text,
+fields}`: Slack, Zapier, Make) or logs it, caps a message at 100 kB, and sends a no-JavaScript post back to
+its own page (never off-site). Checked on a built project: JSON reply, the webhook received the fields, the
+303 back. The site's own CSP keeps preview frames from posting elsewhere; a preview with an outside Send to
+says it did not go through, which is true. Tests answer the sends with `page.route` (`answerSends`).
+**Found on the way:** the newsletter's two messages were hard-coded English that D94 missed (it only spoke on
+submit, and matched its consent message by its English text). They are Words options now, the field that is
+wrong is kept as state, and a source scan (`scratchpad/said.mjs`) found no other part like it.
+
+## 2026-10-05 — D96. What each page needs to go live
+A page has a description (160 characters) and a share picture (a web address); the site has an address
+(reduced to its origin). The Next.js download gives each page `export const metadata` (title, description,
+Open Graph picture, canonical), a layout with `metadataBase` and a title template, and, with an address,
+`app/sitemap.ts` and `app/robots.ts`. The HTML files get the same meta tags and, with an address,
+`sitemap.xml` and `robots.txt`. Everything read from a link is checked (`siteAddress`, `pictureAddress`):
+anything that is not http(s) is dropped. Pictures are addresses, not uploads: the builder's own pictures
+(D85) stay in the browser, so they cannot be a share picture's public address.
+
+## 2026-10-05 — D97. A shop
+A new part, the product grid (cards that are one link each: name as a heading, price and an optional note as
+words, the picture drawn above but read after; no pictures ship, an unsafe address is never loaded). Three
+templates, Shop, Product page and Basket, and a Shop website starter: Home (the grid), Product, Basket,
+Checkout, About, Contact. Every card in the starter opens the one product page, the one to copy per product.
+Delivery and returns are `[TODO]`, not invented. There is still no stock, payment or order handling: the
+card fields and the basket are front ends that hand over to a payment provider, as before.
+
+## 2026-10-05 — D98. Putting it online; no accounts
+**One-click deploy, decided as one command.** A true one-click needs either a public template repository or
+an integration registered under Adesh's Vercel or Netlify account; both are public, irreversible steps that
+are his. The downloaded project already builds and runs anywhere Next.js does, so the README and the
+builder's download dialog say `npx vercel` or `npx netlify deploy --build`, where `FORM_WEBHOOK_URL` goes, and
+that the HTML files go on any static host. **Accounts: not built.** What they would add (a site on two
+devices, a site to review) the compressed link already does; accounts would add sign-in, a database, a
+privacy policy and personal data to look after, for a product with no users yet. Revisit when people ask
+for a list of their sites across devices.

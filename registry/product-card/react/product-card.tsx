@@ -5,6 +5,7 @@ import { useId, useState, useSyncExternalStore, type CSSProperties } from "react
 export type ProductCardConfig = {
   name: string;
   price: string;
+  headingLevel: "h1" | "h2" | "h3";
   blurb: string;
   options: { group: string; label: string; stock: string }[];
   addText: string;
@@ -21,6 +22,7 @@ export type ProductCardConfig = {
 const defaultConfig: ProductCardConfig = {
   name: "Deck jacket",
   price: "£128",
+  headingLevel: "h2",
   blurb: "Waxed cotton, taped seams, two chest pockets.",
   options: [
     { group: "Colour", label: "Navy", stock: "in" },
@@ -91,6 +93,7 @@ function readableAccent(hex: string, onDark: boolean) {
 const fill = (words: string, values: Record<string, string | number>) => words.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
 
 export function ProductCard({ config = defaultConfig }: { config?: ProductCardConfig }) {
+  const Name = config.headingLevel;
   const id = useId();
   const [picked, setPicked] = useState<Record<string, string>>({});
   const [said, setSaid] = useState("");
@@ -114,7 +117,7 @@ export function ProductCard({ config = defaultConfig }: { config?: ProductCardCo
 
   return (
     <div style={style} className="max-w-md rounded-[var(--bc-radius-lg,0.75rem)] border border-(--pc-line) bg-(--pc-surface) p-4 text-(--pc-text)">
-      <h2 className="text-lg font-semibold">{config.name}</h2>
+      <Name className={config.headingLevel === "h1" ? "text-3xl font-bold tracking-tight" : "text-lg font-semibold"}>{config.name}</Name>
       {config.showPrice && <p className="mt-1 text-xl font-semibold">{config.price}</p>}
       <p className="mt-1 text-sm text-(--pc-muted)">{config.blurb}</p>
 

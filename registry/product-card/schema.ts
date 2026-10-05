@@ -4,6 +4,7 @@ import type { ProductCardConfig } from "./react/product-card";
 export const productCardSchema = [
   { key: "name", label: "Product name", group: "Content", type: "text", default: "Deck jacket", maxLength: 60 },
   { key: "price", label: "Price", description: "Written exactly as you type it — no currency maths here.", group: "Content", type: "text", default: "£128", maxLength: 20 },
+  { key: "headingLevel", label: "Heading level", description: "h1 when the card is the product's own page.", group: "Content", type: "select", default: "h2", options: ["h1", "h2", "h3"] },
   { key: "blurb", label: "One line about it", group: "Content", type: "text", default: "Waxed cotton, taped seams, two chest pockets.", maxLength: 120 },
   {
     key: "options",

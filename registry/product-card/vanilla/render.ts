@@ -63,7 +63,7 @@ ${inputs}
   const needed = groups.join(` ${config.andText} `).toLowerCase();
 
   return `    <div class="pc pc--theme-${config.theme}" style="${vars}" data-product-card data-pick="${escapeHtml(config.pickText)}" data-and="${escapeHtml(config.andText)}" data-added="${escapeHtml(config.addedText)}" data-name="${escapeHtml(config.name)}" data-needed="${escapeHtml(needed)}">
-      <h2 class="pc-name">${escapeHtml(config.name)}</h2>
+      <${config.headingLevel} class="pc-name${config.headingLevel === "h1" ? " pc-name--page" : ""}">${escapeHtml(config.name)}</${config.headingLevel}>
 ${config.showPrice ? `      <p class="pc-price">${escapeHtml(config.price)}</p>\n` : ""}      <p class="pc-blurb">${escapeHtml(config.blurb)}</p>
 ${fieldsets}
       <button class="pc-add" type="button" disabled data-add>${escapeHtml(config.addText)}</button>

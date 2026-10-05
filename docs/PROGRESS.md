@@ -18,8 +18,17 @@ Last updated: 2026-10-05 (session 17, on dev, not shipped)
   Real bugs it found, now fixed: rating's plain script lost its words in pick mode (my D94 batch); the text
   section's link was 21px (D88); the part page's version, tested-for and report links were 18px (D90). The
   builder spec passes with two workers. The full test record (frameworks included) is running.
-- **Open questions for Adesh:** did "languages" mean human languages (built) or programming languages? Name
-  Next.js, Nuxt and SvelteKit on the part page, each with a test that server-renders a part in it?
+- **Points 8 to 11 (Adesh: "decide for me, do not ask"):**
+  - Forms send (D95): a Send to option on the form and newsletter; the Next.js download has its own
+    `/api/forms` that passes messages to `FORM_WEBHOOK_URL` or logs them. Checked on a built project.
+  - Going live (D96): page descriptions, share pictures and a site address in the builder; metadata,
+    canonical links, sitemap and robots in both downloads.
+  - Shop (D97): a product grid part (132 parts), Shop, Product page and Basket templates, a Shop website.
+  - Online (D98): one command (`npx vercel` / `npx netlify deploy --build`) in the README and the download
+    dialog. No accounts: the link does what they would, without personal data.
+- **Earlier questions, decided:** "languages" stays human languages (D94, as point 6 said). Next.js is named
+  beside React on the part page, since every React test runs inside a Next.js page; Nuxt and SvelteKit are
+  not named until a test renders a part in them.
 - **Not shipped:** on dev, waiting for "ship". The counter still needs the Upstash database (session 16).
 
 ## Session 16
@@ -50,7 +59,7 @@ Last updated: 2026-10-05 (session 17, on dev, not shipped)
   blank in 2 to 4 tests (it fails the same way without today's changes). `--workers=2` passes every time.
 - **Spun off:** notification list and toolbar key items by their text, so two items with one title break
   React (the feature grid had the same bug, fixed).
-- **Next:** Adesh tries /templates and /build; then ship when he says so. No shop website yet: there is no
+- **Next:** Adesh tries /templates and /build; then ship when he says so. A shop website exists since D97; was: no
   product list template (a product card is one card).
 - **Versions, test record, report link, counting (D90):** every part has a version, stamped on the first line
   of every file it gives out, and its page lists the changes, its last test run (written by
