@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { dictionary } from "../lib/dictionary";
 import { languages } from "../lib/languages";
@@ -18,7 +19,6 @@ import { open, targets } from "./helpers";
 
 test("no part's files hold a stray control character", () => {
   // One slipped into seven files once, as an escaped regex backreference: it shows on the page as a box.
-  const fs = require("node:fs") as typeof import("node:fs");
   const bad = fs
     .readdirSync("registry", { recursive: true, encoding: "utf8" })
     .filter((file) => /\.(tsx?|js|css|html)$/.test(file))

@@ -10,3 +10,9 @@ export const author = { name: "Adesh Shukla", url: "https://devstash.me" };
 
 /** Where "Report a problem" on a part page writes to. */
 export const problemEmail = "hello@devstash.me";
+
+/**
+ * The public repository Vercel clones for one-click deploys (D99), made from deploy-template/. Unset, the
+ * builder shows no Deploy button: set NEXT_PUBLIC_DEPLOY_TEMPLATE once the repository exists.
+ */
+export const deployTemplate = process.env.NEXT_PUBLIC_DEPLOY_TEMPLATE ?? "";

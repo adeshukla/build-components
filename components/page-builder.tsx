@@ -45,6 +45,7 @@ import {
 } from "@/lib/site-builder";
 import { ACCEPTED_PICTURES, loadPicture, pictureName, picturesIn, savePicture, swapPictures } from "@/lib/pictures";
 import type { Schema } from "@/lib/schema";
+import { deployTemplate } from "@/lib/site";
 import { templateReactSource } from "@/lib/template-output";
 import { zipInBrowser } from "@/lib/zip-browser";
 import { defaultOptions, sectionSpaces, sectionWidths, templateById, templates, type SectionSpace, type SectionWidth } from "@/lib/templates";
@@ -716,6 +717,24 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
   }
 
   /** The Next.js project with the pictures in public/images, zipped here: only this browser has them. */
+  /**
+   * One-click deploy (D99): the site is kept on the server and Vercel's Deploy Button opens with its files'
+   * address filled in. The tab opens at once, while the click still counts as the person's, then goes there.
+   */
+  async function deployToVercel() {
+    const tab = window.open("", "_blank");
+    if (tab) tab.opener = null;
+    const response = await fetch("/api/deploy", { method: "POST", body: link }).catch(() => null);
+    const data = response ? ((await response.json().catch(() => ({}))) as { url?: string; error?: string }) : {};
+    if (data.url) {
+      if (tab) tab.location.href = data.url;
+      else window.location.href = data.url;
+      return;
+    }
+    tab?.close();
+    setSaid(data.error ?? "The deploy could not start. Check your connection and try again.");
+  }
+
   async function downloadProject() {
     const files: Record<string, string> = await (await fetch(`/download/${siteName}.json?p=${link}`)).json();
     const blobs: Record<string, Uint8Array> = {};
@@ -1475,6 +1494,11 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
             <button type="button" disabled={!link} onClick={() => copy(`${origin}/build#p=${link}`, "Link copied")} className="btn-glass cursor-pointer text-sm">
               {site.pages.length === 1 ? "Copy a link to this page" : "Copy a link to this website"}
             </button>
+            {deployTemplate && (
+              <button type="button" disabled={!link} onClick={deployToVercel} className="btn-glass cursor-pointer text-sm">
+                Deploy to Vercel
+              </button>
+            )}
           </p>
           <p className="-mt-2 text-xs text-ink-muted">
             The Next.js project runs as it is: npm install, then npm run dev. The link holds the whole page, so anyone with
@@ -1487,7 +1511,8 @@ function Builder({ exportNames, initialSite }: { exportNames: Record<string, str
               Put it online
             </h3>
             <p className="mt-1 text-pretty text-ink-muted">
-              In the Next.js project&rsquo;s folder, one command: <code className="font-mono text-ink">npx vercel</code> or{" "}
+              {deployTemplate && "Deploy to Vercel puts it online from here: sign in to Vercel and press Deploy. Or, "}
+              {deployTemplate ? "in" : "In"} the Next.js project&rsquo;s folder, one command: <code className="font-mono text-ink">npx vercel</code> or{" "}
               <code className="font-mono text-ink">npx netlify deploy --build</code>. Its forms send to its own{" "}
               <code className="font-mono text-ink">/api/forms</code>: set <code className="font-mono text-ink">FORM_WEBHOOK_URL</code> to pass messages on
               (the README says how). The HTML files go on any host that serves files, such as Netlify Drop.{site.url ? "" : " Set the site address under Website to include a sitemap."}

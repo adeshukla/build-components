@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { encodePage, MAX_SECTIONS, newSection, suggestions, type BuiltPage } from "../lib/page-builder";
 import { inStock } from "../lib/parts";
@@ -393,6 +394,34 @@ test.describe("what a page gives back", () => {
     expect(html["robots.txt"]).toContain("Sitemap: https://northwind.example/sitemap.xml");
     expect(html["product.html"]).toContain('<meta name="description" content="A waxed cotton jacket.">');
     expect(html["product.html"]).toContain('<link rel="canonical" href="https://northwind.example/product.html">');
+  });
+
+  test("one click deploys: Vercel's Deploy Button opens with the site's files filled in (D99)", async ({ request }) => {
+    const shop = siteFromStarter("shop", { name: "Northwind", brand: "#16303f", theme: "light" })!;
+    const p = await encodeSite(shop);
+    const response = await request.post("/api/deploy", { data: p, headers: { "content-type": "text/plain" } });
+    test.skip(response.status() === 404, "One-click deploy is off on this server (NEXT_PUBLIC_DEPLOY_TEMPLATE)");
+    expect(response.status()).toBe(200);
+    const deploy = new URL((await response.json()).url);
+    expect(deploy.origin + deploy.pathname).toBe("https://vercel.com/new/clone");
+    expect(deploy.searchParams.get("repository-url")).toMatch(/^https:\/\/github\.com\//);
+    expect(deploy.searchParams.get("project-name")).toBe("northwind");
+    expect(deploy.searchParams.get("env")).toBe("SITE_FILES_URL");
+    const files = new URL(JSON.parse(deploy.searchParams.get("envDefaults")!).SITE_FILES_URL);
+    expect(files.pathname).toBe("/download/northwind.json");
+
+    // What the template's build fetches is this very site's Next.js project (asked of this server).
+    const project: Record<string, string> = await (await request.get(`${files.pathname}${files.search}`)).json();
+    expect(Object.keys(project)).toEqual(expect.arrayContaining(["app/page.tsx", "app/product/page.tsx", "app/api/forms/route.ts"]));
+    // The template installs exactly the packages the project needs.
+    const template = JSON.parse(readFileSync("deploy-template/package.json", "utf8"));
+    const wanted = JSON.parse(project["package.json"]);
+    expect(template.dependencies).toEqual(wanted.dependencies);
+    expect(template.devDependencies).toEqual(wanted.devDependencies);
+
+    expect((await request.post("/api/deploy", { data: "not-a-site", headers: { "content-type": "text/plain" } })).status()).toBe(400);
+    // Without a store an id finds nothing.
+    expect((await request.get("/download/x.json?s=0123456789abcdef")).status()).toBe(404);
   });
 
   test("a website's address and pictures must be web addresses", () => {

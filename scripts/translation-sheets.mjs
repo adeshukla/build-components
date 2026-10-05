@@ -53,16 +53,27 @@ function parseCsv(text) {
   let quoted = false;
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-    if (quoted) {
-      if (char === '"' && text[i + 1] === '"') (field += '"'), i++;
-      else if (char === '"') quoted = false;
-      else field += char;
-    } else if (char === '"') quoted = true;
-    else if (char === ",") row.push(field), (field = "");
-    else if (char === "\n") row.push(field.replace(/\r$/, "")), rows.push(row), (row = []), (field = "");
-    else field += char;
+    if (quoted && char === '"' && text[i + 1] === '"') {
+      field += '"';
+      i++;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (!quoted && char === ",") {
+      row.push(field);
+      field = "";
+    } else if (!quoted && char === "\n") {
+      row.push(field.replace(/\r$/, ""));
+      rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += char;
+    }
   }
-  if (field || row.length) row.push(field), rows.push(row);
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
   return rows;
 }
 
@@ -102,7 +113,10 @@ if (mode === "export") {
         problems.push(`${name}: "${corrected}" must keep ${blanks(english) || "no blanks"}`);
         continue;
       }
-      if (entry[code] !== corrected.trim()) (entry[code] = corrected.trim()), changed++;
+      if (entry[code] !== corrected.trim()) {
+        entry[code] = corrected.trim();
+        changed++;
+      }
     }
   }
   const out = lines.map((line) => {

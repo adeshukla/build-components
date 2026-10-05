@@ -18,6 +18,13 @@ Last updated: 2026-10-05 (session 17, on dev, not shipped)
   Real bugs it found, now fixed: rating's plain script lost its words in pick mode (my D94 batch); the text
   section's link was 21px (D88); the part page's version, tested-for and report links were 18px (D90). The
   builder spec passes with two workers. The full test record (frameworks included) is running.
+- **After testing (Adesh asked):**
+  - Email: a test went from shuklaadesh7@gmail.com to hello@devstash.me and did not bounce. devstash.me's mail
+    is Cloudflare Email Routing; whether it was forwarded shows in Cloudflare (Email, Email Routing, Activity
+    log), which needs Adesh signed in.
+  - Translations: `docs/translations-review/<language>.csv` for native speakers, and
+    `node scripts/translation-sheets.mjs import` to take their corrections back (it refuses broken blanks).
+  - One-click deploy (D99) is built; it needs the public template repository and two settings in Vercel.
 - **Testing complete (2026-10-05, commit 0adb641):**
   - Every part's own spec in all seven outputs (React, HTML/CSS/JS, Vue, Svelte, Angular, Solid, Web
     Component) and three browsers: 132 parts, 17,524 passed, 0 failed (`lib/test-results.json`, written in

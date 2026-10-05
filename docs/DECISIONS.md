@@ -915,3 +915,23 @@ that the HTML files go on any static host. **Accounts: not built.** What they wo
 devices, a site to review) the compressed link already does; accounts would add sign-in, a database, a
 privacy policy and personal data to look after, for a product with no users yet. Revisit when people ask
 for a list of their sites across devices.
+
+## 2026-10-05 — D99. One-click deploy, with Vercel's Deploy Button
+**Adesh asked for one click.** Vercel's Deploy Button can now fill in an environment variable's value
+(`envDefaults`), which makes it possible without an OAuth integration (which would need a marketplace listing,
+a EULA and a privacy policy). One public template repository serves every site: `deploy-template/` in this
+repo, published as `github.com/adeshukla/build-components-site`. Its build runs `get-site.mjs`, which fetches
+the site's Next.js files from `SITE_FILES_URL` and builds them. The builder's **Deploy to Vercel** posts the
+site to `/api/deploy`, which keeps it in Upstash under the start of its SHA-256 (`lib/site-store.ts`, the same
+database as the counter; the same site is kept once, never deleted) and answers with the Deploy Button
+address: repository, project name, and `SITE_FILES_URL` pointing at `/download/<name>.json?s=<id>`. Without the
+store, a link up to 6,000 characters travels in the address itself (a six-page shop is about 2,300); a bigger
+one is refused with a pointer to the download. Builds fetching `?s=` are not counted as downloads.
+**Shown only when set up:** the button appears once `NEXT_PUBLIC_DEPLOY_TEMPLATE` is set, so it can never send
+anyone to a repository that does not exist. The person signs in to Vercel and presses Deploy; Vercel clones
+the template into their own GitHub. The deployed repository holds the template, not the site's code, so its
+README says how to take the code over (fetch once, commit, build with `next build`).
+**Checked:** the route in Node (the Deploy Button address and its parameters, a bad body refused); the store
+against a stand-in for Upstash's REST API; the template installed and built with a six-page shop fetched from
+the dev server; its errors when the variable is missing or the site is gone; a test that the template's
+packages equal the project's. Not checked: a real Vercel deploy, which needs the repository to exist.

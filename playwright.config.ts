@@ -29,5 +29,7 @@ export default defineConfig({
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    // One-click deploy (D99) is on in tests; a reused server without it skips those tests.
+    env: { NEXT_PUBLIC_DEPLOY_TEMPLATE: process.env.NEXT_PUBLIC_DEPLOY_TEMPLATE ?? "https://github.com/adeshukla/build-components-site" },
   },
 });
