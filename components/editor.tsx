@@ -563,7 +563,7 @@ function Checklist({ items, checked, onToggle }: { items: string[]; checked: num
   return (
     <div>
       <p className="text-sm text-pretty text-ink-muted">
-        Automated tests already cover axe and keyboard flows on both outputs. These need a person: try them on both
+        Automated tests already cover axe and keyboard flows on every output. These need a person: try them on both
         outputs. Ticks are saved in this browser.
       </p>
       <ul className="mt-4 space-y-3">

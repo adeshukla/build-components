@@ -16,8 +16,9 @@ const slugs = (process.argv.length > 2 ? process.argv.slice(2) : fs.readdirSync(
 );
 const report = path.join(os.tmpdir(), `bc-test-results-${Date.now()}.json`);
 
-spawnSync(`pnpm exec playwright test ${slugs.map((slug) => `e2e/${slug}.spec.ts`).join(" ")} --reporter=json`, {
-  stdio: ["ignore", "ignore", "inherit"],
+// The line reporter shows progress as it goes (a long run otherwise says nothing until the end).
+spawnSync(`pnpm exec playwright test ${slugs.map((slug) => `e2e/${slug}.spec.ts`).join(" ")} --reporter=line,json`, {
+  stdio: ["ignore", "inherit", "inherit"],
   shell: true,
   env: { ...process.env, PLAYWRIGHT_JSON_OUTPUT_NAME: report },
 });

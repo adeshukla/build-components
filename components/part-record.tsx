@@ -58,7 +58,7 @@ export function PartRecord({ slug }: { slug: RegistrySlug }) {
           </h2>
           {record ? (
             <>
-              <p className="mt-2 text-sm text-ink-muted">{`${sayDate(record.ranOn)}, at commit ${record.commit}: this part's own tests, in both outputs.`}</p>
+              <p className="mt-2 text-sm text-ink-muted">{`${sayDate(record.ranOn)}, at commit ${record.commit}: this part's own tests, in every output: React, HTML/CSS/JS and the five framework files.`}</p>
               <ul className="mt-4 grid gap-2 text-sm">
                 {Object.entries(record.browsers).map(([browser, counts]) => (
                   <li key={browser} className="flex flex-wrap justify-between gap-x-4">

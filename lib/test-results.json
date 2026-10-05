@@ -1,2358 +1,2376 @@
 {
   "accordion": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "address-fields": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "alert-banner": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "anchor-nav": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "announcement-bar": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "webkit": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "iphone": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       }
     }
   },
   "article-card": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "author-byline": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "autosave-field": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "avatar-group": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "back-to-top": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "badge": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "bottom-sheet": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "breadcrumbs": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "card-fields": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "carousel": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "cart": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "changelog": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "checkbox-group": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "circular-progress": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "code-block": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "color-picker": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "command-menu": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "webkit": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "iphone": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       }
     }
   },
   "comment-thread": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "comparison-table": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "confirm-dialog": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "contact-details": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "webkit": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "iphone": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       }
     }
   },
   "cookie-consent": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "countdown": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "cta": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "currency-input": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "cursor-pagination": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "data-grid": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "date-picker": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "date-range": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "details-list": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "drawer": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "dual-slider": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "empty-state": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "webkit": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "iphone": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       }
     }
   },
   "error-state": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "error-summary": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "faq": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "feature-grid": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "feed": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "filter-bar": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "footer": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "webkit": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "iphone": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       }
     }
   },
   "form": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "header": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "help-hint": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "hero": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "hover-card": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "how-it-works": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "image-gallery": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "inline-confirm": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "inline-edit": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "invoice-summary": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "kanban": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "language-switcher": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "lightbox": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "loading-button": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "logo-wall": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "maintenance-notice": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 18,
+        "passed": 58,
         "failed": 0
       },
       "webkit": {
-        "passed": 18,
+        "passed": 58,
         "failed": 0
       },
       "iphone": {
-        "passed": 18,
+        "passed": 58,
         "failed": 0
       }
     }
   },
   "masked-input": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "mega-menu": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "webkit": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "iphone": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       }
     }
   },
   "menu": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "menu-bar": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "webkit": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "iphone": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       }
     }
   },
   "modal": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "multi-select": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "nav-progress": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "newsletter": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "notification-list": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "offline-banner": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "order-tracker": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "otp": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "page-header": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "pagination": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "password": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "phone-input": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "picture-section": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "webkit": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "iphone": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       }
     }
   },
   "pin-pad": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "popover": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "post-list": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "webkit": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "iphone": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       }
     }
   },
   "pricing-table": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "product-card": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
+        "failed": 0
+      }
+    }
+  },
+  "product-grid": {
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
+    "browsers": {
+      "chromium": {
+        "passed": 21,
+        "failed": 0
+      },
+      "webkit": {
+        "passed": 21,
+        "failed": 0
+      },
+      "iphone": {
+        "passed": 21,
         "failed": 0
       }
     }
   },
   "pull-quote": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "quantity": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "radio-cards": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "rating": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "reading-progress": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "resizable-panels": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "row-actions": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "search": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "searchable-select": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "segmented": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "webkit": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       },
       "iphone": {
-        "passed": 7,
+        "passed": 22,
         "failed": 0
       }
     }
   },
   "select-field": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "session-timeout": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "shortcut-help": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "sidebar": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "signature-pad": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "skeleton": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "webkit": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       },
       "iphone": {
-        "passed": 9,
+        "passed": 29,
         "failed": 0
       }
     }
   },
   "skip-links": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "slider": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "slot-picker": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "sortable-list": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "split-feature": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "stat-comparison": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "stats-tiles": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "stepper": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "sticky-header": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "switch": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "table": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "webkit": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       },
       "iphone": {
-        "passed": 23,
+        "passed": 78,
         "failed": 0
       }
     }
   },
   "tabs": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "tag-input": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "team-grid": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "testimonials": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "webkit": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "iphone": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       }
     }
   },
   "text-section": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "webkit": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       },
       "iphone": {
-        "passed": 6,
+        "passed": 21,
         "failed": 0
       }
     }
   },
   "textarea-counter": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "time-picker": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "time-range": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "timeline": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "toast": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "toggle-group": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "toolbar": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "webkit": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       },
       "iphone": {
-        "passed": 17,
+        "passed": 57,
         "failed": 0
       }
     }
   },
   "tooltip": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "tour": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "tree-view": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "undo-snackbar": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "unit-input": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "webkit": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       },
       "iphone": {
-        "passed": 11,
+        "passed": 36,
         "failed": 0
       }
     }
   },
   "unsaved-changes": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "webkit": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       },
       "iphone": {
-        "passed": 13,
+        "passed": 43,
         "failed": 0
       }
     }
   },
   "upload": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "webkit": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       },
       "iphone": {
-        "passed": 15,
+        "passed": 50,
         "failed": 0
       }
     }
   },
   "video-embed": {
-    "ranOn": "2026-10-04",
-    "commit": "7cc1562",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }
   },
   "wizard": {
-    "ranOn": "2026-10-04",
-    "commit": "89f4038+",
+    "ranOn": "2026-10-05",
+    "commit": "0adb641",
     "browsers": {
       "chromium": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "webkit": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       },
       "iphone": {
-        "passed": 19,
+        "passed": 64,
         "failed": 0
       }
     }

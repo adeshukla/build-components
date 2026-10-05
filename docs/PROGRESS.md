@@ -18,6 +18,15 @@ Last updated: 2026-10-05 (session 17, on dev, not shipped)
   Real bugs it found, now fixed: rating's plain script lost its words in pick mode (my D94 batch); the text
   section's link was 21px (D88); the part page's version, tested-for and report links were 18px (D90). The
   builder spec passes with two workers. The full test record (frameworks included) is running.
+- **Testing complete (2026-10-05, commit 0adb641):**
+  - Every part's own spec in all seven outputs (React, HTML/CSS/JS, Vue, Svelte, Angular, Solid, Web
+    Component) and three browsers: 132 parts, 17,524 passed, 0 failed (`lib/test-results.json`, written in
+    chunks by `scripts/test-results.mjs`, which now prints progress as it runs).
+  - Every other spec: Chromium 3,679 passed (the 12 failures were OneDrive file locks and the builder's
+    known frame flake; all passed on a rerun with the builder on two workers); WebKit and iPhone 2,124
+    passed, 0 failed.
+  - A downloaded Shop website builds with `next build`, serves its sitemap, robots and metadata, and its
+    forms route passes a message to a webhook.
 - **Points 8 to 11 (Adesh: "decide for me, do not ask"):**
   - Forms send (D95): a Send to option on the form and newsletter; the Next.js download has its own
     `/api/forms` that passes messages to `FORM_WEBHOOK_URL` or logs them. Checked on a built project.
