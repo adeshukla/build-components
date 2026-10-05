@@ -49,6 +49,15 @@ export function PartRecord({ slug }: { slug: RegistrySlug }) {
             </li>
           ))}
         </ol>
+        <p className="mt-5 text-sm">
+          {/* An RSS feed (D100): fixes reach someone who copied the part, with no account. */}
+          <a
+            href={`/changes/${slug}.xml`}
+            className="inline-flex min-h-6 items-center underline decoration-rule-strong underline-offset-3 hover:decoration-accent"
+          >
+            {`Follow changes to ${name} (RSS)`}
+          </a>
+        </p>
       </section>
 
       <div className="grid-gap grid content-start">

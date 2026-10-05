@@ -46,3 +46,42 @@ test("a part page shows its version, its changes, its last run and a report link
 test("every part in the catalogue has a version", () => {
   for (const part of inStock) if (isRegistrySlug(part.slug)) expect(versionOf(part.slug)).toMatch(/^1\.\d+\.\d+$/);
 });
+
+test("each part's changes are an RSS feed, and every part's are one more (D100)", async ({ page, request }) => {
+  test.skip(test.info().project.name !== "chromium", "Feeds, not pages: once is enough");
+  const one = await request.get("/changes/feature-grid.xml");
+  expect(one.headers()["content-type"]).toContain("application/rss+xml");
+  const all = await request.get("/changes.xml");
+  expect(all.headers()["content-type"]).toContain("application/rss+xml");
+  expect((await request.get("/changes/not-a-part.xml")).status()).toBe(404);
+
+  // Both are well-formed RSS that a reader can take: parsed here by the browser's own XML parser.
+  await page.goto("/parts");
+  const read = (xml: string) =>
+    page.evaluate((text) => {
+      const doc = new DOMParser().parseFromString(text, "application/xml");
+      return {
+        broken: doc.querySelector("parsererror") !== null,
+        titles: [...doc.querySelectorAll("item > title")].map((node) => node.textContent),
+        guids: [...doc.querySelectorAll("item > guid")].map((node) => node.textContent),
+      };
+    }, xml);
+
+  const feed = await read(await one.text());
+  expect(feed.broken).toBe(false);
+  expect(feed.titles).toHaveLength(changesOf("feature-grid").length);
+  expect(feed.titles[0]).toBe(`Feature grid ${versionOf("feature-grid")}: added`);
+  expect(feed.guids[0]).toBe(`feature-grid@${versionOf("feature-grid")}`);
+
+  // A change made to many parts on one day is one item that names them, not one item each.
+  const everything = await read(await all.text());
+  expect(everything.broken).toBe(false);
+  expect(new Set(everything.guids).size).toBe(everything.guids.length);
+  expect(everything.titles.filter((title) => /^\d+ parts: added$/.test(title ?? "")).length).toBeGreaterThan(0);
+  expect(everything.titles.length).toBeLessThan(inStock.length);
+
+  // The part page names both feeds for readers, and links its own where people can see it.
+  await page.goto("/feature-grid");
+  await expect(page.locator('link[rel="alternate"][type="application/rss+xml"][href$="/changes/feature-grid.xml"]')).toHaveCount(1);
+  await expect(page.locator("main").getByRole("link", { name: "Follow changes to Feature grid (RSS)" })).toHaveAttribute("href", "/changes/feature-grid.xml");
+});

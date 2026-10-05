@@ -21,7 +21,16 @@ export async function generateMetadata({ params }: PageProps<"/[slug]">): Promis
     title: `${title}: configure, test and export`,
     description,
     // Options in the query string are the same page; point search engines at the plain one.
-    alternates: { canonical: `/${slug}` },
+    alternates: {
+      canonical: `/${slug}`,
+      // Feed readers find the part's changes (D100) and every part's.
+      types: {
+        "application/rss+xml": [
+          { url: `/changes/${slug}.xml`, title: `${title} changes` },
+          { url: "/changes.xml", title: "Part changes" },
+        ],
+      },
+    },
     openGraph: { title, description, url: `/${slug}`, images: "/opengraph-image" },
   };
 }

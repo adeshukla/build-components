@@ -2,6 +2,10 @@
 
 Last updated: 2026-10-06 (session 17, shipped)
 
+## After shipping (2026-10-06, on dev)
+- Adesh asked whether to add login; decided no for now (D100) and to start with change feeds: built,
+  on dev, not shipped. Next on the list: a "My sites" list kept in the browser.
+
 ## Shipped (2026-10-06)
 Adesh said ship. `main` was fast-forwarded to `dev` (ac90e6a, 67 commits: D83 to D99) and pushed; Vercel
 served it in about 140 seconds.

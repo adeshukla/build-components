@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 // Every other page sets its own canonical; the home page did not, so a
 // trailing-slash or query-string variant could be indexed separately.
 export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", types: { "application/rss+xml": [{ url: "/changes.xml", title: "Part changes" }] } },
 };
 
 const tests = [

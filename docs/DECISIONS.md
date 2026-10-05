@@ -935,3 +935,15 @@ README says how to take the code over (fetch once, commit, build with `next buil
 against a stand-in for Upstash's REST API; the template installed and built with a six-page shop fetched from
 the dev server; its errors when the variable is missing or the site is gone; a test that the template's
 packages equal the project's. Not checked: a real Vercel deploy, which needs the repository to exist.
+
+## 2026-10-06 — D100. Change feeds instead of accounts
+**Adesh chose** to skip login for now (no users yet; the link already carries a site) and start with what an
+account would have given someone who copied a part: hearing about its fixes. RSS 2.0, built from the version
+history (`lib/versions.ts`) by `lib/feed.ts`, static at build time:
+- `/changes/<slug>.xml`: one part's changes, newest first; each item is a version (guid `slug@version`), linking
+  to the part page's Changes section.
+- `/changes.xml`: every part. A change made to many parts on one day (the site theme, the Words options) is one
+  item naming the parts, not ninety, so a reader is not flooded.
+Part pages and the home page name the feeds in `<head>` for feed readers, and the Changes section links its own
+feed. RSS over Atom: more readers and tools know it by name. Checked by the browser's own XML parser in
+`e2e/versions.spec.ts`. **Next, if wanted:** a list of the websites someone built, kept in their browser.
